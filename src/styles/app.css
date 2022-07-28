@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+
+.btn {
+  /* @apply inline-flex items-center justify-center whitespace-nowrap border border-transparent py-2 px-3 text-sm font-medium capitalize leading-snug shadow-sm transition duration-300 ease-in-out; */
+  @apply relative justify-center border border-transparent py-2 px-4 text-sm font-medium capitalize text-white;
+}
+
+.btn-lg {
+  @apply py-2 px-3 text-base;
+}
+
+.btn-md {
+  @apply py-2 px-3 text-sm;
+}
+
+.btn-sm {
+  @apply py-2 px-3 text-xs;
+}
+
+.btn-primary {
+  @apply bg-royal-blue-500  text-white shadow-xl hover:shadow-royal-blue-500 focus:outline-none;
+}
+
+.btn-secondary {
+  @apply bg-royal-blue-300  text-royal-blue-700 shadow-xl hover:shadow-royal-blue-300 focus:outline-none;
+}
+
+.btn-tertiary {
+  @apply bg-pickled-bluewood-500 text-white shadow-xl hover:shadow-pickled-bluewood-500 focus:outline-none;
+}
+
+.btn-success {
+  @apply bg-success text-white shadow-xl hover:shadow-success focus:outline-none;
+}
+
+.btn-danger {
+  @apply bg-danger  text-white shadow-xl hover:shadow-danger focus:outline-none;
+}
+
+.btn-warning {
+  @apply bg-warning text-pickled-bluewood-600 shadow-xl hover:shadow-warning focus:outline-none;
+}
+
+.btn-primary.btn-outlined {
+  @apply border border-royal-blue-600  bg-transparent text-royal-blue-600 hover:bg-royal-blue-700 hover:text-white;
+}
+
+.btn-secondary.btn-outlined {
+  @apply border border-royal-blue-300  bg-transparent text-royal-blue-300 hover:bg-royal-blue-300 hover:text-royal-blue-700;
+}
+
+.btn-tertiary.btn-outlined {
+  @apply border border-pickled-bluewood-500  bg-transparent text-pickled-bluewood-500 hover:bg-pickled-bluewood-500 hover:text-white;
+}
+
+.btn-success.btn-outlined {
+  @apply border  border-success  bg-transparent text-success hover:bg-success hover:text-white;
+}
+
+.btn-danger.btn-outlined {
+  @apply border border-danger  bg-transparent text-danger hover:bg-danger hover:text-white;
+}
+
+.btn-warning.btn-outlined {
+  @apply border border-warning bg-transparent text-warning hover:bg-warning hover:text-pickled-bluewood-600;
+}
+
+.input {
+  @apply block w-full appearance-none border border-pickled-bluewood-300 px-3 py-2 text-pickled-bluewood-900 placeholder-pickled-bluewood-500 focus:z-10 focus:border focus:border-royal-blue-500 focus:outline-none focus:ring-transparent sm:text-sm;
+}
+
+.error {
+  @apply border-danger text-danger;
+}
+
+.success {
+  @apply border-success text-success;
+}
+
+.warning {
+  @apply border-warning text-warning;
+}
+
+.info {
+  @apply border-info text-info;
+}
+
+.spin {
+  @apply mr-2 inline h-8 w-8 animate-spin fill-royal-blue-600 text-pickled-bluewood-200;
+}
+
+input:checked ~ .dot {
+  transform: translateX(100%);
+  @apply bg-success;
+}
+
+@tailwind utilities;
+
+.menu {
+  grid-area: menu;
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.dot-align {
+  text-align: "." center;
+}
+
+/* .big-menu {
+	width: 200px;
+}
+.small-menu {
+	width: 60px;
+
+} */

@@ -27,7 +27,7 @@ specifiers:
   cross-fetch: ^3.1.5
   csvtojson: ^2.0.10
   dayjs: ^1.11.4
-  dinero.js: ^1.9.1
+  dinero.js: 2.0.0-alpha.8
   eslint: ^8.16.0
   eslint-config-prettier: ^8.3.0
   eslint-plugin-svelte3: ^4.0.0
@@ -50,9 +50,15 @@ specifiers:
   tslib: ^2.3.1
   typescript: ^4.7.4
   uuid: ^8.3.2
+  validator: ^13.7.0
+  vest: ^4.5.0
   vite: ^3.0.0
   vitest: ^0.19.1
   zod: ^3.17.10
+
+dependencies:
+  validator: 13.7.0
+  vest: 4.5.0
 
 devDependencies:
   '@dinero.js/currencies': 2.0.0-alpha.1
@@ -81,7 +87,7 @@ devDependencies:
   cross-fetch: 3.1.5
   csvtojson: 2.0.10
   dayjs: 1.11.4
-  dinero.js: 1.9.1
+  dinero.js: 2.0.0-alpha.8
   eslint: 8.20.0
   eslint-config-prettier: 8.5.0_eslint@8.20.0
   eslint-plugin-svelte3: 4.0.0_piwa6j2njmnknm35bh3wz5v52y
@@ -146,8 +152,24 @@ packages:
     resolution: {integrity: sha512-B1/plF62pt+H2IJHvApK8fdOJAVsvojvacuac8x8s+JIyqbropMyqNqHTKLm3YD8ZFLGwYeFTudU+PQ7vGvBdA==}
     dev: true
 
+  /@dinero.js/calculator-number/2.0.0-alpha.8:
+    resolution: {integrity: sha512-/L+N7g5DjcS6wlMb2hcOXWBKW2TGiG+vZDZr9ow0nsHUTdwtMarL1bmBH9fGldHhH2XsxcrjN9H+036yeNzh3Q==}
+    dependencies:
+      '@dinero.js/core': 2.0.0-alpha.8
+    dev: true
+
+  /@dinero.js/core/2.0.0-alpha.8:
+    resolution: {integrity: sha512-3jaw2j6J/SshlCZz5KhHkh8zP47HRmt9RpnjR0BJs2awpweVuZIyyX9qzGVUEVpml9IwzQ1U+YdXevhOxtcDgg==}
+    dependencies:
+      '@dinero.js/currencies': 2.0.0-alpha.8
+    dev: true
+
   /@dinero.js/currencies/2.0.0-alpha.1:
     resolution: {integrity: sha512-JoKY6q3AOm2II44qLp6VMGn+j+p6QC39m3DFogKZXsucWIIvzt7c2v04DZrrHWLNnDYNzITOnbQ7f2pGbONjig==}
+    dev: true
+
+  /@dinero.js/currencies/2.0.0-alpha.8:
+    resolution: {integrity: sha512-zApiqtuuPwjiM9LJA5/kNcT48VSHRiz2/mktkXjIpfxrJKzthXybUAgEenExIH6dYhLDgVmsLQZtZFOsdYl0Ag==}
     dev: true
 
   /@eslint/eslintrc/1.3.0:
@@ -1264,6 +1286,12 @@ packages:
     resolution: {integrity: sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==}
     dev: true
 
+  /context/2.0.8:
+    resolution: {integrity: sha512-lWMrHYuF9i33m6NXEt/T2OIp/C7i/xncQubWtEtEmVfzhsOXerNXQYW4KRM8DcjAo0lNXeLNq7iAxrJuoz7UtA==}
+    dependencies:
+      vest-utils: 0.0.2
+    dev: false
+
   /convert-source-map/1.8.0:
     resolution: {integrity: sha512-+OQdjP49zViI/6i7nIJpA8rAl4sV/JdPfU9nZs3VqOwGIgizICvuN2ru6fMd+4llL0tar18UYJXfZ/TWtmhUjA==}
     dependencies:
@@ -1455,8 +1483,12 @@ packages:
     engines: {node: ^12.13.0 || ^14.15.0 || ^16.10.0 || >=17.0.0}
     dev: true
 
-  /dinero.js/1.9.1:
-    resolution: {integrity: sha512-1HXiF2vv3ZeRQ23yr+9lFxj/PbZqutuYWJnE0qfCB9xYBPnuaJ8lXtli1cJM0TvUXW1JTOaePldmqN5JVNxKSA==}
+  /dinero.js/2.0.0-alpha.8:
+    resolution: {integrity: sha512-6bl+g6oh6iQ6vPR5Pd4qr7D+P5e51GYRUT3jl8HYqYeejYC5sd9OVTTbXC3WU7L25mAIbOm+diiTVz1rL4QLwg==}
+    dependencies:
+      '@dinero.js/calculator-number': 2.0.0-alpha.8
+      '@dinero.js/core': 2.0.0-alpha.8
+      '@dinero.js/currencies': 2.0.0-alpha.8
     dev: true
 
   /dir-glob/3.0.1:
@@ -3048,6 +3080,13 @@ packages:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
     dev: true
 
+  /n4s/4.1.9:
+    resolution: {integrity: sha512-aiQqkmW0RvRtQAzogLlESD82s4kptR4PwVu7mhMkZTMJN5TbTrH/P2JBzRKjlSkT8mRztWeDuNuAOpIPxc3kjQ==}
+    dependencies:
+      context: 2.0.8
+      vest-utils: 0.0.2
+    dev: false
+
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -4270,6 +4309,23 @@ packages:
       '@types/istanbul-lib-coverage': 2.0.4
       convert-source-map: 1.8.0
     dev: true
+
+  /validator/13.7.0:
+    resolution: {integrity: sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==}
+    engines: {node: '>= 0.10'}
+    dev: false
+
+  /vest-utils/0.0.2:
+    resolution: {integrity: sha512-E+5ZAjUPn9vhJ9Pq/C2gBR02hKq8HrjELmsTsyX13Vwheeja4XVwzYRfPDIuox11QDQ7Mdf8VFLjH8JeRLIs9A==}
+    dev: false
+
+  /vest/4.5.0:
+    resolution: {integrity: sha512-39V1VAPkXAFuscRh2V70cHT5M+Uy8SJVhk1u+AnS5cggez7Vf2PvDoCgPvIkBXDyrrJSflURBx7RuyYSDFdKYQ==}
+    dependencies:
+      context: 2.0.8
+      n4s: 4.1.9
+      vest-utils: 0.0.2
+    dev: false
 
   /vite/3.0.3:
     resolution: {integrity: sha512-sDIpIcl3mv1NUaSzZwiXGEy1ZoWwwC2vkxUHY6yiDacR6zf//ZFuBJrozO62gedpE43pmxnLATNR5IYUdAEkMQ==}

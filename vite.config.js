@@ -25,7 +25,7 @@ const config = {
       inline: [/msw/]
     },
     // Exclude playwright tests folder
-    exclude: [...configDefaults.exclude, 'tests']
+    exclude: [...configDefaults.exclude, './src/tests']
   }
 }
 
