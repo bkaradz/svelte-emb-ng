@@ -62,7 +62,7 @@
 				});
 				await goto('/');
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}

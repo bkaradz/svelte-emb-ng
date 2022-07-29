@@ -16,7 +16,7 @@
 		"coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
-		"@dinero.js/currencies": "2.0.0-alpha.1",
+		"@dinero.js/currencies": "2.0.0-alpha.8",
 		"@playwright/test": "^1.22.2",
 		"@rgossiaux/svelte-headlessui": "^1.0.2",
 		"@sveltejs/adapter-auto": "next",
@@ -65,13 +65,11 @@
 		"tslib": "^2.3.1",
 		"typescript": "^4.7.4",
 		"uuid": "^8.3.2",
-		"vite": "^3.0.0",
-		"vitest": "^0.19.1",
 		"validator": "^13.7.0",
 		"vest": "^4.5.0",
+		"vite": "^3.0.0",
+		"vitest": "^0.19.1",
 		"zod": "^3.17.10"
 	},
-	"type": "module",
-	"dependencies": {
-	}
+	"type": "module"
 }

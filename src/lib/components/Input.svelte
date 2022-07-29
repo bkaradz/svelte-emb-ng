@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { selectTextOnFocus, blurOnEscape } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall } from '$lib/utility/svgLogos';
-	export let value = null;
+	export let value = '';
 	export let disabled = false;
 	export let type = 'text';
 	export let label = '';
 	export let name = '';
 	export let pending = false;
-	export let messages = [];
+	export let messages: string|any[] = [];
 	export let validityClass = '';
 	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
 

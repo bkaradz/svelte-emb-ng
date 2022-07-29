@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ locals }): Promise<unknown> => {
       status: 200,
       body: res,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -98,7 +98,7 @@ export const POST: RequestHandler = async ({ request }): Promise<unknown> => {
       status: 200,
       body: contacts,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -131,7 +131,7 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<unknown>
         ...userUpdated,
       },
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -170,7 +170,7 @@ export const DELETE: RequestHandler = async ({ locals, request }): Promise<unkno
       status: 200,
       body: userUpdated,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
