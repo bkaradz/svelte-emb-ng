@@ -6,9 +6,6 @@ import ContactsModel from '$lib/models/contacts.model';
 import type { ContactsDocument } from '$lib/models/contacts.model';
 import config from 'config';
 import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json';
-import dayjs from 'dayjs';
-import isToday from 'dayjs/plugin/isToday'
-dayjs.extend(isToday)
 
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {
