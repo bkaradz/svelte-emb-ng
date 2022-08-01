@@ -15,7 +15,7 @@ export function getMonetaryValue(value: string) {
 	return value;
 }
 
-export function setMonetaryValue(value: number | string | Dinero<number>): string {
+export function setMonetaryValue(value: number | string | Dinero<number>) {
 	if (typeof value === 'number' || typeof value === 'string') {
 		const dineroObject = toDineroObject(value);
 
