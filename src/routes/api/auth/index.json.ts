@@ -3,7 +3,7 @@ import logger from '$lib/utility/logger'
 import { postSuite } from '$lib/validation/server/signUp.validate'
 import type { RequestHandler } from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ locals }): Promise<unknown> => {
+export const GET: RequestHandler = async ({ locals }): Promise<{}> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -42,74 +42,7 @@ export const GET: RequestHandler = async ({ locals }): Promise<unknown> => {
   }
 }
 
-export const POST: RequestHandler = async ({ request }): Promise<unknown> => {
-  try {
-    const reqUser = await request.json()
-
-    const result = postSuite(reqUser)
-
-    if (result.hasErrors()) {
-      return {
-        status: 400,
-        body: {
-          message: result.getErrors(),
-        },
-      }
-    }
-
-    const userExist = await ContactsModel.findOne({ email: reqUser.email })
-
-    if (userExist) {
-      return {
-        status: 409,
-        body: {
-          message: 'User with that email already exist',
-        },
-      }
-    }
-
-    const contacts = new ContactsModel(reqUser)
-
-    const allUsers = await ContactsModel.find({
-      isUser: true,
-      isActive: true,
-      userRole: 'ADMIN',
-    }).select('-password')
-
-    /**
-     * If the database has no ADMIN create one,
-     * other users are activated by the first ADMIN
-     */
-    if (allUsers.length === 0) {
-      contacts.userRole = 'ADMIN'
-      contacts.isActive = true
-    } else {
-      contacts.userRole = 'USER'
-      contacts.isActive = false
-    }
-
-    contacts.isUser = true
-
-    await contacts.save()
-
-    delete contacts.password
-
-    return {
-      status: 200,
-      body: contacts,
-    }
-  } catch (err: any) {
-    logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
-  }
-}
-
-export const PUT: RequestHandler = async ({ request, locals }): Promise<unknown> => {
+export const PUT: RequestHandler = async ({ request, locals }): Promise<{}> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -142,7 +75,7 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<unknown>
   }
 }
 
-export const DELETE: RequestHandler = async ({ locals, request }): Promise<unknown> => {
+export const DELETE: RequestHandler = async ({ locals, request }): Promise<{}> => {
   try {
     if (!locals?.user?._id) {
       return {
