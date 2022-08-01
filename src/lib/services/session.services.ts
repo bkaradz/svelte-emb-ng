@@ -4,8 +4,11 @@ import type { SessionsDocument } from '$lib/models/sessions.model';
 import type { FilterQuery } from 'mongoose';
 import ContactsModel from '$lib/models/contacts.model';
 import type { ContactsDocument } from '$lib/models/contacts.model';
-import omit from 'lodash-es/omit';
 import config from 'config';
+import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json';
+import dayjs from 'dayjs';
+import isToday from 'dayjs/plugin/isToday'
+dayjs.extend(isToday)
 
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {
@@ -62,19 +65,21 @@ export async function findSessions(query: FilterQuery<SessionsDocument>) {
 	return await SessionsModel.find(query).lean();
 }
 
-export type signedInUserInterface = Pick<
-	ContactsDocument,
-	'_id' | 'id' | 'name' | 'email' | 'isUser' | 'isCorporate' | 'isActive' | 'userRole'
->;
+/**
+ * @param userCredentials 
+ * @returns 
+ */
+export async function validateUserPassword(userCredentials: loginCredentials): Promise<null | Omit<ContactsDocument, 'password'>> {
 
-export async function validateSessionPassword({
-	email,
-	password
-}: {
-	email: ContactsDocument['email'];
-	password: ContactsDocument['password'];
-}) {
-	const user: ContactsDocument = await ContactsModel.findOne(
+	const parsedUser = loginCredentialsSchema.safeParse(userCredentials)
+
+	if (!parsedUser.success) {
+		throw new Error(`${parsedUser.error}`);	
+	}
+
+	const {email, password } = userCredentials
+
+	const user: ContactsDocument | null = await ContactsModel.findOne(
 		{ email },
 		{
 			phone: 0,
@@ -88,22 +93,27 @@ export async function validateSessionPassword({
 	);
 
 	if (!user) {
-		return false;
+		return null;
 	}
 
 	const isValid = await user.comparePassword(password);
 
 	if (!isValid) {
-		return false;
+		return null;
 	}
 
-	return omit(user.toJSON(), ['password']);
+	delete user.password
+
+	return user;
 }
 
+/**
+ * Delete logout Session
+ * @param userID -- User id from mongodb
+ * @returns 
+ */
 export async function deleteSessions(userId: ContactsDocument['_id']) {
 	return await SessionsModel.findByIdAndDelete(userId);
 }
 
-export async function deleteAllSessionByUserID(userId: ContactsDocument['_id']) {
-	return await SessionsModel.deleteMany({ userID: userId });
-}
+

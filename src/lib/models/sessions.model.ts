@@ -1,11 +1,13 @@
 import mongoose, { model, Schema, Document } from 'mongoose';
 
 export interface SessionsDocument extends Document {
+	_id: mongoose.Schema.Types.ObjectId;
 	user: mongoose.Schema.Types.ObjectId;
 	valid: boolean;
 	userAgent: string;
 	createdAt: Date;
 	updatedAt: Date;
+	expireAt: Date;
 }
 
 const sessionsSchema: Schema = new Schema<SessionsDocument>(
@@ -13,8 +15,9 @@ const sessionsSchema: Schema = new Schema<SessionsDocument>(
 		user: { type: Schema.Types.ObjectId, ref: 'Contacts' },
 		valid: { type: Boolean, required: true, default: true },
 		userAgent: { type: String },
-		createdAt: { type: Date },
-		updatedAt: { type: Date }
+		createdAt: { type: Date, expires: '24h' },
+		updatedAt: { type: Date },
+		expireAt: { type: Date,  expires: 86400 },
 	},
 	{ timestamps: true }
 );
