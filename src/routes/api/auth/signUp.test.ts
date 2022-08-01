@@ -1,5 +1,6 @@
 import { connectDB } from '$lib/database/mongooseDB';
 import ContactsModel from '$lib/models/contacts.model';
+import omit from 'lodash-es/omit';
 import type { User } from "./signUp.json";
 
 const userData: Partial<User> = {
@@ -17,6 +18,8 @@ export const fetchPosts = async (formData: any) => {
 			body: JSON.stringify(formData),
 			headers: { 'Content-Type': 'application/json' }
 		});
+		const { authToken } = res.cookies
+    console.log("🚀 ~ file: signUp.test.ts ~ line 22 ~ fetchPosts ~ authToken", authToken)
 		return res.json();
 };
 
@@ -28,45 +31,45 @@ if (import.meta.vitest) {
 		await ContactsModel.deleteMany({})
 	})
 
-	describe('Sign up a user:', () => {
+	describe.skip('Sign Up a user:', () => {
 		it('Should return created user data with user name if successful:', async () => {
 			const userData1 = {...userData}
 			const result = await fetchPosts(userData1);
 			expect(result?.name).toBe('John Doe')
 		});
 		it('Should return an error if name is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.name
+			const userData1 = omit(userData, 'name')
+			
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('name')
 		});
 		it('Should return an error if email is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.email
+			const userData1 = omit(userData, 'email')
+
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('email')
 		});
 		it('Should return an error if phone is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.phone
+			const userData1 = omit(userData, 'phone')
+
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('phone')
 		});
 		it('Should return an error if address is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.address
+			const userData1 = omit(userData, 'address')
+
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('address')
 		});
 		it('Should return an error if password is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.password
+			const userData1 = omit(userData, 'password')
+
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('password')
 		});
 		it('Should return an error if confirmPassword is not provided:', async () => {
-			const userData1 = {...userData}
-			delete userData1.confirmPassword
+			const userData1 = omit(userData, 'confirmPassword')
+
 			const result = await fetchPosts(userData1);
 			expect(result?.error?.issues[0]?.path[0]).toBe('confirmPassword')
 		});

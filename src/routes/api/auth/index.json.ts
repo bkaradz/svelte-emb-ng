@@ -3,7 +3,7 @@ import logger from '$lib/utility/logger'
 import { postSuite } from '$lib/validation/server/signUp.validate'
 import type { RequestHandler } from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ locals }): Promise<{}> => {
+export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | any}> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ locals }): Promise<{}> => {
   }
 }
 
-export const PUT: RequestHandler = async ({ request, locals }): Promise<{}> => {
+export const PUT: RequestHandler = async ({ request, locals }): Promise<{status: number, body: {message: string} | any}> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -60,9 +60,7 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<{}> => {
 
     return {
       status: 200,
-      body: {
-        ...userUpdated,
-      },
+      body: userUpdated
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
@@ -75,7 +73,7 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<{}> => {
   }
 }
 
-export const DELETE: RequestHandler = async ({ locals, request }): Promise<{}> => {
+export const DELETE: RequestHandler = async ({ locals, request }): Promise<{status: number, body: {message: string} | any}> => {
   try {
     if (!locals?.user?._id) {
       return {

@@ -2,6 +2,7 @@ import { connectDB } from '$lib/database/mongooseDB';
 import ContactsModel from '$lib/models/contacts.model';
 import pick from 'lodash-es/pick';
 import type { User } from "./signUp.json";
+import * as cookie from 'cookie';
 
 const userData: Partial<User> = {
 	"name": "John Doe",
@@ -11,14 +12,7 @@ const userData: Partial<User> = {
 	"password": "johnDoe123",
 	"confirmPassword": "johnDoe123"
 }
-const userData2: Partial<User> = {
-	"name": "Jane Doe",
-	"email": "janedoe@example.com",
-	"phone": "0733123456",
-	"address": "1569 Old Lobengula",
-	"password": "janeDoe123",
-	"confirmPassword": "janeDoe123"
-}
+
 
 export const fetchPosts = async (formData: any, uri: string) => {
 		const res = await fetch(uri, {
@@ -26,6 +20,14 @@ export const fetchPosts = async (formData: any, uri: string) => {
 			body: JSON.stringify(formData),
 			headers: { 'Content-Type': 'application/json' }
 		});
+		// const { authToken } = req.cookies
+		// loginRes.headers["set-cookie"][0];
+		// const cookies = cookie.parse(res.headers.get('cookie') || '');
+    console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies", res.headers )
+    console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies set-cookie", res.headers.get('set-cookie') )
+    console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies content-type", res.headers.get('content-type') )
+    console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies set-cookie", res.headers["set-cookie"])
+   
 		return res?.json();
 };
 
@@ -38,7 +40,7 @@ if (import.meta.vitest) {
 		await ContactsModel.deleteMany({})
 	})
 
-	describe.skip('Sign In a user:', () => {
+	describe('Sign Out a user:', () => {
 		it('First User Sign Up: Should return created user data with user name if successful:', async () => {
 			const uri = 'http://localhost:5173/api/auth/signUp.json'
 			const userData1 = {...userData}
@@ -54,36 +56,15 @@ if (import.meta.vitest) {
 			const result = await fetchPosts(userData1, uri);      
 			expect(result?.authenticated).toBeTruthy()
 		});
-		it('First User Login: Should return an error if email is not provided:', async () => {
-			const uri = 'http://localhost:5173/api/auth/signIn.json'
+		it('First User Logout: Should return an error if email is not provided:', async () => {
+			const uri = 'http://localhost:5173/api/auth/signOut.json'
 
-			const userData1 = pick(userData, 'email')
-
-			const result = await fetchPosts(userData1, uri);
-			expect(result?.error?.issues[0]?.path[0]).toBe('password')
-		});
-		it('First User Login: Should return an error if password is not provided:', async () => {
-			const uri = 'http://localhost:5173/api/auth/signIn.json'
-
-			const userData1 = pick(userData, 'password')
+			const userData1 = {}
 
 			const result = await fetchPosts(userData1, uri);
-			expect(result?.error?.issues[0]?.path[0]).toBe('email')
+      console.log("🚀 ~ file: signOut.test.ts ~ line 56 ~ it ~ result", result)
+			expect(result?.error?.issues[0]?.path[0]).toBe('You have successfully singed out')
 		});
-		it('Second User Sign Up: Should return created user data with user name if successful:', async () => {
-			const uri = 'http://localhost:5173/api/auth/signUp.json'
-			const userData1 = {...userData2}
-			const result = await fetchPosts(userData1, uri);
-			expect(result?.name).toBe('Jane Doe')
-			expect(result?.userRole).toBe('USER')
-		});
-		it('Second User Login: Should return unauthorized if not approved by ADMIN:', async () => {
-			const uri = 'http://localhost:5173/api/auth/signIn.json'
-
-			const userData1 = pick(userData2, 'email', 'password')
-     
-			const result = await fetchPosts(userData1, uri);
-			expect(result?.message).toBe('Unauthorized')
-		});
+		
 	});
 }

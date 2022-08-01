@@ -7,24 +7,26 @@ import type { ContactsDocument } from '$lib/models/contacts.model';
 import config from 'config';
 import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json';
 
+console.log('typeof', typeof config.get('httpOnly'));
+
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {
 		'Set-Cookie': [
 			cookie.serialize('accessToken', accessToken, {
 				maxAge: config.get('cookieAccessTokenTtl'), // 15min
-				httpOnly: true,
+				httpOnly: config.get('httpOnly'),
 				domain: 'localhost',
 				path: '/',
-				sameSite: 'lax',
-				secure: false
+				sameSite: config.get('sameSite'),
+				secure: config.get('secure')
 			}),
 			cookie.serialize('refreshToken', refreshToken, {
 				maxAge: config.get('cookieRefreshTokenTtl'), // 1year
-				httpOnly: true,
+				httpOnly: config.get('httpOnly'),
 				domain: 'localhost',
 				path: '/',
-				sameSite: 'lax',
-				secure: false
+				sameSite: config.get('sameSite'),
+				secure: config.get('secure')
 			})
 		]
 	};

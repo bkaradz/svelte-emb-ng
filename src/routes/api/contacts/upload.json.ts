@@ -41,6 +41,7 @@ export const POST: RequestHandler = async ({
 		}
 		// @ts-expect-error: the above if statement catches the error if file is null
 		const csvString = await file.text();
+    console.log("🚀 ~ file: upload.json.ts ~ line 44 ~ csvString", csvString)
 
 		const jsonArray = await csv()
 			.preFileLine((fileLine, idx) => {

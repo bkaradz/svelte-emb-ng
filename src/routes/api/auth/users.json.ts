@@ -1,9 +1,9 @@
-import ContactsModel from '$lib/models/contacts.model'
+import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from '@sveltejs/kit';
 
-
-export const GET: RequestHandler = async ({ locals }) => {
+// Omit<ContactsDocument, 'password' | 'createdAt'| 'updatedAt'| '__v'| 'isCorpotate'| 'balanceDue'| 'totalReceipts'>
+export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | any}> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ locals }) => {
       status: 200,
       body: res,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,

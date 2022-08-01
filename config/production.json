@@ -1,3 +1,6 @@
 {
-  "MONGODB_URI": "mongodb://127.0.0.1:27017/productiondb"
+  "MONGODB_URI": "mongodb://127.0.0.1:27017/productiondb",
+  "sameSite": "strict",
+  "secure": true,
+  "httpOnly": true
 }

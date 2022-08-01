@@ -6,6 +6,7 @@ export const POST: RequestHandler = async ({ locals }) => {
   try {
     const sessionID = locals?.user?.sessionID
     const name = locals?.user?.name
+    console.log("🚀 ~ file: signOut.json.ts ~ line 9 ~ constPOST:RequestHandler= ~ name", name)
 
     const headers = deleteSessionCookies()
 
@@ -27,10 +28,10 @@ export const POST: RequestHandler = async ({ locals }) => {
       status: 200,
       headers,
       body: {
-        message: `${name} has successfully singed out`,
+        message: `You have successfully singed out`,
       },
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,

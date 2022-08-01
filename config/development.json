@@ -1,3 +1,6 @@
 {
-  "MONGODB_URI": "mongodb://127.0.0.1:27017/devdb"
+  "MONGODB_URI": "mongodb://127.0.0.1:27017/devdb",
+  "sameSite": "lax",
+  "secure": false,
+  "httpOnly": false
 }

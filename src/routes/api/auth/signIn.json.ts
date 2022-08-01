@@ -19,7 +19,7 @@ export interface SessionInterface extends Omit<ContactsDocument, 'password'> {
   authenticated: boolean;
 }
 
-export const POST: RequestHandler = async ({ request }): Promise<{ status: number, headers?: {}, body: { message: string } | SessionInterface | { error: any } }> => {
+export const POST: RequestHandler = async ({ request }): Promise<{ status: number, headers?: any, body: { message: string } | SessionInterface | { error: any } }> => {
   try {
     // validate the user's password
     const reqUser: loginCredentials = await request.json()
