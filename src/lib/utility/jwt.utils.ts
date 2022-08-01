@@ -14,7 +14,7 @@ interface userInterface {
 	isActive: ContactsDocument['isActive'];
 	isUser: ContactsDocument['isUser'];
 	userRole: ContactsDocument['userRole'];
-	sessionId: SessionsDocument['_id'];
+	sessionID: SessionsDocument['_id'];
 	authenticated: boolean;
 }
 
@@ -31,7 +31,7 @@ export const verifyJwt = (token: string) => {
 			expired: false,
 			decoded
 		};
-	} catch (err) {
+	} catch (err: any) {
 		return {
 			valid: false,
 			expired: err.message === 'jwt must be provided',

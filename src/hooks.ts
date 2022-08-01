@@ -14,7 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const { decoded } = verifyJwt(accessToken);
 
 	if (decoded) {
-		const session = await findSessions({ _id: decoded.sessionId });
+		const session = await findSessions({ _id: decoded.sessionID });
 		if (session.length) {
 			event.locals.user = decoded;
 			event.locals.user.authenticated = true;

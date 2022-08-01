@@ -16,7 +16,7 @@ declare global {
 			isActive: ContactsDocument['isActive'];
 			isUser: ContactsDocument['isUser'];
 			userRole: ContactsDocument['userRole'];
-			sessionId: SessionsDocument['_id'];
+			sessionID: SessionsDocument['_id'];
 			authenticated: boolean;
 		}
 

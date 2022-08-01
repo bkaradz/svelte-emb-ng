@@ -4,12 +4,12 @@ import logger from '$lib/utility/logger'
 
 export const POST: RequestHandler = async ({ locals }) => {
   try {
-    const sessionId = locals?.user?.sessionId
+    const sessionID = locals?.user?.sessionID
     const name = locals?.user?.name
 
     const headers = deleteSessionCookies()
 
-    if (!sessionId) {
+    if (!sessionID) {
       return {
         status: 404,
         headers,
@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals }) => {
       }
     }
 
-    deleteSessions(sessionId)
+    deleteSessions(sessionID)
 
     locals.user = {}
 
