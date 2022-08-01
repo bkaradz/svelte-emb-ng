@@ -180,7 +180,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const calcOrder = await calculateOrder(reqOrder, pricelist);
-    console.log("🚀 ~ file: index.json.ts ~ line 183 ~ constPOST:RequestHandler= ~ calcOrder", calcOrder)
 
 		const newOrder = new OrdersModel(calcOrder);
 
@@ -192,7 +191,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			status: 200,
 			body: newOrder
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,

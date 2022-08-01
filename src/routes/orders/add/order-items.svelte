@@ -35,7 +35,6 @@
 	let pricelists: PricelistsDocument[];
 	let options: OptionsDocument[];
 	const selectedPricelist = { name: '' };
-	$: console.log('🚀 ~ file: order-items.svelte ~ line 39 ~ selectedPricelist', selectedPricelist);
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -175,7 +174,6 @@
 			tax: 0,
 			orderLine: itemList
 		};
-		console.log('calculateOrder()', calculateOrder(order, selectedPricelist));
 		itemList = itemList;
 	};
 </script>

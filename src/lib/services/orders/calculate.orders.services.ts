@@ -6,7 +6,6 @@ import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.service
 
 
 export const calculateOrder = (order, pricelist) => {
-console.log("🚀 ~ file: calculate.orders.services.ts ~ line 9 ~ calculateOrder ~ pricelist", pricelist)
 	let { balance, subTotal, discountRate, discount, taxRate, tax } = order;
 	balance = dinero({ amount: 0, currency: USD, scale: 3 });
 
