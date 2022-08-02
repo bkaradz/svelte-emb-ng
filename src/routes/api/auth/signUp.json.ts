@@ -3,13 +3,13 @@ import ContactsModel, {type ContactsDocument} from '$lib/models/contacts.model';
 import logger from '$lib/utility/logger';
 import { z } from "zod";
 
-const UserSchema = z.object({
-	name: z.string(), // { required_error: 'Name is required'}
-	email: z.string().email(), //  { required_error: 'Email is required'}  'Not a valid email'
-	phone: z.string(), //  { required_error: 'Phone is required'}
-	address: z.string(), //  { required_error: 'Address is required'}
-	password: z.string(), //  { required_error: 'Password is required'}
-	confirmPassword: z.string() //  { required_error: 'Name is required'}
+export const UserSchema = z.object({
+	name: z.string({required_error: "Name is required", invalid_type_error: "Name must be a string"}).trim(), 
+	email: z.string({required_error: "Email is required"}).email({message: "Not a valid email"}), 
+	phone: z.string({required_error: "Phone is required"}), 
+	address: z.string({required_error: "Address is required"}), 
+	password: z.string({required_error: "Address is required"}),
+	confirmPassword: z.string({required_error: "Password is required"})
 }).refine((data) => data.password === data.confirmPassword, {
 	message: 'Passwords do not match',
 	path: ['confirmPassword']

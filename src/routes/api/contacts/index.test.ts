@@ -74,17 +74,5 @@ if (import.meta.vitest) {
 			expect(result?.name).toBe('John Doe')
 			expect(result?.userRole).toBe('ADMIN')
 		});
-		// it('Get contacts', async () => {
-
-    //   const options = {
-    //     method: 'GET',
-    //   }
-
-		// 	const uri = 'http://localhost:5173/api/auth/signIn.json'
-     
-		// 	const result = await fetchPosts(uri, options);    
-    //   console.log("🚀 ~ file: index.test.ts ~ line 50 ~ it ~ result", result)
-		// 	expect(result?.authenticated).toBeTruthy()
-		// });
 	});
 }

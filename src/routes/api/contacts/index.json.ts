@@ -2,12 +2,24 @@ import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
 import aggregateQuery from '$lib/services/aggregateQuery.services';
-// import { postSuite } from '$lib/validation/server/contacts.validate';
 import pickBy from 'lodash-es/pickBy';
 import identity from 'lodash-es/identity';
 import type { RequestHandler } from '@sveltejs/kit';
-// import { toDineroObject } from '$lib/services/monetary';
-// import { dinero } from 'dinero.js';
+import { z } from "zod";
+import type { Schema } from 'mongoose';
+
+const ContactsSchema = z.object({
+	name: z.string({required_error: "Name is required", invalid_type_error: "Name must be a string"}).trim(), 
+	email: z.string().email({message: "Not a valid email"}).optional(), 
+	phone: z.string({required_error: "Phone is required"}), 
+	address: z.string().optional(), 
+	isCorporate: z.boolean({required_error: "Corporate or Individual is required"}), 
+	organizationID: z.string().optional(), 
+	vatOrBpNo: z.string().optional() 
+})
+
+export type Contacts = z.infer<typeof ContactsSchema>
+
 
 export interface contactsTest {
 	_id: string;
@@ -39,7 +51,6 @@ export interface Pagination {
 
 export interface ContentsPaginationIterface extends Pagination {
 	results: ContactsDocument[];
-	
 }
 
 export const GET: RequestHandler = async ({
@@ -47,7 +58,7 @@ export const GET: RequestHandler = async ({
 	locals
 }): Promise<{
 	status: number;
-	body: ContactsDocument | { error: string } | { message: string };
+	body: ContactsDocument | { error: any } | { message: string };
 }> => {
 	try {
 		if (!locals?.user?._id) {
@@ -61,10 +72,8 @@ export const GET: RequestHandler = async ({
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		let { limit = 15, page = 1 } = queryParams;
-
-		limit = parseInt(limit) < 1 ? 1 : parseInt(limit);
-		page = parseInt(page);
+		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
+		const page = isNaN(+queryParams?.page) ? 1 :  +queryParams?.page;
 
 		const startIndex = (page - 1) * limit;
 		const endIndex = page * limit;
@@ -194,7 +203,7 @@ export const GET: RequestHandler = async ({
 			status: 200,
 			body: contacts
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -231,18 +240,6 @@ export const POST: RequestHandler = async ({
 
 		reqContact.isActive = true;
 
-		// const result = postSuite(reqContact);
-
-		// if (result.hasErrors()) {
-		// 	logger.error(result.getErrors());
-		// 	return {
-		// 		status: 400,
-		// 		body: {
-		// 			message: `${result.getErrors()}`
-		// 		}
-		// 	};
-		// }
-
 		const contactFiltered = pickBy(reqContact, identity);
 
 		const contacts = new ContactsModel(contactFiltered);
@@ -256,7 +253,7 @@ export const POST: RequestHandler = async ({
 			status: 200,
 			body: contacts
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -272,7 +269,7 @@ export const PUT: RequestHandler = async ({
 	locals
 }): Promise<{
 	status: number;
-	body: ContactsDocument | { error: string } | { message: string };
+	body: (ContactsDocument & Required<{_id: Schema.Types.ObjectId}>) | null | { error: string } | { message: string };
 }> => {
 	try {
 		if (!locals?.user?._id) {
@@ -292,7 +289,7 @@ export const PUT: RequestHandler = async ({
 			status: 200,
 			body: res
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -302,7 +299,3 @@ export const PUT: RequestHandler = async ({
 		};
 	}
 };
-
-// export const DELETE: RequestHandler = async() => {
-// 	return;
-// }

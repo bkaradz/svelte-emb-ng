@@ -1,9 +1,9 @@
-import ContactsModel from '$lib/models/contacts.model'
+import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model'
 import logger from '$lib/utility/logger'
-import { postSuite } from '$lib/validation/server/signUp.validate'
 import type { RequestHandler } from '@sveltejs/kit'
+import type { Schema, _LeanDocument } from 'mongoose'
 
-export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | any}> => {
+export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>[]) | null }> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ locals }): Promise<{status: number, 
   }
 }
 
-export const PUT: RequestHandler = async ({ request, locals }): Promise<{status: number, body: {message: string} | any}> => {
+export const PUT: RequestHandler = async ({ request, locals }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>) | null }> => {
   try {
     if (!locals?.user?._id) {
       return {
@@ -73,7 +73,7 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<{status:
   }
 }
 
-export const DELETE: RequestHandler = async ({ locals, request }): Promise<{status: number, body: {message: string} | any}> => {
+export const DELETE: RequestHandler = async ({ locals, request }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>) | null }> => {
   try {
     if (!locals?.user?._id) {
       return {

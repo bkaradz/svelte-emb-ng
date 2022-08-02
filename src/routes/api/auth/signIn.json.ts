@@ -8,8 +8,8 @@ import { z } from "zod";
 import type { SessionsDocument } from '$lib/models/sessions.model'
 
 export const loginCredentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+  email: z.string({required_error: "Email is required"}).email({message: "Not a valid email"}),
+	password: z.string({required_error: "Address is required"}),
 }).strict()
 
 export type loginCredentials = z.infer<typeof loginCredentialsSchema>

@@ -1,9 +1,10 @@
 import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from '@sveltejs/kit';
+import type { Schema, _LeanDocument } from 'mongoose';
 
-// Omit<ContactsDocument, 'password' | 'createdAt'| 'updatedAt'| '__v'| 'isCorpotate'| 'balanceDue'| 'totalReceipts'>
-export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | any}> => {
+// & <>
+export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | {error: any} | _LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>}> => {
   try {
     if (!locals?.user?._id) {
       return {
