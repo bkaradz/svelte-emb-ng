@@ -1,6 +1,7 @@
 import { connectDB } from '$lib/database/mongooseDB';
 import ContactsModel from '$lib/models/contacts.model';
 import pick from 'lodash-es/pick';
+import type { User } from '../auth/signUp.json';
 
 const userData: Partial<User> = {
 	"name": "John Doe",

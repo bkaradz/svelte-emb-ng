@@ -13,20 +13,16 @@ const userData: Partial<User> = {
 	"confirmPassword": "johnDoe123"
 }
 
+let userCookie: any
 
-export const fetchPosts = async (formData: any, uri: string) => {
-		const res = await fetch(uri, {
-			method: 'POST',
-			body: JSON.stringify(formData),
-			headers: { 'Content-Type': 'application/json' }
-		});
-		// const { authToken } = req.cookies
-		// loginRes.headers["set-cookie"][0];
-		// const cookies = cookie.parse(res.headers.get('cookie') || '');
+
+export const fetchPosts = async (uri: string, options: {method: string, headers?: any, body?: any}) => {
+		const res = await fetch(uri, options);
+		
     console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies", res.headers )
     console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies set-cookie", res.headers.get('set-cookie') )
     console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies content-type", res.headers.get('content-type') )
-    console.log("🚀 ~ line 25 ~ fetchPosts ~ cookies set-cookie", res.headers["set-cookie"])
+		userCookie = res.headers.get('set-cookie')
    
 		return res?.json();
 };
@@ -43,25 +39,41 @@ if (import.meta.vitest) {
 	describe('Sign Out a user:', () => {
 		it('First User Sign Up: Should return created user data with user name if successful:', async () => {
 			const uri = 'http://localhost:5173/api/auth/signUp.json'
-			const userData1 = {...userData}
-			const result = await fetchPosts(userData1, uri);
+			const formData = {...userData}
+
+			const options = {
+				method: 'POST',
+				body: JSON.stringify(formData),
+				headers: { 'Content-Type': 'application/json' }
+			}
+
+			const result = await fetchPosts(uri, options);
 			expect(result?.name).toBe('John Doe')
 			expect(result?.userRole).toBe('ADMIN')
 		});
 		it('First User Login: Should loggin first user as ADMIN, return session credentials:', async () => {
 			const uri = 'http://localhost:5173/api/auth/signIn.json'
 
-			const userData1 = pick(userData, 'email', 'password')
+			const formData = pick(userData, 'email', 'password')
+
+			const options = {
+				method: 'POST',
+				body: JSON.stringify(formData),
+				headers: { 'Content-Type': 'application/json' }
+			}
      
-			const result = await fetchPosts(userData1, uri);      
+			const result = await fetchPosts(uri, options);      
 			expect(result?.authenticated).toBeTruthy()
 		});
 		it('First User Logout: Should return an error if email is not provided:', async () => {
 			const uri = 'http://localhost:5173/api/auth/signOut.json'
 
-			const userData1 = {}
+			const options = {
+				method: 'GET',
+				headers: userCookie
+			}
 
-			const result = await fetchPosts(userData1, uri);
+			const result = await fetchPosts(uri, options);
       console.log("🚀 ~ file: signOut.test.ts ~ line 56 ~ it ~ result", result)
 			expect(result?.error?.issues[0]?.path[0]).toBe('You have successfully singed out')
 		});
