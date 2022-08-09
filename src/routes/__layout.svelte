@@ -17,7 +17,6 @@
 	import Menu from '$lib/components/Menu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import '../styles/app.css';
-	// import { goto } from '$app/navigation';
 	import Toasts from '$lib/components/Toasts.svelte';
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
@@ -26,7 +25,7 @@
 	const pingHealthCheck = async () => {
 		try {
 			const res = await fetch('/api/healthcheck.json');
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};
@@ -35,11 +34,6 @@
 		pingHealthCheck();
 	});
 
-	// async function redirectToLogin() {
-	// 	if (typeof window !== 'undefined') {
-	// 		await goto('/auth/signIn');
-	// 	}
-	// }
 </script>
 
 <div class="app flex h-screen {$toggleMenu ? 'big-menu' : 'small-menu'}">
@@ -73,5 +67,4 @@
 	.main {
 		grid-area: main;
 	}
-	/* fixed top-20 right-4 z-50 flex flex-col opacity-50 */
 </style>
