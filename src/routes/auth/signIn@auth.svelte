@@ -8,6 +8,7 @@
 	import { svgSignIn } from '$lib/utility/svgLogos';
 	import Input from '$lib/components/Input.svelte';
 	import small_logo from '$lib/assets/small_logo.png';
+	import { browser } from '$app/env';
 
 	let result = suite.get();
 
@@ -55,14 +56,16 @@
 				const sessionData = await res.json();
 				resetForm();
 				suite.reset();
-				$session = sessionData;
+				session.set(sessionData);
 				toasts.add({
-					message: `Sign In successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData.user.name}</bold>`,
+					message: `Sign In successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
 					type: 'success'
 				});
-				await goto('/');
+				browser && window.location.reload(false);
+				console.log('Success', sessionData);
 			}
 		} catch (err: any) {
+			console.log('object', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
