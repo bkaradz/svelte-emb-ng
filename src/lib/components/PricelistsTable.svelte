@@ -26,15 +26,15 @@
 	});
 
 	const viewPricelist = async (id: string) => {
-		await goto(`/settings/pricelists/view/${id}`);
+		goto(`/settings/pricelists/view/${id}`);
 	};
 
 	const editPricelist = async (id: string) => {
-		await goto(`/settings/pricelists/edit/${id}`);
+		goto(`/settings/pricelists/edit/${id}`);
 	};
 
 	const heandleAddPricelist = async () => {
-		await goto(`/settings/pricelists/add`);
+		goto(`/settings/pricelists/add`);
 	};
 </script>
 

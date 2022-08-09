@@ -70,11 +70,11 @@
 	});
 
 	const viewProducts = async (id: string) => {
-		await goto(`/products/view/${id}`);
+		goto(`/products/view/${id}`);
 	};
 
 	const gotoAddProducts = async () => {
-		await goto(`/orders/add`);
+		goto(`/orders/add`);
 	};
 
 	let searchInputValue = '';

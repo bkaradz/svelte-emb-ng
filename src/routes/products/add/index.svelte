@@ -90,7 +90,7 @@
 	};
 
 	const gotoProducts = async () => {
-		await goto(`/products`);
+		goto(`/products`);
 	};
 
 	const handleUpload = async (e: SubmitEvent) => {

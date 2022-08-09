@@ -94,11 +94,11 @@
 	});
 
 	const viewOrder = async (id: string) => {
-		await goto(`/orders/view/${id}`);
+		goto(`/orders/view/${id}`);
 	};
 
 	const gotoAddOrders = async () => {
-		await goto(`/orders/add`);
+		goto(`/orders/add`);
 	};
 
 	let gridView = false;

@@ -71,10 +71,10 @@
 		}
 	};
 	const gotoContacts = async () => {
-		await goto(`/contacts`);
+		goto(`/contacts`);
 	};
 	const heandleEdit = async (id: string) => {
-		await goto(`/contacts/edit/${id}`);
+		goto(`/contacts/edit/${id}`);
 	};
 
 	$: contact;

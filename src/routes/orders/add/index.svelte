@@ -90,11 +90,11 @@
 	});
 
 	const gotoOrders = async () => {
-		await goto(`/orders`);
+		goto(`/orders`);
 	};
 
 	const gotoAddProduct = async () => {
-		await goto(`/orders/add/order-items`);
+		goto(`/orders/add/order-items`);
 	};
 </script>
 

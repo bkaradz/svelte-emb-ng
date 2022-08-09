@@ -47,7 +47,7 @@
 		}
 	};
 	const gotoProducts = async () => {
-		await goto(`/products`);
+		goto(`/products`);
 	};
 
 	$: product;

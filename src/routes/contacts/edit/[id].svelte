@@ -143,7 +143,7 @@
 	};
 
 	const gotoContacts = async () => {
-		await goto(`/contacts`);
+		goto(`/contacts`);
 	};
 
 	// const makeMatchBold = (searchMatchString: string) => {
@@ -160,7 +160,7 @@
 	// };
 
 	const handleCancel = async () => {
-		await goto(`/contacts/${$page.params.id}`);
+		goto(`/contacts/${$page.params.id}`);
 	};
 
 	const handleComboInput = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {

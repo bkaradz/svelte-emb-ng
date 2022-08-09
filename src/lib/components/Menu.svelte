@@ -37,9 +37,9 @@
 					message: `${data.message}`,
 					type: 'success'
 				});
-				await goto('/auth/signIn');
+				goto('/auth/signIn');
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.messages);
 		}
 	};

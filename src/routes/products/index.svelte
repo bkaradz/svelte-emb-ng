@@ -57,11 +57,11 @@
 	});
 
 	const viewProducts = async (id: string) => {
-		await goto(`/products/view/${id}`);
+		goto(`/products/view/${id}`);
 	};
 
 	const gotoAddProducts = async () => {
-		await goto(`/products/add`);
+		goto(`/products/add`);
 	};
 
 	let gridView = false;

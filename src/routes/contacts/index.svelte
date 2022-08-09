@@ -93,11 +93,11 @@ interface ContentIterface {
 	});
 
 	const viewContact = async (id: string) => {
-		await goto(`/contacts/view/${id}`);
+		goto(`/contacts/view/${id}`);
 	};
 
 	const gotoAddContact = async () => {
-		await goto(`/contacts/add`);
+		goto(`/contacts/add`);
 	};
 
 	let gridView = true;

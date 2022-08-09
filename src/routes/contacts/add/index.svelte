@@ -127,7 +127,7 @@
 	};
 
 	const gotoContacts = async () => {
-		await goto(`/contacts`);
+		goto(`/contacts`);
 	};
 
 	const handleUpload = async (e: SubmitEvent) => {
