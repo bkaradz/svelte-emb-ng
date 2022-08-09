@@ -2,10 +2,12 @@ import type { RequestHandler } from '@sveltejs/kit'
 import { signJwt } from '$lib/utility/jwt.utils'
 import config from 'config'
 import logger from '$lib/utility/logger'
-import type { ContactsDocument } from '$lib/models/contacts.model'
 import { setSessionCookies, createSession, validateUserPassword } from '$lib/services/session.services'
 import { z } from "zod";
 import type { SessionsDocument } from '$lib/models/sessions.model'
+import omit from 'lodash-es/omit'
+import type { Schema } from 'mongoose'
+import type { ContactsDocument } from '$lib/models/contacts.model'
 
 export const loginCredentialsSchema = z.object({
   email: z.string({required_error: "Email is required"}).email({message: "Not a valid email"}),
@@ -14,12 +16,19 @@ export const loginCredentialsSchema = z.object({
 
 export type loginCredentials = z.infer<typeof loginCredentialsSchema>
 
-export interface SessionInterface extends Omit<ContactsDocument, 'password'> {
+export interface SessionInterface {
+  _id: Schema.Types.ObjectId;
+	name: string;
+	isCorporate: boolean;
+	email: string;
+	isActive: boolean;
+	isUser: boolean;
+	userRole: string;
   sessionID: SessionsDocument['_id'];
   authenticated: boolean;
 }
 
-export const POST: RequestHandler = async ({ request }): Promise<{ status: number, headers?: any, body: { message: string } | SessionInterface | { error: any } }> => {
+export const POST: RequestHandler = async ({ request }): Promise<{ status: number, headers?: any, body: { message: string } | { error: any } | SessionInterface }> => {
   try {
     // validate the user's password
     const reqUser: loginCredentials = await request.json()
@@ -35,7 +44,7 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
       };
     }
 
-    const user = (await validateUserPassword(reqUser))
+    let user = await validateUserPassword(reqUser)
 
     if (!user) {
       return {
@@ -57,6 +66,8 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
       }
     }
 
+     user = omit(JSON.parse(JSON.stringify(user)), ['password']) as Omit<ContactsDocument, 'password'>
+
     // create a session
     const session: SessionsDocument = await createSession(user._id, request.headers.get('user-agent') || '')
 
@@ -68,12 +79,13 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
 
     const headers = setSessionCookies(accessToken, refreshToken)
 
+    
 
     // return access & refresh tokens
     return {
       status: 200,
       headers,
-      body: { ...user, sessionID: session._id, authenticated: true },
+      body: { ...user, sessionID: session._id, authenticated: true } as SessionInterface,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
