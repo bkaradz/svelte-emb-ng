@@ -18,8 +18,7 @@ export const fetchPosts = async (formData: any) => {
 			body: JSON.stringify(formData),
 			headers: { 'Content-Type': 'application/json' }
 		});
-		const { authToken } = res.cookies
-    console.log("🚀 ~ file: signUp.test.ts ~ line 22 ~ fetchPosts ~ authToken", authToken)
+		// const { authToken } = res.cookies
 		return res.json();
 };
 

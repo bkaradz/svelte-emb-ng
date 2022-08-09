@@ -70,7 +70,6 @@ if (import.meta.vitest) {
 			const uri = 'http://localhost:5173/api/contacts/upload.json'
 
 			const result = await fetchPosts(uri, options);
-      console.log("🚀 ~ file: index.test.ts ~ line 38 ~ it ~ result", result)
 			expect(result?.name).toBe('John Doe')
 			expect(result?.userRole).toBe('ADMIN')
 		});
