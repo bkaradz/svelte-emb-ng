@@ -5,8 +5,6 @@ import logger from '$lib/utility/logger'
 export const POST: RequestHandler = async ({ locals }) => {
   try {
     const sessionID = locals?.user?.sessionID
-    const name = locals?.user?.name
-    console.log("🚀 ~ file: signOut.json.ts ~ line 9 ~ constPOST:RequestHandler= ~ name", name)
 
     const headers = deleteSessionCookies()
 
