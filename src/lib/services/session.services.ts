@@ -7,8 +7,6 @@ import type { ContactsDocument } from '$lib/models/contacts.model';
 import config from 'config';
 import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json';
 
-console.log('typeof', typeof config.get('httpOnly'));
-
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {
 		'Set-Cookie': [
@@ -68,7 +66,7 @@ export async function findSessions(query: FilterQuery<SessionsDocument>) {
  * @param userCredentials 
  * @returns 
  */
-export async function validateUserPassword(userCredentials: loginCredentials): Promise<null | Omit<ContactsDocument, 'password'>> {
+export async function validateUserPassword(userCredentials: loginCredentials): Promise<null | ContactsDocument> {
 
 	const parsedUser = loginCredentialsSchema.safeParse(userCredentials)
 
@@ -101,9 +99,7 @@ export async function validateUserPassword(userCredentials: loginCredentials): P
 		return null;
 	}
 
-	delete user.password
-
-	return user;
+	return user
 }
 
 /**
