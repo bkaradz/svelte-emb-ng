@@ -61,6 +61,7 @@ export const GET: RequestHandler = async ({
 	body: ContactsDocument | { error: any } | { message: string };
 }> => {
 	try {
+		console.log('locals', locals);
 		if (!locals?.user?._id) {
 			return {
 				status: 401,
