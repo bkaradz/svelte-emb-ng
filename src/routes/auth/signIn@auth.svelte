@@ -3,7 +3,6 @@
 	import suite from '$lib/validation/client/signIn.validate';
 	import logger from '$lib/utility/logger';
 	import classnames from 'vest/classnames';
-	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgSignIn } from '$lib/utility/svgLogos';
 	import Input from '$lib/components/Input.svelte';
@@ -62,7 +61,6 @@
 					type: 'success'
 				});
 				browser && window.location.reload(false);
-				console.log('Success', sessionData);
 			}
 		} catch (err: any) {
 			console.log('object', err);
