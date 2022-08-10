@@ -57,7 +57,6 @@
 
 	const handleSignUp = async () => {
 		try {
-			console.log('formData', formData);
 			const res = await fetch('/api/auth/signUp.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
@@ -77,7 +76,6 @@
 				goto('/auth/signIn');
 			}
 		} catch (err: any) {
-			console.log('Error: ', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}

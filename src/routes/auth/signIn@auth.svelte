@@ -63,7 +63,6 @@
 				browser && window.location.reload(false);
 			}
 		} catch (err: any) {
-			console.log('object', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
