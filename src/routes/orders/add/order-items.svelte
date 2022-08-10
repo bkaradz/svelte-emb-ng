@@ -123,7 +123,7 @@
 			const res = await fetch('/api/products.json?' + searchParams.toString());
 			products = await res.json();
 			removeAddedItem();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};
@@ -132,7 +132,7 @@
 		try {
 			const res = await fetch('/api/pricelists.json');
 			pricelists = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};
@@ -141,7 +141,7 @@
 		try {
 			const res = await fetch('/api/options.json');
 			options = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};

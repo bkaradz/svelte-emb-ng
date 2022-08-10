@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({
       status: 200,
       body: options,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({
       status: 200,
       body: res,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -120,7 +120,7 @@ export const PUT: RequestHandler = async ({
       status: 200,
       body: res,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
@@ -163,7 +163,7 @@ export const DELETE: RequestHandler = async ({
       status: 200,
       body: res,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,

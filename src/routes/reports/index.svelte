@@ -17,7 +17,7 @@
 		try {
 			const res = await fetch('/api/options.json');
 			options = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};

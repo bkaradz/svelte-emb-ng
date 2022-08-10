@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ params }) => {
       status: 200,
       body: pricelist,
     }
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,

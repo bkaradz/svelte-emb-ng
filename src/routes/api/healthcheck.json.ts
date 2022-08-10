@@ -6,7 +6,7 @@ export const GET: RequestHandler = async () => {
 			status: 200,
 			body: { status: 'ok' }
 		};
-	} catch (err) {
+	} catch (err: any) {
 		return {
 			status: 500,
 			body: {

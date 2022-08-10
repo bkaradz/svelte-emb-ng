@@ -135,7 +135,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			status: 200,
 			body: { ...products }
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -185,7 +185,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				message: newProduct
 			}
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -204,7 +204,7 @@ export const PUT: RequestHandler = async () => {
 				message: 'Success'
 			}
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,

@@ -134,7 +134,7 @@ interface ContentIterface {
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			contacts = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};

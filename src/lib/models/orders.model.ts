@@ -251,7 +251,7 @@ export const getCurrentOrderID = async () => {
 			orderID = quotation[0].orderID;
 		}
 		return orderID;
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(err.message);
 		throw new Error(`Error ${err.message}`);
 	}

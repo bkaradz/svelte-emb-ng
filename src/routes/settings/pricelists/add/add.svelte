@@ -109,7 +109,7 @@
 				pricelist = await res.json();
 				toasts.add({ message: `${pricelist.name} was added`, type: 'success' });
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.messages);
 			toasts.add({
 				message: 'An error has occured while updating',

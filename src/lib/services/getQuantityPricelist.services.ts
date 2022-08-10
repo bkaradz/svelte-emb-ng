@@ -20,7 +20,7 @@ export const getQuantityPricelist = ({
 			.filter((list) => list.minimumQuantity <= quantity);
 
 		return minimumQuantityArray.pop();
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error ${err.message}`);
 		throw new Error(`Error ${err.message}`);
 	}

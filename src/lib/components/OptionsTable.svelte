@@ -45,7 +45,7 @@
 	// 			// const data = await res.json();
 	// 			toasts.add({ message: 'The Option was added', type: 'success' });
 	// 		}
-	// 	} catch (err) {
+	// 	} catch (err: any) {
 	// 		logger.error(err.messages);
 	// 		toasts.add({ message: 'An error has occured while adding the contact', type: 'error' });
 	// 	}
@@ -95,7 +95,7 @@
 				});
 				getOptions();
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 			toasts.add({
 				message: 'An error has occured while updating user',
@@ -139,7 +139,7 @@
 				}
 			}
 			getOptions();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 			toasts.add({
 				message: 'An error has occured while updating user',
@@ -154,7 +154,7 @@
 			// let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/options.json?');
 			optionsList = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 			// error = err.message;
 		}

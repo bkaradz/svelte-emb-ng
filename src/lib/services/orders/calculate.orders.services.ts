@@ -88,7 +88,7 @@ export const calculateOrder = (order, pricelist) => {
 			tax: JSON.stringify(toSnapshot(tax)),
 			orderLine: orderLine
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		
 	}

@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({
 				message: 'Product Uploaded'
 			}
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`)
     return {
       status: 500,

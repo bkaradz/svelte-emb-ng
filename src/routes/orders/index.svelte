@@ -135,7 +135,7 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
 			orders = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};

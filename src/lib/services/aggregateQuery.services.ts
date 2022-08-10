@@ -60,7 +60,7 @@ const aggregateQuery = async (searchQuery, model, aggregateFilter, endSearchPara
 		metaData.totalPages = totalPages;
 
 		return results[0];
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(err.message);
 		throw new Error(`Error ${err.message}`);
 	}

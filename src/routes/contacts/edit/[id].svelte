@@ -61,7 +61,7 @@
 			let searchParams = new URLSearchParams(paramsObj as string);
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			corporateContacts = await res.json();
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 			toasts.add({
 				message: 'An error has occured while getting corporate contacts',
@@ -133,7 +133,7 @@
 
 				suite.reset();
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.messages);
 			toasts.add({
 				message: 'An error has occured while updating contacts',

@@ -8,7 +8,7 @@ export async function connectDB() {
 
 		await connect(MONGODB_URI);
 		logger.info('Database connected.....');
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Could not connect to MongoDB, ${err}`);
 		process.exit(1);
 	}

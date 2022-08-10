@@ -49,7 +49,7 @@
 				const results = await res.json();
 				contact = results;
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	});

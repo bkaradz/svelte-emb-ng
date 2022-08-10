@@ -113,7 +113,7 @@ const query = async (searchQuery, model) => {
 		results.metaData.push(metaDataTemp);
 
 		return results;
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(err.message);
 		throw new Error(`Error ${err.message}`);
 	}

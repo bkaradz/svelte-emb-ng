@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			status: 200,
 			body: reqPricelists
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			status: 200,
 			body: res
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,
@@ -131,7 +131,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			status: 200,
 			body: newPricelists
 		};
-	} catch (err) {
+	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return {
 			status: 500,

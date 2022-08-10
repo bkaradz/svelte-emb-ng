@@ -112,7 +112,7 @@ export const getCurrentProductID = async (): Promise<string> => {
 			productID = products[0].productID;
 		}
 		return productID;
-	} catch (err) {
+	} catch (err: any) {
 		throw new Error(`Error ${err.message}`);
 	}
 };

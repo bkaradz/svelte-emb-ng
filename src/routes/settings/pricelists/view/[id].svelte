@@ -44,7 +44,7 @@
 				const tempPricelist = await res.json();
 				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	});

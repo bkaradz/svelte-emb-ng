@@ -50,7 +50,7 @@
 				const tempPricelist = await res.json();
 				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};
@@ -145,7 +145,7 @@
 				const newPricelist = await res.json();
 				toasts.add({ message: `${newPricelist.name} was updated`, type: 'success' });
 			}
-		} catch (err) {
+		} catch (err: any) {
 			logger.error(err.messages);
 			toasts.add({
 				message: 'An error has occured while updating',

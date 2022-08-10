@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({
         message: 'Options Uploaded'
       }
     };
-  } catch (err) {
+  } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return {
       status: 500,
