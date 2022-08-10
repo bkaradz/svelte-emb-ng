@@ -57,7 +57,8 @@
 
 	const handleSignUp = async () => {
 		try {
-			const res = await fetch('/api/signUp.json', {
+			console.log('formData', formData);
+			const res = await fetch('/api/auth/signUp.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
 				headers: { 'Content-Type': 'application/json' }
@@ -70,12 +71,13 @@
 
 				suite.reset();
 				toasts.add({
-					message: 'Sign Up was successful, Wait for approval from the ADMIN',
+					message: 'Sign Up was successful',
 					type: 'success'
 				});
 				goto('/auth/signIn');
 			}
 		} catch (err: any) {
+			console.log('Error: ', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}

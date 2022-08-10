@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({
 				finalQuery[name] = finalQuery[name] === 'true' ? true : false;
 				newRegExQuery = { ...newRegExQuery, [name]: finalQuery[name] };
 			} else {
-				newRegExQuery = { ...newRegExQuery, [name]: { $regex: finalQuery[name], $options: 'ig' } };
+				newRegExQuery = { ...newRegExQuery, [name]: { $regex: finalQuery[name], $options: 'i' } };
 			}
 		});
 
