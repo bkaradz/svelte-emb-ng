@@ -11,7 +11,6 @@ export const getQuantityPricelist = ({
 	quantity: number;
 }) => {
 	try {
-		// const pricelist = await PricelistsModel.findById({ _id: id }).lean();
 		const pricelistsArray = pricelist.pricelists;
 
 		const minimumQuantityArray = pricelistsArray
