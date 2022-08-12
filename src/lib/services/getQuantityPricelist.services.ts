@@ -14,11 +14,12 @@ export const getQuantityPricelist = ({
 		const pricelistsArray = pricelist.pricelists;
 
 		const minimumQuantityArray = pricelistsArray
-			.filter((list) => embroideryTypes === list.embroideryTypes)
-			.sort((a, b) => a.minimumQuantity - b.minimumQuantity)
-			.filter((list) => list.minimumQuantity <= quantity);
-
-		return minimumQuantityArray.pop();
+		.filter((list) => embroideryTypes.toLowerCase() === list.embroideryTypes.toLowerCase())
+		.sort((a, b) => b.minimumQuantity - a.minimumQuantity)
+		.filter((list) => list.minimumQuantity >= quantity)
+		.pop()
+		
+		return minimumQuantityArray;
 	} catch (err: any) {
 		logger.error(`Error ${err.message}`);
 		throw new Error(`Error ${err.message}`);

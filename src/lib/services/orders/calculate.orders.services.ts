@@ -2,64 +2,57 @@ import { USD } from '@dinero.js/currencies';
 import { add, dinero, greaterThanOrEqual, multiply, subtract, toSnapshot } from 'dinero.js';
 import logger from '$lib/utility/logger';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
+import type { OrdersDocument } from '$lib/models/orders.model';
+import type { PricelistsDocument } from '$lib/models/pricelists.model';
 // import ProductsModel from '$lib/models/products.models';
 
 
-export const calculateOrder = (order, pricelist) => {
+export const calculateOrder = (order: OrdersDocument, pricelist: PricelistsDocument) => {
 	let { balance, subTotal, discountRate, discount, taxRate, tax } = order;
 	balance = dinero({ amount: 0, currency: USD, scale: 3 });
 
 	try {
 		// calculate the order list totals and unit prices
 		const orderLine = order.orderLine.map((line) => {
-			const { stitches, quantity = 1, embroideryTypes = 'flat' } = line;
+		const { stitches, quantity = 1, embroideryTypes = 'flat' } = line;
 
-			// const productExist = await ProductsModel.exists(line._id);
+		if (stitches && pricelist) {
+			/**
+			 * Calculate prices
+			 */
+			const { pricePerThousandStitches, minimumPrice } = getQuantityPricelist({
+				pricelist,
+				embroideryTypes,
+				quantity
+			});
 
-			// if (!productExist) {
-			// 	throw new Error('Product does not exist');
-			// }
+			// calculate the unit price from the stitches
 
-			if (stitches && pricelist) {
-				/**
-				 * Calculate prices
-				 */
-				const { pricePerThousandStitches, minimumPrice } = getQuantityPricelist({
-					pricelist,
-					embroideryTypes,
-					quantity
-				});
+			const d = dinero(JSON.parse(pricePerThousandStitches));
 
-				// const minimumPrice = '{"amount":1000,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}'
-				// const pricePerThousandStitches = '{"amount":200,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}'
+			const lineUnitPrice = multiply(d, { amount: stitches, scale: 3 });
 
-				// calculate the unit price from the stitches
+			const unitPrice = greaterThanOrEqual(dinero(JSON.parse(minimumPrice)), lineUnitPrice)
+				? dinero(JSON.parse(minimumPrice))
+				: lineUnitPrice;
 
-				const d = dinero(JSON.parse(pricePerThousandStitches));
+			const total = multiply(unitPrice, { amount: quantity * 100, scale: 2 });
+			balance = add(balance, total);
 
-				const lineUnitPrice = multiply(d, { amount: stitches, scale: 3 });
-
-				const unitPrice = greaterThanOrEqual(dinero(JSON.parse(minimumPrice)), lineUnitPrice)
-					? dinero(JSON.parse(minimumPrice))
-					: lineUnitPrice;
-
-				const total = multiply(unitPrice, { amount: quantity * 100, scale: 2 });
-				balance = add(balance, total);
-
-				return {
-					...line,
-					total: JSON.stringify(toSnapshot(total)),
-					unitPrice: JSON.stringify(toSnapshot(unitPrice))
-				};
-			} else {
-				const total = multiply(dinero(JSON.parse(line.unitPrice)), {
-					amount: quantity * 100,
-					scale: 2
-				});
-				balance = add(balance, total);
-				return { ...line, total: JSON.stringify(toSnapshot(total)) };
-			}
-		});
+			return {
+				...line,
+				total: JSON.stringify(toSnapshot(total)),
+				unitPrice: JSON.stringify(toSnapshot(unitPrice))
+			};
+		} else {
+			const total = multiply(dinero(JSON.parse(line.unitPrice)), {
+				amount: quantity * 100,
+				scale: 2
+			});
+			balance = add(balance, total);
+			return { ...line, total: JSON.stringify(toSnapshot(total)) };
+		}
+	});
 
 		tax = dinero({ amount: 0, currency: USD, scale: 3 });
 		discount = dinero({ amount: 0, currency: USD, scale: 3 });
@@ -90,6 +83,6 @@ export const calculateOrder = (order, pricelist) => {
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		
+
 	}
 };

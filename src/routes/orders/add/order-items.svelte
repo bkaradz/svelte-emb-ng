@@ -17,9 +17,10 @@
 	import type { ProductsDocument } from '$lib/models/products.models';
 	import type { PricelistsDocument } from '$lib/models/pricelists.model';
 	import type { OptionsDocument } from '$lib/models/options.models';
-	import Combobox from '$lib/components/Combobox.svelte';
 	import { calculateOrder } from '$lib/services/orders';
-	
+	import { format } from '$lib/services/monetary';
+	import { USD } from '@dinero.js/currencies';
+
 	interface productIterface {
 		results: ProductsDocument[];
 		totalRecords: number;
@@ -30,11 +31,26 @@
 		next: { page: number; limit: number };
 	}
 
-	let itemList = [];
+	let order = {
+		subTotal: "{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}",
+		tax: '',
+		taxRate: '',
+		discount: '',
+		discountRate: '',
+		balance: '',
+		isActive: true,
+		pricelistID: [],
+		customerID: [],
+		orderLine: []
+	};
+
+	
+
+	let itemList: string | any[] = [];
 	let products: productIterface;
-	let pricelists: PricelistsDocument[];
+	let pricelists: PricelistsDocument[] = [];
 	let options: OptionsDocument[];
-	const selectedPricelist = { name: '' };
+	let selectedPricelist: PricelistsDocument | null;
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -154,12 +170,27 @@
 		products.results = products.results.filter((item) => !orderItems.orderItemsHasID(item._id));
 	};
 
-	const addProduct = (product: ProductsDocument) => {
+	const addProduct = async (product: ProductsDocument) => {
 		removeItemID(product._id);
-		itemList = [...itemList, { ...product, quantity: 1 }];
+		order.orderLine = [
+			...itemList,
+			{
+				...product,
+				quantity: 1,
+				embroideryPositions: 'Front Left',
+				embroideryTypes: 'Flat',
+				productCategories: 'Embroidery'
+			}
+		];
+		const calcOrder = calculateOrder(order, selectedPricelist);
+    console.log("🚀 ~ file: order-items.svelte ~ line 186 ~ addProduct ~ calcOrder", calcOrder)
+		// order = calcOrder;
+   
+
+		itemList = calcOrder.orderLine;
 	};
 
-	const incrementQuantity = (object: any, value: number) => {
+	const incrementQuantity = async (object: any, value: number) => {
 		if (object.quantity <= 1 && value === -1) {
 			return;
 		}
@@ -174,6 +205,8 @@
 			tax: 0,
 			orderLine: itemList
 		};
+		// const calcOrder = await calculateOrder(order, selectedPricelist);
+		// console.log("🚀 ~ file: order-items.svelte ~ line 180 ~ incrementQuantity ~ calcOrder", calcOrder)
 		itemList = itemList;
 	};
 </script>
@@ -277,10 +310,10 @@
 										</div>
 									</td>
 									<td class="px-2 py-1">
-										{list.unitPrice}
+										{format(JSON.parse(list.unitPrice))}
 									</td>
 									<td class="px-2 py-1">
-										{list.total}
+										{format(JSON.parse(list.total))}
 									</td>
 								</tr>
 							{/each}
@@ -290,12 +323,19 @@
 						>
 							<td class="px-2 py-1 text-right"> Pricelists </td>
 							<td class="px-2 py-1">
-								{#if pricelists}
-									<Combobox
+								{#if pricelists.length}
+									<select bind:value={selectedPricelist}>
+										{#each pricelists as item}
+											<option value={item}>
+												{item.name}
+											</option>
+										{/each}
+									</select>
+									<!-- <Combobox
 										class="py-0 my-0 w-full border-none"
 										list={pricelists}
 										value={selectedPricelist}
-									/>
+									/> -->
 								{/if}
 							</td>
 							<td class="px-2 py-1" />
@@ -304,7 +344,8 @@
 							<td class="px-2 py-1" />
 							<td class="px-2 py-1" />
 							<td class="px-2 py-1">Total</td>
-							<td class="px-2 py-1">$12.30</td>
+							<td class="px-2 py-1">$12.00</td>
+							<!-- <td class="px-2 py-1">{format(JSON.parse(order.subTotal))}</td> -->
 						</tr>
 					</tbody>
 				</table>
