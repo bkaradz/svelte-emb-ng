@@ -4,7 +4,6 @@
 
 	let options: any[];
 	let selected: any;
-  $: console.log("🚀 ~ file: index.svelte ~ line 7 ~ selected", selected)
 
 	onMount(() => {
 		getOptions();
