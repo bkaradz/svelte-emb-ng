@@ -18,6 +18,10 @@ export const getQuantityPricelist = ({
 		.sort((a, b) => b.minimumQuantity - a.minimumQuantity)
 		.filter((list) => list.minimumQuantity >= quantity)
 		.pop()
+
+		if (minimumQuantityArray === undefined) {
+			throw new Error("Pricelist Selection is Undefined");
+		}
 		
 		return minimumQuantityArray;
 	} catch (err: any) {

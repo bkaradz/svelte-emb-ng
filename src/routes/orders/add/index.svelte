@@ -9,6 +9,7 @@
 	import { orderItems } from '$lib/stores/order.items.store';
 	import type { OptionsDocument } from '$lib/models/options.models';
 	import type { PricelistsDocument } from '$lib/models/pricelists.model';
+	import { orderStore } from '$lib/stores/orders.store';
 
 	let isEditableID: any;
 
@@ -24,7 +25,8 @@
 		'Total'
 	];
 
-	let itemList = $orderItems;
+	let itemList = $orderStore ? $orderStore.orderLine : [];
+  console.log("🚀 ~ file: index.svelte ~ line 29 ~ itemList", itemList)
 	let contacts;
 	let products;
 	let pricelists: PricelistsDocument[];

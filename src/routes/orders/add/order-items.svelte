@@ -3,23 +3,24 @@
 	import {
 		svgChevronLeft,
 		svgChevronRight,
-		svgPlus,
 		svgPlusSmall,
 		svgSearch,
-		svgSelector
+		svgSelector,
+		svgXESmall
 	} from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import Loading from '$lib/components/Loading.svelte';
-	import { orderItems } from '$lib/stores/order.items.store';
+	import { orderStore } from '$lib/stores/orders.store';
 	import type { ProductsDocument } from '$lib/models/products.models';
 	import type { PricelistsDocument } from '$lib/models/pricelists.model';
 	import type { OptionsDocument } from '$lib/models/options.models';
 	import { calculateOrder } from '$lib/services/orders';
 	import { format } from '$lib/services/monetary';
-	import { USD } from '@dinero.js/currencies';
+	import type { OrdersDocument } from '$lib/models/orders.model';
+	import map from 'lodash-es/map';
 
 	interface productIterface {
 		results: ProductsDocument[];
@@ -31,20 +32,18 @@
 		next: { page: number; limit: number };
 	}
 
-	let order = {
-		subTotal: "{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}",
-		tax: '',
+	let order: OrdersDocument = {
+		subTotal: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
+		tax: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
 		taxRate: '',
-		discount: '',
+		discount: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
 		discountRate: '',
-		balance: '',
+		balance: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
 		isActive: true,
 		pricelistID: [],
 		customerID: [],
 		orderLine: []
 	};
-
-	
 
 	let itemList: string | any[] = [];
 	let products: productIterface;
@@ -90,6 +89,7 @@
 	};
 
 	const gotoAddProducts = async () => {
+		$orderStore = order
 		goto(`/orders/add`);
 	};
 
@@ -116,7 +116,8 @@
 		'Stitches',
 		'Quantity',
 		'Unit Price',
-		'Total'
+		'Total',
+		'Remove'
 	];
 
 	const heandleSearchSelection = (event: MouseEvent) => {
@@ -138,7 +139,7 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/products.json?' + searchParams.toString());
 			products = await res.json();
-			removeAddedItem();
+			removeCartAddedItem();
 		} catch (err: any) {
 			logger.error(err.message);
 		}
@@ -166,12 +167,22 @@
 		products.results = products.results.filter((item) => item._id !== id);
 	};
 
-	const removeAddedItem = () => {
-		products.results = products.results.filter((item) => !orderItems.orderItemsHasID(item._id));
+	const removeCartAddedItem = () => {
+		products.results = products.results.filter((item) => !alreadyExistInItemList(item._id));
 	};
 
-	const addProduct = async (product: ProductsDocument) => {
+	const alreadyExistInItemList = (id: Schema.Types.ObjectId) => {
+		const ids = map(itemList, '_id');
+		return ids.includes(id)
+	};
+
+	const addProduct = (product: ProductsDocument) => {
 		removeItemID(product._id);
+
+		if (alreadyExistInItemList(product._id)) {
+			return
+		}
+
 		order.orderLine = [
 			...itemList,
 			{
@@ -182,32 +193,94 @@
 				productCategories: 'Embroidery'
 			}
 		];
+
+		if (!selectedPricelist) {
+			return;
+		}
+
+		order.pricelistID = selectedPricelist;
+
 		const calcOrder = calculateOrder(order, selectedPricelist);
-    console.log("🚀 ~ file: order-items.svelte ~ line 186 ~ addProduct ~ calcOrder", calcOrder)
-		// order = calcOrder;
-   
+
+		if (!calcOrder) {
+			return;
+		}
 
 		itemList = calcOrder.orderLine;
+		order.subTotal = calcOrder?.subTotal;
+		order.balance = calcOrder?.balance;
+		order.discount = calcOrder?.discount;
+		order.tax = calcOrder?.tax;
+		// ************* These cause the program to crash ********************
+		// order.discountRate = calcOrder?.discountRate;
+		// order.taxRate = calcOrder?.taxRate;
 	};
 
-	const incrementQuantity = async (object: any, value: number) => {
+	const incrementQuantity = (object: any, value: number) => {
 		if (object.quantity <= 1 && value === -1) {
 			return;
 		}
 		object.quantity = object.quantity + value;
-		// calculate Unit price and total
-		const order = {
-			balance: 0,
-			subTotal: 0,
-			discountRate: 0,
-			discount: 0,
-			taxRate: 0,
-			tax: 0,
-			orderLine: itemList
-		};
-		// const calcOrder = await calculateOrder(order, selectedPricelist);
-		// console.log("🚀 ~ file: order-items.svelte ~ line 180 ~ incrementQuantity ~ calcOrder", calcOrder)
-		itemList = itemList;
+
+		// Assign itemList to order orderLine
+		order.orderLine = itemList;
+
+		if (!selectedPricelist) {
+			return;
+		}
+
+		const calcOrder = calculateOrder(order, selectedPricelist);
+
+		if (!calcOrder) {
+			return;
+		}
+
+		itemList = calcOrder.orderLine;
+		order.subTotal = calcOrder?.subTotal;
+		order.balance = calcOrder?.balance;
+		order.discount = calcOrder?.discount;
+		order.tax = calcOrder?.tax;
+	};
+
+	const handleChange = () => {
+		order.orderLine = itemList;
+
+		if (!selectedPricelist) {
+			return;
+		}
+
+		const calcOrder = calculateOrder(order, selectedPricelist);
+
+		if (!calcOrder) {
+			return;
+		}
+
+		itemList = calcOrder.orderLine;
+		order.subTotal = calcOrder?.subTotal;
+		order.balance = calcOrder?.balance;
+		order.discount = calcOrder?.discount;
+		order.tax = calcOrder?.tax;
+	};
+
+	const removeCartItem = (list) => {
+		itemList = itemList.filter((item) => !(item._id === list._id));
+		order.orderLine = itemList;
+
+		if (!selectedPricelist) {
+			return;
+		}
+
+		const calcOrder = calculateOrder(order, selectedPricelist);
+
+		if (!calcOrder) {
+			return;
+		}
+
+		itemList = calcOrder.orderLine;
+		order.subTotal = calcOrder?.subTotal;
+		order.balance = calcOrder?.balance;
+		order.discount = calcOrder?.discount;
+		order.tax = calcOrder?.tax;
 	};
 </script>
 
@@ -249,7 +322,7 @@
 						{#if itemList.length && options?.length}
 							{#each itemList as list (list._id)}
 								<tr
-									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+									class="whitespace-no-wrap w-full hover:bg-royal-blue-200 border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>
 									<td class="px-2 py-1">
 										{list.name}
@@ -258,7 +331,11 @@
 										{list.productID}
 									</td>
 									<td class="px-2 py-1">
-										<select bind:value={list.productCategories} class="text-sm">
+										<select
+											bind:value={list.productCategories}
+											on:change|preventDefault={handleChange}
+											class="text-sm"
+										>
 											{#each optionsToList(filterOptionsGroup('productCategories')) as name}
 												<option value={name}>
 													{name}
@@ -267,7 +344,11 @@
 										</select>
 									</td>
 									<td class="px-2 py-1">
-										<select bind:value={list.embroideryTypes} class="text-sm">
+										<select
+											bind:value={list.embroideryTypes}
+											on:change|preventDefault={handleChange}
+											class="text-sm"
+										>
 											{#each optionsToList(filterOptionsGroup('embroideryTypes')) as name}
 												<option value={name}>
 													{name}
@@ -309,11 +390,16 @@
 											</button>
 										</div>
 									</td>
-									<td class="px-2 py-1">
+									<td class="px-2 py-1 text-end">
 										{format(JSON.parse(list.unitPrice))}
 									</td>
-									<td class="px-2 py-1">
+									<td class="px-2 py-1 text-end">
 										{format(JSON.parse(list.total))}
+									</td>
+									<td class="px-2 text-center">
+										<button on:click|preventDefault={removeCartItem(list)}
+											>{@html svgXESmall}</button
+										>
 									</td>
 								</tr>
 							{/each}
@@ -344,8 +430,8 @@
 							<td class="px-2 py-1" />
 							<td class="px-2 py-1" />
 							<td class="px-2 py-1">Total</td>
-							<td class="px-2 py-1">$12.00</td>
-							<!-- <td class="px-2 py-1">{format(JSON.parse(order.subTotal))}</td> -->
+							<td class="px-2 py-1 text-end">{format(JSON.parse(order.subTotal))}</td>
+							<td class="px-2 py-1" />
 						</tr>
 					</tbody>
 				</table>
@@ -602,7 +688,7 @@
 					<tbody class="overflow-y-auto">
 						{#each products.results as product (product._id)}
 							<tr
-								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900 dot-align"
+								class="whitespace-no-wrap hover:bg-royal-blue-200 w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900 dot-align"
 							>
 								<td class="px-2 py-1">{product.name}</td>
 								<td class="px-2 py-1">{product.productID}</td>
@@ -642,12 +728,4 @@
 		-webkit-appearance: none;
 		margin: 0;
 	}
-
-	/* .custom-number-input input:focus {
-		outline: none !important;
-	}
-
-	.custom-number-input button:focus {
-		outline: none !important;
-	} */
 </style>

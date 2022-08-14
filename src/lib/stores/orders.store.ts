@@ -1,51 +1,18 @@
-import type { OrderLineDocument } from '$lib/models/orders.model';
-import type { Schema } from 'mongoose';
+import type { OrdersDocument } from '$lib/models/orders.model';
 import { writable } from 'svelte/store';
 
-type orderItemsInterface = OrderLineDocument;
+// let order: OrdersDocument = {
+// 	subTotal: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
+// 	tax: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
+// 	taxRate: '',
+// 	discount: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
+// 	discountRate: '',
+// 	balance: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
+// 	isActive: true,
+// 	pricelistID: [],
+// 	customerID: [],
+// 	orderLine: []
+// };
 
-const orderItemsIDs = new Set([]);
+export const orderStore = writable(null);
 
-const lineItems = {
-	total: '',
-	productCategories: '',
-	embroideryTypes: '',
-	embroideryPositions: '',
-	manufacturingStatus: ''
-};
-
-function createOrderItems() {
-	const { subscribe, set, update } = writable([]);
-
-	return {
-		subscribe,
-		add: (item: orderItemsInterface) => {
-			if (!orderItemsIDs.has(item._id)) {
-				orderItemsIDs.add(item._id);
-				update((allOrderItems: orderItemsInterface[]) => [
-					...allOrderItems,
-					{ ...item, ...lineItems }
-				]);
-			}
-		},
-		remove: (id: Schema.Types.ObjectId) => {
-			orderItemsIDs.delete(id);
-			update((allOrderItems: orderItemsInterface[]) =>
-				allOrderItems.filter((item: orderItemsInterface) => item._id !== id)
-			);
-		},
-		update: (item: orderItemsInterface) => {
-			this.remove(item._id);
-			this.add(item);
-		},
-		reset: () => {
-			orderItemsIDs.clear();
-			set([]);
-		},
-		orderItemsHasID: (id: Schema.Types.ObjectId) => {
-			return orderItemsIDs.has(id);
-		}
-	};
-}
-
-export const orderItems = createOrderItems();
