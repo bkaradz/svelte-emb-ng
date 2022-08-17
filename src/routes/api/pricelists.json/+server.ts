@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import PricelistsModel, {
 	type PricelistsDocument,
 	type PricelistsSubDocument
@@ -10,40 +13,40 @@ import { getMonetaryValue, setMonetaryValue } from '$lib/services/monetary';
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const reqPricelists: Array<PricelistsDocument> = await PricelistsModel.find();
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(reqPricelists);
 		return {
 			status: 200,
 			body: reqPricelists
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const userId = locals.user._id;
@@ -78,30 +81,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const res = await newPricelists.save();
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(res);
 		return {
 			status: 200,
 			body: res
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const userId = locals.user._id;
@@ -114,12 +118,11 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		if (result.hasErrors()) {
 			logger.error(result.getErrors());
-			return {
-				status: 400,
-				body: {
-					message: result.getErrors()
-				}
-			};
+			return json$1({
+				message: result.getErrors()
+			}, {
+				status: 400
+			});
 		}
 
 		const newPricelists = await PricelistsModel.findByIdAndUpdate(
@@ -127,17 +130,19 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			reqPricelists
 		);
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(newPricelists);
 		return {
 			status: 200,
 			body: newPricelists
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };

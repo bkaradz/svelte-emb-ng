@@ -17,7 +17,7 @@ if (import.meta.vitest) {
 	const { it, expect } = import.meta.vitest;
 	
 	it.skip('Test fetchPosts', async () => {
-		const { posts } = await import('../mocks/handlers');
+		const { posts } = await import('../../mocks/handlers');
 		const result = await fetchPosts();
 		expect(result).toEqual(posts);
 	});

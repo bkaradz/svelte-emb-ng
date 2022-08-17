@@ -1,7 +1,7 @@
 import { connectDB } from '$lib/database/mongooseDB';
 import ContactsModel from '$lib/models/contacts.model';
 import pick from 'lodash-es/pick';
-import type { User } from "./signUp.json";
+import type { User } from "../signUp.json";
 import * as cookie from 'cookie';
 import { session } from '$app/stores';
 

@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import logger from '$lib/utility/logger';
 import ProductsModel from '$lib/models/products.models';
 import aggregateQuery from '$lib/services/aggregateQuery.services';
@@ -131,30 +134,25 @@ export const GET: RequestHandler = async ({ url }) => {
 		products = { ...products, ...products.metaData[0] };
 		delete products.metaData;
 
-		return {
-			status: 200,
-			body: { ...products }
-		};
+		return json$1({ ...products });
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const userId = locals.user._id;
@@ -165,12 +163,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (result.hasErrors()) {
 			logger.error(result.getErrors());
-			return {
-				status: 400,
-				body: {
-					message: result.getErrors()
-				}
-			};
+			return json$1({
+				message: result.getErrors()
+			}, {
+				status: 400
+			});
 		}
 
 		const newProduct = new ProductsModel(reqProduct);
@@ -179,39 +176,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		await newProduct.save();
 
-		return {
-			status: 200,
-			body: {
-				message: newProduct
-			}
-		};
+		return json$1({
+			message: newProduct
+		});
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
 export const PUT: RequestHandler = async () => {
 	try {
-		return {
-			status: 200,
-			body: {
-				message: 'Success'
-			}
-		};
+		return json$1({
+			message: 'Success'
+		});
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 

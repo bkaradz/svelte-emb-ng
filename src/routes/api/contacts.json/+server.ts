@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model';
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
@@ -62,12 +65,11 @@ export const GET: RequestHandler = async ({
 }> => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
@@ -199,18 +201,20 @@ export const GET: RequestHandler = async ({
 		contacts = { ...contacts, ...contacts.metaData[0] };
 		delete contacts.metaData;
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(contacts);
 		return {
 			status: 200,
 			body: contacts
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
@@ -223,12 +227,11 @@ export const POST: RequestHandler = async ({
 }> => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const userId = locals.user._id;
@@ -249,18 +252,20 @@ export const POST: RequestHandler = async ({
 
 		await contacts.save();
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(contacts);
 		return {
 			status: 200,
 			body: contacts
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };
 
@@ -273,29 +278,30 @@ export const PUT: RequestHandler = async ({
 }> => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const reqContact = await request.json();
 
 		const res = await ContactsModel.findByIdAndUpdate(reqContact._id, reqContact);
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(res);
 		return {
 			status: 200,
 			body: res
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };

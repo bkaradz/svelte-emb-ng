@@ -1,3 +1,5 @@
+
+// @migration task: Check imports
 import { render, screen } from '@testing-library/svelte';
 import Index from './index.svelte';
 

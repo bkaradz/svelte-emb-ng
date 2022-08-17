@@ -1,3 +1,4 @@
+import { json as json$1 } from '@sveltejs/kit';
 import { postSuite } from '$lib/validation/server/products.validate';
 import pickBy from 'lodash-es/pickBy';
 import identity from 'lodash-es/identity';
@@ -20,12 +21,11 @@ export const POST: RequestHandler = async ({
 }> => {
 	try {
 		if (!locals?.user?._id) {
-			return {
-				status: 401,
-				body: {
-					message: 'Unauthorized'
-				}
-			};
+			return json$1({
+				message: 'Unauthorized'
+			}, {
+				status: 401
+			});
 		}
 
 		const userId = locals.user._id;
@@ -36,12 +36,11 @@ export const POST: RequestHandler = async ({
 
 		if (!(Object.prototype.toString.call(file) === '[object File]')) {
 			logger.error('File is empty');
-			return {
-				status: 400,
-				body: {
-					message: 'File is empty'
-				}
-			};
+			return json$1({
+				message: 'File is empty'
+			}, {
+				status: 400
+			});
 		}
 		// @ts-expect-error: the above if statement catches the error if file is null
 		const csvString = await file.text();
@@ -83,19 +82,15 @@ export const POST: RequestHandler = async ({
 			newProduct.save();
 		});
 
-		return {
-			status: 200,
-			body: {
-				message: 'Product Uploaded'
-			}
-		};
+		return json$1({
+			message: 'Product Uploaded'
+		});
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+    	status: 500
+    })
 	}
 };

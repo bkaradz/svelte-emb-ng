@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import OptionsModel from '$lib/models/options.models'
 import { postSuite } from '$lib/validation/server/options.validate'
 import logger from '$lib/utility/logger'
@@ -14,30 +17,31 @@ export const GET: RequestHandler = async ({
 }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const queryParams = Object.fromEntries(url.searchParams)
 
     const options: Array<OptionsDocument> = await OptionsModel.find(queryParams)
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(options);
     return {
       status: 200,
       body: options,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }
 
@@ -51,12 +55,11 @@ export const POST: RequestHandler = async ({
 }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const userId = locals.user._id
@@ -75,18 +78,20 @@ export const POST: RequestHandler = async ({
 
     const res = await newOption.save()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(res);
     return {
       status: 200,
       body: res,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }
 
@@ -100,12 +105,11 @@ export const PUT: RequestHandler = async ({
 }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const userId = locals.user._id
@@ -116,18 +120,20 @@ export const PUT: RequestHandler = async ({
 
     const res: OptionsDocument = await OptionsModel.findByIdAndUpdate({ _id: reqOptions._id }, reqOptions, { new: true }).lean()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(res);
     return {
       status: 200,
       body: res,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }
 
@@ -141,12 +147,11 @@ export const DELETE: RequestHandler = async ({
 }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     // const userId = locals.user._id
@@ -159,17 +164,19 @@ export const DELETE: RequestHandler = async ({
       _id: reqOptions._id,
     }).lean()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(res);
     return {
       status: 200,
       body: res,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }

@@ -1,4 +1,6 @@
 <script lang="ts">
+	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import type { PricelistsDocument, PricelistsSubDocument } from '$lib/models/pricelists.model';

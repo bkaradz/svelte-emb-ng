@@ -1,3 +1,4 @@
+import { json as json$1 } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit'
 import { signJwt } from '$lib/utility/jwt.utils'
 import config from 'config'
@@ -36,34 +37,31 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
     const parsedUser = loginCredentialsSchema.safeParse(reqUser)
 
     if (!parsedUser.success) {
-      return {
-        status: 400,
-        body: {
-          error: parsedUser.error
-        }
-      };
+      return json$1({
+  error: parsedUser.error
+}, {
+        status: 400
+      });
     }
 
     let user = await validateUserPassword(reqUser)
 
     if (!user) {
-      return {
+      return json$1({
+  message: 'Invalid email or password',
+}, {
         status: 401,
-        headers: { 'Set-Cookie': '' },
-        body: {
-          message: 'Invalid email or password',
-        },
-      }
+        headers: { 'Set-Cookie': '' }
+      })
     }
 
     if (!user.isActive) {
-      return {
+      return json$1({
+  message: 'Unauthorized',
+}, {
         status: 403,
-        headers: { 'Set-Cookie': '' },
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+        headers: { 'Set-Cookie': '' }
+      })
     }
 
      user = omit(JSON.parse(JSON.stringify(user)), ['password']) as Omit<ContactsDocument, 'password'>
@@ -82,6 +80,9 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
     
 
     // return access & refresh tokens
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return new Response({ ...user, sessionID: session._id, authenticated: true } as SessionInterface, { headers: headers });
     return {
       status: 200,
       headers,
@@ -89,11 +90,10 @@ export const POST: RequestHandler = async ({ request }): Promise<{ status: numbe
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }

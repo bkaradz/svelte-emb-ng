@@ -1,17 +1,3 @@
-<script context="module" lang="ts">
-	import type { Load } from '@sveltejs/kit';
-
-	export const load: Load = async ({ session }) => {
-		if (session?.user?.authenticated) {
-			return {
-				status: 302,
-				redirect: '/'
-			};
-		}
-		return {};
-	};
-</script>
-
 <script lang="ts">
 	import Loading from '$lib/components/Loading.svelte';
 	import { onMount } from 'svelte';

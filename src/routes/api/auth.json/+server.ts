@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from '@sveltejs/kit'
@@ -6,12 +9,11 @@ import type { Schema, _LeanDocument } from 'mongoose'
 export const GET: RequestHandler = async ({ locals }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>[]) | null }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const res = await ContactsModel.find(
@@ -27,30 +29,31 @@ export const GET: RequestHandler = async ({ locals }): Promise<{status: number, 
       }
     ).lean()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(res);
     return {
       status: 200,
       body: res,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }
 
 export const PUT: RequestHandler = async ({ request, locals }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>) | null }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const userUpdate = await request.json()
@@ -58,30 +61,31 @@ export const PUT: RequestHandler = async ({ request, locals }): Promise<{status:
       .select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts')
       .lean()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(userUpdated);
     return {
       status: 200,
       body: userUpdated
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }
 
 export const DELETE: RequestHandler = async ({ locals, request }): Promise<{status: number, body: {message: string} | {error: any} | (_LeanDocument<ContactsDocument & Required<{_id: Schema.Types.ObjectId}>>) | null }> => {
   try {
     if (!locals?.user?._id) {
-      return {
-        status: 401,
-        body: {
-          message: 'Unauthorized',
-        },
-      }
+      return json$1({
+  message: 'Unauthorized',
+}, {
+        status: 401
+      })
     }
 
     const userDelete = await request.json()
@@ -97,17 +101,19 @@ export const DELETE: RequestHandler = async ({ locals, request }): Promise<{stat
       .select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts')
       .lean()
 
+    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+    // Suggestion (check for correctness before using):
+    // return json$1(userUpdated);
     return {
       status: 200,
       body: userUpdated,
     }
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return {
-      status: 500,
-      body: {
-        error: `A server error occurred ${err}`,
-      },
-    }
+    return json$1({
+  error: `A server error occurred ${err}`,
+}, {
+      status: 500
+    })
   }
 }

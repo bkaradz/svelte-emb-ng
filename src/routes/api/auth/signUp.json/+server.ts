@@ -1,3 +1,4 @@
+import { json as json$1 } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import ContactsModel, {type ContactsDocument} from '$lib/models/contacts.model';
 import logger from '$lib/utility/logger';
@@ -24,23 +25,21 @@ export const POST: RequestHandler = async ({ request }): Promise<{status: number
 		const parsedUser = UserSchema.safeParse(reqUser)
 
 		if (!parsedUser.success) {
-			return {
-				status: 400,
-				body: {
-					error: parsedUser.error
-				}
-			};
+			return json$1({
+				error: parsedUser.error
+			}, {
+				status: 400
+			});
 		}
 
 		const userExist = await ContactsModel.findOne({ email: reqUser.email });
 
 		if (userExist) {
-			return {
-				status: 409,
-				body: {
-					message: 'User with that email already exist'
-				}
-			};
+			return json$1({
+				message: 'User with that email already exist'
+			}, {
+				status: 409
+			});
 		}
 
 		const contacts = new ContactsModel(reqUser);
@@ -69,17 +68,19 @@ export const POST: RequestHandler = async ({ request }): Promise<{status: number
 
 		delete contacts.password
 
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+		// Suggestion (check for correctness before using):
+		// return json$1(contacts);
 		return {
 			status: 200,
 			body: contacts,
 		};
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return {
-			status: 500,
-			body: {
-				error: `A server error occurred ${err}`
-			}
-		};
+		return json$1({
+			error: `A server error occurred ${err}`
+		}, {
+			status: 500
+		});
 	}
 };

@@ -1,17 +1,3 @@
-<script context="module" lang="ts">
-	import type { Load } from '@sveltejs/kit';
-
-	export const load: Load = async ({ session }) => {
-		if (!session?.user?.authenticated) {
-			return {
-				status: 302,
-				redirect: '/auth/signIn'
-			};
-		}
-		return {};
-	};
-</script>
-
 <script lang="ts">
 	import { toggleMenu } from '$lib/stores/sideMenu.store';
 	import Menu from '$lib/components/Menu.svelte';
