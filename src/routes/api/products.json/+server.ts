@@ -1,12 +1,12 @@
 import { json as json$1 } from '@sveltejs/kit';
 
-// @migration task: Check imports
+
 import logger from '$lib/utility/logger';
 import ProductsModel from '$lib/models/products.models';
 import aggregateQuery from '$lib/services/aggregateQuery.services';
 import { postSuite } from '$lib/validation/server/products.validate';
-import  omit  from 'lodash-es/omit';
-import type { RequestHandler } from '@sveltejs/kit';
+import omit from 'lodash-es/omit';
+import type { RequestHandler } from './$types';
 
 
 export const GET: RequestHandler = async ({ url }) => {

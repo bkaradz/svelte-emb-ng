@@ -19,7 +19,6 @@
 	onMount(() => {
 		pingHealthCheck();
 	});
-
 </script>
 
 <div class="app flex h-screen {$toggleMenu ? 'big-menu' : 'small-menu'}">

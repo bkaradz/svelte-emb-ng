@@ -5,10 +5,10 @@ import pickBy from 'lodash-es/pickBy';
 import identity from 'lodash-es/identity';
 import logger from '$lib/utility/logger';
 import csv from 'csvtojson';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { z } from "zod";
 
-/** @type {import('@sveltejs/kit').RequestHandler}*/
+
 export const POST: RequestHandler = async ({
 	request,
 	locals

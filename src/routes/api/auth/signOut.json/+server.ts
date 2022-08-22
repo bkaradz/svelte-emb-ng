@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit'
+import type { RequestHandler } from './$types'
 import { deleteSessionCookies, deleteSessions } from '$lib/services/session.services'
 import logger from '$lib/utility/logger'
 
@@ -11,8 +11,8 @@ export const POST: RequestHandler = async ({ locals }) => {
 
     if (!sessionID) {
       return json({
-  message: 'Session not Found',
-}, {
+        message: 'Session not Found',
+      }, {
         status: 404,
         headers: headers
       })
@@ -20,19 +20,18 @@ export const POST: RequestHandler = async ({ locals }) => {
 
     deleteSessions(sessionID)
 
-    locals.user = {}
+    locals.user = null
 
     return json({
-  message: `You have successfully singed out`,
-}, {
+      message: `You have successfully singed out`,
+    }, {
       headers: headers
     })
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return json({
-  error: `A server error occurred ${err}`,
-}, {
-      status: 500
+      status: 500,
+      errors: { message: `A server error occurred ${err}` },
     })
   }
 }

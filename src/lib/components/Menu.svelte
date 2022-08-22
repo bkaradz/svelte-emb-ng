@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { session } from '$app/stores';
+	// import { session } from '$app/stores';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgBellSolid, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
@@ -32,7 +32,7 @@
 
 			if (res.ok) {
 				const data = await res.json();
-				$session = {};
+				// $session = {};
 				toasts.add({
 					message: `${data.message}`,
 					type: 'success'

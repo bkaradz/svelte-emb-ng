@@ -1,16 +1,16 @@
 import { json as json$1 } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
-import ContactsModel, {type ContactsDocument} from '$lib/models/contacts.model';
+import type { RequestHandler } from './$types';
+import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model';
 import logger from '$lib/utility/logger';
 import { z } from "zod";
 
 export const UserSchema = z.object({
-	name: z.string({required_error: "Name is required", invalid_type_error: "Name must be a string"}).trim(), 
-	email: z.string({required_error: "Email is required"}).email({message: "Not a valid email"}), 
-	phone: z.string({required_error: "Phone is required"}), 
-	address: z.string({required_error: "Address is required"}), 
-	password: z.string({required_error: "Address is required"}),
-	confirmPassword: z.string({required_error: "Password is required"})
+	name: z.string({ required_error: "Name is required", invalid_type_error: "Name must be a string" }).trim(),
+	email: z.string({ required_error: "Email is required" }).email({ message: "Not a valid email" }),
+	phone: z.string({ required_error: "Phone is required" }),
+	address: z.string({ required_error: "Address is required" }),
+	password: z.string({ required_error: "Address is required" }),
+	confirmPassword: z.string({ required_error: "Password is required" })
 }).refine((data) => data.password === data.confirmPassword, {
 	message: 'Passwords do not match',
 	path: ['confirmPassword']
@@ -18,7 +18,7 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>
 
-export const POST: RequestHandler = async ({ request }): Promise<{status: number, body: {error: any} | {message: string} | Omit<ContactsDocument, 'password'>}> => {
+export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const reqUser: User = await request.json();
 
@@ -26,9 +26,8 @@ export const POST: RequestHandler = async ({ request }): Promise<{status: number
 
 		if (!parsedUser.success) {
 			return json$1({
-				error: parsedUser.error
-			}, {
-				status: 400
+				status: 400,
+				errors: { message: parsedUser.error }
 			});
 		}
 
@@ -36,9 +35,8 @@ export const POST: RequestHandler = async ({ request }): Promise<{status: number
 
 		if (userExist) {
 			return json$1({
-				message: 'User with that email already exist'
-			}, {
-				status: 409
+				status: 409,
+				errors: { message: 'User with that email already exist' }
 			});
 		}
 
@@ -68,19 +66,13 @@ export const POST: RequestHandler = async ({ request }): Promise<{status: number
 
 		delete contacts.password
 
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-		// Suggestion (check for correctness before using):
-		// return json$1(contacts);
-		return {
-			status: 200,
-			body: contacts,
-		};
+		return json$1(contacts);
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };

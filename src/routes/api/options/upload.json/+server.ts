@@ -1,10 +1,10 @@
 import { json as json$1 } from '@sveltejs/kit';
 import logger from '$lib/utility/logger';
 import csv from 'csvtojson';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import OptionsModel, { type OptionsDocument } from '$lib/models/options.models';
 
-/** @type {import('@sveltejs/kit').RequestHandler}*/
+
 export const POST: RequestHandler = async ({
   request,
   locals

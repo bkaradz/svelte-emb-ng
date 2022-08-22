@@ -26,7 +26,6 @@
 	];
 
 	let itemList = $orderStore ? $orderStore.orderLine : [];
-  console.log("🚀 ~ file: index.svelte ~ line 29 ~ itemList", itemList)
 	let contacts;
 	let products;
 	let pricelists: PricelistsDocument[];

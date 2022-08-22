@@ -1,6 +1,6 @@
 import { json as json$1 } from '@sveltejs/kit';
 
-// @migration task: Check imports
+
 import logger from '$lib/utility/logger';
 import aggregateQuery from '$lib/services/aggregateQuery.services';
 import OrdersModel from '$lib/models/orders.model';
@@ -8,7 +8,7 @@ import omit from 'lodash-es/omit';
 import { calculateOrder } from '$lib/services/orders';
 import PricelistsModel from '$lib/models/pricelists.model';
 import ContactsModel from '$lib/models/contacts.model';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -130,12 +130,12 @@ export const GET: RequestHandler = async ({ url }) => {
 		delete orders.metaData;
 
 		return json$1({ ...orders });
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };
@@ -144,9 +144,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?._id) {
 			return json$1({
-				message: 'Unauthorized'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Unauthorized' }
 			});
 		}
 
@@ -159,9 +158,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!pricelist) {
 			return json$1({
-				message: 'Pricelist does not exist'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Pricelist does not exist' }
 			});
 		}
 		// check that the customer exist
@@ -169,9 +167,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!customerExist) {
 			return json$1({
-				message: 'Customer does not exist'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Customer does not exist' }
 			});
 		}
 
@@ -183,19 +180,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		await newOrder.save();
 
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-		// Suggestion (check for correctness before using):
-		// return json$1(newOrder);
-		return {
-			status: 200,
-			body: newOrder
-		};
+		return json$1(newOrder);
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };
@@ -208,9 +199,8 @@ export const PUT: RequestHandler = async () => {
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };

@@ -1,26 +1,17 @@
 import { json as json$1 } from '@sveltejs/kit';
-
-// @migration task: Check imports
 import OptionsModel from '$lib/models/options.models'
 import { postSuite } from '$lib/validation/server/options.validate'
 import logger from '$lib/utility/logger'
-import type { RequestHandler } from '@sveltejs/kit'
+import type { RequestHandler } from './$types'
 import type { OptionsDocument } from '$lib/models/options.models'
 
-/** @type {import('@sveltejs/kit').RequestHandler}*/
-export const GET: RequestHandler = async ({
-  url,
-  locals,
-}): Promise<{
-  status: number
-  body: Array<OptionsDocument> | { error: string } | { message: string }
-}> => {
+
+export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     if (!locals?.user?._id) {
       return json$1({
-  message: 'Unauthorized',
-}, {
-        status: 401
+        status: 401,
+        errors: { message: 'Unauthorized' }
       })
     }
 
@@ -28,37 +19,23 @@ export const GET: RequestHandler = async ({
 
     const options: Array<OptionsDocument> = await OptionsModel.find(queryParams)
 
-    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-    // Suggestion (check for correctness before using):
-    // return json$1(options);
-    return {
-      status: 200,
-      body: options,
-    }
+    return json$1(options);
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return json$1({
-  error: `A server error occurred ${err}`,
-}, {
-      status: 500
+      status: 500,
+      errors: { message: `A server error occurred ${err}` }
     })
   }
 }
 
-/** @type {import('@sveltejs/kit').RequestHandler} */
-export const POST: RequestHandler = async ({
-  request,
-  locals,
-}): Promise<{
-  status: number
-  body: OptionsDocument | { error: string } | { message: string }
-}> => {
+export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     if (!locals?.user?._id) {
       return json$1({
-  message: 'Unauthorized',
-}, {
-        status: 401
+        status: 401,
+        errors: { message: 'Unauthorized' }
       })
     }
 
@@ -78,37 +55,24 @@ export const POST: RequestHandler = async ({
 
     const res = await newOption.save()
 
-    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-    // Suggestion (check for correctness before using):
-    // return json$1(res);
-    return {
-      status: 200,
-      body: res,
-    }
+    return json$1(res);
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return json$1({
-  error: `A server error occurred ${err}`,
-}, {
-      status: 500
+      status: 500,
+      errors: { message: `A server error occurred ${err}` }
     })
   }
 }
 
-/** @type {import('@sveltejs/kit').RequestHandler} */
-export const PUT: RequestHandler = async ({
-  locals,
-  request,
-}): Promise<{
-  status: number
-  body: OptionsDocument | { error: string } | { message: string }
-}> => {
+
+export const PUT: RequestHandler = async ({ locals, request }) => {
   try {
     if (!locals?.user?._id) {
       return json$1({
-  message: 'Unauthorized',
-}, {
-        status: 401
+        status: 401,
+        errors: { message: 'Unauthorized' }
       })
     }
 
@@ -120,37 +84,27 @@ export const PUT: RequestHandler = async ({
 
     const res: OptionsDocument = await OptionsModel.findByIdAndUpdate({ _id: reqOptions._id }, reqOptions, { new: true }).lean()
 
-    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-    // Suggestion (check for correctness before using):
-    // return json$1(res);
-    return {
-      status: 200,
-      body: res,
-    }
+    return json$1(res);
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return json$1({
-  error: `A server error occurred ${err}`,
-}, {
-      status: 500
+      status: 500,
+      errors: { message: `A server error occurred ${err}` }
     })
   }
 }
 
-/** @type {import('@sveltejs/kit').RequestHandler} */
+
 export const DELETE: RequestHandler = async ({
   locals,
   request,
-}): Promise<{
-  status: number
-  body: OptionsDocument | { error: string } | { message: string }
-}> => {
+}) => {
   try {
     if (!locals?.user?._id) {
       return json$1({
-  message: 'Unauthorized',
-}, {
-        status: 401
+        status: 401,
+        errors: { message: 'Unauthorized' }
       })
     }
 
@@ -164,19 +118,13 @@ export const DELETE: RequestHandler = async ({
       _id: reqOptions._id,
     }).lean()
 
-    throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-    // Suggestion (check for correctness before using):
-    // return json$1(res);
-    return {
-      status: 200,
-      body: res,
-    }
+    return json$1(res);
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
     return json$1({
-  error: `A server error occurred ${err}`,
-}, {
-      status: 500
+      status: 500,
+      errors: { message: `A server error occurred ${err}` }
     })
   }
 }

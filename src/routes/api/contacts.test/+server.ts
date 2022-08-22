@@ -1,5 +1,5 @@
 
-// @migration task: Check imports
+
 import { connectDB } from '$lib/database/mongooseDB';
 import ContactsModel from '$lib/models/contacts.model';
 import pick from 'lodash-es/pick';
@@ -14,9 +14,9 @@ const userData: Partial<User> = {
 	"confirmPassword": "johnDoe123"
 }
 
-export const fetchPosts = async (uri: string, options: {method: string, headers?: any, body?: any}) => {
-		const res = await fetch(uri, options);
-		return res?.json();
+export const fetchPosts = async (uri: string, options: { method: string, headers?: any, body?: any }) => {
+	const res = await fetch(uri, options);
+	return res?.json();
 };
 
 
@@ -29,17 +29,17 @@ if (import.meta.vitest) {
 	})
 
 	describe('Upload and Get user:', () => {
-    it('First User Sign Up: Should return created user data with user name if successful:', async () => {
+		it('First User Sign Up: Should return created user data with user name if successful:', async () => {
 			const uri = 'http://localhost:5173/api/auth/signUp.json'
 
-      const formData = {...userData}
+			const formData = { ...userData }
 
-      const options = {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: { 'Content-Type': 'application/json' }
-      }
-			
+			const options = {
+				method: 'POST',
+				body: JSON.stringify(formData),
+				headers: { 'Content-Type': 'application/json' }
+			}
+
 			const result = await fetchPosts(uri, options);
 			expect(result?.name).toBe('John Doe')
 			expect(result?.userRole).toBe('ADMIN')
@@ -49,25 +49,25 @@ if (import.meta.vitest) {
 
 			const formData = pick(userData, 'email', 'password')
 
-      const options = {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: { 'Content-Type': 'application/json' }
-      }
-     
-			const result = await fetchPosts(uri, options);      
+			const options = {
+				method: 'POST',
+				body: JSON.stringify(formData),
+				headers: { 'Content-Type': 'application/json' }
+			}
+
+			const result = await fetchPosts(uri, options);
 			expect(result?.authenticated).toBeTruthy()
 		});
 		it('Upload contacts csv', async () => {
-      const form = new FormData();
+			const form = new FormData();
 			const data = '../../../../../contacts 5cont.csv'
-      form.append("contacts", data);
+			form.append("contacts", data);
 
-      const options = {
-        method: 'POST',
-        headers: {'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001'},
-        body: form
-      };
+			const options = {
+				method: 'POST',
+				headers: { 'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001' },
+				body: form
+			};
 
 			const uri = 'http://localhost:5173/api/contacts/upload.json'
 

@@ -3,7 +3,7 @@ import { postSuite } from '$lib/validation/server/products.validate';
 import pickBy from 'lodash-es/pickBy';
 import identity from 'lodash-es/identity';
 import logger from '$lib/utility/logger';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import ProductsModel, {
 	getCurrentProductID,
 	incProductID,
@@ -11,7 +11,7 @@ import ProductsModel, {
 } from '$lib/models/products.models';
 import csv from 'csvtojson';
 
-/** @type {import('@sveltejs/kit').RequestHandler}*/
+
 export const POST: RequestHandler = async ({
 	request,
 	locals

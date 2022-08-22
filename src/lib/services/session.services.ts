@@ -5,7 +5,7 @@ import type { FilterQuery } from 'mongoose';
 import ContactsModel from '$lib/models/contacts.model';
 import type { ContactsDocument } from '$lib/models/contacts.model';
 import config from 'config';
-import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json';
+import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json/+server';
 
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {

@@ -40,7 +40,6 @@
 </script>
 
 <svelte:head>
-	<!-- <link rel="icon" type="image/svg" href={icon-path} /> -->
 </svelte:head>
 
 {#if !isPageLoading}

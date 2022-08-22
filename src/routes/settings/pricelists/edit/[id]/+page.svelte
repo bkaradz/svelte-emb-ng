@@ -1,5 +1,5 @@
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
+	// throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
 
 	import { page } from '$app/stores';
 	import suite from '$lib/validation/client/signUp.validate';
@@ -16,7 +16,7 @@
 
 	let result = suite.get();
 
-	export let tableHeadings = [
+	let tableHeadings = [
 		'Embroidery Type',
 		'Minimum Quantity',
 		'Minimum Price',

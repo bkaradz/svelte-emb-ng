@@ -1,24 +1,21 @@
 import { json as json$1 } from '@sveltejs/kit';
-
-// @migration task: Check imports
 import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model';
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
 import aggregateQuery from '$lib/services/aggregateQuery.services';
 import pickBy from 'lodash-es/pickBy';
 import identity from 'lodash-es/identity';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 import { z } from "zod";
-import type { Schema } from 'mongoose';
 
 const ContactsSchema = z.object({
-	name: z.string({required_error: "Name is required", invalid_type_error: "Name must be a string"}).trim(), 
-	email: z.string().email({message: "Not a valid email"}).optional(), 
-	phone: z.string({required_error: "Phone is required"}), 
-	address: z.string().optional(), 
-	isCorporate: z.boolean({required_error: "Corporate or Individual is required"}), 
-	organizationID: z.string().optional(), 
-	vatOrBpNo: z.string().optional() 
+	name: z.string({ required_error: "Name is required", invalid_type_error: "Name must be a string" }).trim(),
+	email: z.string().email({ message: "Not a valid email" }).optional(),
+	phone: z.string({ required_error: "Phone is required" }),
+	address: z.string().optional(),
+	isCorporate: z.boolean({ required_error: "Corporate or Individual is required" }),
+	organizationID: z.string().optional(),
+	vatOrBpNo: z.string().optional()
 })
 
 export type Contacts = z.infer<typeof ContactsSchema>
@@ -59,23 +56,19 @@ export interface ContentsPaginationIterface extends Pagination {
 export const GET: RequestHandler = async ({
 	url,
 	locals
-}): Promise<{
-	status: number;
-	body: ContactsDocument | { error: any } | { message: string };
-}> => {
+}) => {
 	try {
 		if (!locals?.user?._id) {
 			return json$1({
-				message: 'Unauthorized'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Unauthorized' }
 			});
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
 		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
-		const page = isNaN(+queryParams?.page) ? 1 :  +queryParams?.page;
+		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
 
 		const startIndex = (page - 1) * limit;
 		const endIndex = page * limit;
@@ -201,19 +194,13 @@ export const GET: RequestHandler = async ({
 		contacts = { ...contacts, ...contacts.metaData[0] };
 		delete contacts.metaData;
 
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-		// Suggestion (check for correctness before using):
-		// return json$1(contacts);
-		return {
-			status: 200,
-			body: contacts
-		};
+		return json$1(contacts);
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };
@@ -221,16 +208,12 @@ export const GET: RequestHandler = async ({
 export const POST: RequestHandler = async ({
 	request,
 	locals
-}): Promise<{
-	status: number;
-	body: ContactsDocument | { error: string } | { message: string };
-}> => {
+}) => {
 	try {
 		if (!locals?.user?._id) {
 			return json$1({
-				message: 'Unauthorized'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Unauthorized' }
 			});
 		}
 
@@ -252,19 +235,13 @@ export const POST: RequestHandler = async ({
 
 		await contacts.save();
 
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-		// Suggestion (check for correctness before using):
-		// return json$1(contacts);
-		return {
-			status: 200,
-			body: contacts
-		};
+		return json$1(contacts);
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };
@@ -272,16 +249,12 @@ export const POST: RequestHandler = async ({
 export const PUT: RequestHandler = async ({
 	request,
 	locals
-}): Promise<{
-	status: number;
-	body: (ContactsDocument & Required<{_id: Schema.Types.ObjectId}>) | null | { error: string } | { message: string };
-}> => {
+}) => {
 	try {
 		if (!locals?.user?._id) {
 			return json$1({
-				message: 'Unauthorized'
-			}, {
-				status: 401
+				status: 401,
+				errors: { message: 'Unauthorized' }
 			});
 		}
 
@@ -289,19 +262,13 @@ export const PUT: RequestHandler = async ({
 
 		const res = await ContactsModel.findByIdAndUpdate(reqContact._id, reqContact);
 
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
-		// Suggestion (check for correctness before using):
-		// return json$1(res);
-		return {
-			status: 200,
-			body: res
-		};
+		return json$1(res);
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
 		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
-			status: 500
+			status: 500,
+			errors: { message: `A server error occurred ${err}` }
 		});
 	}
 };
