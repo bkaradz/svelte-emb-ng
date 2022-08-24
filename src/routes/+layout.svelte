@@ -6,6 +6,15 @@
 	import Toasts from '$lib/components/Toasts.svelte';
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/env';
+
+	if (!$page.data?.user?.authenticated) {
+		if (browser) {
+			goto('/auth/signIn');
+		}
+	}
 
 	// Ping to connect to database
 	const pingHealthCheck = async () => {

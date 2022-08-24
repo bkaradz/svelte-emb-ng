@@ -5,6 +5,14 @@
 	import Toasts from '$lib/components/Toasts.svelte';
 	import { svgSignIn, svgSignUp } from '$lib/utility/svgLogos';
 	import logger from '$lib/utility/logger';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/env';
+
+	if ($page.data?.user?.authenticated) {
+		if (browser) {
+			goto('/');
+		}
+	}
 
 	let isPageLoading = false;
 
@@ -12,7 +20,7 @@
 	const pingHealthCheck = async () => {
 		try {
 			const res = await fetch('/api/healthcheck.json');
-		} catch (err:any) {
+		} catch (err: any) {
 			logger.error(err.message);
 		}
 	};
@@ -39,8 +47,7 @@
 	];
 </script>
 
-<svelte:head>
-</svelte:head>
+<svelte:head />
 
 {#if !isPageLoading}
 	<div class="height_max flex flex-col items-center bg-pickled-bluewood-50">
@@ -50,15 +57,14 @@
 			<ul class="flex flex-row pl-1 mr-2">
 				{#each navList as tag (tag.name)}
 					<li>
-						{#if !($page.url.pathname === tag.url) }
-							
-						<a
-							class="m-1 flex appearance-none border px-5 py-1 font-semibold btn btn-primary"
-							href={tag.url}
-						>
-							<span class="">{@html tag.icon}</span>
-							<span class="ml-1">{tag.name}</span>
-						</a>
+						{#if !($page.url.pathname === tag.url)}
+							<a
+								class="m-1 flex appearance-none border px-5 py-1 font-semibold btn btn-primary"
+								href={tag.url}
+							>
+								<span class="">{@html tag.icon}</span>
+								<span class="ml-1">{tag.name}</span>
+							</a>
 						{/if}
 					</li>
 				{/each}
