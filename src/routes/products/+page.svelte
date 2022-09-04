@@ -18,7 +18,7 @@
 	interface productIterface {
 		results: [
 			{
-				_id: string;
+				id: string;
 				name: string;
 				productID: string;
 				title: string;
@@ -374,9 +374,9 @@
 		<!-- TODO: fix overflow in list View so that the header is not hidden -->
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
-				{#each products.results as product (product._id)}
+				{#each products.results as product (product.id)}
 					<div
-						on:click|preventDefault={() => viewProducts(product._id)}
+						on:click|preventDefault={() => viewProducts(product.id)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
@@ -438,7 +438,7 @@
 									</tr>
 								</thead>
 								<tbody class="overflow-y-auto">
-									{#each products.results as product (product._id)}
+									{#each products.results as product (product.id)}
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
@@ -466,7 +466,7 @@
 											<td class="py-1 text-center">
 												<button
 													class=" m-0 p-0"
-													on:click|preventDefault={() => viewProducts(product._id)}
+													on:click|preventDefault={() => viewProducts(product.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button

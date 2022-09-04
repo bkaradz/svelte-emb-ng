@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { SessionsDocument } from '$lib/models/sessions.model'
 import omit from 'lodash-es/omit'
 import type { Schema } from 'mongoose'
-import type { ContactsDocument } from '$lib/models/contacts.model'
+import prisma from '$lib/prisma/client';
 
 export const loginCredentialsSchema = z.object({
   email: z.string({ required_error: "Email is required" }).email({ message: "Not a valid email" }),
@@ -18,14 +18,14 @@ export const loginCredentialsSchema = z.object({
 export type loginCredentials = z.infer<typeof loginCredentialsSchema>
 
 export interface SessionInterface {
-  _id: Schema.Types.ObjectId;
+  id: Schema.Types.ObjectId;
   name: string;
   isCorporate: boolean;
   email: string;
   isActive: boolean;
   isUser: boolean;
   userRole: string;
-  sessionID: SessionsDocument['_id'];
+  sessionID: SessionsDocument['id'];
   authenticated: boolean;
 }
 
@@ -37,9 +37,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const parsedUser = loginCredentialsSchema.safeParse(reqUser)
 
     if (!parsedUser.success) {
-      return json$1({
-        status: 400,
-        errors: { message: parsedUser.error }
+      return new Response(JSON.stringify({ message: parsedUser.error }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 400
       });
     }
 
@@ -49,8 +51,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       return new Response(JSON.stringify({ message: 'Invalid email or password' }), {
         headers: {
           'content-type': 'application/json; charset=utf-8',
-          'status': '401'
-        }
+        },
+        status: 401
       });
     }
 
@@ -58,17 +60,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       return new Response(JSON.stringify({ message: 'Unauthorized' }), {
         headers: {
           'content-type': 'application/json; charset=utf-8',
-          'status': '403'
-        }
+        },
+        status: 403
       });
     }
 
-    user = omit(JSON.parse(JSON.stringify(user)), ['password']) as Omit<ContactsDocument, 'password'>
+    console.log("🚀 ~ file: +server.ts ~ line 80 ~ constPOST:RequestHandler= ~ user", user)
 
     // create a session
-    const session: SessionsDocument = await createSession(user._id, request.headers.get('user-agent') || '')
+    const session = await createSession(user.id, request.headers.get('user-agent') || '')
 
-    const body = { ...user, sessionID: session._id, authenticated: true } //as SessionInterface
+    const body = { ...user, sessionID: session.id, authenticated: true }
 
     locals.user = body
 
@@ -81,13 +83,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     // return access & refresh tokens
     const headers = setSessionCookies(accessToken, refreshToken)
 
-    return new Response(JSON.stringify(body), { headers });
+    return new Response(JSON.stringify(body), { headers: headers });
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` },
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }

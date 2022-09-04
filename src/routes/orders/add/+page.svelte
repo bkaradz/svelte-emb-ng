@@ -167,7 +167,7 @@
 				</thead>
 				<tbody>
 					{#if itemList.length && options?.length}
-						{#each itemList as list (list._id)}
+						{#each itemList as list (list.id)}
 							<tr
 								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 							>

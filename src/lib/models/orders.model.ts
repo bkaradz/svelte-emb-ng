@@ -8,7 +8,7 @@ const oneWeek = dayjs().add(7, 'day').toDate();
 const date = dayjs().toDate();
 
 export interface OrderLineDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId;
+	id: mongoose.Schema.Types.ObjectId;
 	productID: string;
 	name: string;
 	quantity: number;
@@ -25,7 +25,7 @@ export interface OrderLineDocument extends Document {
 
 const orderLineSchema: Schema = new Schema<OrderLineDocument>(
 	{
-		_id: {
+		id: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 			ref: 'Products'
@@ -100,7 +100,7 @@ const orderLineSchema: Schema = new Schema<OrderLineDocument>(
 );
 
 export interface OrdersDocument extends Document {
-	userID: mongoose.Schema.Types.ObjectId;
+	createdBy: mongoose.Schema.Types.ObjectId;
 	customerID: mongoose.Schema.Types.ObjectId;
 	pricelistID: mongoose.Schema.Types.ObjectId;
 	orderID: string;
@@ -123,7 +123,7 @@ export interface OrdersDocument extends Document {
 
 const ordersSchema: Schema = new Schema<OrdersDocument>(
 	{
-		userID: {
+		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 			ref: 'Users'
@@ -242,7 +242,7 @@ export const incOrderID = (orderID: string) => {
 
 export const getCurrentOrderID = async () => {
 	try {
-		const quotation = await OrdersModel.find({}).sort({ _id: -1 }).limit(1).select('orderID');
+		const quotation = await OrdersModel.find({}).sort({ id: -1 }).limit(1).select('orderID');
 		let orderID = '';
 		if (quotation.length === 0) {
 			// set the orderID to the initial Value so xxxxxxx

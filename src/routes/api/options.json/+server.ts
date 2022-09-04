@@ -8,42 +8,48 @@ import type { OptionsDocument } from '$lib/models/options.models'
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
     const queryParams = Object.fromEntries(url.searchParams)
 
     const options: Array<OptionsDocument> = await OptionsModel.find(queryParams)
 
-    return json$1(options);
+    return new Response(JSON.stringify(options));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
-    const userId = locals.user._id
+    const createDBy = locals.user.id
 
     const reqOptions = await request.json()
 
-    reqOptions.userID = userId
+    reqOptions.createdBy = createDBy
 
     /**
      * TODO: VALIDATION
@@ -55,43 +61,49 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const res = await newOption.save()
 
-    return json$1(res);
+    return new Response(JSON.stringify(res));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }
 
 
 export const PUT: RequestHandler = async ({ locals, request }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
-    const userId = locals.user._id
+    const createDBy = locals.user.id
 
     const reqOptions = await request.json()
 
-    reqOptions.userID = userId
+    reqOptions.createdBy = createDBy
 
-    const res: OptionsDocument = await OptionsModel.findByIdAndUpdate({ _id: reqOptions._id }, reqOptions, { new: true }).lean()
+    const res: OptionsDocument = await OptionsModel.findByIdAndUpdate({ id: reqOptions.id }, reqOptions, { new: true }).lean()
 
-    return json$1(res);
+    return new Response(JSON.stringify(res));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }
 
@@ -101,30 +113,34 @@ export const DELETE: RequestHandler = async ({
   request,
 }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
-    // const userId = locals.user._id
+    // const createDBy = locals.user.id
 
     const reqOptions = await request.json()
 
-    // reqOptions.userID = userId
+    // reqOptions.createdBy = createDBy
 
     const res: OptionsDocument = await OptionsModel.findByIdAndDelete({
-      _id: reqOptions._id,
+      id: reqOptions.id,
     }).lean()
 
-    return json$1(res);
+    return new Response(JSON.stringify(res));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }

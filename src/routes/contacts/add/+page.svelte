@@ -108,7 +108,7 @@
 	const handleSubmit = async () => {
 		try {
 			const { organizationID, ...otherData } = formData;
-			const finalData = { ...otherData, organizationID: organizationID._id };
+			const finalData = { ...otherData, organizationID: organizationID.id };
 			const res = await fetch('/api/contacts.json', {
 				method: 'POST',
 				body: JSON.stringify(finalData),

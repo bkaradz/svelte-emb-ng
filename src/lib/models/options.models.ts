@@ -1,8 +1,8 @@
 import mongoose, { model, Schema, Document } from 'mongoose';
 
 export interface OptionsDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId | string;
-	userID: mongoose.Schema.Types.ObjectId | string;
+	id: mongoose.Schema.Types.ObjectId | string;
+	createdBy: mongoose.Schema.Types.ObjectId | string;
 	group: string;
 	name: string;
 	value: string;
@@ -14,7 +14,7 @@ export interface OptionsDocument extends Document {
 
 const optionsSchema: Schema = new Schema<OptionsDocument>(
 	{
-		userID: { type: Schema.Types.ObjectId, ref: 'Contacts', required: true },
+		createdBy: { type: Schema.Types.ObjectId, ref: 'Contacts', required: true },
 		group: {
 			type: String,
 			required: true

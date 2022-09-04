@@ -7,14 +7,14 @@ const privateKey = Buffer.from(config.get<string>('privateKeyBase64'), 'base64')
 const publicKey = Buffer.from(config.get<string>('publicKeyBase64'), 'base64');
 
 interface userInterface {
-	_id: ContactsDocument['_id'];
+	id: ContactsDocument['id'];
 	name: ContactsDocument['name'];
 	isCorporate: ContactsDocument['isCorporate'];
 	email: ContactsDocument['email'];
 	isActive: ContactsDocument['isActive'];
 	isUser: ContactsDocument['isUser'];
 	userRole: ContactsDocument['userRole'];
-	sessionID: SessionsDocument['_id'];
+	sessionID: SessionsDocument['id'];
 	authenticated: boolean;
 }
 

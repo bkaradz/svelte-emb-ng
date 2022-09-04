@@ -3,11 +3,14 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
 	try {
-		return json({ status: 'ok' });
+
+		return new Response(JSON.stringify({ status: 'ok' }));
+
 	} catch (err: any) {
-		return json({
-			error: `A server error occurred ${err}`
-		}, {
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
 			status: 500
 		});
 	}

@@ -118,7 +118,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.pricelists as list (list._id)}
+							{#each pricelist.pricelists as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
@@ -128,7 +128,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="embroideryTypes"
-												disabled={!(isEditableID === list._id)}
+												disabled={!(isEditableID === list.id)}
 												bind:value={list.embroideryTypes}
 											/>
 										</td>
@@ -137,7 +137,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumQuantity"
-												disabled={!(isEditableID === list._id)}
+												disabled={!(isEditableID === list.id)}
 												bind:value={list.minimumQuantity}
 											/>
 										</td>
@@ -146,7 +146,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumPrice"
-												disabled={!(isEditableID === list._id)}
+												disabled={!(isEditableID === list.id)}
 												bind:value={list.minimumPrice}
 											/>
 										</td>
@@ -155,7 +155,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="pricePerThousandStitches"
-												disabled={!(isEditableID === list._id)}
+												disabled={!(isEditableID === list.id)}
 												bind:value={list.pricePerThousandStitches}
 											/>
 										</td>

@@ -9,14 +9,12 @@ import type { SessionsDocument } from '$lib/models/sessions.model';
 declare global {
 	declare namespace App {
 		interface userInterface {
-			_id: ContactsDocument['_id'];
-			name: ContactsDocument['name'];
-			isCorporate: ContactsDocument['isCorporate'];
-			email: ContactsDocument['email'];
-			isActive: ContactsDocument['isActive'];
-			isUser: ContactsDocument['isUser'];
-			userRole: ContactsDocument['userRole'];
-			sessionID: SessionsDocument['_id'];
+			id: string;
+			name: string;
+			isActive: boolean;
+			isUser: boolean;
+			userRole: string;
+			sessionID: string;
 			authenticated: boolean;
 		}
 
@@ -39,13 +37,13 @@ declare global {
 			user?: userInterface | Record<string, never>;
 		}
 
-		interface Platform {}
+		interface Platform { }
 
 		interface Session {
 			user?: userInterface | Record<string, never>;
 		}
 
-		interface Stuff {}
+		interface Stuff { }
 	}
 }
 

@@ -20,8 +20,8 @@ function createOrderItems() {
 	return {
 		subscribe,
 		add: (item: orderItemsInterface) => {
-			if (!orderItemsIDs.has(item._id)) {
-				orderItemsIDs.add(item._id);
+			if (!orderItemsIDs.has(item.id)) {
+				orderItemsIDs.add(item.id);
 				update((allOrderItems: orderItemsInterface[]) => [
 					...allOrderItems,
 					{ ...item, ...lineItems }
@@ -31,11 +31,11 @@ function createOrderItems() {
 		remove: (id: Schema.Types.ObjectId) => {
 			orderItemsIDs.delete(id);
 			update((allOrderItems: orderItemsInterface[]) =>
-				allOrderItems.filter((item: orderItemsInterface) => item._id !== id)
+				allOrderItems.filter((item: orderItemsInterface) => item.id !== id)
 			);
 		},
 		update: (item: orderItemsInterface) => {
-			this.remove(item._id);
+			this.remove(item.id);
 			this.add(item);
 		},
 		reset: () => {

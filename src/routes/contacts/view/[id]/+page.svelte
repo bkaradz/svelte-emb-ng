@@ -24,7 +24,7 @@
 	const endpoint = `/api/contacts/${$page.params.id}.json`;
 
 	interface ContactIterface {
-		_id: string;
+		id: string;
 		name: string;
 		isCorporate: boolean;
 		notes: string;

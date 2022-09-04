@@ -20,7 +20,7 @@
 	// interface ContentIterface {
 	// 	results: [
 	// 		{
-	// 			_id: string;
+	// 			id: string;
 	// 			name: string;
 	// 			isCorporate: boolean;
 	// 			notes: string;
@@ -36,7 +36,7 @@
 	// 			};
 	// 		}
 	// 	];
-	// 	_id: string;
+	// 	id: string;
 	// 	totalRecords: number;
 	// 	totalPages: number;
 	// 	limit: number;
@@ -412,9 +412,9 @@
 		<!-- TODO: fix overflow in list View so that the header is not hidden -->
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
-				{#each orders.results as order (order._id)}
+				{#each orders.results as order (order.id)}
 					<div
-						on:click|preventDefault={() => viewOrder(order._id)}
+						on:click|preventDefault={() => viewOrder(order.id)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
@@ -456,7 +456,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each orders.results as order (order._id)}
+									{#each orders.results as order (order.id)}
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
@@ -475,14 +475,14 @@
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order._id)}
+												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order._id)}
+												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button

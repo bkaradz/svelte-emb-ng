@@ -61,7 +61,7 @@
 					</tr>
 				</thead>
 				<tbody class="overflow-y-scroll">
-					{#each pricelists as list (list._id)}
+					{#each pricelists as list (list.id)}
 						<tr
 							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
@@ -82,21 +82,21 @@
 								<input disabled bind:checked={list.isDefault} type="checkbox" name="isDefault" />
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => viewPricelist(list._id)}>
+								<button class=" m-0 p-0" on:click={() => viewPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgView}
 									</span>
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => editPricelist(list._id)}>
+								<button class=" m-0 p-0" on:click={() => editPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgPencil}
 									</span>
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list._id)}>
+								<button class=" m-0 p-0" on:click={() => heandleDelete(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span>
 								</button>
 							</td>

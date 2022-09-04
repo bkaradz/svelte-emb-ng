@@ -8,13 +8,15 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	if (!$page.data?.user?.authenticated) {
 		if (browser) {
 			goto('/auth/signIn');
 		}
 	}
+
+	let showMenu = false;
 
 	// Ping to connect to database
 	const pingHealthCheck = async () => {

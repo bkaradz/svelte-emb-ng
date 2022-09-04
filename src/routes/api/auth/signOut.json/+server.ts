@@ -10,28 +10,27 @@ export const POST: RequestHandler = async ({ locals }) => {
     const headers = deleteSessionCookies()
 
     if (!sessionID) {
-      return json({
-        message: 'Session not Found',
-      }, {
-        status: 404,
-        headers: headers
-      })
+      return new Response(JSON.stringify({ message: 'Session not Found' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 404
+      });
     }
 
     deleteSessions(sessionID)
 
     locals.user = null
 
-    return json({
-      message: `You have successfully singed out`,
-    }, {
-      headers: headers
-    })
+    return new Response(JSON.stringify({ message: `You have successfully singed out`, }), { headers: headers });
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` },
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }

@@ -1,11 +1,9 @@
 import * as cookie from 'cookie';
-import SessionsModel from '$lib/models/sessions.model';
-import type { SessionsDocument } from '$lib/models/sessions.model';
-import type { FilterQuery } from 'mongoose';
-import ContactsModel from '$lib/models/contacts.model';
-import type { ContactsDocument } from '$lib/models/contacts.model';
 import config from 'config';
 import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json/+server';
+import prisma from '$lib/prisma/client';
+import bcrypt from 'bcrypt';
+
 
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
 	return {
@@ -53,62 +51,97 @@ export const deleteSessionCookies = () => {
 	};
 };
 
-export async function createSession(userId: ContactsDocument['_id'], userAgent: string) {
-	const session = await SessionsModel.create({ user: userId, userAgent });
+export async function createSession(createDBy: any, userAgent: string) {
+	const session = await prisma.sessions.create({
+		data: {
+			contactsId: createDBy,
+			userAgent,
+			valid: true
+		}
+	})
 	return session;
 }
 
-export async function findSessions(query: FilterQuery<SessionsDocument>) {
-	return await SessionsModel.find(query).lean();
+export async function findSessions(query: string) {
+	const session = await prisma.sessions.findUnique({
+		where: {
+			id: query,
+		}
+	})
+	return session;
 }
 
 /**
  * @param userCredentials 
  * @returns 
  */
-export async function validateUserPassword(userCredentials: loginCredentials): Promise<null | ContactsDocument> {
+export async function validateUserPassword(userCredentials: loginCredentials) {
 
 	const parsedUser = loginCredentialsSchema.safeParse(userCredentials)
 
 	if (!parsedUser.success) {
-		throw new Error(`${parsedUser.error}`);	
+		throw new Error(`${parsedUser.error}`);
 	}
 
-	const {email, password } = userCredentials
+	const { email, password } = userCredentials
 
-	const user: ContactsDocument | null = await ContactsModel.findOne(
-		{ email },
-		{
-			phone: 0,
-			address: 0,
-			balanceDue: 0,
-			totalReceipts: 0,
-			createdAt: 0,
-			updatedAt: 0,
-			__v: 0
+	const emailRes = await prisma.email.findUnique({
+		where: {
+			email: email,
 		}
-	);
+	})
 
-	if (!user) {
+	if (!emailRes) {
 		return null;
 	}
 
-	const isValid = await user.comparePassword(password);
+	const userRes = await prisma.contacts.findUnique({
+		where: {
+			id: emailRes.contactsId,
+		},
+		select: {
+			id: true,
+			name: true,
+			isActive: true,
+			isUser: true,
+			userRole: true,
+			password: true
+		},
+	})
+
+	if (!userRes) {
+		return null;
+	}
+
+	if (!userRes?.password) {
+		return null;
+	}
+
+	const isValid = await bcrypt.compare(password, userRes.password).catch(() => false);
 
 	if (!isValid) {
 		return null;
 	}
 
-	return user
+	{	// scope to remove password
+		const { password, ...userRest } = userRes
+
+		return userRest
+	}
 }
 
 /**
  * Delete logout Session
- * @param userID -- User id from mongodb
+ * @param createDBy -- User id from postgresql
  * @returns 
  */
-export async function deleteSessions(userId: ContactsDocument['_id']) {
-	return await SessionsModel.findByIdAndDelete(userId);
+export async function deleteSessions(createDBy: string) {
+	const session = await prisma.sessions.delete({
+		where: {
+			id: createDBy,
+		}
+	})
+	return session;
 }
 
 

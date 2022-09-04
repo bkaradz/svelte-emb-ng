@@ -1,5 +1,4 @@
 <script lang="ts">
-	// import { session } from '$app/stores';
 	import suite from '$lib/validation/client/signIn.validate';
 	import logger from '$lib/utility/logger';
 	import classnames from 'vest/classnames';
@@ -7,7 +6,6 @@
 	import { svgSignIn } from '$lib/utility/svgLogos';
 	import Input from '$lib/components/Input.svelte';
 	import small_logo from '$lib/assets/small_logo.png';
-	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 
 	let result = suite.get();
@@ -62,7 +60,6 @@
 					message: `Sign In successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
 					type: 'success'
 				});
-				// browser && window.location.reload(false);
 				goto('/');
 			}
 		} catch (err: any) {

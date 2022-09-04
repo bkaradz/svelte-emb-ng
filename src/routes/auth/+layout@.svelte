@@ -6,7 +6,7 @@
 	import { svgSignIn, svgSignUp } from '$lib/utility/svgLogos';
 	import logger from '$lib/utility/logger';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	if ($page.data?.user?.authenticated) {
 		if (browser) {

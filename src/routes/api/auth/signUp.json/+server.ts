@@ -1,8 +1,10 @@
 import { json as json$1 } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model';
 import logger from '$lib/utility/logger';
+import prisma from '$lib/prisma/client';
 import { z } from "zod";
+import bcrypt from 'bcrypt';
+import config from 'config';
 
 export const UserSchema = z.object({
 	name: z.string({ required_error: "Name is required", invalid_type_error: "Name must be a string" }).trim(),
@@ -25,54 +27,99 @@ export const POST: RequestHandler = async ({ request }) => {
 		const parsedUser = UserSchema.safeParse(reqUser)
 
 		if (!parsedUser.success) {
-			return json$1({
-				status: 400,
-				errors: { message: parsedUser.error }
+			return new Response(JSON.stringify({ message: parsedUser.error }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 400
 			});
 		}
 
-		const userExist = await ContactsModel.findOne({ email: reqUser.email });
+		const userExist = await prisma.email.findUnique({
+			where: {
+				email: reqUser.email,
+			}
+		})
 
 		if (userExist) {
-			return json$1({
-				status: 409,
-				errors: { message: 'User with that email already exist' }
+			return new Response(JSON.stringify({ message: 'User with that email already exist' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 409
 			});
 		}
 
-		const contacts = new ContactsModel(reqUser);
-
-		const allUsers = await ContactsModel.find({
-			isUser: true,
-			isActive: true,
-			userRole: 'ADMIN'
-		}).select('-password');
+		const allUsers = await prisma.contacts.findMany()
 
 		/**
 		 * If the database has no ADMIN create one,
 		 * other users are activated by the first ADMIN
 		 */
+		let role
 		if (allUsers.length === 0) {
-			contacts.userRole = 'ADMIN';
-			contacts.isActive = true;
+			role = {
+				userRole: 'ADMIN',
+				isUser: true,
+				isActive: true
+			}
 		} else {
-			contacts.userRole = 'USER';
-			contacts.isActive = false;
+			role = {
+				userRole: 'USER',
+				isUser: true,
+				isActive: false
+			}
 		}
 
-		contacts.isUser = true;
+		const salt = await bcrypt.genSalt(config.get('saltWorkFactor'));
 
-		await contacts.save();
+		const hash = bcrypt.hashSync(reqUser.password, salt);
 
-		delete contacts.password
+		reqUser.password = hash;
 
-		return json$1(contacts);
+		delete reqUser.confirmPassword
+
+		const user = await prisma.contacts.create({
+			data: {
+				...reqUser,
+				...role,
+				email: {
+					create: [
+						{
+							email: reqUser.email
+						}
+					]
+				},
+				phone: {
+					create: [
+						{
+							phone: reqUser.phone
+						}
+					]
+				},
+				address: {
+					create: [
+						{
+							address: reqUser.address
+						}
+					]
+				}
+			}
+		})
+
+		if (user?.password) {
+			delete user.password
+		}
+
+		return new Response(JSON.stringify(user));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };

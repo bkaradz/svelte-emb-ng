@@ -9,8 +9,17 @@ import omit from 'lodash-es/omit';
 import type { RequestHandler } from './$types';
 
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
+
 		const queryParams = Object.fromEntries(url.searchParams);
 
 		let { limit = 15, page = 1 } = queryParams;
@@ -60,7 +69,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			// 	$lookup: {
 			// 		from: 'products',
 			// 		localField: 'organizationID',
-			// 		foreignField: '_id',
+			// 		foreignField: 'id',
 			// 		as: 'organizationID'
 			// 	}
 			// },
@@ -134,12 +143,14 @@ export const GET: RequestHandler = async ({ url }) => {
 		products = { ...products, ...products.metaData[0] };
 		delete products.metaData;
 
-		return json$1({ ...products });
+		return new Response(JSON.stringify({ ...products }));
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
 			status: 500
 		});
 	}
@@ -147,15 +158,16 @@ export const GET: RequestHandler = async ({ url }) => {
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		if (!locals?.user?._id) {
-			return json$1({
-				message: 'Unauthorized'
-			}, {
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
 				status: 401
 			});
 		}
 
-		const userId = locals.user._id;
+		const createDBy = locals.user.id;
 
 		const reqProduct = await request.json();
 
@@ -163,27 +175,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (result.hasErrors()) {
 			logger.error(result.getErrors());
-			return json$1({
-				message: result.getErrors()
-			}, {
+			return new Response(JSON.stringify({ message: result.getErrors() }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
 				status: 400
 			});
 		}
 
 		const newProduct = new ProductsModel(reqProduct);
 
-		newProduct.userID = userId;
+		newProduct.createdBy = createDBy;
 
 		await newProduct.save();
 
-		return json$1({
-			message: newProduct
-		});
+		return new Response(JSON.stringify({ message: newProduct }));
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
 			status: 500
 		});
 	}
@@ -191,14 +204,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 export const PUT: RequestHandler = async () => {
 	try {
-		return json$1({
-			message: 'Success'
-		});
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
+
+		return new Response(JSON.stringify({ message: 'Success' }));
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			error: `A server error occurred ${err}`
-		}, {
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
 			status: 500
 		});
 	}

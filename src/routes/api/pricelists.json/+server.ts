@@ -9,36 +9,42 @@ import { getMonetaryValue, setMonetaryValue } from '$lib/services/monetary';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
-		if (!locals?.user?._id) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Unauthorized' }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 
 		const reqPricelists: Array<PricelistsDocument> = await PricelistsModel.find();
 
-		return json$1(reqPricelists);
+		return new Response(JSON.stringify(reqPricelists));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		if (!locals?.user?._id) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Unauthorized' }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 
-		const userId = locals.user._id;
+		const createDBy = locals.user.id;
 
 		const reqPricelists = await request.json();
 
@@ -52,7 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		reqPricelists.pricelists = pricelists;
 
-		reqPricelists.userID = userId;
+		reqPricelists.createdBy = createDBy;
 
 		/**
 		 * TODO: Validation
@@ -62,48 +68,54 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const res = await newPricelists.save();
 
-		return json$1(res);
+		return new Response(JSON.stringify(res));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	try {
-		if (!locals?.user?._id) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Unauthorized' }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 
-		const userId = locals.user._id;
+		const createDBy = locals.user.id;
 
 		const reqPricelists = await request.json();
 
-		reqPricelists.userID = userId;
+		reqPricelists.createdBy = createDBy;
 
 		/**
 		 * TODO: Validation
 		 */
 
 		const newPricelists = await PricelistsModel.findByIdAndUpdate(
-			{ _id: reqPricelists._id },
+			{ id: reqPricelists.id },
 			reqPricelists
 		);
 
-		return json$1(newPricelists);
+		return new Response(JSON.stringify(newPricelists));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };

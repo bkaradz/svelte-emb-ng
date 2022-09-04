@@ -6,11 +6,13 @@ import type { _LeanDocument } from 'mongoose'
 
 export const GET: RequestHandler = async ({ locals }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
     const res = await ContactsModel.find(
@@ -26,66 +28,76 @@ export const GET: RequestHandler = async ({ locals }) => {
       }
     ).lean()
 
-    return json$1(res);
+    return new Response(JSON.stringify(res));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
     const userUpdate = await request.json()
-    const userUpdated = await ContactsModel.findByIdAndUpdate({ _id: userUpdate._id }, userUpdate)
+    const userUpdated = await ContactsModel.findByIdAndUpdate({ id: userUpdate.id }, userUpdate)
       .select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts')
       .lean()
 
-    return json$1(userUpdated);
+    return new Response(JSON.stringify(userUpdated));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }
 
 export const DELETE: RequestHandler = async ({ locals, request }) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-        status: 401,
-        errors: { message: 'Unauthorized' }
-      })
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
     }
 
     const userDelete = await request.json()
 
     const userUpdated = await ContactsModel.findByIdAndUpdate(
-      { _id: userDelete._id },
+      { id: userDelete.id },
       { isActive: false },
       { new: true }
     ).select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts').lean()
 
-    return json$1(userUpdated);
+    return new Response(JSON.stringify(userUpdated));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-      status: 500,
-      errors: { message: `A server error occurred ${err}` }
-    })
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      status: 500
+    });
   }
 }

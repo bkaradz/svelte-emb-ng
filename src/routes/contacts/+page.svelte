@@ -19,7 +19,7 @@
 interface ContentIterface {
 		results: [
 			{
-				_id: string;
+				id: string;
 				name: string;
 				isCorporate: boolean;
 				notes: string;
@@ -35,7 +35,7 @@ interface ContentIterface {
 				};
 			}
 		];
-		_id: string;
+		id: string;
 		totalRecords: number;
 		totalPages: number;
 		limit: number;
@@ -401,9 +401,9 @@ interface ContentIterface {
 		<!-- TODO: fix overflow in list View so that the header is not hidden -->
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
-				{#each contacts.results as contact (contact._id)}
+				{#each contacts.results as contact (contact.id)}
 					<div
-						on:click|preventDefault={() => viewContact(contact._id)}
+						on:click|preventDefault={() => viewContact(contact.id)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
@@ -447,7 +447,7 @@ interface ContentIterface {
 									</tr>
 								</thead>
 								<tbody>
-									{#each contacts.results as contact (contact._id)}
+									{#each contacts.results as contact (contact.id)}
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
@@ -480,7 +480,7 @@ interface ContentIterface {
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewContact(contact._id)}
+												<button class=" m-0 p-0" on:click={() => viewContact(contact.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button

@@ -1,7 +1,7 @@
 import mongoose, { model, Schema, Document } from 'mongoose';
 
 export interface SessionsDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId;
+	id: mongoose.Schema.Types.ObjectId;
 	user: mongoose.Schema.Types.ObjectId;
 	valid: boolean;
 	userAgent: string;
@@ -17,7 +17,7 @@ const sessionsSchema: Schema = new Schema<SessionsDocument>(
 		userAgent: { type: String },
 		createdAt: { type: Date, expires: '24h' },
 		updatedAt: { type: Date },
-		expireAt: { type: Date,  expires: 86400 },
+		expireAt: { type: Date, expires: 86400 },
 	},
 	{ timestamps: true }
 );

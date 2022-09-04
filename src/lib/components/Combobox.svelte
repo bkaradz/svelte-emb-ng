@@ -142,7 +142,7 @@
 						on:clickOutside|preventDefault={handleShowList}
 						class="list peer-checked:flex"
 					>
-						{#each list as listItem, index (listItem._id)}
+						{#each list as listItem, index (listItem.id)}
 							<li class="list--item group">
 								<!-- svelte-ignore a11y-missing-attribute -->
 								<a

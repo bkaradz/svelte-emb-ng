@@ -16,8 +16,8 @@ export interface AggregateContactsDocument extends ContactsPaginationDocument {
 	results: Array<Partial<ContactsDocument>>;
 }
 export interface ContactsDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId;
-	userID?: mongoose.Schema.Types.ObjectId;
+	id: mongoose.Schema.Types.ObjectId;
+	createdBy?: mongoose.Schema.Types.ObjectId;
 	organizationID?: mongoose.Schema.Types.ObjectId | ContactsDocument;
 	name: string | null;
 	isCorporate: boolean;
@@ -39,7 +39,7 @@ export interface ContactsDocument extends Document {
 
 const contactsSchema: Schema = new Schema<ContactsDocument>(
 	{
-		userID: { type: Schema.Types.ObjectId, ref: 'Contacts' },
+		createdBy: { type: Schema.Types.ObjectId, ref: 'Contacts' },
 		organizationID: { type: Schema.Types.ObjectId, ref: 'Contacts' },
 		name: { type: String, required: true },
 		isCorporate: { type: Boolean, required: true, default: false },
@@ -117,7 +117,7 @@ contactsSchema.pre('save', async function (next) {
 
 contactsSchema.methods.comparePassword = async function (
 	candidatePassword: string
-): Promise<boolean> {
+) {
 	const contact = this as ContactsDocument;
 	return bcrypt.compare(candidatePassword, contact.password).catch(() => false);
 };

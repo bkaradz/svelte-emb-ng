@@ -3,8 +3,8 @@ import { optionsGroupsValuesDefaults } from '$lib/models/options.models';
 import { getMonetaryValue, setMonetaryValue } from '$lib/services/monetary';
 
 export interface ProductsDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId;
-	userID: mongoose.Schema.Types.ObjectId;
+	id: mongoose.Schema.Types.ObjectId;
+	createdBy: mongoose.Schema.Types.ObjectId;
 	name: string;
 	productID: string;
 	title?: string;
@@ -20,7 +20,7 @@ export interface ProductsDocument extends Document {
 
 const productsSchema: Schema = new Schema<ProductsDocument>(
 	{
-		userID: { type: Schema.Types.ObjectId, ref: 'Products', required: true },
+		createdBy: { type: Schema.Types.ObjectId, ref: 'Products', required: true },
 		name: { type: String, required: true, unique: true, index: true },
 		productID: {
 			// of the form xxx-xxx-xxxx /^([0-9]{3}-){2}[0-9]{4}$/
@@ -101,9 +101,9 @@ export const incProductID = (productID: string): string => {
 /**
  * Note using Methods is too slow does not give expected results
  */
-export const getCurrentProductID = async (): Promise<string> => {
+export const getCurrentProductID = async () => {
 	try {
-		const products = await ProductsModel.find({}).sort({ _id: -1 }).limit(1).select('productID');
+		const products = await ProductsModel.find({}).sort({ id: -1 }).limit(1).select('productID');
 		let productID = '';
 		if (products.length === 0) {
 			// set the productID to the initial Value xxx-xxx-xxxx (xxyxxyxxxx)

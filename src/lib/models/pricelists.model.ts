@@ -2,7 +2,7 @@ import mongoose, { model, Schema, Document } from 'mongoose';
 import logger from '$lib/utility/logger';
 
 export interface PricelistsSubDocument {
-	_id: mongoose.Schema.Types.ObjectId | string;
+	id: mongoose.Schema.Types.ObjectId | string;
 	minimumPrice: string;
 	pricePerThousandStitches: string;
 	minimumQuantity: number;
@@ -10,8 +10,8 @@ export interface PricelistsSubDocument {
 }
 
 export interface PricelistsDocument extends Document {
-	_id: mongoose.Schema.Types.ObjectId | string;
-	userID: mongoose.Schema.Types.ObjectId | string;
+	id: mongoose.Schema.Types.ObjectId | string;
+	createdBy: mongoose.Schema.Types.ObjectId | string;
 	name: string;
 	isActive: boolean;
 	isDefault: boolean;
@@ -44,7 +44,7 @@ const pricelistsSubSchema: Schema = new Schema<PricelistsSubDocument>(
 
 const pricelistsSchema: Schema = new Schema<PricelistsDocument>(
 	{
-		userID: { type: Schema.Types.ObjectId, ref: 'Contacts', required: true },
+		createdBy: { type: Schema.Types.ObjectId, ref: 'Contacts', required: true },
 		name: {
 			type: String,
 			required: true,

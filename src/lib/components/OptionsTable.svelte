@@ -53,7 +53,7 @@
 
 	const heandleEditable = async (list: Partial<OptionsDocument>) => {
 		if (isEditableID === null) {
-			isEditableID = list._id;
+			isEditableID = list.id;
 		} else {
 			await updateOrAddOptions(list);
 			isEditableID = null;
@@ -69,7 +69,7 @@
 		optionsList = [
 			...optionsList,
 			{
-				_id: id,
+				id: id,
 				group: selectedGroup,
 				name: 'Edit...',
 				value: 'Edit...',
@@ -106,17 +106,17 @@
 	};
 
 	const heandleDelete = (finalData: any) => {
-		idToRemove = idToRemove.filter((list) => list !== finalData._id);
+		idToRemove = idToRemove.filter((list) => list !== finalData.id);
 		deleteOption(finalData);
 	};
 
 	const updateOrAddOptions = async (finalData: any) => {
 		try {
 			// let searchParams = new URLSearchParams(paramsObj as string);
-			if (idToRemove.includes(finalData._id)) {
-				// Remove _id
-				delete finalData._id;
-				idToRemove = idToRemove.filter((list) => list !== finalData._id);
+			if (idToRemove.includes(finalData.id)) {
+				// Remove id
+				delete finalData.id;
+				idToRemove = idToRemove.filter((list) => list !== finalData.id);
 
 				const res = await fetch('/api/options.json', {
 					method: 'POST',
@@ -193,7 +193,7 @@
 			</thead>
 			<tbody class="">
 				{#if optionsList.length}
-					{#each optionsList as list (list._id)}
+					{#each optionsList as list (list.id)}
 						{#if selectedGroup === list.group || selectedGroup === 'all'}
 							<tr
 								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
@@ -203,7 +203,7 @@
 										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 										type="text"
 										name="group"
-										disabled={!(isEditableID === list._id)}
+										disabled={!(isEditableID === list.id)}
 										bind:value={list.group}
 									/>
 								</td>
@@ -212,7 +212,7 @@
 										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 										type="text"
 										name="name"
-										disabled={!(isEditableID === list._id)}
+										disabled={!(isEditableID === list.id)}
 										bind:value={list.name}
 									/>
 								</td>
@@ -221,14 +221,14 @@
 										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 										type="text"
 										name="value"
-										disabled={!(isEditableID === list._id)}
+										disabled={!(isEditableID === list.id)}
 										bind:value={list.value}
 									/>
 								</td>
 								<td class="px-2 py-1">
 									<input
 										bind:checked={list.isActive}
-										disabled={!(isEditableID === list._id)}
+										disabled={!(isEditableID === list.id)}
 										type="checkbox"
 										name="isActive"
 									/>
@@ -236,7 +236,7 @@
 								<td class="px-2 py-1">
 									<input
 										bind:checked={list.isDefault}
-										disabled={!(isEditableID === list._id)}
+										disabled={!(isEditableID === list.id)}
 										type="checkbox"
 										name="isDefault"
 									/>
@@ -244,12 +244,12 @@
 								<td class="p-1 text-center ">
 									<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
 										<span class="fill-current text-pickled-bluewood-500">
-											{@html isEditableID === list._id ? svgDocumentAdd : svgPencil}
+											{@html isEditableID === list.id ? svgDocumentAdd : svgPencil}
 										</span>
 									</button>
 								</td>
 								<td class="p-1 text-center ">
-									<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list._id)}>
+									<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
 										<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span>
 									</button>
 								</td>

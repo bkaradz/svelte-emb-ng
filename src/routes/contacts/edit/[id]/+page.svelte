@@ -31,7 +31,7 @@
 		name?: string;
 	}
 
-	// type corporateSearchInterface = Partial<ContactsDocument> & { name: string; _id?: string };
+	// type corporateSearchInterface = Partial<ContactsDocument> & { name: string; id?: string };
 
 	let corporateSearch: any = { name: null };
 
@@ -90,7 +90,7 @@
 
 	let formData = {
 		...editContact,
-		organizationID: corporateSearch?._id
+		organizationID: corporateSearch?.id
 	};
 
 	$: formData;

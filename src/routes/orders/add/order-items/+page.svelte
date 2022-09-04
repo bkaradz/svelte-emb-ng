@@ -164,22 +164,22 @@
 	};
 
 	const removeItemID = (id: Schema.Types.ObjectId) => {
-		products.results = products.results.filter((item) => item._id !== id);
+		products.results = products.results.filter((item) => item.id !== id);
 	};
 
 	const removeCartAddedItem = () => {
-		products.results = products.results.filter((item) => !alreadyExistInItemList(item._id));
+		products.results = products.results.filter((item) => !alreadyExistInItemList(item.id));
 	};
 
 	const alreadyExistInItemList = (id: Schema.Types.ObjectId) => {
-		const ids = map(itemList, '_id');
+		const ids = map(itemList, 'id');
 		return ids.includes(id)
 	};
 
 	const addProduct = (product: ProductsDocument) => {
-		removeItemID(product._id);
+		removeItemID(product.id);
 
-		if (alreadyExistInItemList(product._id)) {
+		if (alreadyExistInItemList(product.id)) {
 			return
 		}
 
@@ -263,7 +263,7 @@
 	};
 
 	const removeCartItem = (list) => {
-		itemList = itemList.filter((item) => !(item._id === list._id));
+		itemList = itemList.filter((item) => !(item.id === list.id));
 		order.orderLine = itemList;
 
 		if (!selectedPricelist) {
@@ -320,7 +320,7 @@
 					</thead>
 					<tbody>
 						{#if itemList.length && options?.length}
-							{#each itemList as list (list._id)}
+							{#each itemList as list (list.id)}
 								<tr
 									class="whitespace-no-wrap w-full hover:bg-royal-blue-200 border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>
@@ -686,7 +686,7 @@
 						</tr>
 					</thead>
 					<tbody class="overflow-y-auto">
-						{#each products.results as product (product._id)}
+						{#each products.results as product (product.id)}
 							<tr
 								class="whitespace-no-wrap hover:bg-royal-blue-200 w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900 dot-align"
 							>

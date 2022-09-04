@@ -10,8 +10,18 @@ import PricelistsModel from '$lib/models/pricelists.model';
 import ContactsModel from '$lib/models/contacts.model';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
+
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
+
 		const queryParams = Object.fromEntries(url.searchParams);
 
 		let { limit = 15, page = 1 } = queryParams;
@@ -61,7 +71,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				$lookup: {
 					from: 'contacts',
 					localField: 'customerID',
-					foreignField: '_id',
+					foreignField: 'id',
 					as: 'customerID'
 				}
 			},
@@ -69,7 +79,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				$lookup: {
 					from: 'pricelists',
 					localField: 'pricelistID',
-					foreignField: '_id',
+					foreignField: 'id',
 					as: 'pricelistID'
 				}
 			},
@@ -129,46 +139,54 @@ export const GET: RequestHandler = async ({ url }) => {
 		orders = { ...orders, ...orders.metaData[0] };
 		delete orders.metaData;
 
-		return json$1({ ...orders });
+		return new Response(JSON.stringify({ ...orders }));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		if (!locals?.user?._id) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Unauthorized' }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 
-		const userId = locals.user._id;
+		const createDBy = locals.user.id;
 
 		const reqOrder = await request.json();
 
 		// check that the pricelist exist
-		const pricelist = await PricelistsModel.findById({ _id: reqOrder.pricelistID }).lean();
+		const pricelist = await PricelistsModel.findById({ id: reqOrder.pricelistID }).lean();
 
 		if (!pricelist) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Pricelist does not exist' }
+			return new Response(JSON.stringify({ message: 'Pricelist does not exist' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 		// check that the customer exist
-		const customerExist = await ContactsModel.exists({ _id: reqOrder.customerID });
+		const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
 
 		if (!customerExist) {
-			return json$1({
-				status: 401,
-				errors: { message: 'Customer does not exist' }
+			return new Response(JSON.stringify({ message: 'Customer does not exist' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
 			});
 		}
 
@@ -176,31 +194,43 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const newOrder = new OrdersModel(calcOrder);
 
-		newOrder.userID = userId;
+		newOrder.createdBy = createDBy;
 
 		await newOrder.save();
 
-		return json$1(newOrder);
+		return new Response(JSON.stringify(newOrder));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };
 
-export const PUT: RequestHandler = async () => {
+export const PUT: RequestHandler = async ({ locals }) => {
 	try {
-		return json$1({
-			message: 'Success'
-		});
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
+
+		return new Response(JSON.stringify({ message: 'Success' }));
+
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
-		return json$1({
-			status: 500,
-			errors: { message: `A server error occurred ${err}` }
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
 		});
 	}
 };

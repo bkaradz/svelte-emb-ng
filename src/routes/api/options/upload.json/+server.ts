@@ -8,20 +8,18 @@ import OptionsModel, { type OptionsDocument } from '$lib/models/options.models';
 export const POST: RequestHandler = async ({
   request,
   locals
-}): Promise<{
-  status: number;
-  body: { error: string } | { message: string };
-}> => {
+}) => {
   try {
-    if (!locals?.user?._id) {
-      return json$1({
-  message: 'Unauthorized'
-}, {
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
         status: 401
       });
     }
 
-    const userId = locals.user._id;
+    const createDBy = locals.user.id;
 
     const data = await request.formData();
 
@@ -29,9 +27,10 @@ export const POST: RequestHandler = async ({
 
     if (!(Object.prototype.toString.call(file) === '[object File]')) {
       logger.error('File is empty');
-      return json$1({
-  message: 'File is empty'
-}, {
+      return new Response(JSON.stringify({ message: 'File is empty' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
         status: 400
       });
     }
@@ -52,7 +51,7 @@ export const POST: RequestHandler = async ({
       isDefault = isDefault === 'true' ? true : false
 
       const option: Partial<OptionsDocument> = {
-        userID: userId,
+        createdBy: createDBy,
         name,
         group,
         value,
@@ -65,15 +64,15 @@ export const POST: RequestHandler = async ({
       await newOption.save();
     });
 
-    return json$1({
-  message: 'Options Uploaded'
-});
+    return new Response(JSON.stringify({ message: 'Options Uploaded' }));
+
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
-    return json$1({
-  error: `A server error occurred ${err}`,
-}, {
+    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
       status: 500
-    })
+    });
   }
 };
