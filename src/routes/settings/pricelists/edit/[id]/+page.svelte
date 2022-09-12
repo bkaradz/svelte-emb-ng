@@ -11,7 +11,6 @@
 	import { svgDocumentAdd, svgPencil, svgPlus, svgXSmall } from '$lib/utility/svgLogos';
 	import { v4 as uuidv4 } from 'uuid';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { PricelistsDocument, PricelistsSubDocument } from '$lib/models/pricelists.model';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
 
 	let result = suite.get();
@@ -27,7 +26,7 @@
 
 	const endpoint = `/api/pricelists/${$page.params.id}.json`;
 
-	let pricelist: Partial<PricelistsDocument>;
+	let pricelist: Partial<any>;
 
 	let selectedGroup = 'all';
 
@@ -67,7 +66,7 @@
 		valid: 'success'
 	});
 
-	const heandleEditable = async (list: PricelistsSubDocument) => {
+	const heandleEditable = async (list: any) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 			pricelist.pricelists = pricelist.pricelists.map((plist) => {
@@ -97,7 +96,7 @@
 
 	const handleInput = () => {};
 
-	const heandleDelete = (finalData: PricelistsSubDocument) => {
+	const heandleDelete = (finalData: any) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
 		pricelist.pricelists = pricelist.pricelists.filter((list) => list.id !== finalData.id);
 		// deleteOption(finalData);

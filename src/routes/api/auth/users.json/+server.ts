@@ -1,4 +1,3 @@
-import { error, json } from '@sveltejs/kit';
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
@@ -16,6 +15,9 @@ export const GET: RequestHandler = async ({ locals }) => {
     }
 
     const allUsers = await prisma.contacts.findMany({
+      where: {
+        isUser: true
+      },
       include: {
         email: true,
         phone: true,

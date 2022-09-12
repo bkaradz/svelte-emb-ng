@@ -1,8 +1,5 @@
 <script lang="ts">
-	import type { ContactsDocument } from '$lib/models/contacts.model';
-
 	import { toasts } from '$lib/stores/toasts.store';
-
 	import logger from '$lib/utility/logger';
 	import { svgLockClosed, svgPencil, svgXSmall } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
@@ -19,7 +16,7 @@
 		'delete'
 	];
 
-	let contacts: Array<Partial<ContactsDocument>> = [];
+	let contacts: Array<Partial<any>> = [];
 	let isEditableID = null;
 
 	const getUsers = async () => {
@@ -31,7 +28,7 @@
 		}
 	};
 
-	const updateUser = async (finalData: Partial<ContactsDocument>) => {
+	const updateUser = async (finalData: Partial<any>) => {
 		try {
 			// let searchParams = new URLSearchParams(paramsObj as string);
 			const res = await fetch('/api/auth.json', {
@@ -55,7 +52,7 @@
 			});
 		}
 	};
-	const deleteUser = async (finalData: Partial<ContactsDocument>) => {
+	const deleteUser = async (finalData: Partial<any>) => {
 		try {
 			// let searchParams = new URLSearchParams(paramsObj as string);
 			const res = await fetch('/api/auth.json', {
@@ -85,7 +82,7 @@
 		getUsers();
 	});
 
-	const heandleEditable = async (list: Partial<ContactsDocument>) => {
+	const heandleEditable = async (list: Partial<any>) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -94,7 +91,7 @@
 		}
 	};
 
-	const heandleDelete = async (list: Partial<ContactsDocument>) => {
+	const heandleDelete = async (list: Partial<any>) => {
 		await deleteUser(list);
 	};
 </script>

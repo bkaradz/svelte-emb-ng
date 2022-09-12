@@ -1,10 +1,5 @@
-import { json as json$1 } from '@sveltejs/kit';
-import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model';
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
-import aggregateQuery from '$lib/services/aggregateQuery.services';
-import pickBy from 'lodash-es/pickBy';
-import identity from 'lodash-es/identity';
 import type { RequestHandler } from './$types';
 import { z } from "zod";
 import prisma from '$lib/prisma/client';
@@ -22,141 +17,6 @@ const ContactsSchema = z.object({
 })
 
 export type Contacts = z.infer<typeof ContactsSchema>
-
-// export interface contactsTest {
-// 	id: string;
-// 	createdBy: string;
-// 	name: string;
-// 	isCorporate: boolean;
-// 	phone: string;
-// 	balanceDue: number;
-// 	totalReceipts: number;
-// 	isActive: boolean;
-// 	isUser: boolean;
-// 	organizationID: {
-// 		name: string;
-// 	};
-// 	vatOrBpNo?: string;
-// 	email?: string;
-// 	address?: string;
-// }
-
-export interface Pagination {
-	totalRecords: number;
-	totalPages: number;
-	limit: number;
-	error: boolean;
-	previous?: { page: number; limit: number };
-	current: { page: number; limit: number };
-	next?: { page: number; limit: number };
-}
-
-// export interface ContentsPaginationIterface extends Pagination {
-// 	results: ContactsDocument[];
-// }
-
-export const GET: RequestHandler = async ({
-	url,
-	locals
-}) => {
-	try {
-		if (!locals?.user?.id) {
-			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-				headers: {
-					'content-type': 'application/json; charset=utf-8',
-				},
-				status: 401
-			});
-		}
-
-		const queryParams = Object.fromEntries(url.searchParams);
-
-		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
-		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
-
-		const startIndex = (page - 1) * limit;
-		const endIndex = page * limit;
-
-		let previous = null;
-		const next = null;
-		const current = {
-			page: page,
-			limit
-		};
-
-		if (startIndex > 0) {
-			previous = {
-				page: page - 1,
-				limit
-			};
-		}
-
-		const endSearchParams = { limit, page, next, endIndex, current };
-		/**
-		 * TODO: Make sort to be dynamic
-		 */
-
-		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
-		console.log("🚀 ~ file: +server.ts ~ line 99 ~ finalQuery", finalQuery)
-
-		const objectKeys = Object.keys(finalQuery)[0];
-
-		let contactsQuery
-		let totalRecords
-
-		if (objectKeys) {
-			contactsQuery = await prisma.contacts.findMany({
-				take: limit,
-				skip: page - 1,
-				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
-				},
-			})
-			totalRecords = await prisma.contacts.count({
-				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
-				},
-			})
-		} else {
-			contactsQuery = await prisma.contacts.findMany({
-				take: limit,
-				skip: page - 1,
-			})
-			totalRecords = await prisma.contacts.count()
-		}
-
-		// {
-		// 	"results": [],
-		// 	"totalRecords": 0,
-		// 	"limit": 15,
-		// 	"previous": null,
-		// 	"current": {
-		// 		"page": 1,
-		// 		"limit": 15
-		// 	},
-		// 	"next": null,
-		// 	"error": false,
-		// 	"totalPages": 0
-		// }
-
-		return new Response(JSON.stringify({ results: contactsQuery, next, previous, current, totalRecords, limit }));
-
-	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
-		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
-			headers: {
-				'content-type': 'application/json; charset=utf-8',
-			},
-			status: 500
-		});
-	}
-};
 
 export const querySelection = (reqContact: any, createDBy: string) => {
 
@@ -233,10 +93,105 @@ export const querySelection = (reqContact: any, createDBy: string) => {
 	return contact
 }
 
-export const POST: RequestHandler = async ({
-	request,
-	locals
-}) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
+	try {
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
+
+		const queryParams = Object.fromEntries(url.searchParams);
+
+		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
+		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
+
+		const startIndex = (page - 1) * limit;
+		const endIndex = page * limit;
+
+		let previous = null;
+		let next = null;
+		const current = {
+			page: page,
+			limit
+		};
+
+		if (startIndex > 0) {
+			previous = {
+				page: page - 1,
+				limit
+			};
+		}
+
+		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
+
+		const objectKeys = Object.keys(finalQuery)[0];
+
+		let query: any
+		let queryTotal: any
+
+		if (objectKeys) {
+			query = {
+				take: limit,
+				skip: page - 1,
+				where: {
+					[objectKeys]: {
+						contains: finalQuery[objectKeys],
+						mode: 'insensitive'
+					},
+				},
+				orderBy: {
+					name: 'asc',
+				},
+			}
+			queryTotal = {
+				where: {
+					[objectKeys]: {
+						contains: finalQuery[objectKeys],
+						mode: 'insensitive'
+					},
+				},
+			}
+		} else {
+			query = {
+				take: limit,
+				skip: page - 1,
+				orderBy: {
+					name: 'asc',
+				},
+			}
+			queryTotal = {}
+		}
+
+		const contactsQuery = await prisma.contacts.findMany(query)
+		const totalRecords = await prisma.contacts.count(queryTotal)
+
+		if (endIndex < totalRecords) {
+			next = {
+				page: page + 1,
+				limit
+			};
+		}
+
+		const totalPages = Math.ceil(totalRecords / limit);
+
+		return new Response(JSON.stringify({ results: contactsQuery, next, totalPages, previous, current, totalRecords, limit }));
+
+	} catch (err: any) {
+		logger.error(`Error: ${err.message}`);
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
+		});
+	}
+};
+
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -255,19 +210,6 @@ export const POST: RequestHandler = async ({
 
 		const contactsQuery = await prisma.contacts.create({ data: contact })
 
-		// reqContact = omit(reqContact, 'password');
-
-		// reqContact.isActive = true;
-
-		// const contactFiltered = pickBy(reqContact, identity);
-
-		// const contacts = new ContactsModel(contactFiltered);
-
-		// contacts.isUser = false;
-		// contacts.createdBy = createDBy;
-
-		// await contacts.save();
-
 		return new Response(JSON.stringify(contactsQuery));
 
 	} catch (err: any) {
@@ -281,10 +223,7 @@ export const POST: RequestHandler = async ({
 	}
 };
 
-export const PUT: RequestHandler = async ({
-	request,
-	locals
-}) => {
+export const PUT: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -295,11 +234,20 @@ export const PUT: RequestHandler = async ({
 			});
 		}
 
+		const createDBy = locals.user.id;
+
 		const reqContact = await request.json();
 
-		const res = await ContactsModel.findByIdAndUpdate(reqContact.id, reqContact);
+		const contact = querySelection(reqContact, createDBy)
 
-		return new Response(JSON.stringify(res));
+		const updateContact = await prisma.contacts.update({
+			where: {
+				id: reqContact.id,
+			},
+			data: contact,
+		})
+
+		return new Response(JSON.stringify(updateContact));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

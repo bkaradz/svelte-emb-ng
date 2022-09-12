@@ -1,6 +1,5 @@
 <script lang="ts">
 	// throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import { page } from '$app/stores';
 	import suite from '$lib/validation/client/signUp.validate';
 	import classnames from 'vest/classnames';
@@ -8,8 +7,6 @@
 	import logger from '$lib/utility/logger';
 	import Input from '$lib/components/Input.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
-	import type { PricelistsDocument, PricelistsSubDocument } from '$lib/models/pricelists.model';
-	import { dinero, toFormat, type DineroOptions } from 'dinero.js';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
 
 	let result = suite.get();
@@ -23,7 +20,7 @@
 
 	const endpoint = `/api/pricelists/${$page.params.id}.json`;
 
-	let pricelist: PricelistsDocument;
+	let pricelist: any;
 
 	let selectedGroup = 'all';
 
@@ -34,7 +31,7 @@
 	let isEditableID = null;
 
 	$: if (pricelist?.pricelists?.length) {
-		pricelist.pricelists.forEach((list: PricelistsSubDocument) => {
+		pricelist.pricelists.forEach((list: any) => {
 			groupList.add(list.embroideryTypes);
 		});
 	}

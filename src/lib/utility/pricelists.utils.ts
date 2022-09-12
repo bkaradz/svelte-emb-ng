@@ -1,4 +1,3 @@
-import type { PricelistsSubDocument } from '$lib/models/pricelists.model';
 import { dinero, toFormat, type DineroOptions } from 'dinero.js';
 
 export function formatDefault(dineroObject: DineroOptions<number>) {
@@ -9,7 +8,7 @@ export function formatDefault(dineroObject: DineroOptions<number>) {
 }
 
 export const convertPricelist = (subPricelist) => {
-	const pricelists = subPricelist.pricelists.map((list: any): PricelistsSubDocument => {
+	const pricelists = subPricelist.pricelists.map((list: any) => {
 		return {
 			...list,
 			pricePerThousandStitches: formatDefault(JSON.parse(list.pricePerThousandStitches)),

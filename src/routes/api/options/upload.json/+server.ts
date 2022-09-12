@@ -1,8 +1,7 @@
-import { json as json$1 } from '@sveltejs/kit';
 import logger from '$lib/utility/logger';
 import csv from 'csvtojson';
 import type { RequestHandler } from './$types';
-import OptionsModel, { type OptionsDocument } from '$lib/models/options.models';
+import prisma from '$lib/prisma/client';
 
 
 export const POST: RequestHandler = async ({
@@ -23,9 +22,9 @@ export const POST: RequestHandler = async ({
 
     const data = await request.formData();
 
-    const file: FormDataEntryValue | null = data.get('options');
+    const file = data.get('options');
 
-    if (!(Object.prototype.toString.call(file) === '[object File]')) {
+    if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
       logger.error('File is empty');
       return new Response(JSON.stringify({ message: 'File is empty' }), {
         headers: {
@@ -34,12 +33,14 @@ export const POST: RequestHandler = async ({
         status: 400
       });
     }
-    // @ts-expect-error: the above if statement catches the error if file is null
+
     const csvString = await file.text();
 
     const jsonArray = await csv()
       .preFileLine((fileLine, idx) => fileLine)
       .fromString(csvString);
+
+    const allDocsPromises: any[] = []
 
     jsonArray.forEach(async (element) => {
       let { name, group, value, isActive, isDefault } = element;
@@ -50,7 +51,7 @@ export const POST: RequestHandler = async ({
       isActive = isActive === 'true' ? true : false
       isDefault = isDefault === 'true' ? true : false
 
-      const option: Partial<OptionsDocument> = {
+      const option = {
         createdBy: createDBy,
         name,
         group,
@@ -59,12 +60,12 @@ export const POST: RequestHandler = async ({
         isDefault
       };
 
-      const newOption = new OptionsModel(option);
-
-      await newOption.save();
+      allDocsPromises.push(option)
     });
 
-    return new Response(JSON.stringify({ message: 'Options Uploaded' }));
+    const optionsQuery = await prisma.options.createMany({ data: allDocsPromises })
+
+    return new Response(JSON.stringify(optionsQuery));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)

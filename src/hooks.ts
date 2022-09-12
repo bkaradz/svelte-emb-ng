@@ -1,10 +1,10 @@
-import { connectDB } from '$lib/database/mongooseDB';
+// import { connectDB } from '$lib/database/mongooseDB';
 import * as cookie from 'cookie';
 import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
-import type { GetSession, Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit';
 
-connectDB();
+// connectDB();
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
@@ -14,7 +14,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const { decoded } = verifyJwt(accessToken);
 
 	if (decoded) {
-		const session = await findSessions(decoded.sessionID);
+		const session = await findSessions(decoded?.sessionID);
 		if (session) {
 			event.locals.user = decoded;
 			event.locals.user.authenticated = true;
@@ -26,6 +26,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return await resolve(event);
 };
 
-export const getSession: GetSession = async ({ locals }) => {
+export const getSession = async ({ locals }) => {
 	return locals?.user ? locals : {};
 };

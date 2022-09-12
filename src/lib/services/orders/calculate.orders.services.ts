@@ -2,9 +2,8 @@ import { USD } from '@dinero.js/currencies';
 import { add, dinero, greaterThanOrEqual, multiply, subtract, toSnapshot, type Dinero, type DineroSnapshot } from 'dinero.js';
 import logger from '$lib/utility/logger';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
-import type { PricelistsDocument } from '$lib/models/pricelists.model';
 
-export const calculateOrder = (order: any, pricelist: PricelistsDocument) => {
+export const calculateOrder = (order: any, pricelist: any) => {
 	let { balance, subTotal, discountRate, discount, taxRate, tax } = order;
 	balance = dinero({ amount: 0, currency: USD, scale: 3 });
 

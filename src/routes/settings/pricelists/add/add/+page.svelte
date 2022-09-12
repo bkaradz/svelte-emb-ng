@@ -3,7 +3,6 @@
 
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Input from '$lib/components/Input.svelte';
-	import type { PricelistsDocument, PricelistsSubDocument } from '$lib/models/pricelists.model';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgDocumentAdd, svgPencil, svgPlus, svgXSmall } from '$lib/utility/svgLogos';
@@ -22,7 +21,7 @@
 		'Delete/Add Row'
 	];
 
-	let pricelist: Partial<PricelistsDocument> = {
+	let pricelist: Partial<any> = {
 		name: '',
 		isActive: true,
 		isDefault: false,

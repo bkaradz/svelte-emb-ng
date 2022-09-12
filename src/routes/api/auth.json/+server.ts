@@ -1,8 +1,6 @@
-import { json as json$1 } from '@sveltejs/kit';
-import ContactsModel, { type ContactsDocument } from '$lib/models/contacts.model'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types'
-import type { _LeanDocument } from 'mongoose'
+import prisma from '$lib/prisma/client';
 
 export const GET: RequestHandler = async ({ locals }) => {
   try {
@@ -15,20 +13,23 @@ export const GET: RequestHandler = async ({ locals }) => {
       });
     }
 
-    const res = await ContactsModel.find(
-      { isUser: true },
-      {
-        password: 0,
-        createdAt: 0,
-        updatedAt: 0,
-        __v: 0,
-        isCorporate: 0,
-        balanceDue: 0,
-        totalReceipts: 0,
+    const allUsers = await prisma.contacts.findMany({
+      where: {
+        isUser: true
+      },
+      include: {
+        email: true,
+        phone: true,
+        address: true
       }
-    ).lean()
+    })
 
-    return new Response(JSON.stringify(res));
+    const allUsersFinal = allUsers.map((user) => {
+      const { password, ...rest } = user
+      return rest
+    })
+
+    return new Response(JSON.stringify(allUsersFinal));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
@@ -53,11 +54,17 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
     }
 
     const userUpdate = await request.json()
-    const userUpdated = await ContactsModel.findByIdAndUpdate({ id: userUpdate.id }, userUpdate)
-      .select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts')
-      .lean()
 
-    return new Response(JSON.stringify(userUpdated));
+    const allUsers = await prisma.contacts.update({
+      where: {
+        id: userUpdate.id
+      },
+      data: {
+        ...userUpdate
+      }
+    })
+
+    return new Response(JSON.stringify(allUsers));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
@@ -83,13 +90,16 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
     const userDelete = await request.json()
 
-    const userUpdated = await ContactsModel.findByIdAndUpdate(
-      { id: userDelete.id },
-      { isActive: false },
-      { new: true }
-    ).select('-password -createdAt -updatedAt -__v -isCorporate -balanceDue -totalReceipts').lean()
+    const userD = await prisma.contacts.update({
+      where: {
+        id: userDelete.id
+      },
+      data: {
+        isActive: false
+      }
+    })
 
-    return new Response(JSON.stringify(userUpdated));
+    return new Response(JSON.stringify(userD));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)

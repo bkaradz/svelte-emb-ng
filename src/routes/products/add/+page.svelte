@@ -35,7 +35,6 @@
 
 	// interface productInterface {
 	// 	name: string;
-	// 	title: string;
 	// 	description: string;
 	// 	unitPrice: number | string;
 	// 	productCategories: { name: string; value: string };
@@ -46,7 +45,6 @@
 
 	const initFromData = {
 		name: '',
-		title: '',
 		description: '',
 		unitPrice: 0,
 		productCategories: { name: '', value: '' },
@@ -182,13 +180,6 @@
 					bind:value={formData.name}
 					messages={result.getErrors('name')}
 					validityClass={cn('name')}
-				/>
-				<Input
-					name="title"
-					label="Title"
-					bind:value={formData.title}
-					messages={result.getErrors('title')}
-					validityClass={cn('title')}
 				/>
 				<Textarea
 					name="description"

@@ -14,16 +14,12 @@
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import Loading from '$lib/components/Loading.svelte';
 	import { orderStore } from '$lib/stores/orders.store';
-	import type { ProductsDocument } from '$lib/models/products.models';
-	import type { PricelistsDocument } from '$lib/models/pricelists.model';
-	import type { OptionsDocument } from '$lib/models/options.models';
 	import { calculateOrder } from '$lib/services/orders';
 	import { format } from '$lib/services/monetary';
-	import type { OrdersDocument } from '$lib/models/orders.model';
 	import map from 'lodash-es/map';
 
 	interface productIterface {
-		results: ProductsDocument[];
+		results: any[];
 		totalRecords: number;
 		totalPages: number;
 		limit: number;
@@ -32,7 +28,7 @@
 		next: { page: number; limit: number };
 	}
 
-	let order: OrdersDocument = {
+	let order = {
 		subTotal: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
 		tax: '{"amount":0,"currency":{"code":"USD","base":10,"exponent":2},"scale":3}',
 		taxRate: '',
@@ -47,9 +43,9 @@
 
 	let itemList: string | any[] = [];
 	let products: productIterface;
-	let pricelists: PricelistsDocument[] = [];
-	let options: OptionsDocument[];
-	let selectedPricelist: PricelistsDocument | null;
+	let pricelists: any[] = [];
+	let options: any[];
+	let selectedPricelist: any | null;
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -62,11 +58,11 @@
 		return options.filter((option) => option.group === group);
 	};
 
-	const optionsToList = (optionsObj: OptionsDocument[]) => {
+	const optionsToList = (optionsObj: any[]) => {
 		return optionsObj.map((option) => option.name).reverse();
 	};
 
-	const optionsListMapObj = (optionsObj: OptionsDocument[]) => {
+	const optionsListMapObj = (optionsObj: any[]) => {
 		return optionsObj.reduce((accumulator, option) => {
 			return { ...accumulator, [option.name]: option.value };
 		}, {});
@@ -89,7 +85,7 @@
 	};
 
 	const gotoAddProducts = async () => {
-		$orderStore = order
+		$orderStore = order;
 		goto(`/orders/add`);
 	};
 
@@ -99,8 +95,7 @@
 	const searchNamesOptions = {
 		name: 'Name',
 		stitches: 'Stitches',
-		productID: 'Product ID',
-		title: 'Title',
+		id: 'Product ID',
 		description: 'Description',
 		unitPrice: 'Unit Price',
 		quantity: 'Quantity',
@@ -108,8 +103,8 @@
 	};
 
 	const tableHeadings = [
+		'Product ID',
 		'Name',
-		'ProductID',
 		'Category',
 		'Emb Type',
 		'Emb Position',
@@ -173,14 +168,14 @@
 
 	const alreadyExistInItemList = (id: Schema.Types.ObjectId) => {
 		const ids = map(itemList, 'id');
-		return ids.includes(id)
+		return ids.includes(id);
 	};
 
 	const addProduct = (product: ProductsDocument) => {
 		removeItemID(product.id);
 
 		if (alreadyExistInItemList(product.id)) {
-			return
+			return;
 		}
 
 		order.orderLine = [
@@ -325,10 +320,10 @@
 									class="whitespace-no-wrap w-full hover:bg-royal-blue-200 border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>
 									<td class="px-2 py-1">
-										{list.name}
+										{list.id}
 									</td>
 									<td class="px-2 py-1">
-										{list.productID}
+										{list.name}
 									</td>
 									<td class="px-2 py-1">
 										<select
@@ -476,7 +471,7 @@
 									<MenuItem let:active>
 										<a
 											on:click={heandleSearchSelection}
-											name="productID"
+											name="id"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
 											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
@@ -485,17 +480,6 @@
 										>
 									</MenuItem>
 
-									<MenuItem let:active>
-										<a
-											on:click={heandleSearchSelection}
-											name="title"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-2">Title</a
-										>
-									</MenuItem>
 									<MenuItem let:active>
 										<a
 											on:click={heandleSearchSelection}
@@ -675,8 +659,8 @@
 						<tr
 							class=" sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 						>
-							<th class="px-2 py-2">Name</th>
 							<th class="px-2 py-2">Product ID</th>
+							<th class="px-2 py-2">Name</th>
 							<th class="px-2 py-2">Stitches</th>
 							<th class="px-2 py-2">Description</th>
 							<th class="px-2 py-2">Quantity</th>
@@ -690,8 +674,8 @@
 							<tr
 								class="whitespace-no-wrap hover:bg-royal-blue-200 w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900 dot-align"
 							>
+								<td class="px-2 py-1">{product.id}</td>
 								<td class="px-2 py-1">{product.name}</td>
-								<td class="px-2 py-1">{product.productID}</td>
 								<td class="px-2 py-1">{product.stitches ? product.stitches : '...'}</td>
 								<td class="px-2 py-1">{product.description ? product.description : '...'}</td>
 								<td class="px-2 py-1">{product.quantity ? product.quantity : '...'}</td>

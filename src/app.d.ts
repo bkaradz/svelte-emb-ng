@@ -1,8 +1,4 @@
 /// <reference types="@sveltejs/kit" />
-
-import type { ContactsDocument } from '$lib/models/contacts.model';
-import type { SessionsDocument } from '$lib/models/sessions.model';
-
 // See https://kit.svelte.dev/docs/typescript
 // for information about these interfaces
 
@@ -34,7 +30,7 @@ declare global {
 			onclickOutside?: (e: CustomEvent) => void;
 		}
 		interface Locals {
-			user?: userInterface | Record<string, never>;
+			user?: userInterface | Record<string, never> | null;
 		}
 
 		interface Platform { }

@@ -1,4 +1,3 @@
-import { json as json$1 } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
@@ -77,11 +76,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		reqUser.password = hash;
 
-		delete reqUser.confirmPassword
+		const { confirmPassword, ...restReqUser } = reqUser
 
 		const user = await prisma.contacts.create({
 			data: {
-				...reqUser,
+				...restReqUser,
 				...role,
 				email: {
 					create: [
@@ -107,11 +106,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 		})
 
-		if (user?.password) {
-			delete user.password
-		}
+		const { password, ...restUser } = user
 
-		return new Response(JSON.stringify(user));
+		return new Response(JSON.stringify(restUser));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

@@ -1,10 +1,6 @@
-import { json as json$1 } from '@sveltejs/kit';
-import OptionsModel from '$lib/models/options.models'
-import { postSuite } from '$lib/validation/server/options.validate'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types'
-import type { OptionsDocument } from '$lib/models/options.models'
-
+import prisma from '$lib/prisma/client';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
@@ -19,7 +15,32 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
     const queryParams = Object.fromEntries(url.searchParams)
 
-    const options: Array<OptionsDocument> = await OptionsModel.find(queryParams)
+    const objectKeys = Object.keys(queryParams)[0];
+
+    let query: any
+
+    if (objectKeys) {
+      query = {
+        where: {
+          [objectKeys]: {
+            contains: queryParams[objectKeys],
+            mode: 'insensitive'
+          },
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      }
+    } else {
+      query = {
+        orderBy: {
+          name: 'asc',
+        },
+      }
+    }
+
+
+    const options = await prisma.options.findMany(query)
 
     return new Response(JSON.stringify(options));
 
@@ -49,19 +70,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const reqOptions = await request.json()
 
-    reqOptions.createdBy = createDBy
-
     /**
-     * TODO: VALIDATION
+     * TODO: VALIDATION usung zod
      */
 
-    const result = postSuite(reqOptions)
+    let { name, group, value, isActive, isDefault } = reqOptions;
 
-    const newOption: OptionsDocument = new OptionsModel(reqOptions)
+    name = name.trim();
+    group = group.trim();
+    value = value.trim();
+    isActive = isActive === 'true' ? true : false
+    isDefault = isDefault === 'true' ? true : false
 
-    const res = await newOption.save()
+    const option = {
+      createdBy: createDBy,
+      name,
+      group,
+      value,
+      isActive,
+      isDefault
+    };
 
-    return new Response(JSON.stringify(res));
+    const optionsQuery = await prisma.options.create({ data: option })
+
+    return new Response(JSON.stringify(optionsQuery));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
@@ -90,11 +122,35 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 
     const reqOptions = await request.json()
 
-    reqOptions.createdBy = createDBy
+    /**
+     * TODO: VALIDATION usung zod
+     */
 
-    const res: OptionsDocument = await OptionsModel.findByIdAndUpdate({ id: reqOptions.id }, reqOptions, { new: true }).lean()
+    let { name, group, value, isActive, isDefault } = reqOptions;
 
-    return new Response(JSON.stringify(res));
+    name = name.trim();
+    group = group.trim();
+    value = value.trim();
+    isActive = isActive === 'true' ? true : false
+    isDefault = isDefault === 'true' ? true : false
+
+    const option = {
+      createdBy: createDBy,
+      name,
+      group,
+      value,
+      isActive,
+      isDefault
+    };
+
+    const optionsQuery = await prisma.options.update({
+      where: {
+        id: reqOptions.id,
+      },
+      data: option,
+    })
+
+    return new Response(JSON.stringify(optionsQuery));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)
@@ -122,17 +178,18 @@ export const DELETE: RequestHandler = async ({
       });
     }
 
-    // const createDBy = locals.user.id
+    const createDBy = locals.user.id
 
     const reqOptions = await request.json()
 
-    // reqOptions.createdBy = createDBy
+    const optionsQuery = await prisma.options.update({
+      where: {
+        id: reqOptions.id,
+      },
+      data: { isActive: false }
+    })
 
-    const res: OptionsDocument = await OptionsModel.findByIdAndDelete({
-      id: reqOptions.id,
-    }).lean()
-
-    return new Response(JSON.stringify(res));
+    return new Response(JSON.stringify(optionsQuery));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)

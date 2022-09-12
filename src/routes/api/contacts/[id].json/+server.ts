@@ -1,13 +1,17 @@
-import { json } from '@sveltejs/kit';
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types'
 import prisma from '$lib/prisma/client';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, locals }) => {
   try {
-    // const contact = await ContactsModel.findOne({ id: params.id }, { password: 0, createdAt: 0, updatedAt: 0, __v: 0, userRole: 0 })
-    //   .populate('organizationID')
-    //   .exec()
+    if (!locals?.user?.id) {
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 401
+      });
+    }
 
     const contact = await prisma.contacts.findUnique({
       where: {
@@ -20,12 +24,17 @@ export const GET: RequestHandler = async ({ params }) => {
       }
     })
 
-    if (contact) {
-      const { password, createdAt, updatedAt, userRole, ...restContact } = contact
-      return new Response(JSON.stringify(restContact));
+    if (!contact) {
+      return new Response(JSON.stringify({ message: 'Contact not found' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 400
+      });
     }
 
-    return new Response(JSON.stringify({ message: 'Contact not found' }));
+    const { password, createdAt, updatedAt, userRole, ...restContact } = contact
+    return new Response(JSON.stringify(restContact));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)

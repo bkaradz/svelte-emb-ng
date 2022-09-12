@@ -1,7 +1,6 @@
-import { json } from '@sveltejs/kit';
-import PricelistsModel from '$lib/models/pricelists.model'
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types'
+import prisma from '$lib/prisma/client';
 
 
 export const GET: RequestHandler = async ({ params, locals }) => {
@@ -15,9 +14,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       });
     }
 
-    const pricelist = await PricelistsModel.findOne({ id: params.id }, { createdAt: 0, updatedAt: 0, __v: 0 })
+    const pricelistsQuery = await prisma.pricelists.findMany({
+      where: {
+        id: params.id,
+      },
+      include: {
+        PricelistSubList: true
+      }
+    })
 
-    return new Response(JSON.stringify(pricelist));
+    return new Response(JSON.stringify(pricelistsQuery));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`)

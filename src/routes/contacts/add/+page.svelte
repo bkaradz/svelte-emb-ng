@@ -6,8 +6,6 @@
 	import classnames from 'vest/classnames';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { ContactsDocument } from '$lib/models/contacts.model';
-	import type { metaDataInterface } from '$lib/services/aggregateQuery.services';
 	import Input from '$lib/components/Input.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
@@ -15,8 +13,8 @@
 
 	let result = suite.get();
 
-	interface contactsInterface extends metaDataInterface {
-		results: Array<Omit<ContactsDocument, 'createdAt' | 'updatedAt' | 'password' | 'userRole'>>;
+	interface contactsInterface {
+		results: Array<Omit<any, 'createdAt' | 'updatedAt' | 'password' | 'userRole'>>;
 	}
 
 	interface corporateQueryParamsInterface {
@@ -27,7 +25,7 @@
 		name?: string;
 	}
 
-	type corporateSearchInterface = Partial<ContactsDocument> & { name: string };
+	type corporateSearchInterface = Partial<any> & { name: string };
 
 	let corporateSearch: corporateSearchInterface = { name: '' };
 
@@ -60,7 +58,7 @@
 
 	interface formDataType {
 		name: string;
-		organizationID?: Partial<ContactsDocument>;
+		organizationID?: Partial<any>;
 		isCorporate: boolean;
 		email: string;
 		phone: string;

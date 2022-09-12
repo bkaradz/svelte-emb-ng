@@ -1,8 +1,5 @@
-import type { OrderLineDocument } from '$lib/models/orders.model';
 import type { Schema } from 'mongoose';
 import { writable } from 'svelte/store';
-
-type orderItemsInterface = OrderLineDocument;
 
 const orderItemsIDs = new Set([]);
 
@@ -19,10 +16,10 @@ function createOrderItems() {
 
 	return {
 		subscribe,
-		add: (item: orderItemsInterface) => {
+		add: (item: any) => {
 			if (!orderItemsIDs.has(item.id)) {
 				orderItemsIDs.add(item.id);
-				update((allOrderItems: orderItemsInterface[]) => [
+				update((allOrderItems: any[]) => [
 					...allOrderItems,
 					{ ...item, ...lineItems }
 				]);
@@ -30,11 +27,11 @@ function createOrderItems() {
 		},
 		remove: (id: Schema.Types.ObjectId) => {
 			orderItemsIDs.delete(id);
-			update((allOrderItems: orderItemsInterface[]) =>
-				allOrderItems.filter((item: orderItemsInterface) => item.id !== id)
+			update((allOrderItems: any[]) =>
+				allOrderItems.filter((item: any) => item.id !== id)
 			);
 		},
-		update: (item: orderItemsInterface) => {
+		update: (item: any) => {
 			this.remove(item.id);
 			this.add(item);
 		},

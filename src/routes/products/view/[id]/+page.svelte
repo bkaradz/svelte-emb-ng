@@ -17,6 +17,7 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import dayjs from 'dayjs';
 	import type { ProductsDocument } from '$lib/models/products.models';
+	import { format } from '$lib/services/monetary';
 
 	const endpoint = `/api/products/${$page.params.id}.json`;
 
@@ -25,8 +26,7 @@
 	onMount(async () => {
 		const res = await fetch(endpoint);
 		if (res.ok) {
-			const results = await res.json();
-			product = { ...product, ...results.product };
+			product = await res.json();
 		}
 	});
 
@@ -46,6 +46,7 @@
 			paginationCurrentValue += 1;
 		}
 	};
+
 	const gotoProducts = async () => {
 		goto(`/products`);
 	};
@@ -62,7 +63,7 @@
 		<!-- Heading and Buttons -->
 		<div class="main-header flex flex-row items-center justify-between">
 			<div class="flex">
-				<button class="mr-3" on:click={gotoProducts}>
+				<button class="mr-3" on:click|preventDefault={gotoProducts}>
 					{@html svgArrow}
 				</button>
 				<h1 class="text-slate-700 text-2xl font-medium">Products</h1>
@@ -84,7 +85,7 @@
 			>
 				<div class="w-full border border-royal-blue-200 bg-pickled-bluewood-100 p-3">
 					<h4 class="text-lg font-medium text-pickled-bluewood-600 ">
-						{product.productID}
+						{product.id}
 					</h4>
 				</div>
 				<div class="w-full border border-royal-blue-200 bg-pickled-bluewood-100 p-3">
@@ -109,7 +110,7 @@
 					<div class="p-2">
 						<p class="p-1 text-sm font-semibold text-pickled-bluewood-500">Unit Price</p>
 						<p class="p-1 text-sm text-pickled-bluewood-500">
-							{product?.unitPrice ? product.unitPrice : '...'}
+							{!product?.unitPrice ? '...' : format(product.unitPrice)}
 						</p>
 					</div>
 					<div class="p-2">

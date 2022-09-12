@@ -1,14 +1,8 @@
-import { json as json$1 } from '@sveltejs/kit';
-
-
 import logger from '$lib/utility/logger';
-import aggregateQuery from '$lib/services/aggregateQuery.services';
-import OrdersModel from '$lib/models/orders.model';
 import omit from 'lodash-es/omit';
 import { calculateOrder } from '$lib/services/orders';
-import PricelistsModel from '$lib/models/pricelists.model';
-import ContactsModel from '$lib/models/contacts.model';
 import type { RequestHandler } from './$types';
+import prisma from '$lib/prisma/client';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
@@ -24,16 +18,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		let { limit = 15, page = 1 } = queryParams;
-
-		limit = parseInt(limit) < 1 ? 1 : parseInt(limit);
-		page = parseInt(page);
+		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
+		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
 
 		const startIndex = (page - 1) * limit;
 		const endIndex = page * limit;
 
 		let previous = null;
-		const next = null;
+		let next = null;
 		const current = {
 			page: page,
 			limit
@@ -46,100 +38,59 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			};
 		}
 
-		const endSearchParams = { limit, page, next, endIndex, current };
-		/**
-		 * TODO: Make sort to be dynamic
-		 */
-
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
 
-		const objectKeys = Object.keys(finalQuery);
+		const objectKeys = Object.keys(finalQuery)[0];
 
-		let newRegExQuery = {};
+		let query: any
+		let queryTotal: any
 
-		objectKeys.forEach((name) => {
-			if (name === 'isCorporate' || name === 'isUser' || name === 'isActive') {
-				finalQuery[name] = finalQuery[name] === 'true' ? true : false;
-				newRegExQuery = { ...newRegExQuery, [name]: finalQuery[name] };
-			} else {
-				newRegExQuery = { ...newRegExQuery, [name]: { $regex: finalQuery[name], $options: 'i' } };
+		if (objectKeys) {
+			query = {
+				take: limit,
+				skip: page - 1,
+				where: {
+					[objectKeys]: {
+						contains: finalQuery[objectKeys],
+						mode: 'insensitive'
+					},
+				},
+				orderBy: {
+					name: 'asc',
+				},
 			}
-		});
-
-		const aggregateFilter = [
-			{
-				$lookup: {
-					from: 'contacts',
-					localField: 'customerID',
-					foreignField: 'id',
-					as: 'customerID'
-				}
-			},
-			{
-				$lookup: {
-					from: 'pricelists',
-					localField: 'pricelistID',
-					foreignField: 'id',
-					as: 'pricelistID'
-				}
-			},
-			// {
-			//   $addFields: {
-			//     stitches: {
-			//       $toString: '$stitches',
-			//     },
-			//   },
-			// },
-			{
-				$match: newRegExQuery
-			},
-			{
-				$sort: {
-					name: 1
-				}
-			},
-
-			{
-				$facet: {
-					metaData: [
-						{
-							$count: 'totalRecords'
-						},
-						{
-							$addFields: {
-								previous,
-								current,
-								limit
-							}
-						}
-					],
-					results: [
-						{
-							$skip: startIndex
-						},
-						{
-							$limit: limit
-						}
-					]
-				}
-			},
-			{
-				$project: {
-					results: {
-						createdAt: 0,
-						updatedAt: 0,
-						__v: 0
-					}
-				}
+			queryTotal = {
+				where: {
+					[objectKeys]: {
+						contains: finalQuery[objectKeys],
+						mode: 'insensitive'
+					},
+				},
 			}
-		];
+		} else {
+			query = {
+				take: limit,
+				skip: page - 1,
+				orderBy: {
+					name: 'asc',
+				},
+			}
+			queryTotal = {}
+		}
 
-		let orders = await aggregateQuery(queryParams, OrdersModel, aggregateFilter, endSearchParams);
+		const orderQuery = await prisma.orders.findMany(query)
+		const totalRecords = await prisma.orders.count(queryTotal)
 
-		orders = { ...orders, ...orders.metaData[0] };
-		delete orders.metaData;
+		if (endIndex < totalRecords) {
+			next = {
+				page: page + 1,
+				limit
+			};
+		}
 
-		return new Response(JSON.stringify({ ...orders }));
+		const totalPages = Math.ceil(totalRecords / limit);
+
+		return new Response(JSON.stringify({ results: orderQuery, next, totalPages, previous, current, totalRecords, limit }));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
@@ -168,7 +119,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const reqOrder = await request.json();
 
 		// check that the pricelist exist
-		const pricelist = await PricelistsModel.findById({ id: reqOrder.pricelistID }).lean();
+		const pricelist = await prisma.pricelists.findUnique({
+			where: {
+				id: reqOrder.pricelistID
+			}
+		})
 
 		if (!pricelist) {
 			return new Response(JSON.stringify({ message: 'Pricelist does not exist' }), {
@@ -179,7 +134,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 		// check that the customer exist
-		const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
+		// const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
+		const customerExist = await prisma.contacts.findUnique({
+			where: {
+				id: reqOrder.customerID
+			}
+		})
 
 		if (!customerExist) {
 			return new Response(JSON.stringify({ message: 'Customer does not exist' }), {

@@ -6,7 +6,6 @@
 	import Input from '$lib/components/Input.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
-	import type { AggregateContactsDocument, ContactsDocument } from '$lib/models/contacts.model';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgArrow, svgRefresh, svgXCircle } from '$lib/utility/svgLogos';
@@ -18,7 +17,7 @@
 
 	let result = suite.get();
 
-	let editContact: Partial<ContactsDocument>;
+	let editContact: Partial<any>;
 
 	// interface contactsInterface extends metaDataInterface {
 	// 	results: Array<Omit<ContactsDocument, 'createdAt' | 'updatedAt' | 'password' | 'userRole'>>;
@@ -50,7 +49,7 @@
 		isCorporate: true
 	};
 	let currentCorporateQueryParams = defaultCorporateQueryParams;
-	let corporateContacts: Partial<AggregateContactsDocument>;
+	let corporateContacts: Partial<any>;
 
 	onMount(() => {
 		getCorporateContacts(currentCorporateQueryParams);
@@ -69,24 +68,6 @@
 			});
 		}
 	};
-
-	// interface formDataType {
-	// 	name: string;
-	// 	organizationID?: Partial<ContactsDocument>;
-	// 	isCorporate: boolean;
-	// 	email: string;
-	// 	phone: string;
-	// 	address: string;
-	// }
-
-	// let formData: formDataType = {
-	// 	isCorporate: false,
-	// 	organizationID: corporateSearch,
-	// 	name: '',
-	// 	email: '',
-	// 	phone: '',
-	// 	address: ''
-	// };
 
 	let formData = {
 		...editContact,
@@ -145,19 +126,6 @@
 	const gotoContacts = async () => {
 		goto(`/contacts`);
 	};
-
-	// const makeMatchBold = (searchMatchString: string) => {
-	// 	let MatchedWords = [];
-	// 	if (corporateSearch.name) {
-	// 		const regex = new RegExp(corporateSearch.name, 'ig');
-	// 		MatchedWords = searchMatchString.trim().match(regex);
-	// 	}
-
-	// 	let makeBold = `<strong>${MatchedWords[0]}</strong>`;
-	// 	let boldedStr = searchMatchString.replace(MatchedWords[0], makeBold);
-
-	// 	return boldedStr;
-	// };
 
 	const handleCancel = async () => {
 		goto(`/contacts/${$page.params.id}`);

@@ -1,4 +1,3 @@
-import type { OrdersDocument } from '$lib/models/orders.model';
 import { writable } from 'svelte/store';
 
 // let order: OrdersDocument = {

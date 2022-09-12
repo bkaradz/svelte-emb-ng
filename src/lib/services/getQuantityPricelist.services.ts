@@ -1,4 +1,3 @@
-import type { PricelistsDocument } from "$lib/models/pricelists.model";
 import logger from '$lib/utility/logger';
 
 export const getQuantityPricelist = ({
@@ -6,7 +5,7 @@ export const getQuantityPricelist = ({
 	embroideryTypes,
 	quantity
 }: {
-	pricelist: PricelistsDocument;
+	pricelist: any
 	embroideryTypes: string;
 	quantity: number;
 }) => {
@@ -14,15 +13,15 @@ export const getQuantityPricelist = ({
 		const pricelistsArray = pricelist.pricelists;
 
 		const minimumQuantityArray = pricelistsArray
-		.filter((list) => embroideryTypes.toLowerCase() === list.embroideryTypes.toLowerCase())
-		.sort((a, b) => b.minimumQuantity - a.minimumQuantity)
-		.filter((list) => list.minimumQuantity >= quantity)
-		.pop()
+			.filter((list) => embroideryTypes.toLowerCase() === list.embroideryTypes.toLowerCase())
+			.sort((a, b) => b.minimumQuantity - a.minimumQuantity)
+			.filter((list) => list.minimumQuantity >= quantity)
+			.pop()
 
 		if (minimumQuantityArray === undefined) {
 			throw new Error("Pricelist Selection is Undefined");
 		}
-		
+
 		return minimumQuantityArray;
 	} catch (err: any) {
 		logger.error(`Error ${err.message}`);

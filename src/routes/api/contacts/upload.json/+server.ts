@@ -1,6 +1,3 @@
-import { json as json$1 } from '@sveltejs/kit';
-import pickBy from 'lodash-es/pickBy';
-import identity from 'lodash-es/identity';
 import logger from '$lib/utility/logger';
 import csv from 'csvtojson';
 import type { RequestHandler } from './$types';
@@ -21,7 +18,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const createDBy = locals.user.id;
-		console.log("🚀 ~ file: +server.ts ~ line 25 ~ constPOST:RequestHandler= ~ createDBy", createDBy)
 
 		const data = await request.formData();
 

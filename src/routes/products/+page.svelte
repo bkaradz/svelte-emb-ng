@@ -14,18 +14,18 @@
 	import logger from '$lib/utility/logger';
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import Loading from '$lib/components/Loading.svelte';
+	import { format } from '$lib/services/monetary';
 
 	interface productIterface {
 		results: [
 			{
-				id: string;
+				id: Number;
 				name: string;
-				productID: string;
-				title: string;
 				description: string;
 				unitPrice: string;
 				productCategories: string;
 				stitches: string;
+				utilisation: Number;
 				quantity: string;
 				isActive: boolean;
 			}
@@ -71,8 +71,7 @@
 	const searchNamesOptions = {
 		name: 'Name',
 		stitches: 'Stitches',
-		productID: 'Product ID',
-		title: 'Title',
+		id: 'Product ID',
 		description: 'Description',
 		unitPrice: 'Unit Price',
 		quantity: 'Quantity',
@@ -167,7 +166,7 @@
 									<MenuItem let:active>
 										<a
 											on:click={heandleSearchSelection}
-											name="productID"
+											name="id"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
 											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
@@ -176,17 +175,6 @@
 										>
 									</MenuItem>
 
-									<MenuItem let:active>
-										<a
-											on:click={heandleSearchSelection}
-											name="title"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-2">Title</a
-										>
-									</MenuItem>
 									<MenuItem let:active>
 										<a
 											on:click={heandleSearchSelection}
@@ -381,17 +369,17 @@
 					>
 						<div class="flex h-full items-center">
 							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
-								{product.name}
+								{product?.name}
 							</h4>
 						</div>
-						{#if product.productCategories === 'embLogo'}
+						{#if product?.productCategories === 'embLogo'}
 							<div
 								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
 							>
 								<div class="p-1">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">STITCHES</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-										{product.stitches}
+										{product?.stitches}
 									</span>
 								</div>
 							</div>
@@ -402,13 +390,13 @@
 								<div class="p-1">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">QUANTITY</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-										${product.quantity}
+										{!product?.quantity ? '...' : product.quantity}
 									</span>
 								</div>
 								<div class="p-1">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">UNIT PRICE</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-										${product.unitPrice}
+										{!product?.unitPrice ? '...' : format(product.unitPrice)}
 									</span>
 								</div>
 							</div>
@@ -426,14 +414,13 @@
 									<tr
 										class=" sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 									>
-										<th class="px-2 py-2">Name</th>
 										<th class="px-2 py-2">Product ID</th>
+										<th class="px-2 py-2">Name</th>
 										<th class="px-2 py-2">Stitches</th>
-										<th class="px-2 py-2">Title</th>
 										<th class="px-2 py-2">Description</th>
 										<th class="px-2 py-2">Quantity</th>
 										<th class="px-2 py-2">Unit Price</th>
-										<th class="px-2 py-2">State Used</th>
+										<th class="px-2 py-2">Utilisation</th>
 										<th class="px-2 py-2">View</th>
 									</tr>
 								</thead>
@@ -442,10 +429,9 @@
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
+											<td class="px-2 py-1">{product.id}</td>
 											<td class="px-2 py-1">{product.name}</td>
-											<td class="px-2 py-1">{product.productID}</td>
 											<td class="px-2 py-1">{product.stitches}</td>
-											<td class="px-2 py-1">{product.title}</td>
 
 											<td class="px-2 py-1">
 												{!product.description ? '...' : product.description}
@@ -454,13 +440,13 @@
 												{!product.quantity ? '...' : product.quantity}
 											</td>
 											<td class="px-2 py-1 text-right"
-												>{!product.unitPrice ? '...' : product.unitPrice}</td
+												>{!product.unitPrice ? '...' : format(product.unitPrice)}</td
 											>
 
 											<td class="px-2 py-1">
 												<span
 													class="whitespace-nowrap rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
-													>10 times</span
+													>{product.utilisation} times</span
 												>
 											</td>
 											<td class="py-1 text-center">

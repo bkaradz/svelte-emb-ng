@@ -7,15 +7,13 @@
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
 	import { orderItems } from '$lib/stores/order.items.store';
-	import type { OptionsDocument } from '$lib/models/options.models';
-	import type { PricelistsDocument } from '$lib/models/pricelists.model';
 	import { orderStore } from '$lib/stores/orders.store';
 
 	let isEditableID: any;
 
 	const tableHeadings = [
+		'Product ID',
 		'Name',
-		'ProductID',
 		'Category',
 		'Emb Type',
 		'Emb Position',
@@ -28,18 +26,18 @@
 	let itemList = $orderStore ? $orderStore.orderLine : [];
 	let contacts;
 	let products;
-	let pricelists: PricelistsDocument[];
-	let options: OptionsDocument[];
+	let pricelists: any[];
+	let options: any[];
 
 	const filterOptionsGroup = (group: string) => {
 		return options.filter((option) => option.group === group);
 	};
 
-	const optionsToList = (optionsObj: OptionsDocument[]) => {
+	const optionsToList = (optionsObj: any[]) => {
 		return optionsObj.map((option) => option.name);
 	};
 
-	const optionsListMapObj = (optionsObj: OptionsDocument[]) => {
+	const optionsListMapObj = (optionsObj: any[]) => {
 		return optionsObj.reduce((accumulator, option) => {
 			return { ...accumulator, [option.name]: option.value };
 		}, {});
@@ -172,10 +170,10 @@
 								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 							>
 								<td class="px-2 py-1">
-									{list.name}
+									{list.id}
 								</td>
 								<td class="px-2 py-1">
-									{list.productID}
+									{list.name}
 								</td>
 								<td class="px-2 py-1">
 									<select bind:value={list.productCategories}>

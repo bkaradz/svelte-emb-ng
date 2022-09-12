@@ -16,7 +16,7 @@
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 	import { onMount } from 'svelte';
 
-interface ContentIterface {
+	interface ContentIterface {
 		results: [
 			{
 				id: string;

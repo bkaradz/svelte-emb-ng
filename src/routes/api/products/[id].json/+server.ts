@@ -1,7 +1,6 @@
-import { json } from '@sveltejs/kit';
 import logger from '$lib/utility/logger'
-import ProductsModel from '$lib/models/products.models'
 import type { RequestHandler } from './$types'
+import prisma from '$lib/prisma/client';
 
 
 export const GET: RequestHandler = async ({ params, locals }) => {
@@ -15,7 +14,20 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       });
     }
 
-    const product = await ProductsModel.findOne({ id: params.id }, { createdAt: 0, updatedAt: 0, __v: 0 })
+    const product = await prisma.products.findUnique({
+      where: {
+        id: parseInt(params.id)
+      },
+    })
+
+    if (!product) {
+      return new Response(JSON.stringify({ message: 'Product not found' }), {
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+        },
+        status: 400
+      });
+    }
 
     return new Response(JSON.stringify(product));
 

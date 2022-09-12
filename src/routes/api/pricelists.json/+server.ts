@@ -1,11 +1,7 @@
-import { json as json$1 } from '@sveltejs/kit';
-import PricelistsModel, {
-	type PricelistsDocument,
-	type PricelistsSubDocument
-} from '$lib/models/pricelists.model';
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import { getMonetaryValue, setMonetaryValue } from '$lib/services/monetary';
+import { setMonetaryValue } from '$lib/services/monetary';
+import prisma from '$lib/prisma/client';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
@@ -18,9 +14,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 			});
 		}
 
-		const reqPricelists: Array<PricelistsDocument> = await PricelistsModel.find();
+		const pricelistsQuery = await prisma.pricelists.findMany()
 
-		return new Response(JSON.stringify(reqPricelists));
+		return new Response(JSON.stringify(pricelistsQuery));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
@@ -48,7 +44,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const reqPricelists = await request.json();
 
-		const pricelists = reqPricelists.pricelists.map((list) => {
+		const { pricelists, ...restPricelist } = reqPricelists
+
+		const subPrices = reqPricelists.pricelists.map((list: any) => {
 			return {
 				...list,
 				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
@@ -56,19 +54,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			};
 		});
 
-		reqPricelists.pricelists = pricelists;
+		const pricelistsQuery = await prisma.pricelists.create({
+			data: {
+				...restPricelist,
+				createdBy: createDBy,
+				PricelistSubList: { createMany: { data: subPrices } }
+			}
+		})
 
-		reqPricelists.createdBy = createDBy;
-
-		/**
-		 * TODO: Validation
-		 */
-
-		const newPricelists = new PricelistsModel(reqPricelists);
-
-		const res = await newPricelists.save();
-
-		return new Response(JSON.stringify(res));
+		return new Response(JSON.stringify(pricelistsQuery));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);
@@ -96,18 +90,28 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const reqPricelists = await request.json();
 
-		reqPricelists.createdBy = createDBy;
+		const { pricelists, ...restPricelist } = reqPricelists
 
-		/**
-		 * TODO: Validation
-		 */
+		const subPrices = reqPricelists.pricelists.map((list: any) => {
+			return {
+				...list,
+				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
+				minimumPrice: setMonetaryValue(list.minimumPrice)
+			};
+		});
 
-		const newPricelists = await PricelistsModel.findByIdAndUpdate(
-			{ id: reqPricelists.id },
-			reqPricelists
-		);
+		const pricelistsQuery = await prisma.pricelists.update({
+			where: {
+				id: reqPricelists.id,
+			},
+			data: {
+				...restPricelist,
+				createdBy: createDBy,
+				PricelistSubList: { createMany: { data: subPrices } }
+			}
+		})
 
-		return new Response(JSON.stringify(newPricelists));
+		return new Response(JSON.stringify(pricelistsQuery));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

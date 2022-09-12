@@ -1,4 +1,3 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types'
 import { deleteSessionCookies, deleteSessions } from '$lib/services/session.services'
 import logger from '$lib/utility/logger'
