@@ -180,7 +180,7 @@
 					<div class="p-2">
 						<p class="p-2 text-sm font-semibold text-pickled-bluewood-500">Phone</p>
 						<p class="p-2 text-sm text-pickled-bluewood-500">
-							{contact.phone ? contact.phone : '...'}
+							{contact.phone ? contact.phone.map((item) => item.phone).join(', ') : '...'}
 						</p>
 					</div>
 					<div class="p-2">

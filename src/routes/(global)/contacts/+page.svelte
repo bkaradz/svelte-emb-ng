@@ -75,6 +75,7 @@
 	];
 
 	let contacts: ContentIterface;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 78 ~ contacts', contacts);
 	let limit = 15;
 	let currentGlobalParams: getContactsInterface = {
 		limit,
@@ -441,8 +442,8 @@
 									<tr
 										class="border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 									>
-										{#each tableHeadings as header (header.id)}
-											<th class="px-2 py-2">{header.name}</th>
+										{#each tableHeadings as header (header?.id)}
+											<th class="px-2 py-2">{header?.name}</th>
 										{/each}
 									</tr>
 								</thead>
@@ -452,13 +453,13 @@
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
 											<td class="px-2 py-1">{contact.name}</td>
+											<td class="px-2 py-1">
+												{contact?.organizationID ? contact?.organizationID : '...'}
+											</td>
 											<td class="px-2 py-1"
-												>{contact?.organizationID[0]?.name
-													? contact?.organizationID[0]?.name
-													: '...'}</td
+												>{contact?.phone.map((item) => item.phone).join(', ')}</td
 											>
-											<td class="px-2 py-1">{contact.phone}</td>
-											<td class="px-2 py-1">{!contact.email ? '...' : contact.email}</td>
+											<td class="px-2 py-1">{!contact?.email ? '...' : contact?.email}</td>
 
 											<td class="px-2 py-1">
 												<input
@@ -470,17 +471,17 @@
 												/>
 											</td>
 											<td class="px-2 py-1">
-												{!contact.vatOrBpNo ? '...' : contact.vatOrBpNo}
+												{!contact?.vatOrBpNo ? '...' : contact?.vatOrBpNo}
 											</td>
-											<td class="px-2 py-1 text-right">{format(contact.balanceDue)}</td>
-											<td class="px-2 py-1 text-right">{format(contact.totalReceipts)}</td>
+											<td class="px-2 py-1 text-right">{format(contact?.balanceDue)}</td>
+											<td class="px-2 py-1 text-right">{format(contact?.totalReceipts)}</td>
 											<td class="flex items-center justify-end px-2 py-1">
 												<span class="rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
 													>Invoiced</span
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewContact(contact.id)}
+												<button class=" m-0 p-0" on:click={() => viewContact(contact?.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button

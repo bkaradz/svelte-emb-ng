@@ -17,6 +17,7 @@
 	];
 
 	let contacts: Array<Partial<any>> = [];
+	$: console.log('🚀 ~ file: +page.svelte ~ line 20 ~ contacts', contacts);
 	let isEditableID = null;
 
 	const getUsers = async () => {
@@ -136,7 +137,7 @@
 									type="email"
 									name="email"
 									disabled={!(isEditableID === list.id)}
-									bind:value={list.email}
+									bind:value={list.email[0].email}
 								/>
 							</td>
 							<td class="px-2 py-1">
@@ -145,7 +146,7 @@
 									type="text"
 									name="phone"
 									disabled={!(isEditableID === list.id)}
-									bind:value={list.phone}
+									bind:value={list.phone[0].phone}
 								/>
 							</td>
 							<td class="px-2 py-1">
@@ -154,7 +155,7 @@
 									type="text"
 									name="address"
 									disabled={!(isEditableID === list.id)}
-									bind:value={list.address}
+									bind:value={list.address[0].address}
 								/>
 							</td>
 							<td class="px-2 py-1">

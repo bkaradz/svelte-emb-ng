@@ -1,9 +1,10 @@
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import { z } from "zod";
+import { z, type TypeOf } from "zod";
 import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
+import normalizePhone from '$lib/utility/normalizePhone.util';
 
 
 const ContactsSchema = z.object({
@@ -27,7 +28,7 @@ export const querySelection = (reqContact: any, createDBy: string) => {
 		email = email.split(',').map((data: string) => { return { email: data.trim() } });
 	}
 	if (phone) {
-		phone = phone.split(',').map((data: string) => { return { phone: data.trim() } });
+		phone = normalizePhone(phone);
 	}
 	if (address) {
 		address = address.split(',').map((data: string) => { return { address: data.trim() } });
@@ -35,7 +36,7 @@ export const querySelection = (reqContact: any, createDBy: string) => {
 
 	let contact: Prisma.ContactsCreateInput
 
-	const contactConstants = {
+	contact = {
 		name,
 		createdBy: createDBy,
 		isActive: true,
@@ -44,46 +45,46 @@ export const querySelection = (reqContact: any, createDBy: string) => {
 
 	if (email) {
 		contact = {
-			...contactConstants,
+			...contact,
 			email: { createMany: { data: email } },
 		}
 	}
 	if (phone) {
 		contact = {
-			...contactConstants,
+			...contact,
 			phone: { createMany: { data: phone } },
 		}
 	}
 	if (address) {
 		contact = {
-			...contactConstants,
+			...contact,
 			address: { createMany: { data: address } },
 		}
 	}
 	if (email && phone) {
 		contact = {
-			...contactConstants,
+			...contact,
 			email: { createMany: { data: email } },
 			phone: { createMany: { data: phone } },
 		}
 	}
 	if (email && address) {
 		contact = {
-			...contactConstants,
+			...contact,
 			email: { createMany: { data: email } },
 			address: { createMany: { data: address } },
 		}
 	}
 	if (phone && address) {
 		contact = {
-			...contactConstants,
+			...contact,
 			phone: { createMany: { data: phone } },
 			address: { createMany: { data: address } },
 		}
 	}
 	if (email && phone && address) {
 		contact = {
-			...contactConstants,
+			...contact,
 			email: { createMany: { data: email } },
 			phone: { createMany: { data: phone } },
 			address: { createMany: { data: address } },
@@ -130,6 +131,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const objectKeys = Object.keys(finalQuery)[0];
 
+		let whereQuery
+
+		if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+			whereQuery = {
+				equals: finalQuery[objectKeys] === 'true',
+			}
+		} else {
+			whereQuery = {
+				contains: finalQuery[objectKeys],
+				mode: 'insensitive'
+			}
+		}
+
 		let query: any
 		let queryTotal: any
 
@@ -138,10 +152,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				take: limit,
 				skip: page - 1,
 				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
+					[objectKeys]: whereQuery,
+				},
+				include: {
+					email: true,
+					phone: true,
+					address: true
 				},
 				orderBy: {
 					name: 'asc',
@@ -149,16 +165,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 			queryTotal = {
 				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
+					[objectKeys]: whereQuery,
 				},
 			}
 		} else {
 			query = {
 				take: limit,
 				skip: page - 1,
+				include: {
+					email: true,
+					phone: true,
+					address: true
+				},
 				orderBy: {
 					name: 'asc',
 				},

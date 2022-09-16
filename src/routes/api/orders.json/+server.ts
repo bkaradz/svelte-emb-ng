@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					},
 				},
 				orderBy: {
-					name: 'asc',
+					id: 'asc',
 				},
 			}
 			queryTotal = {
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				take: limit,
 				skip: page - 1,
 				orderBy: {
-					name: 'asc',
+					id: 'asc',
 				},
 			}
 			queryTotal = {}

@@ -2,6 +2,7 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import '../../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
 	import { svgSignIn, svgSignUp } from '$lib/utility/svgLogos';
 	import logger from '$lib/utility/logger';

@@ -33,24 +33,6 @@
 		groupList = groupList;
 	}
 
-	// const handleSubmit = async (option) => {
-	// 	try {
-	// 		const res = await fetch('/api/options.json', {
-	// 			method: 'POST',
-	// 			body: JSON.stringify(option),
-	// 			headers: { 'Content-Type': 'application/json' }
-	// 		});
-
-	// 		if (res.ok) {
-	// 			// const data = await res.json();
-	// 			toasts.add({ message: 'The Option was added', type: 'success' });
-	// 		}
-	// 	} catch (err: any) {
-	// 		logger.error(err.messages);
-	// 		toasts.add({ message: 'An error has occured while adding the contact', type: 'error' });
-	// 	}
-	// };
-
 	const heandleEditable = async (list: Partial<OptionsDocument>) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;

@@ -1,10 +1,7 @@
-// import { connectDB } from '$lib/database/mongooseDB';
 import * as cookie from 'cookie';
 import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
 import type { Handle } from '@sveltejs/kit';
-
-// connectDB();
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');

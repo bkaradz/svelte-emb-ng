@@ -1,5 +1,5 @@
 {
-  "MONGODB_URI": "mongodb://127.0.0.1:27017/testdb",
+  "DATABASE_URL": "postgresql://postgres:karadz@localhost:5432/embTestPrisma",
   "sameSite": "lax",
   "secure": false,
   "httpOnly": false

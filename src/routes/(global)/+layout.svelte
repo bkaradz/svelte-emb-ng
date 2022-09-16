@@ -2,7 +2,7 @@
 	import { toggleMenu } from '$lib/stores/sideMenu.store';
 	import Menu from '$lib/components/Menu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
-	import '../styles/app.css';
+	import '../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
