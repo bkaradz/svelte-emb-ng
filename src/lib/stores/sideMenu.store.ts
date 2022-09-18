@@ -1,4 +1,4 @@
-import { writable, readable } from 'svelte/store';
+import { readable } from 'svelte/store';
 
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -9,10 +9,11 @@ import {
 	svgAdjustments,
 	svgDocReport,
 	svgDollar,
-	svgClipboardList
+	svgClipboardList,
+	svgCart,
+	svgFloppy,
+	svgDocumentSearch
 } from '$lib/utility/svgLogos';
-
-export const toggleMenu = writable<boolean>(false);
 
 const anchorTags = [
 	{
@@ -35,6 +36,12 @@ const anchorTags = [
 	},
 	{
 		id: uuidv4(),
+		url: '/cart',
+		name: 'Cart',
+		icon: svgCart
+	},
+	{
+		id: uuidv4(),
 		url: '/orders',
 		name: 'Sales',
 		icon: svgDollar
@@ -43,7 +50,7 @@ const anchorTags = [
 		id: uuidv4(),
 		url: '/reports',
 		name: 'Reports',
-		icon: svgDocReport
+		icon: svgDocumentSearch
 	},
 	{
 		id: uuidv4(),

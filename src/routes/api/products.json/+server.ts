@@ -93,6 +93,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return new Response(JSON.stringify({ results: productsQuery, next, totalPages, previous, current, totalRecords, limit }));
 
 	} catch (err: any) {
+		console.log('object', err);
 		logger.error(`Error: ${err.message}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

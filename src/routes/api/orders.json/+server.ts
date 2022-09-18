@@ -45,18 +45,27 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let query: any
 		let queryTotal: any
 
+		const commonQuery = {
+			take: limit,
+			skip: page - 1,
+			include: {
+				customerContact: true,
+				Pricelists: true,
+				OrderLine: true,
+			},
+			orderBy: {
+				id: 'asc',
+			},
+		}
+
 		if (objectKeys) {
 			query = {
-				take: limit,
-				skip: page - 1,
+				...commonQuery,
 				where: {
 					[objectKeys]: {
 						contains: finalQuery[objectKeys],
 						mode: 'insensitive'
 					},
-				},
-				orderBy: {
-					id: 'asc',
 				},
 			}
 			queryTotal = {
@@ -69,11 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				take: limit,
-				skip: page - 1,
-				orderBy: {
-					id: 'asc',
-				},
+				...commonQuery
 			}
 			queryTotal = {}
 		}
@@ -121,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// check that the pricelist exist
 		const pricelist = await prisma.pricelists.findUnique({
 			where: {
-				id: reqOrder.pricelistID
+				id: reqOrder.pricelistsID
 			}
 		})
 
@@ -137,7 +142,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
 		const customerExist = await prisma.contacts.findUnique({
 			where: {
-				id: reqOrder.customerID
+				id: reqOrder.customersID
 			}
 		})
 
@@ -150,15 +155,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const calcOrder = await calculateOrder(reqOrder, pricelist);
+		const calcOrder = await calculateOrder(reqOrder);
 
-		const newOrder = new OrdersModel(calcOrder);
+		// const newOrder = new OrdersModel(calcOrder);
 
-		newOrder.createdBy = createDBy;
+		// newOrder.createdBy = createDBy;
 
-		await newOrder.save();
+		// await newOrder.save();
 
-		return new Response(JSON.stringify(newOrder));
+		const { orderLine, ...restOrder } = reqOrder
+
+		const orderQuery = await prisma.orders.create({
+			data: {
+				...restOrder,
+				createdBy: createDBy,
+				OrderLine: {
+					createMany: { data: calcOrder }
+				}
+			}
+		})
+
+		return new Response(JSON.stringify(orderQuery));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

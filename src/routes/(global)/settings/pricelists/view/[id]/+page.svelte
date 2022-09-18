@@ -21,6 +21,7 @@
 	const endpoint = `/api/pricelists/${$page.params.id}.json`;
 
 	let pricelist: any;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 24 ~ pricelist', pricelist);
 
 	let selectedGroup = 'all';
 
@@ -41,6 +42,7 @@
 			const res = await fetch(endpoint);
 			if (res.ok) {
 				const tempPricelist = await res.json();
+
 				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
 			}
 		} catch (err: any) {
@@ -115,7 +117,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.pricelists as list (list.id)}
+							{#each pricelist.PricelistSubList as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"

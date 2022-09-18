@@ -2,7 +2,7 @@
 	import type { OptionsDocument } from '$lib/models/options.models';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
-	import { svgDocumentAdd, svgPencil, svgPlus, svgXSmall } from '$lib/utility/svgLogos';
+	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -226,13 +226,13 @@
 								<td class="p-1 text-center ">
 									<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
 										<span class="fill-current text-pickled-bluewood-500">
-											{@html isEditableID === list.id ? svgDocumentAdd : svgPencil}
+											{@html isEditableID === list.id ? svgFloppy : svgPencil}
 										</span>
 									</button>
 								</td>
 								<td class="p-1 text-center ">
 									<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
-										<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span>
+										<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 									</button>
 								</td>
 							</tr>

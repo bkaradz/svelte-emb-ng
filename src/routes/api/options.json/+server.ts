@@ -145,7 +145,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 
     const optionsQuery = await prisma.options.update({
       where: {
-        id: reqOptions.id,
+        id: parseInt(reqOptions.id)
       },
       data: option,
     })
@@ -184,7 +184,7 @@ export const DELETE: RequestHandler = async ({
 
     const optionsQuery = await prisma.options.update({
       where: {
-        id: reqOptions.id,
+        id: parseInt(reqOptions.id)
       },
       data: { isActive: false }
     })

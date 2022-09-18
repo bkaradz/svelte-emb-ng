@@ -8,7 +8,7 @@
 	import logger from '$lib/utility/logger';
 	import Input from '$lib/components/Input.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
-	import { svgDocumentAdd, svgPencil, svgPlus, svgXSmall } from '$lib/utility/svgLogos';
+	import { svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { v4 as uuidv4 } from 'uuid';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
@@ -36,9 +36,9 @@
 
 	let isEditableID = null;
 
-	$: if (pricelist?.pricelists?.length) {
+	$: if (pricelist?.PricelistSubList?.length) {
 		groupList = new Set(['all']);
-		pricelist.pricelists.forEach((list) => {
+		pricelist.PricelistSubList.forEach((list) => {
 			groupList.add(list.embroideryTypes);
 		});
 		groupList = groupList;
@@ -69,7 +69,7 @@
 	const heandleEditable = async (list: any) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
-			pricelist.pricelists = pricelist.pricelists.map((plist) => {
+			pricelist.PricelistSubList = pricelist.PricelistSubList.map((plist) => {
 				if (plist.id === list.id) {
 					return {
 						...plist,
@@ -81,7 +81,7 @@
 			});
 		} else {
 			isEditableID = null;
-			pricelist.pricelists = pricelist.pricelists.map((plist) => {
+			pricelist.PricelistSubList = pricelist.PricelistSubList.map((plist) => {
 				if (plist.id === list.id) {
 					return {
 						...plist,
@@ -98,7 +98,9 @@
 
 	const heandleDelete = (finalData: any) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		pricelist.pricelists = pricelist.pricelists.filter((list) => list.id !== finalData.id);
+		pricelist.PricelistSubList = pricelist.PricelistSubList.filter(
+			(list) => list.id !== finalData.id
+		);
 		// deleteOption(finalData);
 	};
 
@@ -109,8 +111,8 @@
 
 		isEditableID = id;
 		idToRemove.push(id);
-		pricelist.pricelists = [
-			...pricelist.pricelists,
+		pricelist.PricelistSubList = [
+			...pricelist.PricelistSubList,
 			{
 				id: id,
 				embroideryTypes: selectedGroup,
@@ -123,7 +125,7 @@
 
 	const headleSubmit = async () => {
 		try {
-			pricelist.pricelists = pricelist.pricelists.map((pList) => {
+			pricelist.PricelistSubList = pricelist.PricelistSubList.map((pList) => {
 				if (idToRemove.includes(pList.id)) {
 					delete pList.id;
 					idToRemove = idToRemove.filter((list) => list !== pList.id);
@@ -214,7 +216,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.pricelists as list (list.id)}
+							{#each pricelist.PricelistSubList as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
@@ -261,15 +263,14 @@
 												on:click|preventDefault={() => heandleEditable(list)}
 											>
 												<span class="fill-current text-pickled-bluewood-500">
-													{@html isEditableID === list.id ? svgDocumentAdd : svgPencil}
+													{@html isEditableID === list.id ? svgTrash : svgPencil}
 												</span>
 											</button>
 										</td>
 
 										<td class="p-1 text-center ">
 											<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
-												<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span
-												>
+												<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 											</button>
 										</td>
 									</tr>

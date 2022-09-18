@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		svgCart,
 		svgChevronLeft,
 		svgChevronRight,
 		svgGrid,
@@ -26,7 +27,6 @@
 				productCategories: string;
 				stitches: string;
 				utilisation: Number;
-				quantity: string;
 				isActive: boolean;
 			}
 		];
@@ -64,7 +64,7 @@
 		goto(`/products/add`);
 	};
 
-	let gridView = false;
+	let gridView = true;
 	let searchInputValue = '';
 	let searchOption = 'name';
 
@@ -74,7 +74,7 @@
 		id: 'Product ID',
 		description: 'Description',
 		unitPrice: 'Unit Price',
-		quantity: 'Quantity',
+		units: 'Units',
 		productCategories: 'Category'
 	};
 
@@ -224,12 +224,12 @@
 									<MenuItem let:active>
 										<a
 											on:click={heandleSearchSelection}
-											name="quantity"
+											name="units"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
 											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
 											role="menuitem"
-											id="menu-item-6">Quantity</a
+											id="menu-item-6">Units</a
 										>
 									</MenuItem>
 								</div>
@@ -364,15 +364,24 @@
 			{#if gridView}
 				{#each products.results as product (product.id)}
 					<div
-						on:click|preventDefault={() => viewProducts(product.id)}
-						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
+						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
-							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
+							<h4
+								class="relative truncate w-full pt-6 pb-0 px-5 text-base font-medium text-pickled-bluewood-600"
+							>
+								<span
+									class="absolute top-3 left-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+									>{product?.id}</span
+								>
+								<span
+									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
+									>{@html svgCart}</span
+								>
 								{product?.name}
 							</h4>
 						</div>
-						{#if product?.productCategories === 'embLogo'}
+						{#if product?.productCategories === 'embroidery'}
 							<div
 								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
 							>
@@ -388,9 +397,9 @@
 								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
 							>
 								<div class="p-1">
-									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">QUANTITY</p>
+									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">UNITS</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-										{!product?.quantity ? '...' : product.quantity}
+										{!product?.units ? '...' : product.units}
 									</span>
 								</div>
 								<div class="p-1">
@@ -414,14 +423,15 @@
 									<tr
 										class=" sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 									>
-										<th class="px-2 py-2">Product ID</th>
+										<th class="px-2 py-2">ID</th>
 										<th class="px-2 py-2">Name</th>
 										<th class="px-2 py-2">Stitches</th>
 										<th class="px-2 py-2">Description</th>
-										<th class="px-2 py-2">Quantity</th>
+										<th class="px-2 py-2">Units</th>
 										<th class="px-2 py-2">Unit Price</th>
-										<th class="px-2 py-2">Utilisation</th>
-										<th class="px-2 py-2">View</th>
+										<th class="px-2 py-2 text-center">Utilisation</th>
+										<th class="px-2 py-2 text-center">Cart</th>
+										<th class="px-2 py-2 text-center">View</th>
 									</tr>
 								</thead>
 								<tbody class="overflow-y-auto">
@@ -437,16 +447,23 @@
 												{!product.description ? '...' : product.description}
 											</td>
 											<td class="px-2 py-1">
-												{!product.quantity ? '...' : product.quantity}
+												{!product.units ? '...' : product.units}
 											</td>
-											<td class="px-2 py-1 text-right"
-												>{!product.unitPrice ? '...' : format(product.unitPrice)}</td
-											>
+											<td class="px-2 py-1 text-right">
+												{!product.unitPrice ? '...' : format(product.unitPrice)}
+											</td>
 
-											<td class="px-2 py-1">
+											<td class="px-2 py-1 text-center">
 												<span
 													class="whitespace-nowrap rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
 													>{product.utilisation} times</span
+												>
+											</td>
+											<td class="py-1 text-center">
+												<button
+													class=" m-0 p-0"
+													on:click|preventDefault={() => viewProducts(product.id)}
+													><span class="fill-current text-danger">{@html svgCart}</span></button
 												>
 											</td>
 											<td class="py-1 text-center">

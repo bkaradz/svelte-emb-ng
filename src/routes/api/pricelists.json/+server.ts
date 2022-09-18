@@ -14,7 +14,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 			});
 		}
 
-		const pricelistsQuery = await prisma.pricelists.findMany()
+		const pricelistsQuery = await prisma.pricelists.findMany({
+			include: {
+				PricelistSubList: true
+			}
+		})
 
 		return new Response(JSON.stringify(pricelistsQuery));
 

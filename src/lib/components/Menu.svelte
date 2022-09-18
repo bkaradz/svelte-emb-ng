@@ -1,22 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	// import { session } from '$app/stores';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgBellSolid, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 
 	let signInMenuOpen = false;
-	// function handleClick() {
-	// 	signInMenuOpen = !signInMenuOpen;
-	// }
-	// $: signInMenuOpen;
-
-	// function handleClickOutside(event: any) {
-	// 	if (signInMenuOpen) {
-	// 		signInMenuOpen = !signInMenuOpen;
-	// 	}
-	// }
 
 	function handleKeyDown(event: { key: string }) {
 		if (event.key === 'Escape') {

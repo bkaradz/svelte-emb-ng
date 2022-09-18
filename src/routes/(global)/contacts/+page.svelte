@@ -62,20 +62,20 @@
 	}
 
 	const tableHeadings = [
-		{ id: 1, name: 'Customer', dbName: 'name' },
-		{ id: 2, name: 'Organization', dbName: 'organizationID' },
-		{ id: 3, name: 'Phone', dbName: 'phone' },
-		{ id: 4, name: 'Email', dbName: 'email' },
-		{ id: 5, name: 'Corporate', dbName: 'isCorporate' },
-		{ id: 6, name: 'Vat No', dbName: 'vatOrBpNo' },
-		{ id: 7, name: 'Balance Due', dbName: 'balanceDue' },
-		{ id: 8, name: 'Total Receipts', dbName: 'totalReceipts' },
-		{ id: 9, name: 'State', dbName: null },
-		{ id: 10, name: 'View', dbName: null }
+		{ id: 1, name: 'ID', dbName: 'id' },
+		{ id: 2, name: 'Customer', dbName: 'name' },
+		{ id: 3, name: 'Organization', dbName: 'organizationID' },
+		{ id: 4, name: 'Phone', dbName: 'phone' },
+		{ id: 5, name: 'Email', dbName: 'email' },
+		{ id: 6, name: 'Corporate', dbName: 'isCorporate' },
+		{ id: 7, name: 'Vat No', dbName: 'vatOrBpNo' },
+		{ id: 8, name: 'Balance Due', dbName: 'balanceDue' },
+		{ id: 9, name: 'Total Receipts', dbName: 'totalReceipts' },
+		{ id: 10, name: 'State', dbName: null },
+		{ id: 11, name: 'View', dbName: null }
 	];
 
 	let contacts: ContentIterface;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 78 ~ contacts', contacts);
 	let limit = 15;
 	let currentGlobalParams: getContactsInterface = {
 		limit,
@@ -408,8 +408,14 @@
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
-							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
-								{contact.name}
+							<h4
+								class="relative truncate pt-6 pb-2 px-5 text-base font-medium text-pickled-bluewood-600"
+							>
+								<span
+									class="absolute top-3 left-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+									>{contact?.id}</span
+								>
+								{contact?.name}
 							</h4>
 						</div>
 						<div
@@ -418,14 +424,14 @@
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(contact.balanceDue)}
+									{format(contact?.balanceDue)}
 									<!-- ${contact.balanceDue} -->
 								</span>
 							</div>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(contact.totalReceipts)}
+									{format(contact?.totalReceipts)}
 									<!-- ${contact.totalReceipts} -->
 								</span>
 							</div>
@@ -452,6 +458,7 @@
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
+											<td class="px-2 py-1">{contact.id}</td>
 											<td class="px-2 py-1">{contact.name}</td>
 											<td class="px-2 py-1">
 												{contact?.organizationID ? contact?.organizationID : '...'}

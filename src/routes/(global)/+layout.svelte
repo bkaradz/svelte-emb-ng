@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { toggleMenu } from '$lib/stores/sideMenu.store';
 	import Menu from '$lib/components/Menu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import '../../styles/app.css';
@@ -32,7 +31,7 @@
 	});
 </script>
 
-<div class="app flex h-screen {$toggleMenu ? 'big-menu' : 'small-menu'}">
+<div class="app flex h-screen small-menu">
 	<SideMenu />
 	<Menu />
 	<main class="main z-0 flex flex-1 overflow-hidden bg-royal-blue-50 p-6">
@@ -54,10 +53,6 @@
 
 	.small-menu {
 		grid-template-columns: 60px 1fr;
-	}
-
-	.big-menu {
-		grid-template-columns: 200px 1fr;
 	}
 
 	.main {

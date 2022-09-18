@@ -39,7 +39,6 @@
 	// 	unitPrice: number | string;
 	// 	productCategories: { name: string; value: string };
 	// 	stitches: number | string;
-	// 	quantity: number | string;
 	// 	isActive: boolean;
 	// }
 
@@ -49,7 +48,7 @@
 		unitPrice: 0,
 		productCategories: { name: '', value: '' },
 		stitches: 0,
-		quantity: 0,
+		units: 0,
 		isActive: true
 	};
 
@@ -221,12 +220,12 @@
 				{/if}
 				{#if formData?.productCategories?.value !== 'embroidery'}
 					<Input
-						name="quantity"
+						name="units"
 						label="Quantity"
 						type="number"
-						bind:value={formData.quantity}
-						messages={result.getErrors('quantity')}
-						validityClass={cn('quantity')}
+						bind:value={formData.units}
+						messages={result.getErrors('units')}
+						validityClass={cn('units')}
 					/>
 				{/if}
 				<div class="mt-6 flex space-x-2">

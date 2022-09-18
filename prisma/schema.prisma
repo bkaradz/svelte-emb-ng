@@ -12,11 +12,11 @@ datasource db {
 }
 
 model Contacts {
-  id                   String       @id @default(uuid())
-  createdBy            String?
+  id                   Int          @id @default(autoincrement())
+  createdBy            Int?
   user                 Contacts?    @relation("userCreatedBy", fields: [createdBy], references: [id])
   UserContacts         Contacts[]   @relation("userCreatedBy")
-  organisationID       String?
+  organisationID       Int?
   organisation         Contacts?    @relation("organisation", fields: [organisationID], references: [id])
   organisationContacts Contacts[]   @relation("organisation")
   name                 String       @unique
@@ -43,46 +43,46 @@ model Contacts {
 }
 
 model Phone {
-  id         String   @id @default(uuid())
+  id         Int      @id @default(autoincrement())
   phone      String   @unique
   Contacts   Contacts @relation(fields: [contactsId], references: [id])
-  contactsId String
+  contactsId Int
 }
 
 model Email {
-  id         String    @id @default(uuid())
+  id         Int       @id @default(autoincrement())
   email      String    @unique
   Contacts   Contacts? @relation(fields: [contactsId], references: [id])
-  contactsId String?
+  contactsId Int?
 }
 
 model Address {
-  id         String    @id @default(uuid())
+  id         Int       @id @default(autoincrement())
   address    String
   Contacts   Contacts? @relation(fields: [contactsId], references: [id])
-  contactsId String?
+  contactsId Int?
 }
 
 model Sessions {
-  id         String    @id @default(uuid())
+  id         Int       @id @default(autoincrement())
   valid      Boolean   @default(true)
   userAgent  String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt()
   Contacts   Contacts? @relation(fields: [contactsId], references: [id])
-  contactsId String?
+  contactsId Int?
 }
 
 model Products {
   id                Int         @id @default(autoincrement())
   Contacts          Contacts    @relation(fields: [createdBy], references: [id])
-  createdBy         String
+  createdBy         Int
   name              String      @unique
   description       String?
   unitPrice         Json?       @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   productCategories String
   stitches          Int?
-  quantity          Int?
+  units             Int?
   isActive          Boolean
   utilisation       Int?        @default(0)
   createdAt         DateTime    @default(now())
@@ -91,9 +91,9 @@ model Products {
 }
 
 model Options {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   Contacts  Contacts @relation(fields: [createdBy], references: [id])
-  createdBy String
+  createdBy Int
   group     String
   isActive  Boolean  @default(true)
   isDefault Boolean  @default(false)
@@ -104,9 +104,9 @@ model Options {
 }
 
 model Pricelists {
-  id               String             @id @default(uuid())
+  id               Int                @id @default(autoincrement())
   Contacts         Contacts           @relation(fields: [createdBy], references: [id])
-  createdBy        String
+  createdBy        Int
   name             String             @unique
   isActive         Boolean            @default(true)
   isDefault        Boolean            @default(false)
@@ -117,30 +117,30 @@ model Pricelists {
 }
 
 model PricelistSubList {
-  id                       String      @id @default(uuid())
+  id                       Int         @id @default(autoincrement())
   minimumPrice             Json        @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   pricePerThousandStitches Json        @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   minimumQuantity          Int         @default(0)
   embroideryTypes          String
   Pricelists               Pricelists? @relation(fields: [pricelistsId], references: [id])
-  pricelistsId             String?
+  pricelistsId             Int?
 }
 
 model Orders {
   id              Int         @id @default(autoincrement())
   createdOrder    Contacts    @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy       String
-  customerContact Contacts    @relation("customerID", fields: [customerID], references: [id])
-  customerID      String
+  createdBy       Int
+  customerContact Contacts    @relation("customerID", fields: [customersID], references: [id])
+  customersID     Int
+  Pricelists      Pricelists  @relation(fields: [pricelistsID], references: [id])
+  pricelistsID    Int
   comment         String?
   isActive        Boolean
   orderDate       DateTime    @default(now())
-  deliveryDate    DateTime
+  deliveryDate    DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt()
   accountsStatus  String
-  Pricelists      Pricelists  @relation(fields: [pricelistsID], references: [id])
-  pricelistsID    String
   OrderLine       OrderLine[]
 }
 

@@ -57,7 +57,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
     const allUsers = await prisma.contacts.update({
       where: {
-        id: userUpdate.id
+        id: parseInt(userUpdate.id)
       },
       data: {
         ...userUpdate
@@ -92,7 +92,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
     const userD = await prisma.contacts.update({
       where: {
-        id: userDelete.id
+        id: parseInt(userDelete.id)
       },
       data: {
         isActive: false

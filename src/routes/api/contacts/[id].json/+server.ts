@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
     const contact = await prisma.contacts.findUnique({
       where: {
-        id: params.id
+        id: parseInt(params.id)
       },
       include: {
         email: true,

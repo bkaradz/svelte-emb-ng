@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
-	import { svgLockClosed, svgPencil, svgXSmall } from '$lib/utility/svgLogos';
+	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 
 	const tableHeadings = [
@@ -17,7 +17,6 @@
 	];
 
 	let contacts: Array<Partial<any>> = [];
-	$: console.log('🚀 ~ file: +page.svelte ~ line 20 ~ contacts', contacts);
 	let isEditableID = null;
 
 	const getUsers = async () => {
@@ -192,7 +191,7 @@
 							</td>
 							<td class="p-1 text-center ">
 								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
-									<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span>
+									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>
 						</tr>

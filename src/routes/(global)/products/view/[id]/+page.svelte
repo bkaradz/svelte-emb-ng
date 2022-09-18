@@ -116,7 +116,7 @@
 					<div class="p-2">
 						<p class="p-1 text-sm font-semibold text-pickled-bluewood-500">Quantity</p>
 						<p class="p-1 text-sm text-pickled-bluewood-500">
-							{product?.quantity ? product.quantity : '...'}
+							{product?.units ? product.units : '...'}
 						</p>
 					</div>
 				</div>

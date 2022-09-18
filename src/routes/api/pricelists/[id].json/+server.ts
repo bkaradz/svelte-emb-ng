@@ -14,9 +14,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       });
     }
 
-    const pricelistsQuery = await prisma.pricelists.findMany({
+    const pricelistsQuery = await prisma.pricelists.findUnique({
       where: {
-        id: params.id,
+        id: parseInt(params.id)
       },
       include: {
         PricelistSubList: true

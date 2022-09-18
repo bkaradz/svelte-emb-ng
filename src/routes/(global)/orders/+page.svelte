@@ -63,13 +63,13 @@
 	// }
 
 	const tableHeadings = [
-		{ id: 1, name: 'Order Number', dbName: 'orderID' },
+		{ id: 1, name: 'Order #', dbName: 'orderID' },
 		{ id: 2, name: 'Customer', dbName: 'customerID' },
 		{ id: 3, name: 'Pricelist', dbName: 'pricelistID' },
 		{ id: 4, name: 'Order Date', dbName: 'orderDate' },
-		{ id: 5, name: 'Expiry Date', dbName: 'quoteExpiryDate' },
-		{ id: 6, name: 'Required Date', dbName: 'requiredDate' },
-		{ id: 7, name: 'Balance Due', dbName: 'balance' },
+		{ id: 5, name: 'Delivery Date', dbName: 'deliveryDate' },
+		// { id: 6, name: 'Required Date', dbName: 'requiredDate' },
+		// { id: 7, name: 'Balance Due', dbName: 'balance' },
 		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
 		{ id: 9, name: 'View', dbName: null },
 		{ id: 10, name: 'Edit', dbName: null }
@@ -419,7 +419,7 @@
 					>
 						<div class="flex h-full items-center">
 							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
-								{order.orderID}
+								{order?.id}
 							</h4>
 						</div>
 						<div
@@ -428,7 +428,7 @@
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(JSON.parse(order.balance))}
+									<!-- {format(JSON.parse(order?.balance))} -->
 								</span>
 							</div>
 							<div class="p-1">
@@ -460,14 +460,15 @@
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
-											<td class="px-2 py-1">{order.orderID}</td>
-											<td class="px-2 py-1">{order?.customerID[0]?.name}</td>
-											<td class="px-2 py-1">{order?.pricelistID[0]?.name}</td>
-											<td class="px-2 py-1">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
-											<td class="px-2 py-1">{dayjs(order?.quoteExpiryDate).format('DD/MM/YYYY')}</td
+											<td class="px-2 py-1">{order?.id}</td>
+											<td class="px-2 py-1"
+												>{`Id: ${order?.customerContact?.id} ~ ${order?.customerContact?.name}`}</td
 											>
-											<td class="px-2 py-1">{dayjs(order?.requiredDate).format('DD/MM/YYYY')}</td>
-											<td class="px-2 py-1 text-right">{format(JSON.parse(order.balance))}</td>
+											<td class="px-2 py-1"
+												>{`Id: ${order?.Pricelists?.id} ~ ${order?.Pricelists?.name} `}</td
+											>
+											<td class="px-2 py-1">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
+											<td class="px-2 py-1">{dayjs(order?.deliveryDate).format('DD/MM/YYYY')}</td>
 											<td class="flex items-center justify-end px-2 py-1">
 												<span
 													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"

@@ -3,7 +3,7 @@
 	import Combobox from '$lib/components/Combobox.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import AddOrder from '$lib/components/orders/addOrder.svelte';
-	import { svgArrow, svgDocumentAdd, svgPencil, svgPlus, svgXSmall } from '$lib/utility/svgLogos';
+	import { svgArrow, svgPencil, svgPlus } from '$lib/utility/svgLogos';
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
 	import { orderItems } from '$lib/stores/order.items.store';

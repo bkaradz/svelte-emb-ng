@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
-	import { svgPencil, svgView, svgXSmall } from '$lib/utility/svgLogos';
+	import { svgPencil, svgTrash, svgView } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 
 	export let tableHeadings = ['Name', 'isActive', 'isDefault', 'View', 'Edit', 'Delete'];
@@ -97,7 +97,7 @@
 							</td>
 							<td class="p-1 text-center ">
 								<button class=" m-0 p-0" on:click={() => heandleDelete(list.id)}>
-									<span class="fill-current text-pickled-bluewood-500">{@html svgXSmall}</span>
+									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>
 						</tr>
