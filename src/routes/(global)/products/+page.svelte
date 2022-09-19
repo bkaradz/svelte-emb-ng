@@ -21,13 +21,13 @@
 	interface productIterface {
 		results: [
 			{
-				id: Number;
+				id: number;
 				name: string;
 				description: string;
 				unitPrice: string;
 				productCategories: string;
 				stitches: string;
-				utilisation: Number;
+				utilisation: number;
 				isActive: boolean;
 			}
 		];
@@ -105,6 +105,7 @@
 
 	const addToCart = (id: number) => {
 		cartItem.add(id);
+		console.log('🚀 ~ file: +page.svelte ~ line 108 ~ addToCart ~ cartItem', [...$cartItem]);
 	};
 </script>
 
@@ -368,8 +369,11 @@
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
 				{#each products.results as product (product.id)}
+					{@const barColor = $cartItem.has(product.id)}
 					<div
-						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
+						class="{barColor
+							? 'border-success'
+							: 'border-royal-blue-500'} flex h-44 w-full max-w-xs grow flex-col border-t-4 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
 							<h4
@@ -383,7 +387,7 @@
 									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
 									>{@html svgCart}</span
 								>
-								{product?.name}
+								{`${product?.name}, ${barColor} `}
 							</h4>
 						</div>
 						{#if product?.productCategories === 'embroidery'}
