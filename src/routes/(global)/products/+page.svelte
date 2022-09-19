@@ -16,6 +16,7 @@
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
+	import { cartItem } from '$lib/stores/cart.store';
 
 	interface productIterface {
 		results: [
@@ -100,6 +101,10 @@
 		} catch (err: any) {
 			logger.error(err.message);
 		}
+	};
+
+	const addToCart = (id: number) => {
+		cartItem.add(id);
 	};
 </script>
 
@@ -462,7 +467,7 @@
 											<td class="py-1 text-center">
 												<button
 													class=" m-0 p-0"
-													on:click|preventDefault={() => viewProducts(product.id)}
+													on:click|preventDefault={() => addToCart(product.id)}
 													><span class="fill-current text-danger">{@html svgCart}</span></button
 												>
 											</td>

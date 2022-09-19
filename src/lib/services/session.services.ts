@@ -54,7 +54,7 @@ export const deleteSessionCookies = () => {
 export async function createSession(createDBy: any, userAgent: string) {
 	const session = await prisma.sessions.create({
 		data: {
-			contactsId: createDBy,
+			contactsId: parseInt(createDBy),
 			userAgent,
 			valid: true
 		}
@@ -65,7 +65,7 @@ export async function createSession(createDBy: any, userAgent: string) {
 export async function findSessions(query: string) {
 	const session = await prisma.sessions.findUnique({
 		where: {
-			id: query,
+			id: parseInt(query),
 		}
 	})
 	return session;
@@ -93,6 +93,10 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 
 	if (!emailRes) {
 		return null;
+	}
+
+	if (!emailRes.contactsId) {
+		throw new Error(`email not found`);
 	}
 
 	const userRes = await prisma.contacts.findUnique({
@@ -138,7 +142,7 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 export async function deleteSessions(createDBy: string) {
 	const session = await prisma.sessions.delete({
 		where: {
-			id: createDBy,
+			id: parseInt(createDBy),
 		}
 	})
 	return session;

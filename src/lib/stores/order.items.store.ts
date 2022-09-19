@@ -1,4 +1,3 @@
-import type { Schema } from 'mongoose';
 import { writable } from 'svelte/store';
 
 const orderItemsIDs = new Set([]);
