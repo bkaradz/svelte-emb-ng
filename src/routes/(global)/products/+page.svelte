@@ -384,17 +384,18 @@
 									>{product?.id}</span
 								>
 								<span
+									on:click|preventDefault={() => addToCart(product.id)}
 									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
 									>{@html svgCart}</span
 								>
-								{`${product?.name}, ${barColor} `}
+								{product?.name}
 							</h4>
 						</div>
 						{#if product?.productCategories === 'embroidery'}
 							<div
 								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
 							>
-								<div class="p-1">
+								<div class="p-1 text-center">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">STITCHES</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
 										{product?.stitches}
@@ -445,8 +446,11 @@
 								</thead>
 								<tbody class="overflow-y-auto">
 									{#each products.results as product (product.id)}
+										{@const barColor = $cartItem.has(product.id)}
 										<tr
-											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+											class="{barColor
+												? 'bg-success odd:bg-success'
+												: ''} whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
 											<td class="px-2 py-1">{product.id}</td>
 											<td class="px-2 py-1">{product.name}</td>

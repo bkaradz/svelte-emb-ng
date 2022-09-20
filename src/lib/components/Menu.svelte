@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { cartItem } from '$lib/stores/cart.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
-	import { svgBellSolid, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
+	import { svgBellSolid, svgCart, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 
 	let signInMenuOpen = false;
@@ -39,6 +40,17 @@
 <div
 	class="menu z-10 flex flex-row items-center justify-end  bg-gradient-to-tl from-royal-blue-500 to-royal-blue-200 drop-shadow-md"
 >
+	<span
+		on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/cart`) : '')}
+		class="relative hover:cursor-pointer mr-8 inline-block text-danger"
+	>
+		{@html svgCart}
+		<span
+			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+			>{$cartItem.size}</span
+		>
+	</span>
+
 	<span class="relative mr-8 inline-block text-info">
 		{@html svgBellSolid}
 		<span
