@@ -162,107 +162,119 @@
 			{/each}
 		{/if}
 	</div>
-	<div class="">
-		<table class="w-full rounded-lg text-left text-sm">
-			<thead>
-				<tr
-					class="sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
-				>
-					{#each tableHeadings as header (header)}
-						<th class="px-2 py-2">{header}</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody class="">
-				{#if optionsList.length}
-					{#each optionsList as list (list.id)}
-						{#if selectedGroup === list.group || selectedGroup === 'all'}
-							<tr
-								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-							>
-								<td class="px-2 py-1">
-									<input
-										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-										type="text"
-										name="group"
-										disabled={!(isEditableID === list.id)}
-										bind:value={list.group}
-									/>
-								</td>
-								<td class="px-2 py-1">
-									<input
-										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-										type="text"
-										name="name"
-										disabled={!(isEditableID === list.id)}
-										bind:value={list.name}
-									/>
-								</td>
-								<td class="px-2 py-1">
-									<input
-										class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-										type="text"
-										name="value"
-										disabled={!(isEditableID === list.id)}
-										bind:value={list.value}
-									/>
-								</td>
-								<td class="px-2 py-1">
-									<input
-										bind:checked={list.isActive}
-										disabled={!(isEditableID === list.id)}
-										type="checkbox"
-										name="isActive"
-									/>
-								</td>
-								<td class="px-2 py-1">
-									<input
-										bind:checked={list.isDefault}
-										disabled={!(isEditableID === list.id)}
-										type="checkbox"
-										name="isDefault"
-									/>
-								</td>
-								<td class="p-1 text-center ">
-									<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
-										<span class="fill-current text-pickled-bluewood-500">
-											{@html isEditableID === list.id ? svgFloppy : svgPencil}
-										</span>
-									</button>
-								</td>
-								<td class="p-1 text-center ">
-									<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
-										<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
-									</button>
-								</td>
-							</tr>
-						{/if}
-					{/each}
-				{/if}
-				<tr
-					class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
-				>
-					<td class="px-2 py-1">Group</td>
-					<td class="px-2 py-1">Name</td>
-					<td class="px-2 py-1">value</td>
-					<td class="px-2 py-1">
-						<input disabled type="checkbox" name="isActive" checked={false} />
-					</td>
-					<td class="px-2 py-1">
-						<input disabled type="checkbox" name="isActive" checked={true} />
-					</td>
-					<td class="px-2 py-1" />
-					<td class="p-1 text-center">
-						<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
-							><span class="flex fill-current text-white">{@html svgPlus} Add Row</span></button
+	<table class="w-full text-left text-sm">
+		<thead>
+			<tr
+				class="sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
+			>
+				{#each tableHeadings as header (header)}
+					<th class="px-2 py-2">{header}</th>
+				{/each}
+			</tr>
+		</thead>
+		<tbody class="scrollHeight">
+			{#if optionsList.length}
+				{#each optionsList as list (list.id)}
+					{#if selectedGroup === list.group || selectedGroup === 'all'}
+						<tr
+							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+							<td class="px-2 py-1">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+									type="text"
+									name="group"
+									disabled={!(isEditableID === list.id)}
+									bind:value={list.group}
+								/>
+							</td>
+							<td class="px-2 py-1">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+									type="text"
+									name="name"
+									disabled={!(isEditableID === list.id)}
+									bind:value={list.name}
+								/>
+							</td>
+							<td class="px-2 py-1">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+									type="text"
+									name="value"
+									disabled={!(isEditableID === list.id)}
+									bind:value={list.value}
+								/>
+							</td>
+							<td class="px-2 py-1">
+								<input
+									bind:checked={list.isActive}
+									disabled={!(isEditableID === list.id)}
+									type="checkbox"
+									name="isActive"
+								/>
+							</td>
+							<td class="px-2 py-1">
+								<input
+									bind:checked={list.isDefault}
+									disabled={!(isEditableID === list.id)}
+									type="checkbox"
+									name="isDefault"
+								/>
+							</td>
+							<td class="p-1 text-center ">
+								<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
+									<span class="fill-current text-pickled-bluewood-500">
+										{@html isEditableID === list.id ? svgFloppy : svgPencil}
+									</span>
+								</button>
+							</td>
+							<td class="p-1 text-center ">
+								<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
+									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
+								</button>
+							</td>
+						</tr>
+					{/if}
+				{/each}
+			{/if}
+			<tr
+				class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
+			>
+				<td class="px-2 py-1">Group</td>
+				<td class="px-2 py-1">Name</td>
+				<td class="px-2 py-1">value</td>
+				<td class="px-2 py-1">
+					<input disabled type="checkbox" name="isActive" checked={false} />
+				</td>
+				<td class="px-2 py-1">
+					<input disabled type="checkbox" name="isActive" checked={true} />
+				</td>
+				<td class="px-2 py-1" />
+				<td class="p-1 text-center">
+					<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+						><span class="flex fill-current text-white">{@html svgPlus} Add Row</span></button
+					>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>
 
 <!-- Table End -->
 <style lang="postcss">
+	thead,
+	tbody {
+		display: block;
+	}
+	tbody td,
+	thead th {
+		width: 350px;
+	}
+
+	tbody {
+		height: 660px;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
 </style>
