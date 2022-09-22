@@ -1,17 +1,16 @@
 import { writable } from 'svelte/store';
 
-
 function addCartItems() {
-  const { subscribe, set, update } = writable<Set<number>>(new Set<number>());
+  const { subscribe, set, update } = writable<Map<number, unknown>>(new Map<number, unknown>());
 
   return {
     subscribe,
-    add: (productId: number) => update((productIds) => productIds.add(productId)),
-    remove: (productId: number) => update((productIds) => {
-      productIds.delete(productId)
-      return productIds
+    add: (product) => update((products) => products.set(product.id, product)),
+    remove: (product) => update((products) => {
+      products.delete(product.id)
+      return products
     }),
-    reset: () => set(new Set<number>())
+    reset: () => set(new Map<number, unknown>())
   };
 }
 

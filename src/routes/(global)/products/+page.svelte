@@ -103,9 +103,8 @@
 		}
 	};
 
-	const addToCart = (id: number) => {
-		cartItem.add(id);
-		console.log('🚀 ~ file: +page.svelte ~ line 108 ~ addToCart ~ cartItem', [...$cartItem]);
+	const addToCart = (item) => {
+		cartItem.add(item);
 	};
 </script>
 
@@ -384,7 +383,7 @@
 									>{product?.id}</span
 								>
 								<span
-									on:click|preventDefault={() => addToCart(product.id)}
+									on:click|preventDefault={() => addToCart(product)}
 									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
 									>{@html svgCart}</span
 								>
@@ -475,7 +474,7 @@
 											<td class="py-1 text-center">
 												<button
 													class=" m-0 p-0"
-													on:click|preventDefault={() => addToCart(product.id)}
+													on:click|preventDefault={() => addToCart(product)}
 													><span class="fill-current text-danger">{@html svgCart}</span></button
 												>
 											</td>

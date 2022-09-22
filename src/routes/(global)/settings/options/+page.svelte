@@ -16,7 +16,7 @@
 
 			if (res.ok) {
 				formElm.reset();
-				toasts.add({ message: 'Contacts uploaded', type: 'success' });
+				toasts.add({ message: 'Options uploaded', type: 'success' });
 			}
 		} catch (err: any) {
 			logger.error(err.messages);
