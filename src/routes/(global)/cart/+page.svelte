@@ -7,28 +7,28 @@
 	let products: any[] = [];
 	$: console.log('🚀 ~ file: +page.svelte ~ line 7 ~ products', products);
 
-	const getProducts = async (paramsObj: any) => {
-		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/cart.json?' + searchParams.toString());
-			if (res.ok) {
-				const resProducts = await res.json();
-				products = resProducts.map((item: any) => {
-					return {...item, amount: 1}
-				})
-			}
+	// const getProducts = async (paramsObj: any) => {
+	// 	try {
+	// 		let searchParams = new URLSearchParams(paramsObj);
+	// 		const res = await fetch('/api/cart.json?' + searchParams.toString());
+	// 		if (res.ok) {
+	// 			const resProducts = await res.json();
+	// 			products = resProducts.map((item: any) => {
+	// 				return {...item, amount: 1}
+	// 			})
+	// 		}
 
-		} catch (err: any) {
-			logger.error(err.message);
-		}
-	};
+	// 	} catch (err: any) {
+	// 		logger.error(err.message);
+	// 	}
+	// };
 
-	onMount(() => {
-		const query = {
-			id: [...$cartItem].join(',')
-		};
-		getProducts(query);
-	});
+	// onMount(() => {
+	// 	const query = {
+	// 		id: [...$cartItem].join(',')
+	// 	};
+	// 	getProducts(query);
+	// });
 
 	let canDecrease = false;
 	const removeItem = (item) => {};
