@@ -17,6 +17,22 @@
 
 	let selectedCurrency;
 
+	const getOptions = async (paramsObj: any) => {
+		try {
+			let searchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/options.json?' + searchParams.toString());
+			return await res.json();
+		} catch (err: any) {
+			logger.error(err.message);
+		}
+	};
+
+	onMount(() => {
+		getOptions({})
+		getOptions({})
+	})
+
+
 	let canDecrease = false;
 	const removeItem = (item) => {
 		cartItem.remove(item);
