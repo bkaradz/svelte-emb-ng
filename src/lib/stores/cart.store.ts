@@ -5,7 +5,7 @@ function addCartItems() {
 
   return {
     subscribe,
-    add: (product) => update((products) => products.set(product.id, { ...product, amount: 1 })),
+    add: (product) => update((products) => products.set(product.id, { ...product, amount: 1, embroideryPositions: 'Front Left', embroideryTypes: 'Flat' })),
     update: (product, payload) => update((products) => products.set(product.id, { ...product, ...payload })),
     remove: (product) => update((products) => {
       products.delete(product.id)

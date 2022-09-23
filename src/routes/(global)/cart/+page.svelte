@@ -4,6 +4,19 @@
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
 
+	const currencies = [
+		{
+			currency: 'USD',
+			symbol: '$'
+		},
+		{
+			currency: 'EUR',
+			symbol: '€'
+		}
+	];
+
+	let selectedCurrency;
+
 	let canDecrease = false;
 	const removeItem = (item) => {
 		cartItem.remove(item);
@@ -19,31 +32,50 @@
 <div class="w-full flex">
 	<div class="cart">
 		{#if Array.from($cartItem.values()).length > 0}
-			<div class="flex px-6 mt-10 mb-5">
-				<span class="w-2/5 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+			<div class="flex items-center justify-between pb-5 border-b">
+				<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
+				<div class="flex items-center">
+					<label class="mr-3 text-sm whitespace-nowrap">
+						Select a currency
+						<select 
+						class="py-1 pl-1 text-sm border-gray-300 rounded-md shadow-sm pr-7 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+						 id="currency" name="currency" bind:value={selectedCurrency}>
+							{#each currencies as currency}
+								<option value={currency}>
+									{`${currency.symbol}, ${currency.currency}`}
+								</option>
+							{/each}
+						</select>
+					</label>
+				</div>
+			</div>
+			<div class="flex px-6 mt-5 mb-5">
+				<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 					Product
 				</span>
-				<span class="w-1/5 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+					Stitches
+				</span>
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+					Emb Type
+				</span>
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+					Emb Position
+				</span>
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
 					Quantity
 				</span>
-				<span class="w-1/5 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
 					Price
 				</span>
-				<span class="w-1/5 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
+				<span class="w-1/6 text-xs font-semibold tracking-wide text-right text-gray-500 uppercase">
 					Total
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
 				{#each Array.from($cartItem.values()) as item (item.id)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
-						<div class="flex w-2/5">
-							<!-- <div class="flex items-center flex-none w-20 p-2 bg-white rounded xl:w-24">
-							<img
-								class="object-contain h-12 mx-auto xl:h-16"
-								src={item.image}
-								alt=""
-							/>
-						</div> -->
+						<div class="flex w-2/6">
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
 								<div>
 									<h2 class="mb-1 text-sm font-bold">{item.name}</h2>
@@ -57,7 +89,16 @@
 								</button>
 							</div>
 						</div>
-						<div class="flex justify-end w-1/5">
+						<span class="w-1/6 text-sm font-semibold text-right">
+							{item?.stitches}
+						</span>
+						<span class="w-1/6 text-sm font-semibold text-right">
+							{item?.embroideryTypes}
+						</span>
+						<span class="w-1/6 text-sm font-semibold text-right">
+							{item?.embroideryPositions}
+						</span>
+						<div class="flex justify-end w-1/6">
 							<button
 								class="border rounded px-1 {!(item.amount > 1)
 									? 'border-gray-500 cursor-not-allowed opacity-10'
@@ -96,10 +137,10 @@
 								</svg>`}
 							</button>
 						</div>
-						<span class="w-1/5 text-sm font-semibold text-right">
+						<span class="w-1/6 text-sm font-semibold text-right">
 							{item?.quantity}
 						</span>
-						<span class="w-1/5 text-sm font-semibold text-right">
+						<span class="w-1/6 text-sm font-semibold text-right">
 							{format(item.unitPrice)}
 						</span>
 					</div>
