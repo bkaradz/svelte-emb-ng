@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
-import csv from 'csvtojson';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import parseCsv from '$lib/utility/parseCsv';
 
 export const POST: RequestHandler = async ({
   request,
@@ -33,15 +33,14 @@ export const POST: RequestHandler = async ({
       });
     }
 
-    const csvString = await file.text();
+    const csvString: string = await file.text();
 
-    const jsonArray = await csv()
-      .preFileLine((fileLine, idx) => fileLine)
-      .fromString(csvString);
+    
+    const optionsArray = await parseCsv(csvString)
 
     const allDocsPromises: any[] = []
 
-    jsonArray.forEach(async (element) => {
+    optionsArray.forEach(async (element) => {
       let { name, group, value, isActive, isDefault } = element;
 
       name = name.trim();

@@ -1,8 +1,8 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import csv from 'csvtojson';
 import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
+import parseCsv from '$lib/utility/parseCsv';
 
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -34,19 +34,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString = await file.text();
 
-		const jsonArray = await csv()
-			.preFileLine((fileLine, idx) => {
-				if (idx === 0) {
-					return fileLine.toLowerCase();
-				}
-				return fileLine;
-			})
-			.fromString(csvString);
-
+		const optionsArray = await parseCsv(csvString)
 
 		const allDocsPromises: any[] = []
 
-		jsonArray.forEach(async (element) => {
+		optionsArray.forEach(async (element) => {
 			/**
 			 * TODO: calculate the maximum price of emb logos
 			 */

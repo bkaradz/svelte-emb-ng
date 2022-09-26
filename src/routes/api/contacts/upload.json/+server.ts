@@ -1,9 +1,9 @@
 import logger from '$lib/utility/logger';
-import csv from 'csvtojson';
 import type { RequestHandler } from './$types';
 import { z } from "zod";
 import prisma from '$lib/prisma/client';
 import { querySelection } from '../../contacts.json/+server';
+import parseCsv from '$lib/utility/parseCsv';
 
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -35,18 +35,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString = await file.text();
 
-		const jsonArray = await csv()
-			.preFileLine((fileLine, idx) => {
-				if (idx === 0) {
-					return fileLine.toLowerCase();
-				}
-				return fileLine;
-			})
-			.fromString(csvString);
+		const optionsArray = await parseCsv(csvString)
 
 		const allDocsPromises: any[] = []
 
-		jsonArray.forEach(async (element) => {
+		optionsArray.forEach(async (element) => {
 			try {
 				const contact = querySelection(element, createDBy)
 				const contactsQuery = await prisma.contacts.create({ data: contact })

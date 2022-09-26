@@ -1,6 +1,7 @@
 import logger from '$lib/utility/logger'
 import type { RequestHandler } from './$types'
 import prisma from '$lib/prisma/client';
+import {  z } from 'zod';
 
 export const GET: RequestHandler = async ({ locals }) => {
   try {
@@ -42,6 +43,17 @@ export const GET: RequestHandler = async ({ locals }) => {
   }
 }
 
+export const UserSchema = z.object({
+  id: z.union([z.number({ required_error: "id is required"}), (z.string({ required_error: "id is required"}))]),
+	name: z.string({ required_error: "Name is required", invalid_type_error: "Name must be a string" }).trim(),
+	email: z.string({ required_error: "Email is required" }).email({ message: "Not a valid email" }),
+	phone: z.string({ required_error: "Phone is required" }),
+	address: z.string({ required_error: "Address is required" }),
+	password: z.string({ required_error: "Password is required" }),
+})
+
+export type User = z.infer<typeof UserSchema>
+
 export const PUT: RequestHandler = async ({ request, locals }) => {
   try {
     if (!locals?.user?.id) {
@@ -53,7 +65,18 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       });
     }
 
-    const userUpdate = await request.json()
+    const userUpdate: User = await request.json()
+
+    const parsedUser = UserSchema.safeParse(userUpdate)
+
+		if (!parsedUser.success) {
+			return new Response(JSON.stringify({ message: parsedUser.error }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 400
+			});
+		}
 
     const allUsers = await prisma.contacts.update({
       where: {

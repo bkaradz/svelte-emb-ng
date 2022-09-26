@@ -5,25 +5,26 @@ import { z } from "zod";
 import bcrypt from 'bcrypt';
 import config from 'config';
 
-export const UserSchema = z.object({
+export const UserSignUpSchema = z.object({
 	name: z.string({ required_error: "Name is required", invalid_type_error: "Name must be a string" }).trim(),
 	email: z.string({ required_error: "Email is required" }).email({ message: "Not a valid email" }),
 	phone: z.string({ required_error: "Phone is required" }),
 	address: z.string({ required_error: "Address is required" }),
-	password: z.string({ required_error: "Address is required" }),
-	confirmPassword: z.string({ required_error: "Password is required" })
-}).refine((data) => data.password === data.confirmPassword, {
+	password: z.string({ required_error: "Password is required" }),
+	confirmPassword: z.string({ required_error: "Confirm Password is required" }),
+})
+.refine((data) => data.password === data.confirmPassword, {
 	message: 'Passwords do not match',
 	path: ['confirmPassword']
 })
 
-export type User = z.infer<typeof UserSchema>
+export type User = z.infer<typeof UserSignUpSchema>
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const reqUser: User = await request.json();
 
-		const parsedUser = UserSchema.safeParse(reqUser)
+		const parsedUser = UserSignUpSchema.safeParse(reqUser)
 
 		if (!parsedUser.success) {
 			return new Response(JSON.stringify({ message: parsedUser.error }), {
