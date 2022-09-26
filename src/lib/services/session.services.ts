@@ -4,50 +4,48 @@ import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 
-
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {
+	const accessTokenSerial = cookie.serialize('accessToken', accessToken, {
+		maxAge: config.get('cookieAccessTokenTtl'), // 15min
+		httpOnly: config.get('httpOnly'),
+		domain: 'localhost',
+		path: '/',
+		sameSite: config.get('sameSite'),
+		secure: config.get('secure')
+	})
+
+	const refreshTokenSerial = cookie.serialize('refreshToken', refreshToken, {
+		maxAge: config.get('cookieRefreshTokenTtl'), // 1year
+		httpOnly: config.get('httpOnly'),
+		domain: 'localhost',
+		path: '/',
+		sameSite: config.get('sameSite'),
+		secure: config.get('secure')
+	})
 	return {
-		'Set-Cookie': [
-			cookie.serialize('accessToken', accessToken, {
-				maxAge: config.get('cookieAccessTokenTtl'), // 15min
-				httpOnly: config.get('httpOnly'),
-				domain: 'localhost',
-				path: '/',
-				sameSite: config.get('sameSite'),
-				secure: config.get('secure')
-			}),
-			cookie.serialize('refreshToken', refreshToken, {
-				maxAge: config.get('cookieRefreshTokenTtl'), // 1year
-				httpOnly: config.get('httpOnly'),
-				domain: 'localhost',
-				path: '/',
-				sameSite: config.get('sameSite'),
-				secure: config.get('secure')
-			})
-		]
+		'Set-Cookie': `${[accessTokenSerial, refreshTokenSerial]}`
 	};
 };
 
 export const deleteSessionCookies = () => {
+	const accessTokenSerial = cookie.serialize('accessToken', '', {
+		expires: new Date(0),
+		httpOnly: true,
+		domain: 'localhost',
+		path: '/',
+		sameSite: 'lax',
+		secure: false
+	})
+	const refreshTokenSerial = cookie.serialize('refreshToken', '', {
+		expires: new Date(0),
+		httpOnly: true,
+		domain: 'localhost',
+		path: '/',
+		sameSite: 'lax',
+		secure: false
+	})
 	return {
-		'Set-Cookie': [
-			cookie.serialize('accessToken', '', {
-				expires: new Date(0),
-				httpOnly: true,
-				domain: 'localhost',
-				path: '/',
-				sameSite: 'lax',
-				secure: false
-			}),
-			cookie.serialize('refreshToken', '', {
-				expires: new Date(0),
-				httpOnly: true,
-				domain: 'localhost',
-				path: '/',
-				sameSite: 'lax',
-				secure: false
-			})
-		]
+		'Set-Cookie': `${[accessTokenSerial, refreshTokenSerial]}`
 	};
 };
 

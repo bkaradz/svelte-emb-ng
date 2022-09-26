@@ -20,7 +20,7 @@
 			}
 		} catch (err: any) {
 			logger.error(err.messages);
-			toasts.add({ message: 'An error has occured while uploading contacts', type: 'error' });
+			toasts.add({ message: 'An error has occured while uploading Options', type: 'error' });
 		}
 	};
 </script>

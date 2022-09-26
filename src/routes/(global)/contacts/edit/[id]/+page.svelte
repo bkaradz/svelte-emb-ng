@@ -42,13 +42,12 @@
 	// 	}
 	// }
 
-	let defaultCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
+	let currentCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
 		limit: 7,
 		page: 1,
 		sort: 'name',
 		isCorporate: true
 	};
-	let currentCorporateQueryParams = defaultCorporateQueryParams;
 	let corporateContacts: Partial<any>;
 
 	onMount(() => {

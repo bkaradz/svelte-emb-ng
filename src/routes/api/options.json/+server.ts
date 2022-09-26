@@ -55,6 +55,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   }
 }
 
+export const changeCurrentDefault = async (group: string) => {
+  const updatedAllToFalse = await prisma.options.updateMany({
+    where: {
+      group,
+      isDefault: {
+        equals: true
+      }
+    },
+    data: { isDefault: false },
+  })
+}
+
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     if (!locals?.user?.id) {
@@ -81,6 +93,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     value = value.trim();
     isActive = isActive === 'true' ? true : false
     isDefault = isDefault === 'true' ? true : false
+
+    if (isDefault) {
+      changeCurrentDefault(group)
+    }
 
     const option = {
       createdBy: createDBy,

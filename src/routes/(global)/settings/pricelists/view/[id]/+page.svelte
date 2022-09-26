@@ -21,7 +21,6 @@
 	const endpoint = `/api/pricelists/${$page.params.id}.json`;
 
 	let pricelist: any;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 24 ~ pricelist', pricelist);
 
 	let selectedGroup = 'all';
 

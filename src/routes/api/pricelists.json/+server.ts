@@ -33,6 +33,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
+export const changeCurrentDefault = async () => {
+	const updatedAllToFalse = await prisma.pricelists.updateMany({
+		where: {
+			isDefault: {
+				equals: true
+			}
+		},
+		data: { isDefault: false },
+	})
+}
+
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?.id) {
@@ -47,6 +58,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const createDBy = locals.user.id;
 
 		const reqPricelists = await request.json();
+
+		/**
+		 * Check if isDefault is set
+		 */
+
+		if (reqPricelists.isDefault === 'true' || reqPricelists.isDefault === true) {
+			changeCurrentDefault()
+		}
 
 		const { pricelists, ...restPricelist } = reqPricelists
 

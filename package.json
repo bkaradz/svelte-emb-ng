@@ -29,6 +29,7 @@
 		"@types/cookie": "^0.5.1",
 		"@types/jsonwebtoken": "^8.5.8",
 		"@types/lodash-es": "^4.17.6",
+		"@types/postcss-preset-env": "^7.7.0",
 		"@types/testing-library__jest-dom": "^5.14.5",
 		"@types/uuid": "^8.3.4",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
@@ -54,6 +55,7 @@
 		"pino-pretty": "^8.1.0",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",
+		"postcss-preset-env": "^7.8.2",
 		"prettier": "^2.6.2",
 		"prettier-plugin-svelte": "^2.7.0",
 		"prisma": "^4.2.1",
@@ -72,6 +74,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@fast-csv/parse": "^4.3.6",
 		"@prisma/client": "^4.2.1"
 	}
 }

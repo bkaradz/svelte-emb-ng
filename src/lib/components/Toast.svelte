@@ -4,7 +4,7 @@
 		svgExclamation,
 		svgInfo,
 		svgShieldExclamation,
-		svgTrash
+		svgXSmall
 	} from '$lib/utility/svgLogos';
 	import { fade } from 'svelte/transition';
 	export let type: string;
@@ -68,7 +68,7 @@
 
 	<span class="mr-2 flex-none">
 		<button on:click={heandleDelete}>
-			{@html svgTrash}
+			{@html svgXSmall}
 		</button>
 	</span>
 </div>

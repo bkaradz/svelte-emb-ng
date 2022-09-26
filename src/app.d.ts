@@ -1,47 +1,41 @@
 /// <reference types="@sveltejs/kit" />
+
+
 // See https://kit.svelte.dev/docs/typescript
 // for information about these interfaces
 
-declare global {
-	declare namespace App {
-		interface userInterface {
-			id: string;
-			name: string;
-			isActive: boolean;
-			isUser: boolean;
-			userRole: string;
-			sessionID: string;
-			authenticated: boolean;
-		}
 
-		// interface DOMAttributes<T> {
-		// 	onclickOutside?: CompositionEventHandler<T>;
-		// }
+declare namespace App {
 
-		// interface HTMLAttributes<T> {
-		// 	onclickOutside: () => void;
-		// }
 
-		// interface DOMAttributes<T extends EventHandler> {
-		// 	onclickOutside?: MouseEventHandler<T> | undefined | null;
-		// }
+	// interface DOMAttributes<T> {
+	// 	onclickOutside?: CompositionEventHandler<T>;
+	// }
 
-		interface HTMLProps<T> {
-			onclickOutside?: (e: CustomEvent) => void;
-		}
-		interface Locals {
-			user?: userInterface | Record<string, never> | null;
-		}
+	// interface HTMLAttributes<T> {
+	// 	onclickOutside: () => void;
+	// }
 
-		interface Platform { }
+	// interface DOMAttributes<T extends EventHandler> {
+	// 	onclickOutside?: MouseEventHandler<T> | undefined | null;
+	// }
 
-		interface Session {
-			user?: userInterface | Record<string, never>;
-		}
-
-		interface Stuff { }
+	interface HTMLProps<T> {
+		onclickOutside?: (e: CustomEvent) => void;
 	}
+	interface Locals {
+		user: import('$lib/types').User;
+	}
+
+	interface Platform { }
+
+	interface Session {
+		user?: import('$lib/types').User;
+	}
+
+	interface Stuff { }
 }
+
 
 // declare namespace svelte.JSX {
 // 	interface DOMAttributes<T extends EventHandler> {

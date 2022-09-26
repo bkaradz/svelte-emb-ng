@@ -4,6 +4,7 @@ import config from 'config'
 import logger from '$lib/utility/logger'
 import { setSessionCookies, createSession, validateUserPassword } from '$lib/services/session.services'
 import { z } from "zod";
+import type { User } from '$lib/types';
 
 export const loginCredentialsSchema = z.object({
   email: z.string({ required_error: "Email is required" }).email({ message: "Not a valid email" }),
@@ -53,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     const body = { ...user, sessionID: session.id, authenticated: true }
 
-    locals.user = body
+    locals.user = body as unknown as User
 
     // create an access token
     const accessToken = signJwt(body, { expiresIn: config.get('accessTokenTtl') })

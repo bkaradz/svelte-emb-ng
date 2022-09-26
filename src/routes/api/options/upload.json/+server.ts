@@ -3,7 +3,6 @@ import csv from 'csvtojson';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 
-
 export const POST: RequestHandler = async ({
   request,
   locals
