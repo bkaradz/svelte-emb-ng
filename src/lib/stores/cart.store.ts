@@ -5,7 +5,17 @@ function addCartItems() {
 
   return {
     subscribe,
-    add: (product) => update((products) => products.set(product.id, { ...product, amount: 1, embroideryPositions: 'frontLeft', embroideryTypes: 'flat' })),
+    add: (product) => update((products) => products.set(product.id, {
+      ...product, quantity: 1, total: {
+        "scale": 3,
+        "amount": 0,
+        "currency": {
+          "base": 10,
+          "code": "USD",
+          "exponent": 2
+        }
+      }, embroideryPositions: 'frontLeft', embroideryTypes: 'flat'
+    })),
     update: (product, payload) => update((products) => products.set(product.id, { ...product, ...payload })),
     remove: (product) => update((products) => {
       products.delete(product.id)

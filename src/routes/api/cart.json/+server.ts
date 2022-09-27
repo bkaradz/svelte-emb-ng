@@ -2,8 +2,9 @@ import prisma from "$lib/prisma/client";
 import omit from "lodash-es/omit";
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
+import { calculateOrder } from "$lib/services/orders";
 
-export const GET: RequestHandler = async ({ url, locals }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     if (!locals?.user?.id) {
       return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -14,31 +15,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       });
     }
 
-    const queryParams = Object.fromEntries(url.searchParams);
+    let reqCart = await request.json();
 
-    let splitString
-    let query: any
+    const newOrderLine = await calculateOrder(reqCart)
 
-    if (queryParams?.id !== '') {
-      splitString = queryParams?.id.split(',').map((item) => +item)
-      query = {
-        where: {
-          id: {
-            in: splitString
-          },
-        }
-      }
-    } else {
-      query = {
-        where: {
-          id: -1
-        }
-      }
-    }
-
-    const productsQuery = await prisma.products.findMany(query)
-
-    return new Response(JSON.stringify(productsQuery));
+    return new Response(JSON.stringify(newOrderLine));
 
   } catch (err: any) {
     logger.error(`Error: ${err.message}`);

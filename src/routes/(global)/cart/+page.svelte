@@ -5,6 +5,7 @@
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
+	import { toasts } from '$lib/stores/toasts.store';
 
 	const currencies = [
 		{
@@ -66,6 +67,7 @@
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);
 		pricelists = await getPricelists({});
+		handleChange();
 	});
 
 	let canDecrease = false;
@@ -73,13 +75,34 @@
 		cartItem.remove(item);
 	};
 	const onDecrease = (item) => {
-		cartItem.update(item, { amount: item.amount > 1 ? item.amount - 1 : 1 });
+		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
+		handleChange();
 	};
 	const onIncrease = (item) => {
-		cartItem.update(item, { amount: item.amount + 1 });
+		cartItem.update(item, { quantity: item.quantity + 1 });
+		handleChange();
 	};
 
-	const handleChange = () => {};
+	const handleChange = async () => {
+		try {
+			const res = await fetch('/api/cart.json', {
+				method: 'POST',
+				body: JSON.stringify({
+					pricelistsID: pricelistValue,
+					orderLine: Array.from($cartItem.values())
+				})
+			});
+			if (res.ok) {
+				const cartData = await res.json();
+				cartData.forEach((item) => {
+					cartItem.update(item, {});
+				});
+			}
+		} catch (err: any) {
+			logger.error(err.messages);
+			toasts.add({ message: 'An error has occured', type: 'error' });
+		}
+	};
 
 	let customerSearch: any = { name: null };
 
@@ -181,7 +204,6 @@
 							{#if embroideryPositions}
 								<select
 									bind:value={item.embroideryPositions}
-									on:change|preventDefault={handleChange}
 									class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 								>
 									{#each embroideryPositions as type}
@@ -194,12 +216,12 @@
 						</span>
 						<div class="flex justify-end w-1/6">
 							<button
-								class="border rounded px-1 bg-royal-blue-200 {!(item.amount > 1)
+								class="border rounded px-1 bg-royal-blue-200 {!(item.quantity > 1)
 									? 'border-royal-blue-700 cursor-not-allowed opacity-10'
 									: 'border-royal-blue-500 hover:bg-royal-blue-300'}"
-								disabled={!(item.amount > 1)}
-								on:click={() => onDecrease(item)}
-								aria-label="Decrease amount"
+								disabled={!(item.quantity > 1)}
+								on:click|preventDefault={() => onDecrease(item)}
+								aria-label="Decrease quantity"
 							>
 								{@html `<svg
 									class="w-4 text-gray-600 fill-current"
@@ -210,11 +232,12 @@
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
 								</svg>`}
 							</button>
-							<div class="w-8 mx-2 text-center">{item?.amount}</div>
+							<div class="w-8 mx-2 text-center">{item?.quantity}</div>
 							<button
 								class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
 								on:click={() => onIncrease(item)}
-								aria-label="Increase amount"
+								on:change|preventDefault={handleChange}
+								aria-label="Increase quantity"
 							>
 								{@html `<svg
 									class="w-4 text-gray-600 fill-current"
@@ -232,10 +255,10 @@
 							</button>
 						</div>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{item?.quantity}
+							{format(item.unitPrice)}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{format(item.unitPrice)}
+							{format(item.total)}
 						</span>
 					</div>
 				{/each}
@@ -245,12 +268,13 @@
 	<div class="customer">
 		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
 			<h1 class="text-2xl font-semibold capitalize">Order summary</h1>
-			<div class="relative mx-2">
+			<div class="relative mx-2 text-danger">
 				{@html svgCart}
 				<span
-					class="absolute top-0 right-0 -mt-1.5 -mr-2 bg-blue-200 text-blue-700 font-normal rounded-full px-1 text-xs"
+					class="absolute top-0 right-0 -mt-1.5 -mr-2 text-white bg-success text-blue-700 font-normal rounded-full px-1 text-xs"
 				>
 					<!-- {items.length > 0 && count} -->
+					10
 				</span>
 			</div>
 		</div>
