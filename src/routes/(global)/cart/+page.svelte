@@ -6,6 +6,7 @@
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 	import { toasts } from '$lib/stores/toasts.store';
+	import type { Prisma } from '@prisma/client';
 
 	const currencies = [
 		{
@@ -22,8 +23,8 @@
 	let embroideryPositions;
 	let embroideryTypes;
 	let customers;
-	let pricelists;
-	let pricelistValue;
+	let pricelists
+	let pricelistValue: number | undefined;
 	let customerQueryParams = {
 		limit: 7,
 		page: 1
@@ -70,7 +71,6 @@
 		handleChange();
 	});
 
-	let canDecrease = false;
 	const removeItem = (item) => {
 		cartItem.remove(item);
 	};
@@ -99,6 +99,7 @@
 				});
 			}
 		} catch (err: any) {
+			console.log('object', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}

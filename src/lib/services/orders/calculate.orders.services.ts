@@ -32,7 +32,7 @@ export const calculateOrder = async (reqOrder: any) => {
 			})
 
 			if (!product) {
-				throw new Error(`Product id ${item.productID} does not exist`);
+				throw new Error(`Product id ${item.id} does not exist`);
 			}
 
 			const { stitches } = product
@@ -80,8 +80,8 @@ export const calculateOrder = async (reqOrder: any) => {
 
 		return newOrderline
 
-	} catch (err) {
-
+	} catch (err: any) {
+		logger.error(`Error: ${err.message}`);
+		throw new Error(`Error:  ${err.message}`);
 	}
-
 };
