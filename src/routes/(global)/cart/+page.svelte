@@ -6,7 +6,10 @@
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { Prisma } from '@prisma/client';
+	import dayjs from 'dayjs';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import { add, toSnapshot } from 'dinero.js';
+	import { USD } from '@dinero.js/currencies';
 
 	const currencies = [
 		{
@@ -19,15 +22,48 @@
 		}
 	];
 
+	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
+	type MainPricelist = {
+		id: number | null;
+		customersID: number | null;
+		pricelistsID: number | null;
+		isActive: true;
+		accountsStatus: string | null;
+		orderDate: string | null;
+		deliveryDate?: string | null;
+		comment?: string;
+		orderLine: any[] | null;
+	};
+
+	let mainPricelist: MainPricelist = {
+		id: null,
+		customersID: null,
+		pricelistsID: null,
+		isActive: true,
+		accountsStatus: null,
+		orderDate: today,
+		orderLine: Array.from($cartItem.values())
+	};
+
+	let idValue = generateSONumber(mainPricelist.id);
 	let selectedCurrency;
 	let embroideryPositions;
 	let embroideryTypes;
 	let customers;
-	let pricelists
+	let pricelists;
+
 	let pricelistValue: number | undefined;
 	let customerQueryParams = {
 		limit: 7,
 		page: 1
+	};
+
+	const calcSudTotal = (cart: any[]) => {
+		console.log("🚀 ~ file: +page.svelte ~ line 62 ~ calcSudTotal ~ cart", cart)
+		const arrayTotals = cart.map((item) => item.total);
+		console.log("🚀 ~ file: +page.svelte ~ line 63 ~ calcSudTotal ~ arrayTotals",  arrayTotals)
+		const addMany = (addends) => addends.reduce(add);
+		return addMany(arrayTotals); 
 	};
 
 	const getOptions = async (paramsObj: any) => {
@@ -57,6 +93,7 @@
 			const jsonRes = await res.json();
 			const defaultPricelist = jsonRes.find((list) => list.isDefault === true);
 			pricelistValue = defaultPricelist.id;
+			mainPricelist.pricelistsID = defaultPricelist.id;
 			return jsonRes;
 		} catch (err: any) {
 			logger.error(err.message);
@@ -71,6 +108,8 @@
 		handleChange();
 	});
 
+	$: mainPricelist.orderLine = Array.from($cartItem.values());
+
 	const removeItem = (item) => {
 		cartItem.remove(item);
 	};
@@ -82,13 +121,15 @@
 		cartItem.update(item, { quantity: item.quantity + 1 });
 		handleChange();
 	};
+	
+	$: console.log('object calc', calcSudTotal(Array.from($cartItem.values())));
 
 	const handleChange = async () => {
 		try {
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
-					pricelistsID: pricelistValue,
+					pricelistsID: mainPricelist.pricelistsID,
 					orderLine: Array.from($cartItem.values())
 				})
 			});
@@ -106,6 +147,10 @@
 	};
 
 	let customerSearch: any = { name: null };
+
+	$: if (customerSearch.name) {
+		mainPricelist.customersID = customerSearch.id;
+	}
 
 	const handleComboInput = async (
 		event: Event & { currentTarget: EventTarget & HTMLInputElement }
@@ -283,7 +328,14 @@
 		<div class="mt-8">
 			<div class="flex flex-col my-5 text-sm font-medium uppercase">
 				<label class="text-sm text-pickled-bluewood-600" for="orderNo">Order Number</label>
-				<input class="grow input" type="text" name="orderNo" id="orderNo" />
+				<input
+					bind:value={idValue}
+					class="grow input"
+					type="text"
+					name="orderNo"
+					id="orderNo"
+					disabled
+				/>
 			</div>
 			<div class="flex justify-between my-5 text-sm font-medium uppercase">
 				{#if customers}
@@ -303,7 +355,7 @@
 					<select
 						name="pricelist"
 						id="pricelist"
-						bind:value={pricelistValue}
+						bind:value={mainPricelist.pricelistsID}
 						on:change|preventDefault={handleChange}
 						class="text-sm input grow"
 					>
@@ -313,6 +365,30 @@
 							</option>
 						{/each}
 					</select>
+				{/if}
+			</div>
+			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+				<label class="text-sm text-pickled-bluewood-600" for="pricelist">Order Date</label>
+				{#if pricelists}
+					<input
+						class="input w-full"
+						type="datetime-local"
+						name="orderDate"
+						id="orderDate"
+						bind:value={mainPricelist.orderDate}
+					/>
+				{/if}
+			</div>
+			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+				<label class="text-sm text-pickled-bluewood-600" for="pricelist">Due Date</label>
+				{#if pricelists}
+					<input
+						class="input w-full"
+						type="datetime-local"
+						name="deliveryDate"
+						id="deliveryDate"
+						bind:value={mainPricelist.deliveryDate}
+					/>
 				{/if}
 			</div>
 		</div>
@@ -357,8 +433,5 @@
 	}
 	.scrollHeight {
 		height: calc(100% - 75px);
-	}
-	section {
-		background-color: inherit;
 	}
 </style>
