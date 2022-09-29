@@ -8,7 +8,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import { add, toSnapshot } from 'dinero.js';
+	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { USD } from '@dinero.js/currencies';
 
 	const currencies = [
@@ -58,13 +58,36 @@
 		page: 1
 	};
 
-	const calcSudTotal = (cart: any[]) => {
-		console.log("🚀 ~ file: +page.svelte ~ line 62 ~ calcSudTotal ~ cart", cart)
-		const arrayTotals = cart.map((item) => item.total);
-		console.log("🚀 ~ file: +page.svelte ~ line 63 ~ calcSudTotal ~ arrayTotals",  arrayTotals)
-		const addMany = (addends) => addends.reduce(add);
-		return addMany(arrayTotals); 
+	// const vat = 14.5;
+	const vat = 0;
+
+	const calculateVat = (vat, subTotal) => {
+		return multiply(subTotal, { amount: vat, scale: 2 });
 	};
+
+	$: calclculatedVat = calculateVat(vat, subTotal);
+
+	$: calclculatedTotal = add(calclculatedVat, subTotal);
+
+	const calcSubTotal = (cart: any[]) => {
+		const arrayTotals = cart.map((item) => dinero(item.total));
+		if (!arrayTotals.length) {
+			return;
+		}
+		const addMany = (addends) => addends.reduce(add);
+		return addMany(arrayTotals);
+	};
+
+	const calcTotalCartItems = (cart: any[]) => {
+		const arrayTotals = cart.map((item) => item.quantity);
+		if (!arrayTotals.length) {
+			return;
+		}
+
+		return arrayTotals.reduce((accumulator, quantity) => accumulator + quantity);
+	};
+
+	$: totalCartItems = calcTotalCartItems(Array.from($cartItem.values()));
 
 	const getOptions = async (paramsObj: any) => {
 		try {
@@ -121,8 +144,18 @@
 		cartItem.update(item, { quantity: item.quantity + 1 });
 		handleChange();
 	};
-	
-	$: console.log('object calc', calcSudTotal(Array.from($cartItem.values())));
+
+	const deneroZero = {
+		scale: 3,
+		amount: 0,
+		currency: {
+			base: 10,
+			code: 'USD',
+			exponent: 2
+		}
+	};
+
+	$: subTotal = calcSubTotal(Array.from($cartItem.values())) || dinero(deneroZero);
 
 	const handleChange = async () => {
 		try {
@@ -140,7 +173,6 @@
 				});
 			}
 		} catch (err: any) {
-			console.log('object', err);
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
@@ -319,14 +351,13 @@
 				<span
 					class="absolute top-0 right-0 -mt-1.5 -mr-2 text-white bg-success text-blue-700 font-normal rounded-full px-1 text-xs"
 				>
-					<!-- {items.length > 0 && count} -->
-					10
+					{totalCartItems ? totalCartItems : 0}
 				</span>
 			</div>
 		</div>
 
-		<div class="mt-8">
-			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+		<div class="mt-5 mb-7">
+			<div class="flex flex-col my-3 text-sm font-medium uppercase">
 				<label class="text-sm text-pickled-bluewood-600" for="orderNo">Order Number</label>
 				<input
 					bind:value={idValue}
@@ -337,7 +368,7 @@
 					disabled
 				/>
 			</div>
-			<div class="flex justify-between my-5 text-sm font-medium uppercase">
+			<div class="flex justify-between my-3 text-sm font-medium uppercase">
 				{#if customers}
 					<!-- <Combobox label="Customer" list={customers.results} /> -->
 					<Combobox
@@ -349,7 +380,7 @@
 					/>
 				{/if}
 			</div>
-			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+			<div class="flex flex-col my-3 text-sm font-medium uppercase">
 				<label class="text-sm text-pickled-bluewood-600" for="pricelist">Pricelist</label>
 				{#if pricelists}
 					<select
@@ -367,7 +398,7 @@
 					</select>
 				{/if}
 			</div>
-			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+			<div class="flex flex-col my-3 text-sm font-medium uppercase">
 				<label class="text-sm text-pickled-bluewood-600" for="pricelist">Order Date</label>
 				{#if pricelists}
 					<input
@@ -379,7 +410,7 @@
 					/>
 				{/if}
 			</div>
-			<div class="flex flex-col my-5 text-sm font-medium uppercase">
+			<div class="flex flex-col my-3 text-sm font-medium uppercase">
 				<label class="text-sm text-pickled-bluewood-600" for="pricelist">Due Date</label>
 				{#if pricelists}
 					<input
@@ -393,28 +424,38 @@
 			</div>
 		</div>
 
-		<div class="flex justify-between mt-10 mb-5 border-t border-royal-blue-500">
-			<span class="text-sm font-medium uppercase pt-8">Subtotal</span>
-			<span class="text-sm font-semibold">
-				<!-- {format(subtotal)} -->
+		<div class="flex justify-between  border-t border-royal-blue-500">
+			<span class="text-sm font-medium uppercase pt-5">Subtotal</span>
+			<span class="text-sm font-semibold pt-5">
+				{format(toSnapshot(subTotal))}
 			</span>
 		</div>
 		<div class="flex justify-between mt-4 mb-5">
-			<span class="text-sm font-medium uppercase"> VAT </span>
+			<span class="text-sm font-medium uppercase"> VAT({vat}%) </span>
 			<span class="text-sm font-semibold">
-				<!-- {format(vatAmount)} -->
+				{format(toSnapshot(calclculatedVat))}
 			</span>
 		</div>
 
-		<div class="mt-8 border-t border-royal-blue-500">
-			<div class="flex justify-between my-5 text-sm font-medium uppercase">
+		<div class="mt-5 border-t border-royal-blue-500">
+			<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
 				<span>Total</span>
-				<!-- <span>{format(total)}</span> -->
+				<span class="text-base font-semibold ">{format(toSnapshot(calclculatedTotal))}</span>
 			</div>
 			<button
-				class="w-full py-3 text-sm font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
-				Create Order
+				Create Quotation
+			</button>
+			<button
+				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+			>
+				Create Sales Order
+			</button>
+			<button
+				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+			>
+				Create Invoice
 			</button>
 		</div>
 	</div>
