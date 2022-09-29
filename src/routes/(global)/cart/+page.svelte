@@ -9,7 +9,6 @@
 	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-	import { USD } from '@dinero.js/currencies';
 
 	const currencies = [
 		{
@@ -24,7 +23,7 @@
 
 	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
 	type MainPricelist = {
-		id: number | null;
+		id?: number | null;
 		customersID: number | null;
 		pricelistsID: number | null;
 		isActive: true;
@@ -32,7 +31,7 @@
 		orderDate: string | null;
 		deliveryDate?: string | null;
 		comment?: string;
-		orderLine: any[] | null;
+		orderLine: any[];
 	};
 
 	let mainPricelist: MainPricelist = {
@@ -42,7 +41,7 @@
 		isActive: true,
 		accountsStatus: null,
 		orderDate: today,
-		orderLine: Array.from($cartItem.values())
+		orderLine: Array.from($cartItem.values()) || []
 	};
 
 	let idValue = generateSONumber(mainPricelist.id);
@@ -193,6 +192,45 @@
 		};
 		customers = await getCustomers(customerQueryParams);
 	};
+
+	const heandleSubmit = async (status: string) => {
+		/**
+		 * Check if the fields are filled
+		*/
+		if (!mainPricelist.orderLine.length ) {
+			toasts.add({ message: 'A products must be selected', type: 'error' });
+			return
+		}
+		if (!mainPricelist.customersID) {
+			toasts.add({ message: 'A customer must be selected', type: 'error' });
+			return
+		}
+		if (!mainPricelist.pricelistsID ) {
+			toasts.add({ message: 'A pricelist must be selected', type: 'error' });
+			return
+		}
+		if (!mainPricelist.id ) {
+			delete mainPricelist.id
+		}
+
+		mainPricelist.accountsStatus = status
+
+		try {
+			const res = await fetch('/api/orders.json', {
+				method: 'POST',
+				body: JSON.stringify(mainPricelist)
+			});
+
+			if (res.ok) {
+				toasts.add({ message: `The ${status} was created`, type: 'success' });
+			}
+			
+		} catch (err: any) {
+			logger.error(err.messages);
+			toasts.add({ message: 'An error has occured', type: 'error' });
+		}
+		
+	}
 </script>
 
 <div class="w-full flex">
@@ -210,7 +248,7 @@
 					>
 						{#each currencies as currency}
 							<option value={currency}>
-								{`${currency.symbol}, ${currency.currency}`}
+								{` ${currency.currency} (${currency.symbol})`}
 							</option>
 						{/each}
 					</select>
@@ -443,16 +481,19 @@
 				<span class="text-base font-semibold ">{format(toSnapshot(calclculatedTotal))}</span>
 			</div>
 			<button
+				on:click|preventDefault={() => heandleSubmit('Quotation')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Create Quotation
 			</button>
 			<button
+			on:click|preventDefault={() => heandleSubmit('Sales Order')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Create Sales Order
 			</button>
 			<button
+				on:click|preventDefault={() => heandleSubmit('Invoice')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Create Invoice

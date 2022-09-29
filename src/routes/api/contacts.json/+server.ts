@@ -220,7 +220,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		let reqContact = await request.json();
 
@@ -252,7 +252,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		const reqContact = await request.json();
 

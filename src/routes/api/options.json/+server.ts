@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       });
     }
 
-    const createDBy = locals.user.id
+    const createDBy = parseInt(locals.user.id)
 
     const reqOptions = await request.json()
 
@@ -135,7 +135,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
       });
     }
 
-    const createDBy = locals.user.id
+    const createDBy = parseInt(locals.user.id)
 
     const reqOptions = await request.json()
 
@@ -195,9 +195,9 @@ export const DELETE: RequestHandler = async ({
       });
     }
 
-    const createDBy = locals.user.id
+    const createDBy = parseInt(locals.user.id);
 
-    const reqOptions = await request.json()
+    const reqOptions = await request.json();
 
     const optionsQuery = await prisma.options.update({
       where: {

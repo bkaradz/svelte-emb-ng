@@ -99,7 +99,7 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 
 	const userRes = await prisma.contacts.findUnique({
 		where: {
-			id: emailRes.contactsId,
+			id: parseInt(emailRes.contactsId),
 		},
 		select: {
 			id: true,

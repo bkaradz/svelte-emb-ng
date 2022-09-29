@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		const reqProduct = await request.json();
 
@@ -153,7 +153,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 
 		const updateProduct = await prisma.products.update({
 			where: {
-				id: reqProduct.id
+				id: parseInt(reqProduct.id)
 			},
 			data: {
 				...reqProduct

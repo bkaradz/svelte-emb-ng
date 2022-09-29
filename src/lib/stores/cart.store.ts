@@ -14,7 +14,8 @@ function addCartItems() {
           "code": "USD",
           "exponent": 2
         }
-      }, embroideryPositions: 'frontLeft', embroideryTypes: 'flat'
+      }, embroideryPositions: 'frontLeft', embroideryTypes: 'flat',
+      productsID: product.id
     })),
     update: (product, payload) => update((products) => products.set(product.id, { ...product, ...payload })),
     remove: (product) => update((products) => {

@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		const reqPricelists = await request.json();
 
@@ -109,7 +109,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		const reqPricelists = await request.json();
 
@@ -125,7 +125,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const pricelistsQuery = await prisma.pricelists.update({
 			where: {
-				id: reqPricelists.id,
+				id: parseInt(reqPricelists.id),
 			},
 			data: {
 				...restPricelist,

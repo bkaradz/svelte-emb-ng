@@ -13,7 +13,7 @@ export const calculateOrder = async (reqOrder: any) => {
 		 */
 		const pricelist = await prisma.pricelists.findUnique({
 			where: {
-				id: reqOrder.pricelistsID
+				id: parseInt(reqOrder.pricelistsID)
 			},
 			include: {
 				PricelistSubList: true
@@ -27,12 +27,12 @@ export const calculateOrder = async (reqOrder: any) => {
 			 */
 			const product = await prisma.products.findUnique({
 				where: {
-					id: item.id
+					id: parseInt(item?.id)
 				}
 			})
 
 			if (!product) {
-				throw new Error(`Product id ${item.id} does not exist`);
+				throw new Error(`Product id ${item?.id} does not exist`);
 			}
 
 			const { stitches } = product

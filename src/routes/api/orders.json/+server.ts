@@ -3,6 +3,8 @@ import omit from 'lodash-es/omit';
 import { calculateOrder } from '$lib/services/orders';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import pick from 'lodash-es/pick';
+
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
@@ -119,14 +121,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = locals.user.id;
+		const createDBy = parseInt(locals.user.id);
 
 		const reqOrder = await request.json();
 
 		// check that the pricelist exist
 		const pricelist = await prisma.pricelists.findUnique({
 			where: {
-				id: reqOrder.pricelistsID
+				id: parseInt(reqOrder.pricelistsID)
 			}
 		})
 
@@ -138,11 +140,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: 401
 			});
 		}
+		
 		// check that the customer exist
 		// const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
 		const customerExist = await prisma.contacts.findUnique({
 			where: {
-				id: reqOrder.customersID
+				id: parseInt(reqOrder.customersID)
 			}
 		})
 
@@ -155,19 +158,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const calcOrder = await calculateOrder(reqOrder);
+		let calcOrder = await calculateOrder(reqOrder);
 
-		// const newOrder = new OrdersModel(calcOrder);
+		calcOrder = calcOrder.map((item) => pick(item, ['productsID', 'unitPrice', 'quantity', 'total', 'productCategories', 'embroideryPositions', 'embroideryTypes']));
 
-		// newOrder.createdBy = createDBy;
+		delete reqOrder.orderLine
 
-		// await newOrder.save();
+		if (reqOrder?.orderDate) {
+			reqOrder.orderDate = new Date(reqOrder.orderDate)
+		}
 
-		const { orderLine, ...restOrder } = reqOrder
+		if (reqOrder?.deliveryDate) {
+			reqOrder.deliveryDate = new Date(reqOrder.deliveryDate)
+		}
 
 		const orderQuery = await prisma.orders.create({
 			data: {
-				...restOrder,
+				...reqOrder,
 				createdBy: createDBy,
 				OrderLine: {
 					createMany: { data: calcOrder }
