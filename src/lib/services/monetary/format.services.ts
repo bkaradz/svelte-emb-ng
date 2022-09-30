@@ -6,7 +6,7 @@ import {
 	type Dinero,
 	type DineroOptions
 } from 'dinero.js';
-import { BOND, RTGS } from './convert.services';
+import { ZWB, ZWR } from './convert.services';
 import type { dineroSnapshot } from './monetary.services';
 
 function intlFormat(locale: string, options = {}) {
@@ -24,8 +24,8 @@ function intlFormat(locale: string, options = {}) {
 
 function formatDefault(dineroObject: Dinero<unknown>) {
 	if (
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: BOND })]) ||
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: RTGS })])
+		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })]) ||
+		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWR })])
 	) {
 		return toFormat(
 			dineroObject,

@@ -1,32 +1,32 @@
 import { dinero, convert, toSnapshot, toUnit  } from 'dinero.js';
-import { USD, ZAR } from '@dinero.js/currencies';
+import { USD, ZAR, BWP } from '@dinero.js/currencies';
 import logger from '$lib/utility/logger';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
 
-export const BOND: Currency<number> = {
-	code: 'BOND',
+export const ZWB: Currency<number> = {
+	code: 'ZWB',
 	base: 10,
 	exponent: 2
 };
 
-export const RTGS: Currency<number> = {
-	code: 'RTGS',
+export const ZWR: Currency<number> = {
+	code: 'ZWR',
 	base: 10,
 	exponent: 2
 };
 
-function converter(
-	dineroObject: Dinero<unknown>,
-	newCurrency: { code: string; base: number; exponent: number }
-) {
+function converter(dineroObject: Dinero<unknown>, newCurrency: { code: string; base: number; exponent: number }) {
 	if (newCurrency === ZAR) {
-		return convert(dineroObject, newCurrency, { ZAR: { amount: 1600, scale: 2 } });
+		return convert(dineroObject, newCurrency, { ZAR: { amount: 1800, scale: 2 } });
 	}
-	if (newCurrency === BOND) {
-		return convert(dineroObject, newCurrency, { BOND: { amount: 40000, scale: 2 } });
+	if (newCurrency === BWP) {
+		return convert(dineroObject, newCurrency, { ZAR: { amount: 1800, scale: 2 } });
 	}
-	if (newCurrency === RTGS) {
-		return convert(dineroObject, newCurrency, { RTGS: { amount: 51000, scale: 2 } });
+	if (newCurrency === ZWB) {
+		return convert(dineroObject, newCurrency, { ZWB: { amount: 65000, scale: 2 } });
+	}
+	if (newCurrency === ZWR) {
+		return convert(dineroObject, newCurrency, { ZWR: { amount: 70000, scale: 2 } });
 	}
 	if (newCurrency === USD) {
 		return convert(dineroObject, newCurrency, { USD: { amount: 100, scale: 2 } });
