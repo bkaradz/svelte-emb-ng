@@ -172,7 +172,7 @@
 				{/each}
 			</tr>
 		</thead>
-		<tbody class="scrollHeight">
+		<tbody>
 			{#if optionsList.length}
 				{#each optionsList as list (list.id)}
 					{#if selectedGroup === list.group || selectedGroup === 'all'}
@@ -222,15 +222,15 @@
 									name="isDefault"
 								/>
 							</td>
-							<td class="p-1 text-center ">
+							<td class="p-1">
 								<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html isEditableID === list.id ? svgFloppy : svgPencil}
 									</span>
 								</button>
 							</td>
-							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
+							<td class="p-1 text-center">
+								<button class="m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>
@@ -271,9 +271,13 @@
 	thead th {
 		width: 350px;
 	}
+	/* table {
+		table-layout: auto;
+		width: 100%;
+	} */
 
 	tbody {
-		height: 660px;
+		height: calc(100vh - 328px);
 		overflow-y: auto;
 		overflow-x: hidden;
 	}
