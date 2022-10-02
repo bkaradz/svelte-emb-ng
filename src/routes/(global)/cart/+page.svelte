@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Combobox from '$lib/components/Combobox.svelte';
-	import { format } from '$lib/services/monetary';
+	import { createConverter, format, ZWB, ZWR } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
@@ -9,20 +9,67 @@
 	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 
-	const currencies = [
+	const currencyOptions = [
 		{
 			currency: 'USD',
 			symbol: '$'
 		},
 		{
-			currency: 'EUR',
-			symbol: '€'
+			currency: 'BWP',
+			symbol: 'P'
+		},
+		{
+			currency: 'ZAR',
+			symbol: 'R'
+		},
+		{
+			currency: 'ZWB',
+			symbol: '$'
+		},
+		{
+			currency: 'ZWR',
+			symbol: '$'
 		}
 	];
 
+	type CurrencyOptions = typeof currencyOptions[0];
+
+	let selectedCurrency: CurrencyOptions = currencyOptions[0];
+
+	const currencies = { USD, BWP, ZAR, ZWB, ZWR };
+
+	// $: currentCurrency = currencies[selectedCurrency.currency];
+
+	// $: console.log('🚀 ~ file: +page.svelte ~ line 42 ~ currentCurrency', currentCurrency);
+
+	// $: if (currentCurrency) {
+
+	// }
+
+	const runCalculations = () => {
+		const currentCurrency = currencies[selectedCurrency.currency];
+		const convert = createConverter(currentCurrency);
+		// const conv = convert(dinero({ amount: 1150, currency: USD }), currentCurrency);
+		console.log('cartItem top', $cartItem);
+		mainOrder.orderLine = Array.from($cartItem.values()).map((item) => {
+			const total = convert(dinero(item.total), currentCurrency);
+			const unitPrice = convert(dinero(item.unitPrice), currentCurrency);
+
+			console.log('cartItem', $cartItem);
+			return { ...item, unitPrice };
+
+			// cartItem.update(item, {
+			// 	unitPrice: toSnapshot(unitPrice),
+			// 	total: toSnapshot(total)
+			// });
+		});
+		console.log('order line', mainOrder.orderLine);
+	};
+
 	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
-	type MainPricelist = {
+	type MainOrder = {
 		id?: number | null;
 		customersID: number | null;
 		pricelistsID: number | null;
@@ -34,7 +81,7 @@
 		orderLine: any[];
 	};
 
-	let mainPricelist: MainPricelist = {
+	let mainOrder: MainOrder = {
 		id: null,
 		customersID: null,
 		pricelistsID: null,
@@ -44,12 +91,11 @@
 		orderLine: Array.from($cartItem.values()) || []
 	};
 
-	let idValue = generateSONumber(mainPricelist.id);
-	let selectedCurrency;
-	let embroideryPositions;
-	let embroideryTypes;
-	let customers;
-	let pricelists;
+	let idValue = generateSONumber(mainOrder.id);
+	let embroideryPositions: any;
+	let embroideryTypes: any;
+	let customers: any;
+	let pricelists: any;
 
 	let pricelistValue: number | undefined;
 	let customerQueryParams = {
@@ -68,6 +114,23 @@
 
 	$: calclculatedTotal = add(calclculatedVat, subTotal);
 
+	// const getCountAndSubTotal = (cart) =>
+	// 	cart.reduce(
+	// 		(acc, item) => {
+	// 			return {
+	// 				totalCartItems: acc.totalCartItems + item.quantity,
+	// 				subTotal: add(dinero(acc.subTotal), multiply(dinero(item.unitPrice), item.quantity))
+	// 			};
+	// 		},
+	// 		{ totalCartItems: 0, subTotal: deneroZero }
+	// 	);
+
+	// $: ({ totalCartItems = 0, subTotal = deneroZero } = getCountAndSubTotal(
+	// 	Array.from($cartItem.values())
+	// ));
+	// $: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ totalCartItems', totalCartItems);
+	// $: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ subTotal', subTotal);
+
 	const calcSubTotal = (cart: any[]) => {
 		const arrayTotals = cart.map((item) => dinero(item.total));
 		if (!arrayTotals.length) {
@@ -76,6 +139,8 @@
 		const addMany = (addends) => addends.reduce(add);
 		return addMany(arrayTotals);
 	};
+
+	$: subTotal = calcSubTotal(mainOrder.orderLine) || dinero(deneroZero);
 
 	const calcTotalCartItems = (cart: any[]) => {
 		const arrayTotals = cart.map((item) => item.quantity);
@@ -86,7 +151,7 @@
 		return arrayTotals.reduce((accumulator, quantity) => accumulator + quantity);
 	};
 
-	$: totalCartItems = calcTotalCartItems(Array.from($cartItem.values()));
+	$: totalCartItems = calcTotalCartItems(mainOrder.orderLine);
 
 	const getOptions = async (paramsObj: any) => {
 		try {
@@ -115,7 +180,7 @@
 			const jsonRes = await res.json();
 			const defaultPricelist = jsonRes.find((list) => list.isDefault === true);
 			pricelistValue = defaultPricelist.id;
-			mainPricelist.pricelistsID = defaultPricelist.id;
+			mainOrder.pricelistsID = defaultPricelist.id;
 			return jsonRes;
 		} catch (err: any) {
 			logger.error(err.message);
@@ -130,17 +195,21 @@
 		handleChange();
 	});
 
-	$: mainPricelist.orderLine = Array.from($cartItem.values());
+	$: mainOrder.orderLine = Array.from($cartItem.values());
 
 	const removeItem = (item) => {
 		cartItem.remove(item);
+		mainOrder.orderLine = Array.from($cartItem.values());
+		handleChange();
 	};
 	const onDecrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
+		mainOrder.orderLine = Array.from($cartItem.values());
 		handleChange();
 	};
 	const onIncrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
+		mainOrder.orderLine = Array.from($cartItem.values());
 		handleChange();
 	};
 
@@ -149,20 +218,18 @@
 		amount: 0,
 		currency: {
 			base: 10,
-			code: 'USD',
+			code: selectedCurrency.currency,
 			exponent: 2
 		}
 	};
-
-	$: subTotal = calcSubTotal(Array.from($cartItem.values())) || dinero(deneroZero);
 
 	const handleChange = async () => {
 		try {
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
-					pricelistsID: mainPricelist.pricelistsID,
-					orderLine: Array.from($cartItem.values())
+					pricelistsID: mainOrder.pricelistsID,
+					orderLine: mainOrder.orderLine
 				})
 			});
 			if (res.ok) {
@@ -180,7 +247,7 @@
 	let customerSearch: any = { name: null };
 
 	$: if (customerSearch.name) {
-		mainPricelist.customersID = customerSearch.id;
+		mainOrder.customersID = customerSearch.id;
 	}
 
 	const handleComboInput = async (
@@ -196,41 +263,39 @@
 	const heandleSubmit = async (status: string) => {
 		/**
 		 * Check if the fields are filled
-		*/
-		if (!mainPricelist.orderLine.length ) {
+		 */
+		if (!mainOrder.orderLine.length) {
 			toasts.add({ message: 'A products must be selected', type: 'error' });
-			return
+			return;
 		}
-		if (!mainPricelist.customersID) {
+		if (!mainOrder.customersID) {
 			toasts.add({ message: 'A customer must be selected', type: 'error' });
-			return
+			return;
 		}
-		if (!mainPricelist.pricelistsID ) {
+		if (!mainOrder.pricelistsID) {
 			toasts.add({ message: 'A pricelist must be selected', type: 'error' });
-			return
+			return;
 		}
-		if (!mainPricelist.id ) {
-			delete mainPricelist.id
+		if (!mainOrder.id) {
+			delete mainOrder.id;
 		}
 
-		mainPricelist.accountsStatus = status
+		mainOrder.accountsStatus = status;
 
 		try {
 			const res = await fetch('/api/orders.json', {
 				method: 'POST',
-				body: JSON.stringify(mainPricelist)
+				body: JSON.stringify(mainOrder)
 			});
 
 			if (res.ok) {
 				toasts.add({ message: `The ${status} was created`, type: 'success' });
 			}
-			
 		} catch (err: any) {
 			logger.error(err.messages);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
-		
-	}
+	};
 </script>
 
 <div class="w-full flex">
@@ -245,8 +310,9 @@
 						id="currency"
 						name="currency"
 						bind:value={selectedCurrency}
+						on:change|preventDefault={runCalculations}
 					>
-						{#each currencies as currency}
+						{#each currencyOptions as currency}
 							<option value={currency}>
 								{` ${currency.currency} (${currency.symbol})`}
 							</option>
@@ -255,7 +321,7 @@
 				</label>
 			</div>
 		</div>
-		{#if Array.from($cartItem.values()).length > 0}
+		{#if mainOrder.orderLine.length > 0}
 			<div class="flex px-6 mt-5 mb-5">
 				<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 					Product
@@ -280,7 +346,8 @@
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
-				{#each Array.from($cartItem.values()) as item (item.id)}
+				{#each mainOrder.orderLine as item (item.id)}
+					{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 						<div class="flex w-2/6">
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
@@ -374,7 +441,7 @@
 							{format(item.unitPrice)}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{format(item.total)}
+							{format(toSnapshot(totalPrice))}
 						</span>
 					</div>
 				{/each}
@@ -424,7 +491,7 @@
 					<select
 						name="pricelist"
 						id="pricelist"
-						bind:value={mainPricelist.pricelistsID}
+						bind:value={mainOrder.pricelistsID}
 						on:change|preventDefault={handleChange}
 						class="text-sm input grow"
 					>
@@ -444,7 +511,7 @@
 						type="datetime-local"
 						name="orderDate"
 						id="orderDate"
-						bind:value={mainPricelist.orderDate}
+						bind:value={mainOrder.orderDate}
 					/>
 				{/if}
 			</div>
@@ -456,7 +523,7 @@
 						type="datetime-local"
 						name="deliveryDate"
 						id="deliveryDate"
-						bind:value={mainPricelist.deliveryDate}
+						bind:value={mainOrder.deliveryDate}
 					/>
 				{/if}
 			</div>
@@ -487,7 +554,7 @@
 				Create Quotation
 			</button>
 			<button
-			on:click|preventDefault={() => heandleSubmit('Sales Order')}
+				on:click|preventDefault={() => heandleSubmit('Sales Order')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Create Sales Order

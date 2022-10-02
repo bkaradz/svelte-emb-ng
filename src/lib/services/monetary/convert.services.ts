@@ -1,4 +1,4 @@
-import { dinero, convert, toSnapshot, toUnit  } from 'dinero.js';
+import { dinero, convert, toSnapshot, toUnit } from 'dinero.js';
 import { USD, ZAR, BWP } from '@dinero.js/currencies';
 import logger from '$lib/utility/logger';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
@@ -15,12 +15,12 @@ export const ZWR: Currency<number> = {
 	exponent: 2
 };
 
-function converter(dineroObject: Dinero<unknown>, newCurrency: { code: string; base: number; exponent: number }) {
+function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
 	if (newCurrency === ZAR) {
 		return convert(dineroObject, newCurrency, { ZAR: { amount: 1800, scale: 2 } });
 	}
 	if (newCurrency === BWP) {
-		return convert(dineroObject, newCurrency, { ZAR: { amount: 1800, scale: 2 } });
+		return convert(dineroObject, newCurrency, { BWP: { amount: 1300, scale: 2 } });
 	}
 	if (newCurrency === ZWB) {
 		return convert(dineroObject, newCurrency, { ZWB: { amount: 65000, scale: 2 } });
@@ -33,8 +33,8 @@ function converter(dineroObject: Dinero<unknown>, newCurrency: { code: string; b
 	}
 }
 
-export function createConverter({ code }) {
-	return code === 'USD' ? (x: Dinero<unknown>) => x : converter;
+export function createConverter({ code }: { code: Currency<number>['code'] }) {
+	return code === 'USD' ? (x: Dinero<number>) => x : converter;
 }
 
 export function toDineroObject(amount: number | string | DineroOptions<number>) {

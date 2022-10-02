@@ -1,3 +1,4 @@
+import { BWP } from '@dinero.js/currencies';
 import {
 	dinero,
 	haveSameCurrency,
@@ -22,14 +23,32 @@ function intlFormat(locale: string, options = {}) {
 	};
 }
 
+
+
 function formatDefault(dineroObject: Dinero<unknown>) {
+
 	if (
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })]) ||
+		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })])
+	) {
+		return toFormat(
+			dineroObject,
+			({ amount, currency }) => `Bond $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
+		);
+	}
+	if (
 		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWR })])
 	) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `${currency.code} $${amount.toFixed(2)}`
+			({ amount, currency }) => `Rtgs $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
+		);
+	}
+	if (
+		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: BWP })])
+	) {
+		return toFormat(
+			dineroObject,
+			({ amount, currency }) => `P ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
 		);
 	}
 }
@@ -37,8 +56,7 @@ function formatDefault(dineroObject: Dinero<unknown>) {
 const formatters = {
 	USD: intlFormat('en-US'),
 	ZAR: intlFormat('en-ZA'),
-	BWP: intlFormat('en_BW'),
-	EUR: intlFormat('fr-FR')
+	EUR: intlFormat('fr-FR'),
 };
 
 export function format(dineroObject: DineroOptions<number>) {
