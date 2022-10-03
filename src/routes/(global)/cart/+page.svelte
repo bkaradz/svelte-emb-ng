@@ -34,38 +34,58 @@
 		}
 	];
 
+	$: handleCurrency(Array.from($cartItem.values()));
+
 	type CurrencyOptions = typeof currencyOptions[0];
 
 	let selectedCurrency: CurrencyOptions = currencyOptions[0];
 
 	const currencies = { USD, BWP, ZAR, ZWB, ZWR };
 
-	// $: currentCurrency = currencies[selectedCurrency.currency];
+	const handleCalculations = async (lineArray: unknown[] | undefined) => {
+		console.log("🚀 ~ file:", mainOrder.pricelistsID)
+		if (!lineArray) {
+			return
+		}
+		try {
+			const res = await fetch('/api/cart.json', {
 
-	// $: console.log('🚀 ~ file: +page.svelte ~ line 42 ~ currentCurrency', currentCurrency);
+				method: 'POST',
+				body: JSON.stringify({
+					pricelistsID: mainOrder.pricelistsID,
+					orderLine: lineArray
+				})
+			});
+			if (res.ok) {
+				const cartData = await res.json();
+				return cartData
+			}
+		} catch (err: any) {
+			logger.error(err.messages);
+			toasts.add({ message: 'An error has occured', type: 'error' });
+			// throw new Error("An error has occured");
+		}
+	};
 
-	// $: if (currentCurrency) {
+	const handleCurrency = async (lineArray: unknown[]) => {
+		/**
+		 * Calculate using the cart default usd currency
+		 */
+		const newArray = await handleCalculations(lineArray)
+		if (!Array.isArray(newArray)) {
+			return
+		}
 
-	// }
-
-	const runCalculations = () => {
+		//@ts-ignore
 		const currentCurrency = currencies[selectedCurrency.currency];
 		const convert = createConverter(currentCurrency);
-		// const conv = convert(dinero({ amount: 1150, currency: USD }), currentCurrency);
-		console.log('cartItem top', $cartItem);
-		mainOrder.orderLine = Array.from($cartItem.values()).map((item) => {
+		
+		mainOrder.orderLine = newArray.map((item) => {
 			const total = convert(dinero(item.total), currentCurrency);
 			const unitPrice = convert(dinero(item.unitPrice), currentCurrency);
 
-			console.log('cartItem', $cartItem);
-			return { ...item, unitPrice };
-
-			// cartItem.update(item, {
-			// 	unitPrice: toSnapshot(unitPrice),
-			// 	total: toSnapshot(total)
-			// });
+			return { ...item, unitPrice: toSnapshot(unitPrice) };
 		});
-		console.log('order line', mainOrder.orderLine);
 	};
 
 	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
@@ -107,51 +127,35 @@
 	const vat = 0;
 
 	const calculateVat = (vat, subTotal) => {
-		return multiply(subTotal, { amount: vat, scale: 2 });
+		return multiply(dinero(subTotal), { amount: vat, scale: 2 });
 	};
 
 	$: calclculatedVat = calculateVat(vat, subTotal);
+	$: console.log("🚀 ~ file: +page.svelte ~ line 134 ~ calclculatedVat", calclculatedVat)
 
-	$: calclculatedTotal = add(calclculatedVat, subTotal);
+	$: calclculatedTotal = add(calclculatedVat, dinero(subTotal));
+	$: console.log("🚀 ~ file: +page.svelte ~ line 137 ~ calclculatedTotal", calclculatedTotal)
 
-	// const getCountAndSubTotal = (cart) =>
-	// 	cart.reduce(
-	// 		(acc, item) => {
-	// 			return {
-	// 				totalCartItems: acc.totalCartItems + item.quantity,
-	// 				subTotal: add(dinero(acc.subTotal), multiply(dinero(item.unitPrice), item.quantity))
-	// 			};
-	// 		},
-	// 		{ totalCartItems: 0, subTotal: deneroZero }
-	// 	);
+	const getCountAndSubTotal = (cart) =>
+		cart.reduce(
+			(acc, item) => {
+				return {
+					totalCartItems: acc.totalCartItems + item.quantity,
+					subTotal: add(dinero(acc.subTotal), multiply(dinero(item.unitPrice), item.quantity))
+				};
+			},
+			{ totalCartItems: 0, subTotal: deneroZero }
+		);
 
-	// $: ({ totalCartItems = 0, subTotal = deneroZero } = getCountAndSubTotal(
-	// 	Array.from($cartItem.values())
-	// ));
-	// $: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ totalCartItems', totalCartItems);
-	// $: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ subTotal', subTotal);
+	$: ({ totalCartItems = 0, subTotal = deneroZero } = getCountAndSubTotal(
+		mainOrder.orderLine
+	));
+	
+	$: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ totalCartItems', totalCartItems);
+	$: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ subTotal', subTotal);
 
-	const calcSubTotal = (cart: any[]) => {
-		const arrayTotals = cart.map((item) => dinero(item.total));
-		if (!arrayTotals.length) {
-			return;
-		}
-		const addMany = (addends) => addends.reduce(add);
-		return addMany(arrayTotals);
-	};
-
-	$: subTotal = calcSubTotal(mainOrder.orderLine) || dinero(deneroZero);
-
-	const calcTotalCartItems = (cart: any[]) => {
-		const arrayTotals = cart.map((item) => item.quantity);
-		if (!arrayTotals.length) {
-			return;
-		}
-
-		return arrayTotals.reduce((accumulator, quantity) => accumulator + quantity);
-	};
-
-	$: totalCartItems = calcTotalCartItems(mainOrder.orderLine);
+	
+	// $: totalCartItems = calcTotalCartItems(mainOrder.orderLine);
 
 	const getOptions = async (paramsObj: any) => {
 		try {
@@ -192,25 +196,25 @@
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);
 		pricelists = await getPricelists({});
-		handleChange();
+		handleCalculations();
 	});
 
-	$: mainOrder.orderLine = Array.from($cartItem.values());
+	
 
 	const removeItem = (item) => {
 		cartItem.remove(item);
-		mainOrder.orderLine = Array.from($cartItem.values());
-		handleChange();
+		// mainOrder.orderLine = Array.from($cartItem.values());
+		// handleCalculations();
 	};
 	const onDecrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
-		mainOrder.orderLine = Array.from($cartItem.values());
-		handleChange();
+		// mainOrder.orderLine = Array.from($cartItem.values());
+		// handleCalculations();
 	};
 	const onIncrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
-		mainOrder.orderLine = Array.from($cartItem.values());
-		handleChange();
+		// mainOrder.orderLine = Array.from($cartItem.values());
+		// handleCalculations();
 	};
 
 	const deneroZero = {
@@ -223,26 +227,7 @@
 		}
 	};
 
-	const handleChange = async () => {
-		try {
-			const res = await fetch('/api/cart.json', {
-				method: 'POST',
-				body: JSON.stringify({
-					pricelistsID: mainOrder.pricelistsID,
-					orderLine: mainOrder.orderLine
-				})
-			});
-			if (res.ok) {
-				const cartData = await res.json();
-				cartData.forEach((item) => {
-					cartItem.update(item, {});
-				});
-			}
-		} catch (err: any) {
-			logger.error(err.messages);
-			toasts.add({ message: 'An error has occured', type: 'error' });
-		}
-	};
+	
 
 	let customerSearch: any = { name: null };
 
@@ -310,7 +295,7 @@
 						id="currency"
 						name="currency"
 						bind:value={selectedCurrency}
-						on:change|preventDefault={runCalculations}
+						on:change|preventDefault={handleCurrency(Array.from($cartItem.values()))}
 					>
 						{#each currencyOptions as currency}
 							<option value={currency}>
@@ -371,7 +356,7 @@
 							{#if embroideryTypes}
 								<select
 									bind:value={item.embroideryTypes}
-									on:change|preventDefault={handleChange}
+									on:change|preventDefault={handleCalculations}
 									class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 								>
 									{#each embroideryTypes as type}
@@ -419,7 +404,7 @@
 							<button
 								class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
 								on:click={() => onIncrease(item)}
-								on:change|preventDefault={handleChange}
+								on:change|preventDefault={handleCalculations}
 								aria-label="Increase quantity"
 							>
 								{@html `<svg
@@ -456,7 +441,7 @@
 				<span
 					class="absolute top-0 right-0 -mt-1.5 -mr-2 text-white bg-success text-blue-700 font-normal rounded-full px-1 text-xs"
 				>
-					{totalCartItems ? totalCartItems : 0}
+					<!-- {totalCartItems ? totalCartItems : 0} -->
 				</span>
 			</div>
 		</div>
@@ -492,7 +477,7 @@
 						name="pricelist"
 						id="pricelist"
 						bind:value={mainOrder.pricelistsID}
-						on:change|preventDefault={handleChange}
+						on:change|preventDefault={handleCalculations}
 						class="text-sm input grow"
 					>
 						{#each pricelists as pricelist}
