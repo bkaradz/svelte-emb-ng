@@ -81,7 +81,6 @@
 
 		const convert = createConverter(currentCurrency);
 		mainOrder.orderLine = newArray.map((item) => {
-			// const total = convert(dinero(item.total), currentCurrency);
 			let unitPrice = convert(dinero(item.unitPrice), currentCurrency);
 			if (!unitPrice) {
 				unitPrice = zero;
@@ -150,10 +149,6 @@
 		totalCartItems = totals.totalCartItems;
 		subTotal = totals.subTotal;
 	};
-
-	// $: ({ totalCartItems = 0, subTotal = zero } = getCountAndSubTotal(mainOrder.orderLine));
-
-	// $: totalCartItems = calcTotalCartItems(mainOrder.orderLine);
 
 	const getOptions = async (paramsObj: any) => {
 		try {
@@ -330,7 +325,6 @@
 							{item?.stitches}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							<!-- {item?.embroideryTypes} -->
 							{#if embroideryTypes}
 								<select
 									bind:value={item.embroideryTypes}
@@ -346,7 +340,6 @@
 							{/if}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							<!-- {item?.embroideryPositions} -->
 							{#if embroideryPositions}
 								<select
 									bind:value={item.embroideryPositions}
@@ -419,7 +412,7 @@
 				<span
 					class="absolute top-0 right-0 -mt-1.5 -mr-2 text-white bg-success text-blue-700 font-normal rounded-full px-1 text-xs"
 				>
-					<!-- {totalCartItems ? totalCartItems : 0} -->
+					{totalCartItems ? totalCartItems : 0}
 				</span>
 			</div>
 		</div>
@@ -438,7 +431,6 @@
 			</div>
 			<div class="flex justify-between my-3 text-sm font-medium uppercase">
 				{#if customers}
-					<!-- <Combobox label="Customer" list={customers.results} /> -->
 					<Combobox
 						label="Customer"
 						name="customer"

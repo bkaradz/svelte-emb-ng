@@ -1,5 +1,3 @@
-import prisma from "$lib/prisma/client";
-import omit from "lodash-es/omit";
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 import { calculateOrder } from "$lib/services/orders";
