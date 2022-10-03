@@ -62,12 +62,10 @@ export const calculateOrder = async (reqOrder: any) => {
 					? dinero(JSON.parse(minimumPrice))
 					: calcUnitPrice;
 
-				const total = multiply(largestUnitPrice, quantity)
 
 				return {
 					...item,
 					unitPrice: toSnapshot(largestUnitPrice),
-					total: toSnapshot(total)
 				};
 			} else {
 

@@ -6,15 +6,7 @@ function addCartItems() {
   return {
     subscribe,
     add: (product) => update((products) => products.set(product.id, {
-      ...product, quantity: 1, total: {
-        "scale": 3,
-        "amount": 0,
-        "currency": {
-          "base": 10,
-          "code": "USD",
-          "exponent": 2
-        }
-      }, embroideryPositions: 'frontLeft', embroideryTypes: 'flat',
+      ...product, quantity: 1, embroideryPositions: 'frontLeft', embroideryTypes: 'flat',
       productsID: product.id
     })),
     update: (product, payload) => update((products) => products.set(product.id, { ...product, ...payload })),

@@ -154,7 +154,6 @@ model OrderLine {
   productsID          Int
   unitPrice           Json     @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   quantity            Int
-  total               Json
   manufacturingStatus String?
   embroideryPositions String?
   embroideryTypes     String?

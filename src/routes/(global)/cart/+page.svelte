@@ -34,22 +34,22 @@
 		}
 	];
 
+	let selectedCurrency = currencyOptions[0];
+
 	$: handleCurrency(Array.from($cartItem.values()));
-
-	type CurrencyOptions = typeof currencyOptions[0];
-
-	let selectedCurrency: CurrencyOptions = currencyOptions[0];
 
 	const currencies = { USD, BWP, ZAR, ZWB, ZWR };
 
+	let currentCurrency = USD;
+	//@ts-ignore
+	let zero = dinero({ amount: 0, currency: currentCurrency });
+
 	const handleCalculations = async (lineArray: unknown[] | undefined) => {
-		console.log("🚀 ~ file:", mainOrder.pricelistsID)
 		if (!lineArray) {
-			return
+			return;
 		}
 		try {
 			const res = await fetch('/api/cart.json', {
-
 				method: 'POST',
 				body: JSON.stringify({
 					pricelistsID: mainOrder.pricelistsID,
@@ -58,7 +58,7 @@
 			});
 			if (res.ok) {
 				const cartData = await res.json();
-				return cartData
+				return cartData;
 			}
 		} catch (err: any) {
 			logger.error(err.messages);
@@ -68,24 +68,28 @@
 	};
 
 	const handleCurrency = async (lineArray: unknown[]) => {
+		//@ts-ignore
+		currentCurrency = currencies[selectedCurrency.currency];
+		zero = dinero({ amount: 0, currency: currentCurrency });
 		/**
 		 * Calculate using the cart default usd currency
 		 */
-		const newArray = await handleCalculations(lineArray)
+		const newArray = await handleCalculations(lineArray);
 		if (!Array.isArray(newArray)) {
-			return
+			return;
 		}
 
-		//@ts-ignore
-		const currentCurrency = currencies[selectedCurrency.currency];
 		const convert = createConverter(currentCurrency);
-		
 		mainOrder.orderLine = newArray.map((item) => {
-			const total = convert(dinero(item.total), currentCurrency);
-			const unitPrice = convert(dinero(item.unitPrice), currentCurrency);
+			// const total = convert(dinero(item.total), currentCurrency);
+			let unitPrice = convert(dinero(item.unitPrice), currentCurrency);
+			if (!unitPrice) {
+				unitPrice = zero;
+			}
 
 			return { ...item, unitPrice: toSnapshot(unitPrice) };
 		});
+		getCountAndSubTotal(mainOrder.orderLine);
 	};
 
 	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
@@ -104,7 +108,7 @@
 	let mainOrder: MainOrder = {
 		id: null,
 		customersID: null,
-		pricelistsID: null,
+		pricelistsID: 0,
 		isActive: true,
 		accountsStatus: null,
 		orderDate: today,
@@ -124,37 +128,31 @@
 	};
 
 	// const vat = 14.5;
+	let totalCartItems = 0;
+	let subTotal = zero;
+
 	const vat = 0;
 
-	const calculateVat = (vat, subTotal) => {
-		return multiply(dinero(subTotal), { amount: vat, scale: 2 });
-	};
+	$: calclculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
 
-	$: calclculatedVat = calculateVat(vat, subTotal);
-	$: console.log("🚀 ~ file: +page.svelte ~ line 134 ~ calclculatedVat", calclculatedVat)
+	$: calclculatedTotal = add(calclculatedVat, subTotal);
 
-	$: calclculatedTotal = add(calclculatedVat, dinero(subTotal));
-	$: console.log("🚀 ~ file: +page.svelte ~ line 137 ~ calclculatedTotal", calclculatedTotal)
-
-	const getCountAndSubTotal = (cart) =>
-		cart.reduce(
+	const getCountAndSubTotal = (cart) => {
+		const totals = cart.reduce(
 			(acc, item) => {
 				return {
 					totalCartItems: acc.totalCartItems + item.quantity,
-					subTotal: add(dinero(acc.subTotal), multiply(dinero(item.unitPrice), item.quantity))
+					subTotal: add(acc.subTotal, multiply(dinero(item.unitPrice), item.quantity))
 				};
 			},
-			{ totalCartItems: 0, subTotal: deneroZero }
+			{ totalCartItems: 0, subTotal: zero }
 		);
+		totalCartItems = totals.totalCartItems;
+		subTotal = totals.subTotal;
+	};
 
-	$: ({ totalCartItems = 0, subTotal = deneroZero } = getCountAndSubTotal(
-		mainOrder.orderLine
-	));
-	
-	$: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ totalCartItems', totalCartItems);
-	$: console.log('🚀 ~ file: +page.svelte ~ line 126 ~ subTotal', subTotal);
+	// $: ({ totalCartItems = 0, subTotal = zero } = getCountAndSubTotal(mainOrder.orderLine));
 
-	
 	// $: totalCartItems = calcTotalCartItems(mainOrder.orderLine);
 
 	const getOptions = async (paramsObj: any) => {
@@ -196,38 +194,18 @@
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);
 		pricelists = await getPricelists({});
-		handleCalculations();
+		handleCurrency(Array.from($cartItem.values()));
 	});
-
-	
 
 	const removeItem = (item) => {
 		cartItem.remove(item);
-		// mainOrder.orderLine = Array.from($cartItem.values());
-		// handleCalculations();
 	};
 	const onDecrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
-		// mainOrder.orderLine = Array.from($cartItem.values());
-		// handleCalculations();
 	};
 	const onIncrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
-		// mainOrder.orderLine = Array.from($cartItem.values());
-		// handleCalculations();
 	};
-
-	const deneroZero = {
-		scale: 3,
-		amount: 0,
-		currency: {
-			base: 10,
-			code: selectedCurrency.currency,
-			exponent: 2
-		}
-	};
-
-	
 
 	let customerSearch: any = { name: null };
 
@@ -530,7 +508,9 @@
 		<div class="mt-5 border-t border-royal-blue-500">
 			<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
 				<span>Total</span>
-				<span class="text-base font-semibold ">{format(toSnapshot(calclculatedTotal))}</span>
+				<span class="text-base font-semibold ">
+					{format(toSnapshot(calclculatedTotal))}
+				</span>
 			</div>
 			<button
 				on:click|preventDefault={() => heandleSubmit('Quotation')}
