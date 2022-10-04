@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
+	import { cartItem } from '$lib/stores/cart.store';
 	import logger from '$lib/utility/logger';
 	import {
 		svgChevronLeft,
@@ -93,8 +94,13 @@
 		getOrders(currentGlobalParams);
 	});
 
-	const viewOrder = async (id: string) => {
-		goto(`/orders/view/${id}`);
+	const viewOrder = async (order: string) => {
+		console.log("🚀 ~ file: +page.svelte ~ line 97 ~ viewOrder ~ order", order)
+		order.orderLine.forEach(item => {
+			cartItem.add(item)
+		});
+		
+		goto(`/cart/view/${order.id}`);
 	};
 
 	const gotoAddOrders = async () => {
@@ -414,7 +420,7 @@
 			{#if gridView}
 				{#each orders.results as order (order.id)}
 					<div
-						on:click|preventDefault={() => viewOrder(order.id)}
+						on:click|preventDefault={() => viewOrder(order)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
@@ -476,14 +482,14 @@
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
+												<button class=" m-0 p-0" on:click={() => viewOrder(order)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
+												<button class=" m-0 p-0" on:click={() => viewOrder(order)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button

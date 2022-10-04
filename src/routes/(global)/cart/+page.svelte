@@ -105,7 +105,7 @@
 		orderLine: any[];
 	};
 
-	let mainOrder: MainOrder = {
+	let mainOrderInit: MainOrder = {
 		id: null,
 		customersID: null,
 		pricelistsID: 0,
@@ -114,6 +114,8 @@
 		orderDate: today,
 		orderLine: Array.from($cartItem.values()) || []
 	};
+
+	let mainOrder = mainOrderInit
 
 	let idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions: any;
@@ -248,6 +250,9 @@
 			});
 
 			if (res.ok) {
+				mainOrder = {...mainOrderInit, orderLine: []}
+				customerSearch = { name: null }
+				cartItem.reset();
 				toasts.add({ message: `The ${status} was created`, type: 'success' });
 			}
 		} catch (err: any) {
