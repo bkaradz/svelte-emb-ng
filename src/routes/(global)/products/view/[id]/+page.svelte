@@ -18,6 +18,7 @@
 	import dayjs from 'dayjs';
 	import type { ProductsDocument } from '$lib/models/products.models';
 	import { format } from '$lib/services/monetary';
+	import { dinero } from 'dinero.js';
 
 	const endpoint = `/api/products/${$page.params.id}.json`;
 
@@ -110,7 +111,7 @@
 					<div class="p-2">
 						<p class="p-1 text-sm font-semibold text-pickled-bluewood-500">Unit Price</p>
 						<p class="p-1 text-sm text-pickled-bluewood-500">
-							{!product?.unitPrice ? '...' : format(product.unitPrice)}
+							{!product?.unitPrice ? '...' : format(dinero(product.unitPrice))}
 						</p>
 					</div>
 					<div class="p-2">

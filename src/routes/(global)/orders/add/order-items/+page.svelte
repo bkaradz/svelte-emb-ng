@@ -17,6 +17,7 @@
 	import { calculateOrder } from '$lib/services/orders';
 	import { format } from '$lib/services/monetary';
 	import map from 'lodash-es/map';
+	import { dinero } from 'dinero.js';
 
 	interface productIterface {
 		results: any[];
@@ -386,10 +387,10 @@
 										</div>
 									</td>
 									<td class="px-2 py-1 text-end">
-										{format(JSON.parse(list.unitPrice))}
+										{format(dinero(list.unitPrice))}
 									</td>
 									<td class="px-2 py-1 text-end">
-										{format(JSON.parse(list.total))}
+										{format(dinero(list.total))}
 									</td>
 									<td class="px-2 text-center">
 										<button on:click|preventDefault={removeCartItem(list)}

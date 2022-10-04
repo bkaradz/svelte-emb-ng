@@ -20,6 +20,7 @@
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import logger from '$lib/utility/logger';
 	import { format } from '$lib/services/monetary';
+	import { dinero } from 'dinero.js';
 
 	const endpoint = `/api/contacts/${$page.params.id}.json`;
 
@@ -158,13 +159,13 @@
 					<div class="p-2">
 						<p class="p-2 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
 						<span class="p-2 text-lg font-bold text-pickled-bluewood-500">
-							{format(contact.balanceDue)}
+							{format(dinero(contact.balanceDue))}
 						</span>
 					</div>
 					<div class="p-2">
 						<p class="p-2 text-xs font-semibold text-pickled-bluewood-500 ">TOTAL INVOICED</p>
 						<span class="p-2 text-lg font-bold text-pickled-bluewood-500">
-							{format(contact.totalReceipts)}
+							{format(dinero(contact.totalReceipts))}
 						</span>
 					</div>
 				</div>

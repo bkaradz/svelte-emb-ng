@@ -14,6 +14,7 @@
 		svgView
 	} from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
+	import { dinero } from 'dinero.js';
 	import { onMount } from 'svelte';
 
 	interface ContentIterface {
@@ -424,15 +425,13 @@
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(contact?.balanceDue)}
-									<!-- ${contact.balanceDue} -->
+									{format(dinero(contact.balanceDue))}
 								</span>
 							</div>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(contact?.totalReceipts)}
-									<!-- ${contact.totalReceipts} -->
+									{format(dinero(contact.totalReceipts))}
 								</span>
 							</div>
 						</div>

@@ -17,6 +17,7 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
+	import { dinero } from 'dinero.js';
 
 	interface productIterface {
 		results: [
@@ -414,7 +415,7 @@
 								<div class="p-1">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">UNIT PRICE</p>
 									<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-										{!product?.unitPrice ? '...' : format(product.unitPrice)}
+										{!product?.unitPrice ? '...' : format(dinero(product.unitPrice))}
 									</span>
 								</div>
 							</div>
@@ -462,7 +463,7 @@
 												{!product.units ? '...' : product.units}
 											</td>
 											<td class="px-2 py-1 text-right">
-												{!product.unitPrice ? '...' : format(product.unitPrice)}
+												{!product.unitPrice ? '...' : format(dinero(product.unitPrice))}
 											</td>
 
 											<td class="px-2 py-1 text-center">

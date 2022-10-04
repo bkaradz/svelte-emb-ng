@@ -85,9 +85,10 @@
 			if (!unitPrice) {
 				unitPrice = zero;
 			}
-
+		
 			return { ...item, unitPrice: toSnapshot(unitPrice) };
 		});
+
 		getCountAndSubTotal(mainOrder.orderLine);
 	};
 
@@ -310,7 +311,7 @@
 						<div class="flex w-2/6">
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
 								<div>
-									<h2 class="mb-1 text-sm font-bold">{item.name}</h2>
+									<h3 class="mb-1 text-sm font-bold">{item.name}</h3>
 									<!-- <h3 class="text-sm mb-1.5">{item.brand}</h3> -->
 								</div>
 								<button
@@ -394,10 +395,11 @@
 							</button>
 						</div>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{format(item.unitPrice)}
+							
+							{format(dinero(item.unitPrice))}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{format(toSnapshot(totalPrice))}
+							{format(totalPrice)}
 						</span>
 					</div>
 				{/each}
@@ -487,13 +489,13 @@
 		<div class="flex justify-between  border-t border-royal-blue-500">
 			<span class="text-sm font-medium uppercase pt-5">Subtotal</span>
 			<span class="text-sm font-semibold pt-5">
-				{format(toSnapshot(subTotal))}
+				{format(subTotal)}
 			</span>
 		</div>
 		<div class="flex justify-between mt-4 mb-5">
 			<span class="text-sm font-medium uppercase"> VAT({vat}%) </span>
 			<span class="text-sm font-semibold">
-				{format(toSnapshot(calclculatedVat))}
+				{format(calclculatedVat)}
 			</span>
 		</div>
 
@@ -501,7 +503,7 @@
 			<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
 				<span>Total</span>
 				<span class="text-base font-semibold ">
-					{format(toSnapshot(calclculatedTotal))}
+					{format(calclculatedTotal)}
 				</span>
 			</div>
 			<button

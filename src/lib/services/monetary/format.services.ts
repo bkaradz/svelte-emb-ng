@@ -5,10 +5,8 @@ import {
 	toFormat,
 	toSnapshot,
 	type Dinero,
-	type DineroOptions
 } from 'dinero.js';
 import { ZWB, ZWR } from './convert.services';
-import type { dineroSnapshot } from './monetary.services';
 
 function intlFormat(locale: string, options = {}) {
 	return function formatter(dineroObject: Dinero<unknown>) {
@@ -23,8 +21,6 @@ function intlFormat(locale: string, options = {}) {
 	};
 }
 
-
-
 function formatDefault(dineroObject: Dinero<unknown>) {
 
 	if (
@@ -32,7 +28,7 @@ function formatDefault(dineroObject: Dinero<unknown>) {
 	) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `Bond $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
+			({ amount, currency }) => `Bond $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 	if (
@@ -40,7 +36,7 @@ function formatDefault(dineroObject: Dinero<unknown>) {
 	) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `Rtgs $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
+			({ amount, currency }) => `Rtgs $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 	if (
@@ -48,7 +44,7 @@ function formatDefault(dineroObject: Dinero<unknown>) {
 	) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `P ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, ' ')}`
+			({ amount, currency }) => `P ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 }
@@ -59,10 +55,10 @@ const formatters = {
 	EUR: intlFormat('fr-FR'),
 };
 
-export function format(dineroObject: DineroOptions<number>) {
-	const dineroValue = dinero(dineroObject);
-	const { currency } = toSnapshot(dineroValue) as dineroSnapshot;
+export function format(dineroObject: Dinero<number>) {
+
+	const { currency } = toSnapshot(dineroObject);
 	const formatFn = formatters[currency.code] || formatDefault;
 
-	return formatFn(dineroValue);
+	return formatFn(dineroObject);
 }

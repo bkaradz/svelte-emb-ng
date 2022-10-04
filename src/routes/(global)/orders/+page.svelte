@@ -428,13 +428,13 @@
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									<!-- {format(JSON.parse(order?.balance))} -->
+									<!-- {format(dinero(order?.balance))} -->
 								</span>
 							</div>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
 								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									<!-- {format(order.totalReceipts)} -->
+									<!-- {format(dinero(order.totalReceipts))} -->
 								</span>
 							</div>
 						</div>
