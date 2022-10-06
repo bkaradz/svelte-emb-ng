@@ -2,13 +2,16 @@
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
-	import { cartItem } from '$lib/stores/cart.store';
+	import { cartItem, cartOrder } from '$lib/stores/cart.store';
+	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgChevronLeft,
 		svgChevronRight,
 		svgGrid,
 		svgList,
+		svgPencil,
 		svgPlus,
 		svgSearch,
 		svgSelector,
@@ -17,51 +20,6 @@
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-
-	// interface ContentIterface {
-	// 	results: [
-	// 		{
-	// 			id: string;
-	// 			name: string;
-	// 			isCorporate: boolean;
-	// 			notes: string;
-	// 			vatOrBpNo: string;
-	// 			email: string;
-	// 			phone: string;
-	// 			address: string;
-	// 			balanceDue: number;
-	// 			totalReceipts: number;
-	// 			isActive: boolean;
-	// 			organizationID: {
-	// 				name: string;
-	// 			};
-	// 		}
-	// 	];
-	// 	id: string;
-	// 	totalRecords: number;
-	// 	totalPages: number;
-	// 	limit: number;
-	// 	previous: { page: number; limit: number };
-	// 	current: { page: number; limit: number };
-	// 	next: { page: number; limit: number };
-	// }
-
-	// interface getContactsInterface {
-	// 	limit: number;
-	// 	page: number;
-	// 	sort?: string;
-	// 	query?: string;
-	// 	name?: string;
-	// 	organisation?: string;
-	// 	phone?: string;
-	// 	email?: string;
-	// 	vatNo?: string;
-	// 	balanceDue?: string;
-	// 	state?: string;
-	// 	isCorporate?: boolean;
-	// 	isActive?: boolean;
-	// 	isUser?: boolean;
-	// }
 
 	const tableHeadings = [
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
@@ -94,13 +52,20 @@
 		getOrders(currentGlobalParams);
 	});
 
-	const viewOrder = async (order: string) => {
-		console.log("🚀 ~ file: +page.svelte ~ line 97 ~ viewOrder ~ order", order)
-		order.orderLine.forEach(item => {
-			cartItem.add(item)
-		});
-		
-		goto(`/cart/view/${order.id}`);
+	const viewOrder = async (id: number) => {
+		goto(`/cart/view/${id}`);
+	};
+
+	const editOrder = async (order: number) => {
+		if (order.accountsStatus === 'invoice') {
+			toasts.add({
+				message: 'Editing an Invoice is not allowed',
+				type: 'warning'
+			});
+			return;
+		}
+
+		goto(`/cart/edit/${order.id}`);
 	};
 
 	const gotoAddOrders = async () => {
@@ -420,12 +385,12 @@
 			{#if gridView}
 				{#each orders.results as order (order.id)}
 					<div
-						on:click|preventDefault={() => viewOrder(order)}
+						on:click|preventDefault={() => viewOrder(order.id)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
 							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
-								{order?.id}
+								{generateSONumber(order?.id)}
 							</h4>
 						</div>
 						<div
@@ -466,7 +431,7 @@
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
-											<td class="px-2 py-1">{order?.id}</td>
+											<td class="px-2 py-1">{generateSONumber(order?.id)}</td>
 											<td class="px-2 py-1"
 												>{`Id: ${order?.customerContact?.id} ~ ${order?.customerContact?.name}`}</td
 											>
@@ -482,16 +447,16 @@
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order)}
+												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button
 												>
 											</td>
 											<td class="p-1 text-center ">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order)}
+												<button class=" m-0 p-0" on:click={() => editOrder(order)}
 													><span class="fill-current text-pickled-bluewood-500"
-														>{@html svgView}</span
+														>{@html svgPencil}</span
 													></button
 												>
 											</td>

@@ -7,11 +7,15 @@
 	import { onMount } from 'svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import dayjs from 'dayjs';
+	import isBetween from 'dayjs/plugin/isBetween';
+	import weekday from 'dayjs/plugin/weekday';
+	dayjs.extend(isBetween);
+	dayjs.extend(weekday);
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 
-	const currencyOptions = [
+	export const currencyOptions = [
 		{
 			currency: 'USD',
 			symbol: '$'
@@ -85,19 +89,26 @@
 			if (!unitPrice) {
 				unitPrice = zero;
 			}
-		
+
 			return { ...item, unitPrice: toSnapshot(unitPrice) };
 		});
 
 		getCountAndSubTotal(mainOrder.orderLine);
 	};
 
-	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
+	const sundayInBetween = dayjs().weekday(7).isBetween(TODAY, FOUR_DAYS);
+
+	if (sundayInBetween) {
+		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
+	}
+
 	type MainOrder = {
 		id?: number | null;
 		customersID: number | null;
 		pricelistsID: number | null;
-		isActive: true;
+		isActive: boolean;
 		accountsStatus: string | null;
 		orderDate: string | null;
 		deliveryDate?: string | null;
@@ -111,11 +122,12 @@
 		pricelistsID: 0,
 		isActive: true,
 		accountsStatus: null,
-		orderDate: today,
+		orderDate: TODAY,
+		deliveryDate: FOUR_DAYS,
 		orderLine: Array.from($cartItem.values()) || []
 	};
 
-	let mainOrder = mainOrderInit
+	let mainOrder = mainOrderInit;
 
 	let idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions: any;
@@ -250,8 +262,8 @@
 			});
 
 			if (res.ok) {
-				mainOrder = {...mainOrderInit, orderLine: []}
-				customerSearch = { name: null }
+				mainOrder = { ...mainOrderInit, orderLine: [] };
+				customerSearch = { name: null };
 				cartItem.reset();
 				toasts.add({ message: `The ${status} was created`, type: 'success' });
 			}
@@ -400,7 +412,6 @@
 							</button>
 						</div>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							
 							{format(dinero(item.unitPrice))}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
