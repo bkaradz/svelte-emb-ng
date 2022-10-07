@@ -5,6 +5,24 @@ import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import pick from 'lodash-es/pick';
 
+const getQueryOptions = (objectKeys, finalQuery) => {
+	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+		return {
+			equals: finalQuery[objectKeys] === 'true',
+		}
+	}
+
+	if (objectKeys === 'id' || objectKeys === 'customersID' || objectKeys === 'pricelistsID') {
+		return parseInt(finalQuery[objectKeys])
+	}
+
+	return {
+		contains: finalQuery[objectKeys],
+		mode: 'insensitive'
+	}
+
+}
+
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
@@ -64,18 +82,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = {
 				...commonQuery,
 				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
+					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
 				},
 			}
 			queryTotal = {
 				where: {
-					[objectKeys]: {
-						contains: finalQuery[objectKeys],
-						mode: 'insensitive'
-					},
+					[objectKeys]: getQueryOptions(objectKeys, finalQuery),
 				},
 			}
 		} else {

@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 };
 
 export const changeCurrentDefault = async () => {
-	const updatedAllToFalse = await prisma.pricelists.updateMany({
+	return await prisma.pricelists.updateMany({
 		where: {
 			isDefault: {
 				equals: true
