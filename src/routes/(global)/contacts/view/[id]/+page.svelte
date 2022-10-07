@@ -24,6 +24,11 @@
 
 	const endpoint = `/api/contacts/${$page.params.id}.json`;
 
+	export let data;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 28 ~ data', data);
+
+	const tableHeading = ['Order Node', 'Date', 'Date Due', 'Total', 'Outstanding', 'Status', 'View'];
+
 	interface ContactIterface {
 		id: string;
 		name: string;
@@ -400,15 +405,9 @@
 									<tr
 										class="border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 									>
-										<th class="px-4 py-2">#</th>
-										<th class="px-4 py-2">Date</th>
-										<th class="px-4 py-2">Order No</th>
-										<th class="px-4 py-2">Customer</th>
-										<th class="px-4 py-2">Amount</th>
-										<th class="px-4 py-2">Outstanding</th>
-										<th class="px-4 py-2">Due Date</th>
-										<th class="px-4 py-2">State</th>
-										<th class="px-4 py-2">View</th>
+										{#each tableHeading as heading (heading)}
+											<th class="px-4 py-2">{heading}</th>
+										{/each}
 									</tr>
 								</thead>
 								<tbody>
@@ -432,78 +431,6 @@
 										<td class="py-2 text-center">
 											<a href="/"
 												><span class="fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">2</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000012</td>
-										<td class="px-4 py-2">{contact.name}</td>
-										<td class="px-4 py-2 text-right">$1200.00</td>
-										<td class="px-4 py-2 text-right">$120.00</td>
-
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">
-											<span
-												class="rounded-full bg-warning px-3 py-1 text-xs font-bold text-white whitespace-nowrap"
-												>Date Due</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">3</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000013</td>
-										<td class="px-4 py-2">{contact.name}</td>
-										<td class="px-4 py-2 text-right">$500.00</td>
-										<td class="px-4 py-2 text-right">$0.00</td>
-
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2 ">
-											<span
-												class="rounded-full bg-danger px-3 py-1 text-xs font-bold text-white whitespace-nowrap"
-												>Paid</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">3</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000013</td>
-										<td class="px-4 py-2">{contact.name}</td>
-										<td class="px-4 py-2 text-right">$500.00</td>
-										<td class="px-4 py-2 text-right">$0.00</td>
-
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">
-											<span
-												class="rounded-full bg-danger px-3 py-1 text-xs font-bold text-white whitespace-nowrap"
-												>Overdue</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
 												></a
 											>
 										</td>

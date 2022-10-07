@@ -128,6 +128,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
+		console.log("🚀 ~ file: +server.ts ~ line 131 ~ constGET:RequestHandler= ~ finalQuery", finalQuery)
 
 		const objectKeys = Object.keys(finalQuery)[0];
 

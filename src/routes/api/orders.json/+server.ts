@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: 401
 			});
 		}
-		
+
 		// check that the customer exist
 		// const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
 		const customerExist = await prisma.contacts.findUnique({
