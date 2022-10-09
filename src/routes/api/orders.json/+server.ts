@@ -4,6 +4,8 @@ import { calculateOrder } from '$lib/services/orders';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import pick from 'lodash-es/pick';
+import { getPagination } from '$lib/utility/pagination.util';
+import type { Prisma } from '@prisma/client';
 
 const getQueryOptions = (objectKeys, finalQuery) => {
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
@@ -23,7 +25,6 @@ const getQueryOptions = (objectKeys, finalQuery) => {
 
 }
 
-
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 
@@ -38,25 +39,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
-		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
+		const pagination = getPagination(queryParams)
 
-		const startIndex = (page - 1) * limit;
-		const endIndex = page * limit;
-
-		let previous = null;
-		let next = null;
-		const current = {
-			page: page,
-			limit
-		};
-
-		if (startIndex > 0) {
-			previous = {
-				page: page - 1,
-				limit
-			};
-		}
 
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
 
@@ -66,8 +50,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let queryTotal: any
 
 		const commonQuery = {
-			take: limit,
-			skip: page - 1,
+			take: pagination.limit,
+			skip: pagination.page - 1,
 			include: {
 				customerContact: true,
 				Pricelists: true,
@@ -98,18 +82,21 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const orderQuery = await prisma.orders.findMany(query)
-		const totalRecords = await prisma.orders.count(queryTotal)
+		pagination.totalRecords = await prisma.orders.count(queryTotal)
 
-		if (endIndex < totalRecords) {
-			next = {
-				page: page + 1,
-				limit
+
+		if (pagination.endIndex < pagination.totalRecords) {
+			pagination.next = {
+				page: pagination.page + 1,
+				limit: pagination.limit
 			};
 		}
 
-		const totalPages = Math.ceil(totalRecords / limit);
+		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-		return new Response(JSON.stringify({ results: orderQuery, next, totalPages, previous, current, totalRecords, limit }));
+		const results = { results: orderQuery, ...pagination }
+
+		return new Response(JSON.stringify(results));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

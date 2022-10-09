@@ -5,6 +5,7 @@ import { z, type TypeOf } from "zod";
 import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
+import { getPagination } from '$lib/utility/pagination.util';
 
 
 const ContactsSchema = z.object({
@@ -107,28 +108,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
-		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
-
-		const startIndex = (page - 1) * limit;
-		const endIndex = page * limit;
-
-		let previous = null;
-		let next = null;
-		const current = {
-			page: page,
-			limit
-		};
-
-		if (startIndex > 0) {
-			previous = {
-				page: page - 1,
-				limit
-			};
-		}
+		const pagination = getPagination(queryParams)
 
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
-		console.log("🚀 ~ file: +server.ts ~ line 131 ~ constGET:RequestHandler= ~ finalQuery", finalQuery)
 
 		const objectKeys = Object.keys(finalQuery)[0];
 
@@ -150,8 +132,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (objectKeys) {
 			query = {
-				take: limit,
-				skip: page - 1,
+				take: pagination.limit,
+				skip: pagination.page - 1,
 				where: {
 					[objectKeys]: whereQuery,
 				},
@@ -171,8 +153,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				take: limit,
-				skip: page - 1,
+				take: pagination.limit,
+				skip: pagination.page - 1,
 				include: {
 					email: true,
 					phone: true,
@@ -186,18 +168,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const contactsQuery = await prisma.contacts.findMany(query)
-		const totalRecords = await prisma.contacts.count(queryTotal)
+		pagination.totalRecords = await prisma.contacts.count(queryTotal)
 
-		if (endIndex < totalRecords) {
-			next = {
-				page: page + 1,
-				limit
+		if (pagination.endIndex < pagination.totalRecords) {
+			pagination.next = {
+				page: pagination.page + 1,
+				limit: pagination.limit
 			};
 		}
 
-		const totalPages = Math.ceil(totalRecords / limit);
+		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-		return new Response(JSON.stringify({ results: contactsQuery, next, totalPages, previous, current, totalRecords, limit }));
+		return new Response(JSON.stringify({ results: contactsQuery, ...pagination }));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

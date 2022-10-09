@@ -433,27 +433,37 @@
 										>
 											<td class="px-2 py-1">{generateSONumber(order?.id)}</td>
 											<td class="px-2 py-1"
-												>{`Id: ${order?.customerContact?.id} ~ ${order?.customerContact?.name}`}</td
-											>
-											<td class="px-2 py-1"
-												>{`Id: ${order?.Pricelists?.id} ~ ${order?.Pricelists?.name} `}</td
-											>
+												>{`${order?.customerContact?.name}`}
+												<span
+													class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
+												>
+													{order?.customerContact?.id}
+												</span>
+											</td>
+											<td class="px-2 py-1">
+												{`${order?.Pricelists?.name}`}
+												<span
+													class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
+												>
+													{order?.Pricelists?.id}
+												</span>
+											</td>
 											<td class="px-2 py-1">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
 											<td class="px-2 py-1">{dayjs(order?.deliveryDate).format('DD/MM/YYYY')}</td>
-											<td class="flex items-center justify-end px-2 py-1">
+											<td class=" text-left justify-end px-2 py-1">
 												<span
 													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"
 													>{order.accountsStatus}</span
 												>
 											</td>
-											<td class="p-1 text-center ">
+											<td class="p-1 text-center">
 												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
 													></button
 												>
 											</td>
-											<td class="p-1 text-center ">
+											<td class="p-1 text-center">
 												<button class=" m-0 p-0" on:click={() => editOrder(order)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgPencil}</span

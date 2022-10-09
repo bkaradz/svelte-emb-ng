@@ -102,7 +102,7 @@
 		goto(`/contacts/add`);
 	};
 
-	let gridView = true;
+	let gridView = false;
 	let searchInputValue = '';
 	let searchOption = 'name';
 
@@ -424,15 +424,11 @@
 						>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
-								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(dinero(contact.balanceDue))}
-								</span>
+								<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
 							</div>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
-								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
-									{format(dinero(contact.totalReceipts))}
-								</span>
+								<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
 							</div>
 						</div>
 					</div>
@@ -455,7 +451,7 @@
 								<tbody>
 									{#each contacts.results as contact (contact.id)}
 										<tr
-											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+											class="whitespace-no-wrap hover:bg-royal-blue-200 w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
 											<td class="px-2 py-1">{contact.id}</td>
 											<td class="px-2 py-1">{contact.name}</td>
@@ -479,8 +475,8 @@
 											<td class="px-2 py-1">
 												{!contact?.vatOrBpNo ? '...' : contact?.vatOrBpNo}
 											</td>
-											<td class="px-2 py-1 text-right">{format(contact?.balanceDue)}</td>
-											<td class="px-2 py-1 text-right">{format(contact?.totalReceipts)}</td>
+											<td class="px-2 py-1 text-right" />
+											<td class="px-2 py-1 text-right" />
 											<td class="flex items-center justify-end px-2 py-1">
 												<span class="rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
 													>Invoiced</span

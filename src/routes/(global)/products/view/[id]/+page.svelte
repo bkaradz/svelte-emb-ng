@@ -4,55 +4,98 @@
 		svgArrow,
 		svgChevronLeft,
 		svgChevronRight,
-		svgGrid,
-		svgList,
 		svgPlus,
 		svgSearch,
 		svgSelector,
-		svgSort,
 		svgView
 	} from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import dayjs from 'dayjs';
-	import type { ProductsDocument } from '$lib/models/products.models';
 	import { format } from '$lib/services/monetary';
 	import { dinero } from 'dinero.js';
+	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
+	import logger from '$lib/utility/logger';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
 	const endpoint = `/api/products/${$page.params.id}.json`;
 
-	let product: Partial<ProductsDocument>;
+	const tableHeadings = ['Order #', 'Date', 'Customer', 'Due Date', 'State', 'View'];
+
+	let product;
+	let ordersList;
+
+	let limit = 15;
+	let currentGlobalParams = {
+		limit,
+		page: 1,
+		productsID: $page.params.id
+	};
+
+	const checkValue = () => {
+		if (limit < 1) {
+			limit = 1;
+		}
+	};
+
+	let searchInputValue = '';
+	let searchOption = 'id';
+
+	const searchNamesOptions = {
+		id: 'Order Number',
+		organisation: 'Organisation',
+		phone: 'Phone',
+		email: 'Email',
+		vatNo: 'Vat Number',
+		balanceDue: 'Balance Due',
+		state: 'State'
+	};
+
+	const heandleSearchSelection = (event: MouseEvent) => {
+		searchOption = (event.target as HTMLInputElement).name;
+		searchInputValue = '';
+	};
+
+	const heandleSearch = async (
+		event: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) => {
+		currentGlobalParams.page = 1;
+		let searchWord = (event.target as HTMLInputElement).value;
+		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
+		getOrdersList(currentGlobalParams);
+	};
+
+	// Input must be of the form {limit, page, query}
+	const getOrdersList = async (paramsObj: any) => {
+		try {
+			let searchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orderLine.json?' + searchParams.toString());
+			ordersList = await res.json();
+		} catch (err: any) {
+			logger.error(err.message);
+		}
+	};
 
 	onMount(async () => {
-		const res = await fetch(endpoint);
-		if (res.ok) {
-			product = await res.json();
+		try {
+			getOrdersList(currentGlobalParams);
+			const res = await fetch(endpoint);
+			if (res.ok) {
+				product = await res.json();
+			}
+		} catch (err: any) {
+			logger.error(err.message);
 		}
 	});
-
-	let noOrdersPerPage = 10;
-	let paginationCurrentValue = 2;
-	const PAGINATION_LAST_VALUE = 20; // To be replace by the value from the database
-	$: disableLeft = paginationCurrentValue <= 2 ? true : false;
-	$: disableRight = paginationCurrentValue >= PAGINATION_LAST_VALUE ? true : false;
-
-	$: minusPagination = () => {
-		if (paginationCurrentValue > 2) {
-			paginationCurrentValue -= 1;
-		}
-	};
-	$: plusPagination = () => {
-		if (paginationCurrentValue < PAGINATION_LAST_VALUE) {
-			paginationCurrentValue += 1;
-		}
-	};
 
 	const gotoProducts = async () => {
 		goto(`/products`);
 	};
 
-	$: product;
+	const viewOrder = async (id: string) => {
+		goto(`/cart/view/${id}`);
+	};
 </script>
 
 <svelte:head>
@@ -125,90 +168,125 @@
 			<!-- End Product -->
 			<div class="flex grow basis-3/4 flex-col">
 				<!-- Search and Grid/List Bar -->
-				<div class="z-10 flex h-14 w-full flex-row items-center justify-between  bg-white">
+				<div class="z-10 mt-4 flex h-14 w-full flex-row items-center justify-between bg-white">
 					<div>
 						<div class="relative flex flex-row items-center text-left">
-							<div>
-								<button
-									class="btn focus:ring-royal-royal-royal-blue-500 inline-flex w-full items-center justify-center px-2 py-2 text-sm text-pickled-bluewood-500 hover:bg-pickled-bluewood-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-pickled-bluewood-100"
-									id="menu-button"
-									aria-expanded="true"
-									aria-haspopup="true"
-								>
-									<span>
-										{@html svgSort}
-									</span>
+							{#if ordersList}
+								<Menu as="div" class="relative">
+									<MenuButton
+										class="btn inline-flex w-full items-center justify-center px-2 py-2 text-xs text-pickled-bluewood-500 hover:bg-pickled-bluewood-50 focus:outline-none focus:ring-royal-blue-50 focus:ring-offset-transparent"
+										id="menu-button"
+										aria-expanded="true"
+										aria-haspopup="true"
+									>
+										Search by {searchNamesOptions[searchOption]}
+										<span>
+											{@html svgSelector}
+										</span>
+									</MenuButton>
 
-									Sort by Name
-									<span>
-										{@html svgSelector}
-									</span>
-								</button>
+									<MenuItems
+										class=" absolute left-2 top-9 z-10 mt-2 w-40 origin-top-right divide-y divide-pickled-bluewood-100 bg-white shadow-lg ring-1 ring-royal-blue-300 focus:outline-none"
+										role="menu"
+										aria-orientation="vertical"
+										aria-labelledby="menu-button"
+									>
+										<div class="py-1" role="none">
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="id"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-0"
+												>
+													Order Number
+												</a>
+											</MenuItem>
 
-								<div
-									class="ring-black absolute left-0 top-9 z-10 mt-2 hidden w-56 origin-top-right divide-y divide-pickled-bluewood-100 rounded-md bg-white shadow-lg ring-1 ring-opacity-5 focus:outline-none"
-									role="menu"
-									aria-orientation="vertical"
-									aria-labelledby="menu-button"
-								>
-									<div class="py-1" role="none">
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-0">Edit</a
-										>
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-1">Duplicate</a
-										>
-									</div>
-									<div class="py-1" role="none">
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-2">Archive</a
-										>
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-3">Move</a
-										>
-									</div>
-									<div class="py-1" role="none">
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-4">Share</a
-										>
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-5">Add to favorites</a
-										>
-									</div>
-									<div class="py-1" role="none">
-										<a
-											href="/"
-											class="block px-4 py-2 text-sm text-pickled-bluewood-700"
-											role="menuitem"
-											id="menu-item-6">Delete</a
-										>
-									</div>
-								</div>
-							</div>
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="organisation"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-1">Organisation</a
+												>
+											</MenuItem>
+
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="phone"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-2">Phone</a
+												>
+											</MenuItem>
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="email"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-3">Email</a
+												>
+											</MenuItem>
+
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="vatNo"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-4">Vat Number</a
+												>
+											</MenuItem>
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="balanceDue"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-5">Balance Due</a
+												>
+											</MenuItem>
+
+											<MenuItem let:active>
+												<a
+													on:click={heandleSearchSelection}
+													name="state"
+													class={`${
+														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+													} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+													role="menuitem"
+													id="menu-item-6">State</a
+												>
+											</MenuItem>
+										</div>
+									</MenuItems>
+								</Menu>
+							{/if}
 
 							<div class="relative text-pickled-bluewood-100">
 								<input
 									class="input focus:shadow-outline h-10 w-full pl-8 pr-3 text-base placeholder-pickled-bluewood-400"
 									type="text"
 									placeholder="Search..."
+									bind:value={searchInputValue}
+									on:input={heandleSearch}
 								/>
 								<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2">
 									{@html svgSearch}
@@ -223,206 +301,145 @@
 							<ul class="flex">
 								<li>
 									<div class="inline-flex items-center">
-										<label class="mr-4 text-sm  text-pickled-bluewood-500" for="noProductsPerPage"
-											>No of Products</label
+										<span class="mr-2 text-xs text-pickled-bluewood-500"
+											>Page {ordersList?.current.page} of {ordersList?.totalPages}({ordersList?.totalRecords}
+											items)</span
+										>
+										<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit"
+											>Display</label
 										>
 										<input
-											class="input w-16 border-r-0"
+											class="input w-16 border"
 											type="number"
-											name="noProductsPerPage"
-											id="noProductsPerPage"
-											bind:value={noOrdersPerPage}
+											name="limit"
+											id="limit"
+											bind:value={limit}
+											on:change={() => {
+												currentGlobalParams = {
+													...currentGlobalParams,
+													...ordersList?.current,
+													limit: limit
+												};
+												getOrdersList(currentGlobalParams);
+											}}
+											on:input={checkValue}
 										/>
+
+										<label class="mx-2 text-xs text-pickled-bluewood-500" for="limit"
+											>per page</label
+										>
 									</div>
 								</li>
 								<li>
 									<button
-										disabled={disableLeft}
-										on:click={minusPagination}
-										class="btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+										disabled={!ordersList?.previous}
+										on:click|preventDefault={() => {
+											currentGlobalParams = { ...currentGlobalParams, ...ordersList?.previous };
+											getOrdersList(currentGlobalParams);
+										}}
+										class="{!ordersList?.previous
+											? 'hidden'
+											: ''} btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
 										>{@html svgChevronLeft}</button
 									>
 								</li>
 								<li>
 									<button
-										disabled={disableLeft}
-										on:click={minusPagination}
-										class="btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
-										>{paginationCurrentValue - 1}</button
+										disabled={!ordersList?.previous}
+										on:click|preventDefault={() => {
+											currentGlobalParams = { ...currentGlobalParams, ...ordersList?.previous };
+											getOrdersList(currentGlobalParams);
+										}}
+										class="{!ordersList?.previous
+											? 'hidden'
+											: ''} btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+										>{!ordersList?.previous ? '' : ordersList?.previous?.page}</button
 									>
 								</li>
 								<li>
 									<button
-										class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100 hover:bg-pickled-bluewood-200 hover:text-pickled-bluewood-600 disabled:bg-pickled-bluewood-200"
-										>{paginationCurrentValue}</button
+										disabled
+										class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+										>{ordersList?.current?.page}</button
 									>
 								</li>
 								<li>
 									<button
-										disabled={disableRight}
-										on:click={plusPagination}
-										class="btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
-										>{paginationCurrentValue + 1}</button
+										disabled={!ordersList?.next}
+										on:click|preventDefault={() => {
+											currentGlobalParams = { ...currentGlobalParams, ...ordersList?.next };
+											getOrdersList(currentGlobalParams);
+										}}
+										class="{!ordersList?.next
+											? 'hidden'
+											: ''} btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+										>{!ordersList?.next ? '' : ordersList?.next?.page}</button
 									>
 								</li>
 								<li>
 									<button
-										disabled={disableRight}
-										on:click={plusPagination}
-										class="btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+										disabled={!ordersList?.next}
+										on:click|preventDefault={() => {
+											currentGlobalParams = { ...currentGlobalParams, ...ordersList?.next };
+											getOrdersList(currentGlobalParams);
+										}}
+										class=" {!ordersList?.next
+											? 'hidden'
+											: ''} btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
 										>{@html svgChevronRight}</button
 									>
 								</li>
 							</ul>
 						</div>
-						<button class="btn btn-primary btn-md mr-4 p-0">
-							{@html svgGrid}
-						</button>
-						<button class="btn btn-primary btn-md mr-6 p-0">
-							{@html svgList}
-						</button>
 					</div>
 				</div>
-				<!-- TODO use this for orders list -->
+				<!-- TODO use this for ordersList list -->
 				<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 					<!-- Table start -->
 					<div class="w-full bg-white py-6 shadow-lg">
-						<div class="mx-6 mb-6">
-							<button class="btn-outlined btn-tertiary mr-6 h-16 w-32 rounded">
-								<span class="mr-[2px]">All</span><span
-									class="rounded-full bg-pickled-bluewood-400 px-2 py-0 text-xs text-white">25</span
-								>
-								<p>$11 200.00</p>
-							</button>
-							<button class="btn-outlined btn-tertiary mr-6 h-16 w-32 rounded">
-								<span class="mr-[2px]">Unpaid</span><span
-									class="rounded-full bg-pickled-bluewood-400 px-2 py-0 text-xs text-white">25</span
-								>
-								<p>$11 200.00</p>
-							</button>
-							<button class="btn-outlined btn-tertiary mr-6 h-16 w-32 rounded">
-								<span class="mr-[2px]">Paid</span><span
-									class="rounded-full bg-pickled-bluewood-400 px-2 py-0 text-xs text-white">25</span
-								>
-								<p>$11 200.00</p>
-							</button>
-							<button class="btn-outlined btn-tertiary mr-6 h-16 w-32 rounded">
-								<span class="mr-[2px]">Cancelled</span><span
-									class="rounded-full bg-pickled-bluewood-400 px-2 py-0 text-xs text-white">25</span
-								>
-								<p>$11 200.00</p>
-							</button>
-						</div>
 						<div class="mx-6 block overflow-y-auto">
 							<table class="w-full rounded-lg text-left">
 								<thead>
 									<tr
 										class="border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 									>
-										<th class="px-4 py-2">#</th>
-										<th class="px-4 py-2">Date</th>
-										<th class="px-4 py-2">Order No</th>
-										<th class="px-4 py-2">Customer</th>
-										<th class="px-4 py-2">Amount</th>
-										<th class="px-4 py-2">Outstanding</th>
-										<th class="px-4 py-2">Due Date</th>
-										<th class="px-4 py-2">State</th>
-										<th class="px-4 py-2">View</th>
+										{#each tableHeadings as heading (heading)}
+											<th class="px-4 py-2">{heading}</th>
+										{/each}
 									</tr>
 								</thead>
 								<tbody>
-									<tr
-										class="whitespace-no-wrap w-full border border-b-0 border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">1</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000011</td>
-										<td class="px-4 py-2">{product.name}</td>
-										<td class="px-4 py-2 text-right">$250.00</td>
-										<td class="px-4 py-2 text-right">$10.00</td>
+									{#if ordersList?.results}
+										{#each ordersList.results as order (order.id)}
+											<tr
+												class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
+											>
+												<td class="px-4 py-2">{generateSONumber(order.Orders.id)}</td>
+												<td class="px-4 py-2"
+													>{dayjs(order.Orders.orderDate).format('DD/MM/YYYY')}</td
+												>
+												<td class="px-4 py-2">{order.Orders.customerContact.name}</td>
 
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">
-											<span class="rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
-												>Invoiced</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class="fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">2</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000012</td>
-										<td class="px-4 py-2">{product.name}</td>
-										<td class="px-4 py-2 text-right">$1200.00</td>
-										<td class="px-4 py-2 text-right">$120.00</td>
+												<td class="px-4 py-2"
+													>{dayjs(order.Orders.deliveryDate).format('DD/MM/YYYY')}</td
+												>
 
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">
-											<span class="rounded-full bg-warning px-3 py-1 text-xs font-bold text-white"
-												>Date Due</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">3</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000013</td>
-										<td class="px-4 py-2">{product.name}</td>
-										<td class="px-4 py-2 text-right">$500.00</td>
-										<td class="px-4 py-2 text-right">$0.00</td>
-
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2 ">
-											<span class="rounded-full bg-danger px-3 py-1 text-xs font-bold text-white"
-												>Paid</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
-									<tr
-										class="whitespace-no-wrap w-full border border-pickled-bluewood-300 bg-pickled-bluewood-100 font-light text-pickled-bluewood-500"
-									>
-										<td class="px-4 py-2">3</td>
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2">000013</td>
-										<td class="px-4 py-2">{product.name}</td>
-										<td class="px-4 py-2 text-right">$500.00</td>
-										<td class="px-4 py-2 text-right">$0.00</td>
-
-										<td class="px-4 py-2">{dayjs('2019-01-25').format('DD/MM/YYYY')}</td>
-										<td class="px-4 py-2 ">
-											<span class="rounded-full bg-danger px-3 py-1 text-xs font-bold text-white"
-												>Overdue</span
-											>
-										</td>
-										<td class="py-2 text-center">
-											<a href="/"
-												><span class=" fill-current text-pickled-bluewood-500">{@html svgView}</span
-												></a
-											>
-										</td>
-									</tr>
+												<td class="px-4 py-2">
+													<span
+														class="rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
+														>{order.Orders.accountsStatus}</span
+													>
+												</td>
+												<td class="p-1 text-center ">
+													<button class=" m-0 p-0" on:click={() => viewOrder(order.Orders.id)}>
+														<span class="fill-current text-pickled-bluewood-500">
+															{@html svgView}
+														</span>
+													</button>
+												</td>
+											</tr>
+										{/each}
+									{/if}
 								</tbody>
 							</table>
 						</div>

@@ -2,6 +2,7 @@ import logger from '$lib/utility/logger';
 import omit from 'lodash-es/omit';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import { getPagination } from '$lib/utility/pagination.util';
 
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -17,25 +18,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		const limit = isNaN(+queryParams?.limit) ? 15 : +queryParams?.limit;
-		const page = isNaN(+queryParams?.page) ? 1 : +queryParams?.page;
-
-		const startIndex = (page - 1) * limit;
-		const endIndex = page * limit;
-
-		let previous = null;
-		let next = null;
-		const current = {
-			page: page,
-			limit
-		};
-
-		if (startIndex > 0) {
-			previous = {
-				page: page - 1,
-				limit
-			};
-		}
+		const pagination = getPagination(queryParams)
 
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
 
@@ -46,8 +29,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (objectKeys) {
 			query = {
-				take: limit,
-				skip: page - 1,
+				take: pagination.limit,
+				skip: pagination.page - 1,
 				where: {
 					[objectKeys]: {
 						contains: finalQuery[objectKeys],
@@ -68,8 +51,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				take: limit,
-				skip: page - 1,
+				take: pagination.limit,
+				skip: pagination.page - 1,
 				orderBy: {
 					name: 'asc',
 				},
@@ -79,18 +62,18 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const productsQuery = await prisma.products.findMany(query)
 
-		const totalRecords = await prisma.products.count()
+		pagination.totalRecords = await prisma.products.count(queryTotal)
 
-		if (endIndex < totalRecords) {
-			next = {
-				page: page + 1,
-				limit
+		if (pagination.endIndex < pagination.totalRecords) {
+			pagination.next = {
+				page: pagination.page + 1,
+				limit: pagination.limit
 			};
 		}
 
-		const totalPages = Math.ceil(totalRecords / limit);
+		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-		return new Response(JSON.stringify({ results: productsQuery, next, totalPages, previous, current, totalRecords, limit }));
+		return new Response(JSON.stringify({ results: productsQuery, ...pagination }));
 
 	} catch (err: any) {
 		logger.error(`Error: ${err.message}`);

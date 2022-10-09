@@ -66,7 +66,7 @@
 		goto(`/products/add`);
 	};
 
-	let gridView = true;
+	let gridView = false;
 	let searchInputValue = '';
 	let searchOption = 'name';
 
@@ -450,7 +450,7 @@
 										<tr
 											class="{barColor
 												? 'bg-success odd:bg-success'
-												: ''} whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+												: ''} hover:bg-royal-blue-200 whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
 											<td class="px-2 py-1">{product.id}</td>
 											<td class="px-2 py-1">{product.name}</td>
@@ -473,9 +473,7 @@
 												>
 											</td>
 											<td class="py-1 text-center">
-												<button
-													class=" m-0 p-0"
-													on:click|preventDefault={() => addToCart(product)}
+												<button class=" m-0 p-0" on:click|preventDefault={() => addToCart(product)}
 													><span class="fill-current text-danger">{@html svgCart}</span></button
 												>
 											</td>
