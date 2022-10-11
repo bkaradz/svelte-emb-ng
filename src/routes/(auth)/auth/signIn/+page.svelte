@@ -47,7 +47,8 @@
 			const res = await fetch('/api/auth/signIn.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' }
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include'
 			});
 
 			if (res.ok) {

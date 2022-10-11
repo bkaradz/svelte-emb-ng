@@ -38,6 +38,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
+		console.log("🚀 ~ file: +server.ts ~ line 41 ~ constGET:RequestHandler= ~ queryParams", queryParams)
 
 		const pagination = getPagination(queryParams)
 
@@ -99,6 +100,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return new Response(JSON.stringify(results));
 
 	} catch (err: any) {
+		console.log("🚀 ~ file: +server.ts ~ line 103 ~ constGET:RequestHandler= ~ err", err)
 		logger.error(`Error: ${err.message}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
