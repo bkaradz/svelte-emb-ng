@@ -72,6 +72,7 @@
 	<div class="btn btn-primary mt-4">
 		<button on:click={generatePDF}> Generate PDF </button>
 	</div>
+	<h1 class=" text-2xl text-danger mt-8">Testing Gone Wrong</h1>
 </div>
 
 <style>

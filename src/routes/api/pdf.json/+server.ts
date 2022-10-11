@@ -1,256 +1,299 @@
 import { launch } from 'puppeteer';
 import { promises as fs } from "fs";
+import type { RequestHandler } from './$types'
 
 // export async function getImage() {
 //   return await fs.readFile("./logo.png");
 // }
 
 const getHtml = () => {
-  return `
-  <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<title>A simple, clean, and responsive HTML invoice template</title>
+	return `
+	<!DOCTYPE html>
+<html lang="en">
 
-		<style>
-			.invoice-box {
-				max-width: 800px;
-				margin: auto;
-				padding: 30px;
-				border: 1px solid #eee;
-				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-				font-size: 16px;
-				line-height: 24px;
-				font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-				color: #555;
-			}
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tailwind CSS Invoce </title>
+        <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 
-			.invoice-box table {
-				width: 100%;
-				line-height: inherit;
-				text-align: left;
-			}
+    </head>
 
-			.invoice-box table td {
-				padding: 5px;
-				vertical-align: top;
-			}
+    <body>
+        <div class="flex items-center justify-center min-h-screen bg-gray-100">
+            <div class="w-3/5 bg-white shadow-lg">
+                <div class="flex justify-between p-4">
+                    <div>
+                        <h1 class="text-3xl italic font-extrabold tracking-widest text-indigo-500">Larainfo</h1>
+                        <p class="text-base">If account is not paid within 7 days the credits details supplied as
+                            confirmation.</p>
+                    </div>
+                    <div class="p-2">
+                        <ul class="flex">
+                            <li class="flex flex-col items-center p-2 border-l-2 border-indigo-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
+                                <span class="text-sm">
+                                    www.larainfo.com
+                                </span>
+                                <span class="text-sm">
+                                    www.lorememhh.com
+                                </span>
+                            </li>
+                            <li class="flex flex-col p-2 border-l-2 border-indigo-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-sm">
+                                    2821 Kensington Road,Avondale Estates, GA 30002 USA
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-indigo-500"></div>
+                <div class="flex justify-between p-4">
+                    <div>
+                        <h6 class="font-bold">Order Date : <span class="text-sm font-medium"> 12/12/2022</span></h6>
+                        <h6 class="font-bold">Order ID : <span class="text-sm font-medium"> 12/12/2022</span></h6>
+                    </div>
+                    <div class="w-40">
+                        <address class="text-sm">
+                            <span class="font-bold"> Billed To : </span>
+                            Joe Smith
+                            795 Folsom Ave
+                            San Francisco, CA 94107
+                            P: (123) 456-7890
+                        </address>
+                    </div>
+                    <div class="w-40">
+                        <address class="text-sm">
+                            <span class="font-bold">Ship To :</span>
+                            Joe doe
+                            800 Folsom Ave
+                            San Francisco, CA 94107
+                            P: + 111-456-7890
+                        </address>
+                    </div>
+                    <div></div>
+                </div>
+                <div class="flex justify-center p-4">
+                    <div class="border-b border-gray-200 shadow">
+                        <table class="">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-xs text-gray-500 ">
+                                        #
+                                    </th>
+                                    <th class="px-4 py-2 text-xs text-gray-500 ">
+                                        Product Name
+                                    </th>
+                                    <th class="px-4 py-2 text-xs text-gray-500 ">
+                                        Quantity
+                                    </th>
+                                    <th class="px-4 py-2 text-xs text-gray-500 ">
+                                        Rate
+                                    </th>
+                                    <th class="px-4 py-2 text-xs text-gray-500 ">
+                                        Subtotal
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                <tr class="whitespace-nowrap">
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        1
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">
+                                            Amazon Brand - Symactive Men's Regular Fit T-Shirt
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-500">4</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        $20
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        $30
+                                    </td>
+                                </tr>
+                                <tr class="whitespace-nowrap">
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        2
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">
+                                            Amazon Brand - Symactive Men's Regular Fit T-Shirt
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-500">2</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        $60
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        $12
+                                    </td>
+                                </tr>
+                                <tr class="border-b-2 whitespace-nowrap">
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        3
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900">
+                                            Amazon Brand - Symactive Men's Regular Fit T-Shirt
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-500">1</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        $10
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        $13
+                                    </td>
+                                </tr>
+                                <tr class="">
+                                    <td colspan="3"></td>
+                                    <td class="text-sm font-bold">Sub Total</td>
+                                    <td class="text-sm font-bold tracking-wider"><b>$950</b></td>
+                                </tr>
+                                <!--end tr-->
+                                <tr>
+                                    <th colspan="3"></th>
+                                    <td class="text-sm font-bold"><b>Tax Rate</b></td>
+                                    <td class="text-sm font-bold"><b>$1.50%</b></td>
+                                </tr>
+                                <!--end tr-->
+                                <tr class="text-white bg-gray-800">
+                                    <th colspan="3"></th>
+                                    <td class="text-sm font-bold"><b>Total</b></td>
+                                    <td class="text-sm font-bold"><b>$999.0</b></td>
+                                </tr>
+                                <!--end tr-->
 
-			.invoice-box table tr td:nth-child(2) {
-				text-align: right;
-			}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="flex justify-between p-4">
+                    <div>
+                        <h3 class="text-xl">Terms And Condition :</h3>
+                        <ul class="text-xs list-disc list-inside">
+                            <li>All accounts are to be paid within 7 days from receipt of invoice.</li>
+                            <li>To be paid by cheque or credit card or direct payment online.</li>
+                            <li>If account is not paid within 7 days the credits details supplied.</li>
+                        </ul>
+                    </div>
+                    <div class="p-4">
+                        <h3>Signature</h3>
+                        <div class="text-4xl italic text-indigo-500">AAA</div>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-indigo-500"></div>
 
-			.invoice-box table tr.top table td {
-				padding-bottom: 20px;
-			}
+                <div class="p-4">
+                    <div class="flex items-center justify-center">
+                        Thank you very much for doing business with us.
+                    </div>
+                    <div class="flex items-end justify-end space-x-3">
+                        <button class="px-4 py-2 text-sm text-green-600 bg-green-100">Print</button>
+                        <button class="px-4 py-2 text-sm text-blue-600 bg-blue-100">Save</button>
+                        <button class="px-4 py-2 text-sm text-red-600 bg-red-100">Cancel</button>
+                    </div>
+                </div>
 
-			.invoice-box table tr.top table td.title {
-				font-size: 45px;
-				line-height: 45px;
-				color: #333;
-			}
+            </div>
+        </div>
+        <div class="flex items-center justify-center min-h-screen bg-gray-100">
+            <div class="w-6/12 mt-4 text-left bg-white shadow-lg">
+                <div class="flex justify-between px-8 py-6">
+                    <div class="flex items-center">
+                        sale invoice
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="px-2 py-1 bg-gray-200 hover:bg-gray-400">Save</button>
+                        <button class="px-2 py-1 bg-gray-200 hover:bg-gray-400">Print</button>
+                    </div>
+                </div>
+                <div class="w-full h-0.5 bg-gray-800"></div>
 
-			.invoice-box table tr.information table td {
-				padding-bottom: 40px;
-			}
+            </div>
+        </div>
+    </body>
 
-			.invoice-box table tr.heading td {
-				background: #eee;
-				border-bottom: 1px solid #ddd;
-				font-weight: bold;
-			}
-
-			.invoice-box table tr.details td {
-				padding-bottom: 20px;
-			}
-
-			.invoice-box table tr.item td {
-				border-bottom: 1px solid #eee;
-			}
-
-			.invoice-box table tr.item.last td {
-				border-bottom: none;
-			}
-
-			.invoice-box table tr.total td:nth-child(2) {
-				border-top: 2px solid #eee;
-				font-weight: bold;
-			}
-
-			@media only screen and (max-width: 600px) {
-				.invoice-box table tr.top table td {
-					width: 100%;
-					display: block;
-					text-align: center;
-				}
-
-				.invoice-box table tr.information table td {
-					width: 100%;
-					display: block;
-					text-align: center;
-				}
-			}
-
-			/** RTL **/
-			.invoice-box.rtl {
-				direction: rtl;
-				font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
-			}
-
-			.invoice-box.rtl table {
-				text-align: right;
-			}
-
-			.invoice-box.rtl table tr td:nth-child(2) {
-				text-align: left;
-			}
-		</style>
-	</head>
-
-	<body>
-		<div class="invoice-box">
-			<table cellpadding="0" cellspacing="0">
-				<tr class="top">
-					<td colspan="2">
-						<table>
-							<tr>
-								<td class="title">
-									<img src='{logo2.png}' style="width: 100%; max-width: 300px" />
-								</td>
-
-								<td>
-									Invoice #: 123<br />
-									Created: January 1, 2015<br />
-									Due: February 1, 2015
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr class="information">
-					<td colspan="2">
-						<table>
-							<tr>
-								<td>
-									Sparksuite, Inc.<br />
-									12345 Sunny Road<br />
-									Sunnyville, CA 12345
-								</td>
-
-								<td>
-									Acme Corp.<br />
-									John Doe<br />
-									john@example.com
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr class="heading">
-					<td>Payment Method</td>
-
-					<td>Check #</td>
-				</tr>
-
-				<tr class="details">
-					<td>Check</td>
-
-					<td>1000</td>
-				</tr>
-
-				<tr class="heading">
-					<td>Item</td>
-
-					<td>Price</td>
-				</tr>
-
-				<tr class="item">
-					<td>Website design</td>
-
-					<td>$300.00</td>
-				</tr>
-
-				<tr class="item">
-					<td>Hosting (3 months)</td>
-
-					<td>$75.00</td>
-				</tr>
-
-				<tr class="item last">
-					<td>Domain name (1 year)</td>
-
-					<td>$10.00</td>
-				</tr>
-
-				<tr class="total">
-					<td></td>
-
-					<td>Total: $385.00</td>
-				</tr>
-			</table>
-		</div>
-	</body>
 </html>
-  `
+									
+				
+	`
 }
 
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-  try {
+	try {
 
-    if (!locals?.user?.id) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        headers: {
-          'content-type': 'application/json; charset=utf-8',
-        },
-        status: 401
-      });
-    }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8',
+				},
+				status: 401
+			});
+		}
 
-    const browser = await launch({
-      headless: true
-    });
+		const browser = await launch({
+			headless: true
+		});
 
-    const page = await browser.newPage();
-    const html = `${getHtml()}`;
-    await page.setContent(html, {
-      waitUntil: 'domcontentloaded'
-    });
+		const page = await browser.newPage();
+		const html = `${getHtml()}`;
+		await page.setContent(html, {
+			waitUntil: 'domcontentloaded'
+		});
 
-    const pdfBuffer = await page.pdf({
-      format: 'A4'
-    });
+		const pdfBuffer = await page.pdf({
+			format: 'A4'
+		});
 
-    await browser.close();
+		await browser.close();
 
-    const pdf = {
-      pdf: pdfBuffer.toString('base64'),
-    }
+		const pdf = {
+			pdf: pdfBuffer.toString('base64'),
+		}
 
-    // return {
-    //   headers: {
-    //     'Content-Type': 'application/pdf'
-    //   },
-    //   status: 200,
-    //   body: pdfBuffer
-    // };
+		// return {
+		//   headers: {
+		//     'Content-Type': 'application/pdf'
+		//   },
+		//   status: 200,
+		//   body: pdfBuffer
+		// };
 
-    return new Response(JSON.stringify(pdf), {
-      headers: {
-        'Content-Type': 'application/pdf'
-      },
-    });
+		return new Response(JSON.stringify(pdf), {
+			headers: {
+				'Content-Type': 'application/pdf'
+			},
+		});
 
-  } catch (err: any) {
-    logger.error(`Error: ${err.message}`)
-    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
-      headers: {
-        'content-type': 'application/json; charset=utf-8',
-      },
-      status: 500
-    });
-  }
+	} catch (err: any) {
+		logger.error(`Error: ${err.message}`)
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8',
+			},
+			status: 500
+		});
+	}
 }
