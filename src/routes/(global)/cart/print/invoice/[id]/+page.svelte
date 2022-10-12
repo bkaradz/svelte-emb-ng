@@ -19,7 +19,6 @@
 	type Orders = Pagination & { results: Prisma.OrdersGetPayload<Prisma.OrdersArgs>[] };
 
 	let orders: Orders;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 17 ~ orders', orders);
 
 	const getOrders = async (paramsObj: any) => {
 		try {
@@ -27,7 +26,6 @@
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
 			orders = await res.json();
 		} catch (err: any) {
-			console.log('🚀 ~ file: +page.svelte ~ line 25 ~ getOrders ~ err', err);
 			logger.error(err.message);
 		}
 	};

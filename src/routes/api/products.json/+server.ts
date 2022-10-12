@@ -27,19 +27,24 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let query: any
 		let queryTotal: any
 
+		const baseQuery = {
+			take: pagination.limit,
+			skip: (pagination.page - 1) * pagination.limit,
+			orderBy: {
+				name: 'asc',
+			},
+		}
+
 		if (objectKeys) {
 			query = {
-				take: pagination.limit,
-				skip: pagination.page - 1,
+				...baseQuery,
 				where: {
 					[objectKeys]: {
 						contains: finalQuery[objectKeys],
 						mode: 'insensitive'
 					},
 				},
-				orderBy: {
-					name: 'asc',
-				},
+
 			}
 			queryTotal = {
 				where: {
@@ -51,11 +56,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				take: pagination.limit,
-				skip: pagination.page - 1,
-				orderBy: {
-					name: 'asc',
-				},
+				...baseQuery
 			}
 			queryTotal = {}
 		}
@@ -63,15 +64,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const productsQuery = await prisma.products.findMany(query)
 
 		pagination.totalRecords = await prisma.products.count(queryTotal)
+		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-		if (pagination.endIndex < pagination.totalRecords) {
-			pagination.next = {
-				page: pagination.page + 1,
-				limit: pagination.limit
-			};
+		if (pagination.endIndex >= pagination.totalRecords) {
+			pagination.next = null
 		}
 
-		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
 		return new Response(JSON.stringify({ results: productsQuery, ...pagination }));
 

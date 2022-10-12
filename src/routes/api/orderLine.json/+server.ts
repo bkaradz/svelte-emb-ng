@@ -39,9 +39,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     let query: any
     let queryTotal: any
 
-    const commonQuery = {
+    const baseQuery = {
       take: pagination.limit,
-      skip: pagination.page - 1,
+      skip: (pagination.page - 1) * pagination.limit,
       include: {
         Orders: {
           include: {
@@ -56,7 +56,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
     if (objectKeys) {
       query = {
-        ...commonQuery,
+        ...baseQuery,
         where: {
           [objectKeys]: getQueryOptions(objectKeys, finalQuery)
         },
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       }
     } else {
       query = {
-        ...commonQuery,
+        ...baseQuery,
       }
       queryTotal = {}
     }
@@ -77,15 +77,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     const productsQuery = await prisma.orderLine.findMany(query)
 
     pagination.totalRecords = await prisma.orderLine.count(queryTotal)
-
-    if (pagination.endIndex < pagination.totalRecords) {
-      pagination.next = {
-        page: pagination.page + 1,
-        limit: pagination.limit
-      };
-    }
-
     pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
+
+    if (pagination.endIndex >= pagination.totalRecords) {
+      pagination.next = null
+    }
 
     return new Response(JSON.stringify({ results: productsQuery, ...pagination }));
 

@@ -38,7 +38,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
-		console.log("🚀 ~ file: +server.ts ~ line 41 ~ constGET:RequestHandler= ~ queryParams", queryParams)
 
 		const pagination = getPagination(queryParams)
 
@@ -50,9 +49,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let query: any
 		let queryTotal: any
 
-		const commonQuery = {
+		const baseQuery = {
 			take: pagination.limit,
-			skip: pagination.page - 1,
+			skip: (pagination.page - 1) * pagination.limit,
 			include: {
 				customerContact: true,
 				Pricelists: true,
@@ -65,7 +64,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (objectKeys) {
 			query = {
-				...commonQuery,
+				...baseQuery,
 				where: {
 					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
 				},
@@ -77,30 +76,26 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				...commonQuery
+				...baseQuery
 			}
 			queryTotal = {}
 		}
 
 		const orderQuery = await prisma.orders.findMany(query)
+
 		pagination.totalRecords = await prisma.orders.count(queryTotal)
-
-
-		if (pagination.endIndex < pagination.totalRecords) {
-			pagination.next = {
-				page: pagination.page + 1,
-				limit: pagination.limit
-			};
-		}
-
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
+
+
+		if (pagination.endIndex >= pagination.totalRecords) {
+			pagination.next = null
+		}
 
 		const results = { results: orderQuery, ...pagination }
 
 		return new Response(JSON.stringify(results));
 
 	} catch (err: any) {
-		console.log("🚀 ~ file: +server.ts ~ line 103 ~ constGET:RequestHandler= ~ err", err)
 		logger.error(`Error: ${err.message}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

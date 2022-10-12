@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 	import small_logo from '$lib/assets/small_logo.png';
-	console.log('🚀 ~ file: +page.svelte ~ line 4 ~ small_logo', small_logo);
 
 	async function createPdf() {
 		const jpgUrl = 'https://pdf-lib.js.org/assets/cat_riding_unicorn.jpg';

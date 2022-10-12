@@ -130,10 +130,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		let query: any
 		let queryTotal: any
 
+		const baseQuery = {
+			take: pagination.limit,
+			skip: (pagination.page - 1) * pagination.limit,
+			orderBy: {
+				name: 'asc',
+			},
+		}
+
 		if (objectKeys) {
 			query = {
-				take: pagination.limit,
-				skip: pagination.page - 1,
+				...baseQuery,
 				where: {
 					[objectKeys]: whereQuery,
 				},
@@ -141,9 +148,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					email: true,
 					phone: true,
 					address: true
-				},
-				orderBy: {
-					name: 'asc',
 				},
 			}
 			queryTotal = {
@@ -153,15 +157,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		} else {
 			query = {
-				take: pagination.limit,
-				skip: pagination.page - 1,
+				...baseQuery,
 				include: {
 					email: true,
 					phone: true,
 					address: true
-				},
-				orderBy: {
-					name: 'asc',
 				},
 			}
 			queryTotal = {}
@@ -169,15 +169,12 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		const contactsQuery = await prisma.contacts.findMany(query)
 		pagination.totalRecords = await prisma.contacts.count(queryTotal)
+		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-		if (pagination.endIndex < pagination.totalRecords) {
-			pagination.next = {
-				page: pagination.page + 1,
-				limit: pagination.limit
-			};
+		if (pagination.endIndex >= pagination.totalRecords) {
+			pagination.next = null
 		}
 
-		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
 		return new Response(JSON.stringify({ results: contactsQuery, ...pagination }));
 

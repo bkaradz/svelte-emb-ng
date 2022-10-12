@@ -40,7 +40,6 @@
 
 		if (res.ok) {
 			const json = await res.json();
-			console.log('🚀 ~ file: +page.svelte ~ line 42 ~ generatePDF ~ json', json);
 
 			const pdfBuffer = Buffer.from(json.pdf, 'base64');
 

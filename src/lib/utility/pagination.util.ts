@@ -25,7 +25,10 @@ export const getPagination = (queryParams: any) => {
   const endIndex: number = page * limit;
 
   let previous: Previous = null;
-  let next: Next = null;
+  const next: Next = {
+    page: page + 1,
+    limit
+  };
 
   const current: Current = {
     page: page,

@@ -376,19 +376,20 @@
 							: 'border-royal-blue-500'} flex h-44 w-full max-w-xs grow flex-col border-t-4 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
-							<h4
-								class="relative truncate w-full pt-6 pb-0 px-5 text-base font-medium text-pickled-bluewood-600"
+							<span
+								class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
 							>
-								<span
-									class="absolute top-3 left-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
-									>{product?.id}</span
-								>
+								{product?.id}
+							</span>
+							<h4
+								class="relative truncate w-full pt-6 pb-0 pr-5 text-base font-medium text-pickled-bluewood-600"
+							>
+								{product?.name}
 								<span
 									on:click|preventDefault={() => addToCart(product)}
 									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
 									>{@html svgCart}</span
 								>
-								{product?.name}
 							</h4>
 						</div>
 						{#if product?.productCategories === 'embroidery'}
