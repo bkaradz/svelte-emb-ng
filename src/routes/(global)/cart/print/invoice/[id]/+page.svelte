@@ -6,6 +6,7 @@
 	import * as pdfMake from 'pdfmake/build/pdfmake';
 	import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 	import small_logo from '$lib/assets/small_logo.png';
+	import { onMount } from 'svelte';
 
 	// (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
@@ -29,6 +30,10 @@
 			logger.error(err.message);
 		}
 	};
+
+	onMount(() => {
+		getOrders(currentGlobalParams);
+	});
 
 	const ct: any[] = [];
 
@@ -58,8 +63,6 @@
 	});
 
 	const test = 'outside';
-
-	getOrders(currentGlobalParams);
 
 	const handlePrint = () => {
 		const docDefinition = {
