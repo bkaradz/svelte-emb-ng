@@ -53,9 +53,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			take: pagination.limit,
 			skip: (pagination.page - 1) * pagination.limit,
 			include: {
-				customerContact: true,
+				customerContact: {
+					include: {
+						address: true
+					}
+				},
 				Pricelists: true,
-				OrderLine: true,
+				OrderLine: {
+					include: {
+						Products: true
+					}
+				},
 			},
 			orderBy: {
 				id: 'asc',

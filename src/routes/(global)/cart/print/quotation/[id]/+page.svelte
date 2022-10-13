@@ -1,5 +1,48 @@
 <script lang="ts">
 	import small_logo from '$lib/assets/small_logo.png';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import logger from '$lib/utility/logger';
+	import type { Pagination } from '$lib/utility/pagination.util';
+	import type { Prisma } from '@prisma/client';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import dayjs from 'dayjs';
+	import { format } from '$lib/services/monetary';
+	import { dinero } from 'dinero.js';
+
+	let limit = 15;
+	let currentGlobalParams = {
+		limit,
+		page: 1,
+		id: $page.params.id
+	};
+	$: console.log('🚀 ~ file: +page.svelte ~ line 11 ~ currentGlobalParams', currentGlobalParams);
+
+	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
+
+	let order: Orders;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 19 ~ orders', order);
+
+	const getOrders = async (paramsObj: any) => {
+		try {
+			let searchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orders.json?' + searchParams.toString());
+			if (res.ok) {
+				const resOrder = await res.json();
+				console.log(
+					'🚀 ~ file: +page.svelte ~ line 29 ~ getOrders ~ resOrder',
+					resOrder.results[0]
+				);
+				order = resOrder.results[0];
+			}
+		} catch (err: any) {
+			logger.error(err.message);
+		}
+	};
+
+	onMount(() => {
+		getOrders(currentGlobalParams);
+	});
 </script>
 
 <div class="flex flex-1 flex-col w-full">
@@ -63,108 +106,106 @@
 				</div>
 				<div class="w-full h-0.5 bg-royal-blue-500" />
 			</div>
-			<div class="flex justify-between p-4">
-				<div>
-					<h6 class="font-bold">Order # : <span class="text-sm font-medium"> 12/12/2022</span></h6>
-					<h6 class="font-bold">
-						Order Date : <span class="text-sm font-medium"> 12/12/2022</span>
-					</h6>
-				</div>
-				<div class="w-40">
-					<address class="text-sm">
-						<span class="font-bold"> Billed To : </span>
-						Joe Smith 795 Folsom Ave San Francisco, CA 94107 P: (123) 456-7890
-					</address>
-				</div>
-				<div class="w-40">
-					<address class="text-sm">
-						<span class="font-bold">Ship To :</span>
-						Joe doe 800 Folsom Ave San Francisco, CA 94107 P: + 111-456-7890
-					</address>
-				</div>
-				<div />
-			</div>
-			<div class="flex justify-center p-4">
-				<div class="border-b border-pickled-bluewood-200 shadow w-full">
-					<table class="w-full">
-						<thead class="">
-							<tr
-								class="border border-b-0 border-pickled-bluewood-300 bg-pickled-bluewood-200 text-white"
-							>
-								<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> # </th>
-								<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Product Name </th>
-								<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Quantity </th>
-								<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Rate </th>
-								<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Subtotal </th>
-							</tr>
-						</thead>
-						<tbody class="bg-white">
-							<tr
-								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-							>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500 "> 1 </td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-900">
-										Amazon Brand - Symactive Men's Regular Fit T-Shirt
-									</div>
-								</td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-500">4</div>
-								</td>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500"> $20 </td>
-								<td class="px-6 py-2"> $30 </td>
-							</tr>
-							<tr
-								class="whitespace-no-wrap  w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-							>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500"> 2 </td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-900">
-										Amazon Brand - Symactive Men's Regular Fit T-Shirt
-									</div>
-								</td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-500">2</div>
-								</td>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500"> $60 </td>
-								<td class="px-6 py-2"> $12 </td>
-							</tr>
-							<tr
-								class="whitespace-no-wrap  w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-							>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500"> 3 </td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-900">
-										Amazon Brand - Symactive Men's Regular Fit T-Shirt
-									</div>
-								</td>
-								<td class="px-6 py-2">
-									<div class="text-sm text-pickled-bluewood-500">1</div>
-								</td>
-								<td class="px-6 py-2 text-sm text-pickled-bluewood-500"> $10 </td>
-								<td class="px-6 py-2"> $13 </td>
-							</tr>
-							<tr class="">
-								<td colspan="3" />
-								<td class="text-sm font-bold">Sub Total</td>
-								<td class="text-sm font-bold tracking-wider"><b>$950</b></td>
-							</tr>
-							<!--end tr-->
-							<tr>
-								<th colspan="3" />
-								<td class="text-sm font-bold"><b>Tax Rate</b></td>
-								<td class="text-sm font-bold"><b>$1.50%</b></td>
-							</tr>
-							<!--end tr-->
-							<tr class="text-white bg-pickled-bluewood-800">
-								<th colspan="3" />
-								<td class="text-sm font-bold"><b>Total</b></td>
-								<td class="text-sm font-bold"><b>$999.0</b></td>
-							</tr>
-							<!--end tr-->
-						</tbody>
-					</table>
-				</div>
+			<div>
+				{#if order}
+					<div class="flex justify-between p-4">
+						<div>
+							<h6 class="font-bold text-xl">
+								{order.accountsStatus}
+							</h6>
+							<h6 class="font-bold">
+								Order # : <span class="text-sm font-medium">{generateSONumber(order.id)}</span>
+							</h6>
+							<h6 class="font-bold">
+								Order Date : <span class="text-sm font-medium"
+									>{dayjs(order?.orderDate).format('DD/MM/YYYY')}</span
+								>
+							</h6>
+						</div>
+						<div class="w-40">
+							<address class="text-sm">
+								<span class="font-bold"> Billed To : </span>
+								<span>{order?.customerContact?.name}</span>
+								<p>
+									{order?.customerContact?.address.length > 0
+										? order?.customerContact?.address[0]
+										: '...'}
+								</p>
+							</address>
+						</div>
+						<div class="w-40">
+							<address class="text-sm">
+								<span class="font-bold">Ship To :</span>
+								<span>{order?.customerContact?.name}</span>
+								<p>
+									{order?.customerContact?.address.length > 1
+										? order?.customerContact?.address[1]
+										: '...'}
+								</p>
+							</address>
+						</div>
+						<div />
+					</div>
+					<div class="flex justify-center p-4">
+						<div class="border-b border-pickled-bluewood-200 shadow w-full">
+							<table class="w-full">
+								<thead class="">
+									<tr
+										class="border border-b-0 border-pickled-bluewood-300 bg-pickled-bluewood-200 text-white"
+									>
+										<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> # </th>
+										<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Product Name </th>
+										<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Quantity </th>
+										<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Unit Price </th>
+										<th class="px-4 py-2 text-xs text-pickled-bluewood-500 "> Total </th>
+									</tr>
+								</thead>
+								<tbody class="bg-white">
+									{#each order.OrderLine as item (item.id)}
+										<tr
+											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal even:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+										>
+											<td class="px-6 py-2 text-sm text-pickled-bluewood-500 ">{item.productsID}</td
+											>
+											<td class="px-6 py-2">
+												<div class="text-sm text-pickled-bluewood-600">
+													{item.Products.name}
+												</div>
+											</td>
+											<td class="px-6 py-2">
+												<div class="text-sm text-pickled-bluewood-500">{item?.quantity}</div>
+											</td>
+											<td class="px-6 py-2 text-sm text-pickled-bluewood-500"
+												>{format(dinero(item.unitPrice))}
+											</td>
+											<td class="px-6 py-2 text-sm text-pickled-bluewood-500 font-semibold">
+												$30
+											</td>
+										</tr>
+									{/each}
+									<tr class="">
+										<td colspan="3" />
+										<td class="text-sm font-bold">Sub Total</td>
+										<td class="text-sm font-bold tracking-wider"><b>$950</b></td>
+									</tr>
+									<!--end tr-->
+									<tr>
+										<th colspan="3" />
+										<td class="text-sm font-bold"><b>Tax Rate</b></td>
+										<td class="text-sm font-bold"><b>$1.50%</b></td>
+									</tr>
+									<!--end tr-->
+									<tr class="text-white bg-pickled-bluewood-800">
+										<th colspan="3" />
+										<td class="text-sm font-bold"><b>Total</b></td>
+										<td class="text-sm font-bold"><b>$999.0</b></td>
+									</tr>
+									<!--end tr-->
+								</tbody>
+							</table>
+						</div>
+					</div>
+				{/if}
 			</div>
 			<div class="footer">
 				<div class="w-full h-0.5 bg-royal-blue-500" />
@@ -173,14 +214,15 @@
 					<div>
 						<h3 class="text-xl">Banking Details :</h3>
 						<ul class="text-xs list-disc list-inside">
-							<li>All accounts are to be paid within 7 days from receipt of invoice.</li>
-							<li>To be paid by cheque or credit card or direct payment online.</li>
-							<li>If account is not paid within 7 days the credits details supplied.</li>
+							<li>Account Name: <span>Lillian Enterprises P/L</span></li>
+							<li>Account No: <span>21301 12883255602015</span></li>
+							<li>Bank: <span>Banc ABC</span></li>
+							<li>Branch: <span>J Moyo</span></li>
 						</ul>
 					</div>
 					<div class="p-1">
-						<h3>Signature</h3>
-						<div class="text-4xl italic text-royal-blue-500">AAA</div>
+						<!-- <h3>Signature</h3>
+						<div class="text-4xl italic text-royal-blue-500">AAA</div> -->
 					</div>
 				</div>
 
@@ -265,14 +307,15 @@
 					<div>
 						<h3 class="text-xl">Banking Details :</h3>
 						<ul class="text-xs list-disc list-inside">
-							<li>All accounts are to be paid within 7 days from receipt of invoice.</li>
-							<li>To be paid by cheque or credit card or direct payment online.</li>
-							<li>If account is not paid within 7 days the credits details supplied.</li>
+							<li>Account Name: <span>Lillian Enterprises P/L</span></li>
+							<li>Account No: <span>21301 12883255602015</span></li>
+							<li>Bank: <span>Banc ABC</span></li>
+							<li>Branch: <span>J Moyo</span></li>
 						</ul>
 					</div>
 					<div class="p-1">
-						<h3>Signature</h3>
-						<div class="text-4xl italic text-royal-blue-500">AAA</div>
+						<!-- <h3>Signature</h3>
+						<div class="text-4xl italic text-royal-blue-500">AAA</div> -->
 					</div>
 				</div>
 
@@ -357,14 +400,15 @@
 					<div>
 						<h3 class="text-xl">Banking Details :</h3>
 						<ul class="text-xs list-disc list-inside">
-							<li>All accounts are to be paid within 7 days from receipt of invoice.</li>
-							<li>To be paid by cheque or credit card or direct payment online.</li>
-							<li>If account is not paid within 7 days the credits details supplied.</li>
+							<li>Account Name: <span>Lillian Enterprises P/L</span></li>
+							<li>Account No: <span>21301 12883255602015</span></li>
+							<li>Bank: <span>Banc ABC</span></li>
+							<li>Branch: <span>J Moyo</span></li>
 						</ul>
 					</div>
 					<div class="p-1">
-						<h3>Signature</h3>
-						<div class="text-4xl italic text-royal-blue-500">AAA</div>
+						<!-- <h3>Signature</h3>
+						<div class="text-4xl italic text-royal-blue-500">AAA</div> -->
 					</div>
 				</div>
 
