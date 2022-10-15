@@ -72,6 +72,12 @@
 		totalCartItems = totals.totalCartItems;
 		subTotal = totals.subTotal;
 	};
+	/**
+	 * first page max without totals = 16
+	 * first page max with totals = 13
+	 * all other pages without address and totals =
+	 * all other pages without address but with totals =
+	 */
 </script>
 
 <div class="flex flex-1 flex-col w-full">
@@ -199,7 +205,7 @@
 												>{item.productsID}</td
 											>
 											<td class="px-6 py-2">
-												<div class="text-sm text-pickled-bluewood-600">
+												<div class="text-sm text-pickled-bluewood-600 truncate">
 													{item.Products.name}
 												</div>
 											</td>
