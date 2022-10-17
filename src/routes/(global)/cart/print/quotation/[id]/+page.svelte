@@ -8,6 +8,19 @@
 	import chunk from 'lodash-es/chunk';
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
 	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
+	import html2canvas from 'html2canvas';
+	import { jsPDF } from 'jspdf';
+
+	function getPDF() {
+		html2canvas(document.getElementById('toPDF'), {
+			onrendered: function (canvas) {
+				const img = canvas.toDataURL('image/png');
+				const doc = new jsPDF('l', 'cm');
+				doc.addImage(img, 'PNG', 2, 2);
+				doc.save('reporte.pdf');
+			}
+		});
+	}
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -104,6 +117,7 @@
 				getCountAndSubTotal(order.OrderLine);
 				const splitLine = splitOrderLine({ ...order });
 				pagesCreated = Array.from(createPage(splitLine).values());
+				getPDF();
 			}
 		} catch (err: any) {
 			logger.error(err.message);
@@ -136,7 +150,7 @@
 	};
 </script>
 
-<div class="flex flex-1 flex-col w-full">
+<div class="flex flex-1 flex-col w-full" id="toPDF">
 	<div
 		class="flex flex-1 flex-wrap items-center justify-center bg-royal-blue-50 border-danger overflow-y-scroll gap-3 p-3"
 	>
