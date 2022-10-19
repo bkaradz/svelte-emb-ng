@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%~ includeFile('./partials/head.eta'); %>
+</head>
+
+<body>
+  <% it.redPrint.forEach((order, key) => { %> <% if (key === 0) { %> <%~ includeFile('./partials/pageOne.eta', { order }); %> <% } else{ %> <%~ includeFile('./partials/pageTwo.eta', { order }); %> <% } %> <% }) %>
+</body>
+
+</html>

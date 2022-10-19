@@ -1,0 +1,6 @@
+<tr class="item">
+  <td><%= product.name %></td>
+  <td><%= product.quantity %></td>
+  <td>$ <%= product.unit_price.toFixed(2) %></td>
+  <td class="align-right">$ <%= product.total.toFixed(2) %></td>
+</tr>

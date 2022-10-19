@@ -1,0 +1,15 @@
+<page size="A4">
+  <div class="invoice-box">
+    <table>
+      <thead>
+        <%~ includeFile('./header.eta', { page: order.page }); %>
+      </thead>
+      <tbody>
+        <% console.log('order_line: ', order) %> <%~ includeFile('./body.eta', { order, pages}); %>
+      </tbody>
+      <tfoot>
+        <%~ includeFile('./footer.eta', { pages, page: order.page }); %>
+      </tfoot>
+    </table>
+  </div>
+</page>

@@ -1,0 +1,15 @@
+<page size="A4">
+  <div class="invoice-box">
+    <table>
+      <thead>
+        <%~ includeFile('./header.eta', { page: 0 }); %>
+      </thead>
+      <tbody>
+        <% console.log('order: ', order) %> <%~ includeFile('./body.eta', { quotation: ''test, order, pages: 0}); %>
+      </tbody>
+      <tfoot>
+        <%~ includeFile('./footer.eta', { pages: 0, page: 0 }); %>
+      </tfoot>
+    </table>
+  </div>
+</page>

@@ -1,0 +1,16 @@
+<tr>
+  <td colspan="1">
+    <table>
+      <tr>
+        <td class="align-center table-top">
+          Tel: +263 29 2264356, +263 772 357 054, +263 733 251 281, +263 774 677 950 Email: theembroideryshopzw@gmail.com<br />
+          Web: http://www.theembroideryshop.co.zw BPN: 0200136716
+          <br />
+          <span style="color: rgb(64, 180, 229)">Steward Bank</span>, Fife St, Byo, Account No 1008370938 /
+          <span style="color: rgb(64, 180, 229)">Banc ABC</span>, J Moyo, Byo, Account No 21301 12883255602015<br />
+          Page: <%= page %> / <%= pages %> <%- console.log("pages: ", pages); %>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
