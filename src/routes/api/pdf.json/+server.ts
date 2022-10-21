@@ -1,4 +1,4 @@
-import { launch } from 'puppeteer';
+import puppeteer from 'puppeteer';
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 
@@ -13,18 +13,30 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			});
 		}
 
-		// const redPrint = await request.json();
+		// Create a browser instance
+		// const browser = await puppeteer.launch({
+		// 	headless: true
+		// });
+		const browser = await puppeteer.launch();
 
-		const browser = await launch({
-			headless: true
-		});
-
+		// Create a new page
 		const page = await browser.newPage();
-		await page.goto('http://localhost:5173/print/quotation/1', { waitUntil: 'networkidle2' });
 
+		//Get HTML content from HTML file
+
+		await page.goto("http://localhost:5173/print/quotation/1", { waitUntil: ['domcontentloaded', 'networkidle2', 'load'] })
+		// await page.goto(`https://www.google.com/`, { waitUntil: 'networkidle2' })
+
+
+		// To reflect CSS used for screens instead of print
+		// await page.emulateMediaType('screen');
+
+		// Downlaod the PDF
 		const pdfBuffer = await page.pdf({
+			path: './report.pdf',
 			format: 'A4'
 		});
+		console.log("🚀 ~ file: +server.ts ~ line 39 ~ constPOST:RequestHandler= ~ pdfBuffer", pdfBuffer)
 
 		await browser.close();
 

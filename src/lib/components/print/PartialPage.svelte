@@ -72,7 +72,7 @@
 	</div>
 	<div>
 		{#if order}
-			<slot><!-- optional fallback --></slot>
+			<slot />
 			<div class="flex justify-center p-4">
 				<div class="border-b border-pickled-bluewood-200 shadow w-full">
 					<table class="w-full">
@@ -120,20 +120,17 @@
 										>{format(subTotal)}</td
 									>
 								</tr>
-								<!--end tr-->
 								<tr>
 									<th colspan="3" />
 									<td class="text-sm font-bold"><b>VAT({vat}%)</b></td>
 									<td class="text-sm font-bold text-right px-4 py-2">{format(calclculatedVat)}</td>
 								</tr>
-								<!--end tr-->
 								<tr class="text-pickled-bluewood-800 border border-y border-royal-blue-700 ">
 									<th colspan="3" />
 									<td class="text-sm font-bold"><b>Total</b></td>
 									<td class="text-sm font-bold text-right px-4 py-2">{format(calclculatedTotal)}</td
 									>
 								</tr>
-								<!--end tr-->
 							{/if}
 						</tbody>
 					</table>
@@ -155,7 +152,7 @@
 				</ul>
 			</div>
 			<div class="p-1">
-				{order.page}
+				{order?.page}
 			</div>
 		</div>
 
@@ -163,16 +160,6 @@
 			<div class="flex items-center justify-center">
 				Thank you very much for doing business with us.
 			</div>
-			<!-- <div class="flex items-end justify-end space-x-3 printButtons">
-                <button
-                    class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold rounded text-white bg-success"
-                    >Print</button
-                >
-                <button
-                    class="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold rounded text-white bg-danger"
-                    >Cancel</button
-                >
-            </div> -->
 		</div>
 	</div>
 </div>
@@ -180,14 +167,6 @@
 <style lang="postcss">
 	.page {
 		position: relative;
-		/* width: 21cm;
-		min-height: 29.7cm;
-		padding: 1cm;
-		margin: 1cm 1cm;
-		border: 1px #d3d3d3 solid;
-		border-radius: 5px;
-		background: white;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); */
 		background: white;
 		padding: 1cm;
 		width: 21cm;
@@ -195,7 +174,6 @@
 		display: block;
 		margin: 0 auto;
 
-		/* margin-top: 0.5cm; */
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 	}
 
