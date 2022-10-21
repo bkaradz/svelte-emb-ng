@@ -193,7 +193,7 @@
 		width: 21cm;
 		height: 29.7cm;
 		display: block;
-		/* margin: 0 auto; */
+		margin: 0 auto;
 
 		/* margin-top: 0.5cm; */
 		box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);

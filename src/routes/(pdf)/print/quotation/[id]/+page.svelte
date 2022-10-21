@@ -150,7 +150,7 @@
 	};
 </script>
 
-<div class="flex flex-1 flex-col w-full" id="toPDF">
+<div class="flex flex-1 flex-col w-full mx-auto">
 	<div
 		class="flex flex-1 flex-wrap items-center justify-center bg-royal-blue-50 border-danger overflow-y-scroll gap-3 p-3"
 	>
