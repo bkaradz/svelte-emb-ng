@@ -111,7 +111,7 @@
 				toasts.add({ message: `${pricelist.name} was added`, type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating',
 				type: 'error'

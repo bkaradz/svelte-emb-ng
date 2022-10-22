@@ -48,7 +48,7 @@ export function toDineroObject(amount: number | string | DineroOptions<number>) 
 			const results = JSON.parse(amount);
 			return dinero(results);
 		} catch (err: any) {
-			logger.error(`Error: ${err.message}`);
+			logger.error(`Error: ${err}`);
 		}
 		const temp = +amount * 1000;
 		return dinero({ amount: temp, currency: USD, scale: 3 });

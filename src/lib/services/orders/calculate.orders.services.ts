@@ -1,12 +1,19 @@
 import { USD } from '@dinero.js/currencies';
-import { add, dinero, greaterThanOrEqual, multiply, subtract, toSnapshot, type Dinero, type DineroSnapshot } from 'dinero.js';
+import {
+	add,
+	dinero,
+	greaterThanOrEqual,
+	multiply,
+	subtract,
+	toSnapshot,
+	type Dinero,
+	type DineroSnapshot
+} from 'dinero.js';
 import logger from '$lib/utility/logger';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import prisma from '$lib/prisma/client';
 
-
 export const calculateOrder = async (reqOrder: any) => {
-
 	try {
 		/**
 		 * Get Pricelist
@@ -18,10 +25,10 @@ export const calculateOrder = async (reqOrder: any) => {
 			include: {
 				PricelistSubList: true
 			}
-		})
+		});
 
 		const asyncOrderline = reqOrder.orderLine.map(async (item: any) => {
-			const { quantity = 1, embroideryTypes = 'flat' } = item
+			const { quantity = 1, embroideryTypes = 'flat' } = item;
 			/**
 			 * Get product
 			 */
@@ -29,13 +36,13 @@ export const calculateOrder = async (reqOrder: any) => {
 				where: {
 					id: parseInt(item?.id)
 				}
-			})
+			});
 
 			if (!product) {
 				throw new Error(`Product id ${item?.id} does not exist`);
 			}
 
-			const { stitches } = product
+			const { stitches } = product;
 
 			if (stitches && pricelist) {
 				/**
@@ -62,24 +69,20 @@ export const calculateOrder = async (reqOrder: any) => {
 					? dinero(JSON.parse(minimumPrice))
 					: calcUnitPrice;
 
-
 				return {
 					...item,
-					unitPrice: toSnapshot(largestUnitPrice),
+					unitPrice: toSnapshot(largestUnitPrice)
 				};
 			} else {
-
 				return { ...item };
 			}
+		});
 
-		})
+		const newOrderline = await Promise.all(asyncOrderline);
 
-		const newOrderline = await Promise.all(asyncOrderline)
-
-		return newOrderline
-
+		return newOrderline;
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
-		throw new Error(`Error:  ${err.message}`);
+		logger.error(`Error: ${err}`);
+		throw new Error(`Error:  ${err?.message}`);
 	}
 };

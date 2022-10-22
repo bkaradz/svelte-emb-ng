@@ -24,7 +24,7 @@
 			const res = await fetch('/api/auth.json');
 			contacts = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -45,7 +45,7 @@
 				getUsers();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating user',
 				type: 'error'
@@ -69,7 +69,7 @@
 				getUsers();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating user',
 				type: 'error'

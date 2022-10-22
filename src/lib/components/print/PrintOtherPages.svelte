@@ -13,6 +13,3 @@
 </script>
 
 <PartialPage {order} {subTotal} {calclculatedVat} {calclculatedTotal} {vat} />
-
-<style lang="postcss">
-</style>

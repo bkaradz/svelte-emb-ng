@@ -100,7 +100,7 @@
 			const res = await fetch('/api/products.json?' + searchParams.toString());
 			products = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

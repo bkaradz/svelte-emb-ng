@@ -22,7 +22,7 @@
 		try {
 			const res = await fetch('/api/healthcheck.json');
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

@@ -25,7 +25,7 @@
 			const res = await fetch('/api/options.json?' + searchParams.toString());
 			productcategories = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while getting product categories',
 				type: 'error'
@@ -81,7 +81,7 @@
 				toasts.add({ message: 'The Product was added', type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured while adding the product', type: 'error' });
 		}
 	};
@@ -105,7 +105,7 @@
 				toasts.add({ message: 'Products uploaded', type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured while uploading products', type: 'error' });
 		}
 	};

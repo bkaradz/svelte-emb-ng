@@ -48,7 +48,7 @@
 			const res = await fetch('/api/pricelists.json');
 			pricelists = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -58,7 +58,7 @@
 			const res = await fetch('/api/products.json?' + searchParams.toString());
 			products = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -68,7 +68,7 @@
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			contacts = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -77,7 +77,7 @@
 			const res = await fetch('/api/options.json');
 			options = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

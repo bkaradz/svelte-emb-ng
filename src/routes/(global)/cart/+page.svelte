@@ -65,7 +65,7 @@
 				return cartData;
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 			// throw new Error("An error has occured");
 		}
@@ -171,7 +171,7 @@
 			const res = await fetch('/api/options.json?' + searchParams.toString());
 			return await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -181,7 +181,7 @@
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			return await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -195,7 +195,7 @@
 			mainOrder.pricelistsID = defaultPricelist.id;
 			return jsonRes;
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -268,7 +268,7 @@
 				toasts.add({ message: `The ${status} was created`, type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
 	};

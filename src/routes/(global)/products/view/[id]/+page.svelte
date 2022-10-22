@@ -73,7 +73,7 @@
 			const res = await fetch('/api/orderLine.json?' + searchParams.toString());
 			ordersList = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -85,7 +85,7 @@
 				product = await res.json();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	});
 

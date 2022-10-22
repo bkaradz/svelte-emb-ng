@@ -17,7 +17,7 @@
 			const res = await fetch('/api/pricelists.json?');
 			pricelists = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

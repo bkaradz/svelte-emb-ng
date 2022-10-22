@@ -116,7 +116,7 @@
 				// getPDF();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -146,28 +146,33 @@
 	};
 
 	const generatePDF = async () => {
-		const res = await fetch('/api/pdf.json', {
-			method: 'POST',
-			body: JSON.stringify(pagesCreated),
-			headers: {
-				Accept: 'application/json'
+		try {
+			const res = await fetch('/api/pdf.json', {
+				method: 'POST',
+				body: JSON.stringify(pagesCreated),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+
+				const pdfBuffer = Buffer.from(json.pdf, 'base64');
+
+				const file = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+				const fileURL = URL.createObjectURL(file);
+
+				const pdfWindow = window.open();
+
+				if (pdfWindow) {
+					pdfWindow.location.href = fileURL;
+				}
 			}
-		});
-
-		if (res.ok) {
-			const json = await res.json();
-
-			const pdfBuffer = Buffer.from(json.pdf, 'base64');
-
-			const file = new Blob([pdfBuffer], { type: 'application/pdf' });
-
-			const fileURL = URL.createObjectURL(file);
-
-			const pdfWindow = window.open();
-
-			if (pdfWindow) {
-				pdfWindow.location.href = fileURL;
-			}
+		} catch (err: any) {
+			console.log('err', err);
+			logger.error(`Error: ${err}`);
 		}
 	};
 </script>

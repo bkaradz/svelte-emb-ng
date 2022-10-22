@@ -78,12 +78,12 @@
 				getOptions();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating user',
 				type: 'error'
 			});
-			// error = err.message;
+			// error = `Error: ${err}`;
 		}
 	};
 
@@ -122,12 +122,12 @@
 			}
 			getOptions();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating user',
 				type: 'error'
 			});
-			// error = err.message;
+			// error = `Error: ${err}`;
 		}
 	};
 
@@ -137,8 +137,8 @@
 			const res = await fetch('/api/options.json?');
 			optionsList = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
-			// error = err.message;
+			logger.error(`Error: ${err}`);
+			// error = `Error: ${err}`;
 		}
 	};
 

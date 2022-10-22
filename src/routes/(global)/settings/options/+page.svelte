@@ -19,7 +19,7 @@
 				toasts.add({ message: 'Options uploaded', type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured while uploading Options', type: 'error' });
 		}
 	};

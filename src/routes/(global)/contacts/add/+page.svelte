@@ -48,7 +48,7 @@
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			contacts = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while getting corporate contacts',
 				type: 'error'
@@ -119,7 +119,7 @@
 				toasts.add({ message: 'The Contact was added', type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured while adding the contact', type: 'error' });
 		}
 	};
@@ -143,7 +143,7 @@
 				toasts.add({ message: 'Contacts uploaded', type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured while uploading contacts', type: 'error' });
 		}
 	};

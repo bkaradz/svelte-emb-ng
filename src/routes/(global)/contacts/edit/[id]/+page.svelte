@@ -60,7 +60,7 @@
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			corporateContacts = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while getting corporate contacts',
 				type: 'error'
@@ -114,7 +114,7 @@
 				suite.reset();
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating contacts',
 				type: 'error'

@@ -10,44 +10,41 @@ import type { Prisma } from '@prisma/client';
 const getQueryOptions = (objectKeys, finalQuery) => {
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
 		return {
-			equals: finalQuery[objectKeys] === 'true',
-		}
+			equals: finalQuery[objectKeys] === 'true'
+		};
 	}
 
 	if (objectKeys === 'id' || objectKeys === 'customersID' || objectKeys === 'pricelistsID') {
-		return parseInt(finalQuery[objectKeys])
+		return parseInt(finalQuery[objectKeys]);
 	}
 
 	return {
 		contains: finalQuery[objectKeys],
 		mode: 'insensitive'
-	}
-
-}
+	};
+};
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
-
-		if (!locals?.user?.id) {
-			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-				headers: {
-					'content-type': 'application/json; charset=utf-8',
-				},
-				status: 401
-			});
-		}
+		// if (!locals?.user?.id) {
+		// 	return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+		// 		headers: {
+		// 			'content-type': 'application/json; charset=utf-8',
+		// 		},
+		// 		status: 401
+		// 	});
+		// }
 
 		const queryParams = Object.fromEntries(url.searchParams);
 
-		const pagination = getPagination(queryParams)
-
+		const pagination = getPagination(queryParams);
 
 		const finalQuery = omit(queryParams, ['page', 'limit', 'sort']);
 
 		const objectKeys = Object.keys(finalQuery)[0];
 
-		let query: any
-		let queryTotal: any
+		let query: any;
+		let queryTotal: any;
 
 		const baseQuery = {
 			take: pagination.limit,
@@ -63,51 +60,50 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					include: {
 						Products: true
 					}
-				},
+				}
 			},
 			orderBy: {
-				id: 'asc',
-			},
-		}
+				id: 'asc'
+			}
+		};
 
 		if (objectKeys) {
 			query = {
 				...baseQuery,
 				where: {
 					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
-				},
-			}
+				}
+			};
 			queryTotal = {
 				where: {
-					[objectKeys]: getQueryOptions(objectKeys, finalQuery),
-				},
-			}
+					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
+				}
+			};
 		} else {
 			query = {
 				...baseQuery
-			}
-			queryTotal = {}
+			};
+			queryTotal = {};
 		}
 
-		const orderQuery = await prisma.orders.findMany(query)
+		const orderQuery = await prisma.orders.findMany(query);
 
-		pagination.totalRecords = await prisma.orders.count(queryTotal)
+		pagination.totalRecords = await prisma.orders.count(queryTotal);
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
-
 		if (pagination.endIndex >= pagination.totalRecords) {
-			pagination.next = null
+			pagination.next = null;
 		}
 
-		const results = { results: orderQuery, ...pagination }
+		const results = { results: orderQuery, ...pagination };
 
 		return new Response(JSON.stringify(results));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		console.log('err', err);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});
@@ -119,7 +115,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -134,12 +130,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			where: {
 				id: parseInt(reqOrder.pricelistsID)
 			}
-		})
+		});
 
 		if (!pricelist) {
 			return new Response(JSON.stringify({ message: 'Pricelist does not exist' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -151,12 +147,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			where: {
 				id: parseInt(reqOrder.customersID)
 			}
-		})
+		});
 
 		if (!customerExist) {
 			return new Response(JSON.stringify({ message: 'Customer does not exist' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -164,16 +160,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		let calcOrder = await calculateOrder(reqOrder);
 
-		calcOrder = calcOrder.map((item) => pick(item, ['productsID', 'unitPrice', 'quantity', 'total', 'productCategories', 'embroideryPositions', 'embroideryTypes']));
+		calcOrder = calcOrder.map((item) =>
+			pick(item, [
+				'productsID',
+				'unitPrice',
+				'quantity',
+				'total',
+				'productCategories',
+				'embroideryPositions',
+				'embroideryTypes'
+			])
+		);
 
-		delete reqOrder.orderLine
+		delete reqOrder.orderLine;
 
 		if (reqOrder?.orderDate) {
-			reqOrder.orderDate = new Date(reqOrder.orderDate)
+			reqOrder.orderDate = new Date(reqOrder.orderDate);
 		}
 
 		if (reqOrder?.deliveryDate) {
-			reqOrder.deliveryDate = new Date(reqOrder.deliveryDate)
+			reqOrder.deliveryDate = new Date(reqOrder.deliveryDate);
 		}
 
 		const orderQuery = await prisma.orders.create({
@@ -184,15 +190,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					createMany: { data: calcOrder }
 				}
 			}
-		})
+		});
 
 		return new Response(JSON.stringify(orderQuery));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});
@@ -204,23 +209,20 @@ export const PUT: RequestHandler = async ({ locals }) => {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
 		}
 
 		return new Response(JSON.stringify({ message: 'Success' }));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});
 	}
 };
-
-

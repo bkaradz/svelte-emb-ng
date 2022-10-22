@@ -5,7 +5,7 @@ export const getQuantityPricelist = ({
 	embroideryTypes,
 	quantity
 }: {
-	pricelist: any
+	pricelist: any;
 	embroideryTypes: string;
 	quantity: number;
 }) => {
@@ -16,15 +16,15 @@ export const getQuantityPricelist = ({
 			.filter((list) => embroideryTypes.toLowerCase() === list.embroideryTypes.toLowerCase())
 			.sort((a, b) => b.minimumQuantity - a.minimumQuantity)
 			.filter((list) => list.minimumQuantity >= quantity)
-			.pop()
+			.pop();
 
 		if (minimumQuantityArray === undefined) {
-			throw new Error("Pricelist Selection is Undefined");
+			throw new Error('Pricelist Selection is Undefined');
 		}
 
 		return minimumQuantityArray;
 	} catch (err: any) {
-		logger.error(`Error ${err.message}`);
-		throw new Error(`Error ${err.message}`);
+		logger.error(`Error: ${err}`);
+		throw new Error(`Error: ${err}`);
 	}
 };

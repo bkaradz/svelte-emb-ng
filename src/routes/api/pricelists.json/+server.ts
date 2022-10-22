@@ -8,7 +8,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -18,15 +18,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 			include: {
 				PricelistSubList: true
 			}
-		})
+		});
 
 		return new Response(JSON.stringify(pricelistsQuery));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});
@@ -40,16 +39,16 @@ export const changeCurrentDefault = async () => {
 				equals: true
 			}
 		},
-		data: { isDefault: false },
-	})
-}
+		data: { isDefault: false }
+	});
+};
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -64,10 +63,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		 */
 
 		if (reqPricelists.isDefault === 'true' || reqPricelists.isDefault === true) {
-			changeCurrentDefault()
+			changeCurrentDefault();
 		}
 
-		const { pricelists, ...restPricelist } = reqPricelists
+		const { pricelists, ...restPricelist } = reqPricelists;
 
 		const subPrices = reqPricelists.pricelists.map((list: any) => {
 			return {
@@ -83,15 +82,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				createdBy: createDBy,
 				PricelistSubList: { createMany: { data: subPrices } }
 			}
-		})
+		});
 
 		return new Response(JSON.stringify(pricelistsQuery));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});
@@ -103,7 +101,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
-					'content-type': 'application/json; charset=utf-8',
+					'content-type': 'application/json; charset=utf-8'
 				},
 				status: 401
 			});
@@ -113,7 +111,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const reqPricelists = await request.json();
 
-		const { pricelists, ...restPricelist } = reqPricelists
+		const { pricelists, ...restPricelist } = reqPricelists;
 
 		const subPrices = reqPricelists.pricelists.map((list: any) => {
 			return {
@@ -125,22 +123,21 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const pricelistsQuery = await prisma.pricelists.update({
 			where: {
-				id: parseInt(reqPricelists.id),
+				id: parseInt(reqPricelists.id)
 			},
 			data: {
 				...restPricelist,
 				createdBy: createDBy,
 				PricelistSubList: { createMany: { data: subPrices } }
 			}
-		})
+		});
 
 		return new Response(JSON.stringify(pricelistsQuery));
-
 	} catch (err: any) {
-		logger.error(`Error: ${err.message}`);
+		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
-				'content-type': 'application/json; charset=utf-8',
+				'content-type': 'application/json; charset=utf-8'
 			},
 			status: 500
 		});

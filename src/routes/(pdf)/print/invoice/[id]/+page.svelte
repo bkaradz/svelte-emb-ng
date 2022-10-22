@@ -27,7 +27,7 @@
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
 			orders = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

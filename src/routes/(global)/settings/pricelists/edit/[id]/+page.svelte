@@ -52,7 +52,7 @@
 				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 
@@ -149,7 +149,7 @@
 				toasts.add({ message: `${newPricelist.name} was updated`, type: 'success' });
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occured while updating',
 				type: 'error'

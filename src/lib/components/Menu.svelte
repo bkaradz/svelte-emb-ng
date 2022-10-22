@@ -30,7 +30,7 @@
 				goto('/auth/signIn');
 			}
 		} catch (err: any) {
-			logger.error(err.messages);
+			logger.error(`Error: ${err}`);
 		}
 	};
 </script>

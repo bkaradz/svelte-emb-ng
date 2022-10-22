@@ -50,6 +50,3 @@
 		<div />
 	</div>
 </PartialPage>
-
-<style lang="postcss">
-</style>

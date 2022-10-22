@@ -120,7 +120,7 @@
 				// getPDF();
 			}
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 

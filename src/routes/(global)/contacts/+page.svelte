@@ -137,7 +137,7 @@
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			contacts = await res.json();
 		} catch (err: any) {
-			logger.error(err.message);
+			logger.error(`Error: ${err}`);
 		}
 	};
 </script>
