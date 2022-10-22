@@ -121,7 +121,7 @@
 
 	$: calclculatedTotal = add(calclculatedVat, subTotal);
 
-	const getCountAndSubTotal = (cart) => {
+	const getCountAndSubTotal = (cart: any[]) => {
 		const totals = cart.reduce(
 			(acc, item) => {
 				return {
@@ -160,7 +160,9 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/pricelists.json?' + searchParams.toString());
 			const jsonRes = await res.json();
-			const defaultPricelist = jsonRes.find((list) => list.isDefault === true);
+			const defaultPricelist = jsonRes.find(
+				(list: { isDefault: boolean }) => list.isDefault === true
+			);
 			pricelistValue = defaultPricelist.id;
 			mainOrder.pricelistsID = defaultPricelist.id;
 			return jsonRes;
@@ -177,14 +179,19 @@
 		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	});
 
-	const removeItem = (item) => {
+	const removeItem = (item: any) => {
 		cartItem.remove(item);
 	};
-	const onDecrease = (item) => {
+	const onDecrease = (item: { quantity: number }) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
-	const onIncrease = (item) => {
+	const onIncrease = (item: { quantity: number }) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
+	};
+
+	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
+		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
+		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	};
 
 	let customerSearch: any = { name: null };
@@ -299,7 +306,6 @@
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
 								<div>
 									<h3 class="mb-1 text-sm font-bold">{item.name}</h3>
-									<!-- <h3 class="text-sm mb-1.5">{item.brand}</h3> -->
 								</div>
 								<button
 									on:click={() => removeItem(item)}
@@ -316,7 +322,7 @@
 							{#if embroideryTypes}
 								<select
 									bind:value={item.embroideryTypes}
-									on:change|preventDefault={handleCalculations}
+									on:change|preventDefault={() => handleEmbroideryType(item)}
 									class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 								>
 									{#each embroideryTypes as type}
@@ -363,7 +369,6 @@
 							<button
 								class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
 								on:click={() => onIncrease(item)}
-								on:change|preventDefault={handleCalculations}
 								aria-label="Increase quantity"
 							>
 								{@html `<svg
@@ -435,7 +440,8 @@
 						name="pricelist"
 						id="pricelist"
 						bind:value={mainOrder.pricelistsID}
-						on:change|preventDefault={handleCalculations}
+						on:change|preventDefault={() =>
+							handleCurrency(Array.from($cartItem.values()), $selectedCurrency)}
 						class="text-sm input grow"
 					>
 						{#each pricelists as pricelist}

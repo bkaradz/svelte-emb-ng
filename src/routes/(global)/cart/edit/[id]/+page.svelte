@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Combobox from '$lib/components/Combobox.svelte';
-	import { createConverter, format, ZWB, ZWR } from '$lib/services/monetary';
+	import { createConverter, format } from '$lib/services/monetary';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { onMount } from 'svelte';
@@ -8,60 +8,35 @@
 	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
+	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
 
 	export let data: any;
 
 	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
-		if (data?.order) {
-			const { OrderLine, ...restOrder } = data.order;
-			mainOrder = { ...restOrder, orderLine: OrderLine };
-			customerSearch = restOrder.customerContact;
-			OrderLine.forEach((item: any) => {
-				cartItem.add(item);
-			});
-			cartOrder.add({
-				...restOrder
-			});
+		if (!data?.order) {
+			return;
 		}
+		const { OrderLine, ...restOrder } = data.order;
+		mainOrder = { ...restOrder, orderLine: OrderLine };
+		customerSearch = restOrder.customerContact;
+		OrderLine.forEach((item: any) => {
+			cartItem.add(item);
+		});
+		cartOrder.add({
+			...restOrder
+		});
 	};
 
 	$: updateCart(data);
 	// ##########################################
-	export const currencyOptions = [
-		{
-			currency: 'USD',
-			symbol: '$'
-		},
-		{
-			currency: 'BWP',
-			symbol: 'P'
-		},
-		{
-			currency: 'ZAR',
-			symbol: 'R'
-		},
-		{
-			currency: 'ZWB',
-			symbol: '$'
-		},
-		{
-			currency: 'ZWR',
-			symbol: '$'
-		}
-	];
 
-	let selectedCurrency = currencyOptions[0];
+	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
-	$: handleCurrency(Array.from($cartItem.values()));
-
-	const currencies = { USD, BWP, ZAR, ZWB, ZWR };
-
-	let currentCurrency = USD;
 	//@ts-ignore
-	let zero = dinero({ amount: 0, currency: currentCurrency });
+	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
 	const handleCalculations = async (lineArray: unknown[] = []) => {
 		try {
@@ -83,10 +58,8 @@
 		}
 	};
 
-	const handleCurrency = async (lineArray: unknown[]) => {
-		//@ts-ignore
-		currentCurrency = currencies[selectedCurrency.currency];
-		zero = dinero({ amount: 0, currency: currentCurrency });
+	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
+		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
 		 * Calculate using the cart default usd currency
 		 */
@@ -98,9 +71,9 @@
 			return;
 		}
 
-		const convert = createConverter(currentCurrency);
+		const convert = createConverter(selectedCurrency.dineroObj);
 		mainOrder.orderLine = newArray.map((item) => {
-			let unitPrice = convert(dinero(item.unitPrice), currentCurrency);
+			let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
 			if (!unitPrice) {
 				unitPrice = zero;
 			}
@@ -111,7 +84,14 @@
 		getCountAndSubTotal(mainOrder.orderLine);
 	};
 
-	const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
+	const sundayInBetween = dayjs().weekday(7).isBetween(TODAY, FOUR_DAYS);
+
+	if (sundayInBetween) {
+		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
+	}
+
 	type MainOrder = {
 		id?: number | null;
 		customersID: number | null;
@@ -124,7 +104,19 @@
 		orderLine: any[];
 	};
 
-	let mainOrder: Partial<MainOrder> = { ...$cartOrder, orderLine: Array.from($cartItem.values()) };
+	let mainOrderInit: MainOrder = {
+		id: null,
+		customersID: null,
+		pricelistsID: 0,
+		isActive: true,
+		accountsStatus: null,
+		orderDate: TODAY,
+		deliveryDate: FOUR_DAYS,
+		orderLine: Array.from($cartItem.values()) || []
+	};
+
+	let mainOrder: Partial<MainOrder> = mainOrderInit;
+	mainOrder = { ...$cartOrder, orderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions: any;
@@ -203,7 +195,7 @@
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);
 		pricelists = await getPricelists({});
-		handleCurrency(Array.from($cartItem.values()));
+		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	});
 
 	const removeItem = (item: unknown) => {
@@ -214,6 +206,11 @@
 	};
 	const onIncrease = (item: unknown) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
+	};
+
+	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
+		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
+		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	};
 
 	let customerSearch: any = $cartOrder.customerContact;
@@ -261,11 +258,11 @@
 			});
 
 			if (res.ok) {
-				// BUG: fix mainOrderInit
 				mainOrder = { ...mainOrderInit, orderLine: [] };
 				customerSearch = { name: null };
 				cartItem.reset();
 				toasts.add({ message: `The ${status} was created`, type: 'success' });
+				goto('/cart');
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -278,26 +275,9 @@
 	<div class="cart">
 		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
 			<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
-			<div class="flex items-center">
-				<label class="mr-3 text-sm whitespace-nowrap">
-					Select a currency
-					<select
-						class="py-1 pl-1 text-sm border-gray-300 rounded-md shadow-sm pr-7 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-						id="currency"
-						name="currency"
-						bind:value={selectedCurrency}
-						on:change|preventDefault={handleCurrency(Array.from($cartItem.values()))}
-					>
-						{#each currencyOptions as currency}
-							<option value={currency}>
-								{` ${currency.currency} (${currency.symbol})`}
-							</option>
-						{/each}
-					</select>
-				</label>
-			</div>
+			<div class="flex items-center" />
 		</div>
-		{#if mainOrder.orderLine.length > 0}
+		{#if mainOrder?.orderLine?.length > 0}
 			<div class="flex px-6 mt-5 mb-5">
 				<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 					Product
@@ -322,7 +302,7 @@
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
-				{#each mainOrder.orderLine as item (item.id)}
+				{#each mainOrder?.orderLine as item (item.id)}
 					{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 						<div class="flex w-2/6">
@@ -346,7 +326,7 @@
 							{#if embroideryTypes}
 								<select
 									bind:value={item.embroideryTypes}
-									on:change|preventDefault={handleCalculations}
+									on:change|preventDefault={() => handleEmbroideryType(item)}
 									class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 								>
 									{#each embroideryTypes as type}
@@ -393,7 +373,6 @@
 							<button
 								class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
 								on:click={() => onIncrease(item)}
-								on:change|preventDefault={handleCalculations}
 								aria-label="Increase quantity"
 							>
 								{@html `<svg
@@ -465,7 +444,8 @@
 						name="pricelist"
 						id="pricelist"
 						bind:value={mainOrder.pricelistsID}
-						on:change|preventDefault={handleCalculations}
+						on:change|preventDefault={() =>
+							handleCurrency(Array.from($cartItem.values()), $selectedCurrency)}
 						class="text-sm input grow"
 					>
 						{#each pricelists as pricelist}
