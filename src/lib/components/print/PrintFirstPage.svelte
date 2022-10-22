@@ -21,7 +21,8 @@
 				{order.accountsStatus}
 			</h6>
 			<h6 class="font-bold">
-				Order # : <span class="text-sm font-medium">{generateSONumber(order.id)}</span>
+				{order.accountsStatus} # :
+				<span class="text-sm font-medium">{generateSONumber(order.id)}</span>
 			</h6>
 			<h6 class="font-bold">
 				Order Date : <span class="text-sm font-medium"
