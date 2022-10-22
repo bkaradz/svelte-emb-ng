@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Combobox from '$lib/components/Combobox.svelte';
-	import { createConverter, format, ZWB, ZWR } from '$lib/services/monetary';
+	import { createConverter, format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
@@ -13,40 +13,11 @@
 	dayjs.extend(weekday);
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-	import { USD, BWP, ZAR } from '@dinero.js/currencies';
+	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 
-	export const currencyOptions = [
-		{
-			currency: 'USD',
-			symbol: '$'
-		},
-		{
-			currency: 'BWP',
-			symbol: 'P'
-		},
-		{
-			currency: 'ZAR',
-			symbol: 'R'
-		},
-		{
-			currency: 'ZWB',
-			symbol: '$'
-		},
-		{
-			currency: 'ZWR',
-			symbol: '$'
-		}
-	];
+	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
-	let selectedCurrency = currencyOptions[0];
-
-	$: handleCurrency(Array.from($cartItem.values()));
-
-	const currencies = { USD, BWP, ZAR, ZWB, ZWR };
-
-	let currentCurrency = USD;
-	//@ts-ignore
-	let zero = dinero({ amount: 0, currency: currentCurrency });
+	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
 	const handleCalculations = async (lineArray: unknown[] | undefined) => {
 		if (!lineArray) {
@@ -72,10 +43,8 @@
 		}
 	};
 
-	const handleCurrency = async (lineArray: unknown[]) => {
-		//@ts-ignore
-		currentCurrency = currencies[selectedCurrency.currency];
-		zero = dinero({ amount: 0, currency: currentCurrency });
+	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
+		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
 		 * Calculate using the cart default usd currency
 		 */
@@ -84,9 +53,9 @@
 			return;
 		}
 
-		const convert = createConverter(currentCurrency);
+		const convert = createConverter(selectedCurrency.dineroObj);
 		mainOrder.orderLine = newArray.map((item) => {
-			let unitPrice = convert(dinero(item.unitPrice), currentCurrency);
+			let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
 			if (!unitPrice) {
 				unitPrice = zero;
 			}
@@ -205,7 +174,7 @@
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);
 		pricelists = await getPricelists({});
-		handleCurrency(Array.from($cartItem.values()));
+		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	});
 
 	const removeItem = (item) => {
@@ -280,7 +249,7 @@
 		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
 			<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
 			<div class="flex items-center">
-				<label class="mr-3 text-sm whitespace-nowrap">
+				<!-- <label class="mr-3 text-sm whitespace-nowrap">
 					Select a currency
 					<select
 						class="py-1 pl-1 text-sm border-gray-300 rounded-md shadow-sm pr-7 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
@@ -295,7 +264,7 @@
 							</option>
 						{/each}
 					</select>
-				</label>
+				</label> -->
 			</div>
 		</div>
 		{#if mainOrder.orderLine.length > 0}

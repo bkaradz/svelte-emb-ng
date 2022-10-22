@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { cartItem } from '$lib/stores/cart.store';
 	import { toasts } from '$lib/stores/toasts.store';
+	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import logger from '$lib/utility/logger';
 	import { svgBellSolid, svgCart, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
@@ -40,6 +41,23 @@
 <div
 	class="menu z-10 flex flex-row items-center justify-end  bg-gradient-to-tl from-royal-blue-500 to-royal-blue-200 drop-shadow-md"
 >
+	<div class="flex items-center mr-6">
+		<label class="mr-3 text-sm whitespace-nowrap text-white">
+			Select a currency
+			<select
+				class="py-1 pl-1 bg-white text-danger text-sm border-gray-300 rounded-md shadow-sm pr-7 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+				id="currency"
+				name="currency"
+				bind:value={$selectedCurrency}
+			>
+				{#each $currenciesOptions as currency}
+					<option value={currency}>
+						{` ${currency.currency} (${currency.symbol})`}
+					</option>
+				{/each}
+			</select>
+		</label>
+	</div>
 	<span
 		on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/cart`) : '')}
 		class="relative hover:cursor-pointer mr-8 inline-block text-danger"
