@@ -10,6 +10,7 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
+	import { browser } from '$app/environment';
 
 	export let data: any;
 
@@ -62,12 +63,8 @@
 	//@ts-ignore
 	let zero = dinero({ amount: 0, currency: currentCurrency });
 
-	const handleCalculations = async (lineArray: unknown[] | undefined = []) => {
-		if (!lineArray) {
-			return;
-		}
+	const handleCalculations = async (lineArray: unknown[] = []) => {
 		try {
-			// BUG: TypeError: Failed to parse URL from /api/cart.json
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -94,7 +91,10 @@
 		/**
 		 * Calculate using the cart default usd currency
 		 */
-		const newArray = await handleCalculations(lineArray);
+		let newArray;
+		if (browser) {
+			newArray = await handleCalculations(lineArray);
+		}
 		if (!Array.isArray(newArray)) {
 			return;
 		}

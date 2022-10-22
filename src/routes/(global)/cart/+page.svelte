@@ -14,17 +14,14 @@
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
+	import { browser } from '$app/environment';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray: unknown[] | undefined) => {
-		if (!lineArray) {
-			return;
-		}
+	const handleCalculations = async (lineArray: unknown[] = []) => {
 		try {
-			// BUG: TypeError: Failed to parse URL from /api/cart.json
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -48,7 +45,10 @@
 		/**
 		 * Calculate using the cart default usd currency
 		 */
-		const newArray = await handleCalculations(lineArray);
+		let newArray;
+		if (browser) {
+			newArray = await handleCalculations(lineArray);
+		}
 		if (!Array.isArray(newArray)) {
 			return;
 		}
