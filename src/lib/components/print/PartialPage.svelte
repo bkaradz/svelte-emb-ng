@@ -16,10 +16,10 @@
 <div class="page">
 	<div class="header">
 		<div class="flex justify-between items-center">
-			<div>
-				<img src={small_logo} alt="logo" class="w-48" />
+			<div class="w-1/3">
+				<img src={small_logo} alt="logo" class="w-48 mx-auto" />
 			</div>
-			<div class="p-2">
+			<div class="p-2 w-2/3">
 				<ul class="flex">
 					<li class="flex flex-col items-center p-2 border-l-2 border-royal-blue-200">
 						<svg
@@ -60,7 +60,9 @@
 								d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
 							/>
 						</svg>
-						<span class="text-sm"> Lillian Enterprises (Pvt) Ltd t/a The Embroidery Shop </span>
+						<span class="text-sm">
+							Lillian Enterprises (Pvt) Ltd t/a <b>The Embroidery Shop</b></span
+						>
 						<span class="text-sm"> Stanfield Ratcliffe Building </span>
 						<span class="text-sm"> 126 J Moyo St & 13th Ave </span>
 						<span class="text-sm"> Bulawayo </span>
@@ -68,7 +70,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="w-full h-0.5 bg-royal-blue-500" />
+		<div class="w-full h-0.5 bg-royal-blue-500 absolute top-[186px] right-0" />
 	</div>
 	<div>
 		{#if order}

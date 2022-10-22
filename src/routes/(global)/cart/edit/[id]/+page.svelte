@@ -11,14 +11,14 @@
 	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 
-	export let data;
+	export let data: any;
 
-	const updateCart = (data) => {
+	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
 		if (data?.order) {
 			const { OrderLine, ...restOrder } = data.order;
 			mainOrder = { ...restOrder, orderLine: OrderLine };
 			customerSearch = restOrder.customerContact;
-			OrderLine.forEach((item) => {
+			OrderLine.forEach((item: any) => {
 				cartItem.add(item);
 			});
 			cartOrder.add({
@@ -62,11 +62,12 @@
 	//@ts-ignore
 	let zero = dinero({ amount: 0, currency: currentCurrency });
 
-	const handleCalculations = async (lineArray: unknown[] | undefined) => {
+	const handleCalculations = async (lineArray: unknown[] | undefined = []) => {
 		if (!lineArray) {
 			return;
 		}
 		try {
+			// BUG: TypeError: Failed to parse URL from /api/cart.json
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -79,9 +80,9 @@
 				return cartData;
 			}
 		} catch (err: any) {
+			console.log('err', err);
 			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
-			// throw new Error("An error has occured");
 		}
 	};
 
@@ -147,7 +148,7 @@
 
 	$: calclculatedTotal = add(calclculatedVat, subTotal);
 
-	const getCountAndSubTotal = (cart) => {
+	const getCountAndSubTotal = (cart: any[]) => {
 		const totals = cart.reduce(
 			(acc, item) => {
 				return {
@@ -186,7 +187,9 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/pricelists.json?' + searchParams.toString());
 			const jsonRes = await res.json();
-			const defaultPricelist = jsonRes.find((list) => list.isDefault === true);
+			const defaultPricelist = jsonRes.find(
+				(list: { isDefault: boolean }) => list.isDefault === true
+			);
 			pricelistValue = defaultPricelist.id;
 			mainOrder.pricelistsID = defaultPricelist.id;
 			return jsonRes;
@@ -203,13 +206,13 @@
 		handleCurrency(Array.from($cartItem.values()));
 	});
 
-	const removeItem = (item) => {
+	const removeItem = (item: unknown) => {
 		cartItem.remove(item);
 	};
-	const onDecrease = (item) => {
+	const onDecrease = (item: unknown) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
-	const onIncrease = (item) => {
+	const onIncrease = (item: unknown) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
@@ -233,7 +236,7 @@
 		/**
 		 * Check if the fields are filled
 		 */
-		if (!mainOrder.orderLine.length) {
+		if (!mainOrder?.orderLine?.length) {
 			toasts.add({ message: 'A products must be selected', type: 'error' });
 			return;
 		}
@@ -258,6 +261,7 @@
 			});
 
 			if (res.ok) {
+				// BUG: fix mainOrderInit
 				mainOrder = { ...mainOrderInit, orderLine: [] };
 				customerSearch = { name: null };
 				cartItem.reset();

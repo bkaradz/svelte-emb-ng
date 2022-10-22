@@ -108,8 +108,6 @@
 				// getPDF();
 			}
 		} catch (err: any) {
-			console.log('🚀 ~ file: +page.svelte ~ line 111 ~ getOrders ~ err', err);
-
 			logger.error(`Error: ${err}`);
 		}
 	};
@@ -149,5 +147,3 @@
 		{/if}
 	{/each}
 {/if}
-
-<!-- <h1 class=" text-5xl text-royal-blue-800">Hello World</h1> -->

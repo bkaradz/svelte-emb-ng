@@ -53,6 +53,7 @@
 			return;
 		}
 		try {
+			// BUG: TypeError: Failed to parse URL from /api/cart.json
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -65,9 +66,9 @@
 				return cartData;
 			}
 		} catch (err: any) {
+			console.log('err', err);
 			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
-			// throw new Error("An error has occured");
 		}
 	};
 

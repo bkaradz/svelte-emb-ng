@@ -2,7 +2,13 @@ import puppeteer from 'puppeteer';
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 
-export const POST: RequestHandler = async ({ locals }) => {
+// TODO: Use printer auth with limited access
+const input = {
+	username: 'karadz@gmail.com',
+	password: 'karadz123'
+};
+
+export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -13,18 +19,41 @@ export const POST: RequestHandler = async ({ locals }) => {
 			});
 		}
 
+		const reqPdf = await request.json();
+
+		/**
+		 *	For receipt printing
+		 * 	https://stackoverflow.com/questions/59464250/configure-pdf-page-width-using-puppeteer
+		 */
+
 		// Create a browser instance
 		const browser = await puppeteer.launch({
 			headless: true
 		});
 
 		// Create a new page
+		const page1 = await browser.newPage();
+
+		await page1.goto('http://localhost:5173/', {
+			waitUntil: ['domcontentloaded', 'networkidle0']
+		});
+
+		// Login
+		await page1.type('#email', input.username);
+		await page1.type('#password', input.password);
+		await page1.click('#submit');
+		await page1.waitForNavigation();
+
+		// Get cookies
+		const cookies = await page1.cookies();
+
+		// Use cookies in another tab or browser
 		const page = await browser.newPage();
+		await page.setCookie(...cookies);
 
 		//Get HTML content from HTML file
-
-		await page.goto('http://localhost:5173/print/quotation/1', {
-			waitUntil: ['domcontentloaded', 'networkidle2', 'load']
+		await page.goto(`${reqPdf.url}${reqPdf.id}`, {
+			waitUntil: ['domcontentloaded', 'networkidle0']
 		});
 
 		// To reflect CSS used for screens instead of print
@@ -32,14 +61,8 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		// Download the PDF
 		const pdfBuffer = await page.pdf({
-			format: 'A4'
-			// printBackground: true,
-			// margin: {
-			// 	left: '0px',
-			// 	top: '0px',
-			// 	right: '0px',
-			// 	bottom: '0px'
-			// }
+			format: 'A4',
+			printBackground: true
 		});
 
 		await browser.close();
@@ -53,7 +76,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 				'Content-Type': 'application/pdf'
 			}
 		});
-	} catch (err: any) {
+	} catch (err) {
 		console.log('err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {

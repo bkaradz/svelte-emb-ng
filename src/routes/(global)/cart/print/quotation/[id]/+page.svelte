@@ -9,19 +9,6 @@
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
 	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
 
-	// function getPDF() {
-	// 	console.log('object');
-	// 	html2canvas(document.getElementById('toPDF'), {
-	// 		onrendered: function (canvas) {
-	// 			const img = canvas.toDataURL('image/png');
-	// 			console.log('🚀 ~ file: +page.svelte ~ line 19 ~ html2canvas ~ img', img);
-	// 			const doc = new jsPDF('l', 'cm');
-	// 			doc.addImage(img, 'PNG', 2, 2);
-	// 			doc.save('reporte.pdf');
-	// 		}
-	// 	});
-	// }
-
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,

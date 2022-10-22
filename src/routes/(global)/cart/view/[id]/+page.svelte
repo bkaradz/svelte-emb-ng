@@ -11,14 +11,14 @@
 	import { USD, BWP, ZAR } from '@dinero.js/currencies';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 
-	export let data;
+	export let data: any;
 
-	const updateCart = (data) => {
+	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
 		if (data?.order) {
 			const { OrderLine, ...restOrder } = data.order;
 			mainOrder = { ...restOrder, orderLine: OrderLine };
 			customerSearch = restOrder.customerContact;
-			OrderLine.forEach((item) => {
+			OrderLine.forEach((item: any) => {
 				cartItem.add(item);
 			});
 			cartOrder.add({
@@ -62,11 +62,12 @@
 	//@ts-ignore
 	let zero = dinero({ amount: 0, currency: currentCurrency });
 
-	const handleCalculations = async (lineArray: unknown[] | undefined) => {
+	const handleCalculations = async (lineArray: unknown[] | undefined = []) => {
 		if (!lineArray) {
 			return;
 		}
 		try {
+			// BUG: TypeError: Failed to parse URL from /api/cart.json
 			const res = await fetch('/api/cart.json', {
 				method: 'POST',
 				body: JSON.stringify({
@@ -79,6 +80,7 @@
 				return cartData;
 			}
 		} catch (err: any) {
+			console.log('err', err);
 			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 			// throw new Error("An error has occured");

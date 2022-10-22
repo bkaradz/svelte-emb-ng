@@ -26,14 +26,14 @@ const getQueryOptions = (objectKeys, finalQuery) => {
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
-		// if (!locals?.user?.id) {
-		// 	return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-		// 		headers: {
-		// 			'content-type': 'application/json; charset=utf-8',
-		// 		},
-		// 		status: 401
-		// 	});
-		// }
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 401
+			});
+		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
 

@@ -13,12 +13,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		let reqCart = await request.json();
+		const reqCart = await request.json();
 
 		const newOrderLine = await calculateOrder(reqCart);
 
 		return new Response(JSON.stringify(newOrderLine));
-	} catch (err: any) {
+	} catch (err) {
+		console.log('err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
