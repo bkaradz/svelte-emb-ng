@@ -1,11 +1,11 @@
 import puppeteer from 'puppeteer';
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
+import config from 'config';
 
-// TODO: Use printer auth with limited access
 const input = {
-	username: 'karadz@gmail.com',
-	password: 'karadz123'
+	username: config.get<string>('printerEmail'),
+	password: config.get<string>('printerPassword')
 };
 
 export const POST: RequestHandler = async ({ locals, request }) => {

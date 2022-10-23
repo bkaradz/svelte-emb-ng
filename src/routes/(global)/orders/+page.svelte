@@ -20,6 +20,7 @@
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
+	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 
 	const tableHeadings = [
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
@@ -122,7 +123,9 @@
 			<!-- Heading and Buttons Bar -->
 			<div class="main-header flex flex-row items-center justify-between">
 				<h1 class="text-slate-700 text-2xl font-medium">Sales</h1>
+
 				<div class="flex items-center space-x-1">
+					<ArrowProgressBar />
 					<button
 						on:click={gotoAddOrders}
 						class="btn btn-primary inline-flex items-center justify-center px-3"
