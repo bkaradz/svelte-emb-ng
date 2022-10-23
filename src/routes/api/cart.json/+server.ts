@@ -19,7 +19,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return new Response(JSON.stringify(newOrderLine));
 	} catch (err) {
-		console.log('err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

@@ -99,7 +99,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return new Response(JSON.stringify(results));
 	} catch (err: any) {
-		console.log('err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

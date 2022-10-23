@@ -35,7 +35,7 @@
 				<span class="font-bold"> Billed To : </span>
 				<span>{order?.customerContact?.name}</span>
 				<p>
-					{order?.customerContact?.address.length > 0 ? order?.customerContact?.address[0] : '...'}
+					{order?.customerContact?.address?.length > 0 ? order?.customerContact?.address[0] : '...'}
 				</p>
 			</address>
 		</div>
@@ -44,7 +44,7 @@
 				<span class="font-bold">Ship To :</span>
 				<span>{order?.customerContact?.name}</span>
 				<p>
-					{order?.customerContact?.address.length > 1 ? order?.customerContact?.address[1] : '...'}
+					{order?.customerContact?.address?.length > 1 ? order?.customerContact?.address[1] : '...'}
 				</p>
 			</address>
 		</div>

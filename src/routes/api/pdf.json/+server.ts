@@ -77,7 +77,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			}
 		});
 	} catch (err) {
-		console.log('err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

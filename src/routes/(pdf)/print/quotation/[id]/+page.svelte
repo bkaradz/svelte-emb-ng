@@ -2,20 +2,27 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import logger from '$lib/utility/logger';
-	import type { Prisma } from '@prisma/client';
+	import type { Orders, Prisma } from '@prisma/client';
 	import { add, dinero, multiply } from 'dinero.js';
 	import { USD } from '@dinero.js/currencies';
 	import chunk from 'lodash-es/chunk';
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
 	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
-	import small_logo from '$lib/assets/small_logo.png';
 
-	let limit = 15;
-	let currentGlobalParams = {
-		limit,
-		page: 1,
-		id: $page.params.id
+	export let data: any;
+
+	const updatePrint = (data: { order: Orders & {} }) => {
+		if (!data?.order) {
+			return;
+		}
+		order = data.order;
+		getCountAndSubTotal(order.OrderLine);
+		const splitLine = splitOrderLine({ ...order });
+		const pages = createPage(splitLine);
+		pagesCreated = Array.from(pages.values());
 	};
+
+	$: updatePrint(data);
 
 	const vat = 0;
 
@@ -93,28 +100,6 @@
 	};
 
 	let pagesCreated: any;
-
-	const getOrders = async (paramsObj: any) => {
-		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/orders.json?' + searchParams.toString());
-			if (res.ok) {
-				const resOrder = await res.json();
-
-				order = resOrder.results[0];
-				getCountAndSubTotal(order.OrderLine);
-				const splitLine = splitOrderLine({ ...order });
-				return (pagesCreated = Array.from(createPage(splitLine).values()));
-				// getPDF();
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
-	onMount(() => {
-		getOrders(currentGlobalParams);
-	});
 
 	let currentCurrency = USD;
 

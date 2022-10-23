@@ -34,7 +34,6 @@
 				return cartData;
 			}
 		} catch (err: any) {
-			console.log('err', err);
 			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
