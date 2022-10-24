@@ -20,7 +20,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		const reqPdf = await request.json();
-		console.log("🚀 ~ file: +server.ts ~ line 23 ~ constPOST:RequestHandler= ~ reqPdf", reqPdf)
 
 		/**
 		 *	For receipt printing
