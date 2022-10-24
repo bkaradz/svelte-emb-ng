@@ -149,7 +149,11 @@
 		try {
 			const res = await fetch('/api/pdf.json', {
 				method: 'POST',
-				body: JSON.stringify({ url: 'http://localhost:5173/print/quotation/', id: 4 }),
+				body: JSON.stringify({
+					url: 'http://localhost:5173/print/quotation/',
+					currency: 'ZAR',
+					id: 4
+				}),
 				headers: {
 					Accept: 'application/json'
 				}

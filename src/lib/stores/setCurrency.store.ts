@@ -30,6 +30,10 @@ export const currencyOptions = [
 	}
 ];
 
+export const getCurrencyOptions = () => {
+	return currencyOptions
+}
+
 export type CurrenciesOptionsType = typeof currencyOptions;
 export type CurrencyOption = CurrenciesOptionsType[0];
 
