@@ -35,7 +35,6 @@
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
-	//@ts-ignore
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
 	const handleCalculations = async (lineArray: unknown[] = []) => {
