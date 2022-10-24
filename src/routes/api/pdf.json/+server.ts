@@ -20,6 +20,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		const reqPdf = await request.json();
+		console.log("🚀 ~ file: +server.ts ~ line 23 ~ constPOST:RequestHandler= ~ reqPdf", reqPdf)
 
 		/**
 		 *	For receipt printing
@@ -52,7 +53,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		await page.setCookie(...cookies);
 
 		//Get HTML content from HTML file
-		await page.goto(`${reqPdf.url}${reqPdf.id}`, {
+		await page.goto(`${reqPdf.url}${reqPdf.currency}/${reqPdf.id}`, {
 			waitUntil: ['domcontentloaded', 'networkidle0']
 		});
 
