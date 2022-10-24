@@ -7,19 +7,25 @@
 	import chunk from 'lodash-es/chunk';
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
 	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
-	import Checkbox from '$lib/components/Checkbox.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { browser } from '$app/environment';
+	import { createConverter } from '$lib/services/monetary';
+	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
 
 	export let data: any;
 
-	const updatePrint = (data: { order: Orders & {} }) => {
-		console.log('🚀 ~ file: +page.svelte ~ line 14 ~ updatePrint ~ data', { ...data.order });
-
+	const updatePrint = async (data: { order: Orders & {} }) => {
 		if (!data?.order) {
 			return;
 		}
-		zero = dinero({ amount: 0, currency: data.selectedCurrency });
+		$currenciesOptions.forEach((item) => {
+			if (item.currency === data.selectedCurrency.currency) {
+				data.selectedCurrency = item;
+			}
+		});
+		zero = dinero({ amount: 0, currency: data.selectedCurrency.dineroObj });
 		order = data.order;
-		order.OrderLine = JSON.parse(JSON.stringify(order.orderLine));
+		await handleCurrency(order.OrderLine, data.selectedCurrency);
 		getCountAndSubTotal(order.OrderLine);
 		const splitLine = splitOrderLine({ ...order });
 		const pages = createPage(splitLine);
@@ -30,6 +36,52 @@
 		zero = dinero(data.zero);
 		updatePrint(data);
 	});
+
+	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
+		zero = dinero(data.zero);
+		/**
+		 * Calculate using the cart default usd currency
+		 */
+		let newArray;
+		if (browser) {
+			newArray = await handleCalculations(lineArray);
+		}
+		if (!Array.isArray(newArray)) {
+			return;
+		}
+		const convert = createConverter(selectedCurrency.dineroObj);
+		order.OrderLine = [
+			...newArray.map((item) => {
+				let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+				if (!unitPrice) {
+					unitPrice = zero;
+				}
+
+				return { ...item, unitPrice: toSnapshot(unitPrice) };
+			})
+		];
+
+		getCountAndSubTotal(order.OrderLine);
+	};
+
+	const handleCalculations = async (lineArray: unknown[] = []) => {
+		try {
+			const res = await fetch('/api/cart.json', {
+				method: 'POST',
+				body: JSON.stringify({
+					pricelistsID: order.pricelistsID,
+					orderLine: lineArray
+				})
+			});
+			if (res.ok) {
+				const cartData = await res.json();
+				return cartData;
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+			toasts.add({ message: 'An error has occured', type: 'error' });
+		}
+	};
 
 	const vat = 0;
 
@@ -108,16 +160,12 @@
 
 	let pagesCreated: any;
 
-	// let currentCurrency
-
 	let zero = dinero(data.zero);
-	$: console.log('🚀 ~ file: +page.svelte ~ line 112 ~ zero', toSnapshot(zero));
 
 	let totalCartItems = 0;
 	let subTotal = zero;
 
 	const getCountAndSubTotal = (cart: any[]) => {
-		console.log('🚀 ~ file: +page.svelte ~ line 114 ~ getCountAndSubTotal ~ cart', cart);
 		const totals = cart.reduce(
 			(acc, item) => {
 				return {

@@ -151,7 +151,7 @@
 				method: 'POST',
 				body: JSON.stringify({
 					url: 'http://localhost:5173/print/quotation/',
-					currency: 'ZAR',
+					currency: 'zar',
 					id: 4
 				}),
 				headers: {
