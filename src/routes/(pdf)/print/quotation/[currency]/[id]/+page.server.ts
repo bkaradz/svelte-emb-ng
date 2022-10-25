@@ -1,8 +1,6 @@
 import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types';
-import { calculateOrder } from '$lib/services/orders';
-import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-import { createConverter } from '$lib/services/monetary';
+import { dinero, toSnapshot } from 'dinero.js';
 import { getCurrencyOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
 
 export const load: PageServerLoad = async ({ params }) => {
