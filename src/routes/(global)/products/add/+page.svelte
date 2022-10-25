@@ -13,7 +13,7 @@
 
 	let result = suite.get();
 
-	let productcategories: Array<OptionsDocument>;
+	let productCategories: Array<OptionsDocument>;
 
 	onMount(() => {
 		getProductCategories();
@@ -23,7 +23,7 @@
 		try {
 			let searchParams = new URLSearchParams({ group: 'productCategories' });
 			const res = await fetch('/api/options.json?' + searchParams.toString());
-			productcategories = await res.json();
+			productCategories = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
@@ -46,7 +46,7 @@
 		name: '',
 		description: '',
 		unitPrice: 0,
-		productCategories: { name: '', value: '' },
+		productCategories: '',
 		stitches: 0,
 		units: 0,
 		isActive: true
@@ -188,16 +188,17 @@
 					validityClass={cn('description')}
 				/>
 
-				{#if productcategories}
-					<Combobox
-						name="productCategories"
-						label="productCategories"
-						list={productcategories}
-						bind:value={formData.productCategories}
-					/>
+				{#if Array.isArray(productCategories)}
+					<select bind:value={formData.productCategories} class="input">
+						{#each productCategories as type}
+							<option value={type.value}>
+								{type.label}
+							</option>
+						{/each}
+					</select>
 				{/if}
 
-				{#if formData?.productCategories?.value === 'embroidery'}
+				{#if formData?.productCategories === 'embroidery'}
 					<Input
 						name="stitches"
 						label="Stitches"
@@ -208,7 +209,7 @@
 					/>
 				{/if}
 
-				{#if formData?.productCategories?.value !== 'embroidery'}
+				{#if formData?.productCategories !== 'embroidery'}
 					<Input
 						name="unitPrice"
 						label="Unit Price"
@@ -218,7 +219,7 @@
 						validityClass={cn('unitPrice')}
 					/>
 				{/if}
-				{#if formData?.productCategories?.value !== 'embroidery'}
+				{#if formData?.productCategories !== 'embroidery'}
 					<Input
 						name="units"
 						label="Quantity"

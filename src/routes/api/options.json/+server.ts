@@ -29,13 +29,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					}
 				},
 				orderBy: {
-					name: 'asc'
+					label: 'asc'
 				}
 			};
 		} else {
 			query = {
 				orderBy: {
-					name: 'asc'
+					label: 'asc'
 				}
 			};
 		}
@@ -85,9 +85,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		 * TODO: VALIDATION usung zod
 		 */
 
-		let { name, group, value, isActive, isDefault } = reqOptions;
+		let { label, group, value, isActive, isDefault } = reqOptions;
 
-		name = name.trim();
+		label = label.trim();
 		group = group.trim();
 		value = value.trim();
 		isActive = isActive === 'true' ? true : false;
@@ -99,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const option = {
 			createdBy: createDBy,
-			name,
+			label,
 			group,
 			value,
 			isActive,
@@ -139,9 +139,9 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 		 * TODO: VALIDATION usung zod
 		 */
 
-		let { name, group, value, isActive, isDefault } = reqOptions;
+		let { label, group, value, isActive, isDefault } = reqOptions;
 
-		name = name.trim();
+		label = label.trim();
 		group = group.trim();
 		value = value.trim();
 		isActive = isActive === 'true' ? true : false;
@@ -149,7 +149,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 
 		const option = {
 			createdBy: createDBy,
-			name,
+			label,
 			group,
 			value,
 			isActive,

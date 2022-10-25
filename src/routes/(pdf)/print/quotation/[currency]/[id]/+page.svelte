@@ -180,6 +180,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Printing</title>
+</svelte:head>
+
 {#if pagesCreated}
 	{#each pagesCreated as value, key (key)}
 		{#if key === 0}

@@ -83,13 +83,13 @@
 		getCountAndSubTotal(mainOrder.orderLine);
 	};
 
-	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
-	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
-	const sundayInBetween = dayjs().weekday(7).isBetween(TODAY, FOUR_DAYS);
+	// const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+	// let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
+	// const sundayInBetween = dayjs().weekday(7).isBetween(TODAY, FOUR_DAYS);
 
-	if (sundayInBetween) {
-		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
-	}
+	// if (sundayInBetween) {
+	// 	FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
+	// }
 
 	type MainOrder = {
 		id?: number | null;
@@ -103,18 +103,18 @@
 		orderLine: any[];
 	};
 
-	let mainOrderInit: MainOrder = {
-		id: null,
-		customersID: null,
-		pricelistsID: 0,
-		isActive: true,
-		accountsStatus: null,
-		orderDate: TODAY,
-		deliveryDate: FOUR_DAYS,
-		orderLine: Array.from($cartItem.values()) || []
-	};
+	// let mainOrderInit: MainOrder = {
+	// 	id: null,
+	// 	customersID: null,
+	// 	pricelistsID: 0,
+	// 	isActive: true,
+	// 	accountsStatus: null,
+	// 	orderDate: TODAY,
+	// 	deliveryDate: FOUR_DAYS,
+	// 	orderLine: Array.from($cartItem.values()) || []
+	// };
 
-	let mainOrder: Partial<MainOrder> = mainOrderInit;
+	let mainOrder: Partial<MainOrder> = data.order;
 	mainOrder = { ...$cartOrder, orderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
@@ -330,7 +330,7 @@
 								>
 									{#each embroideryTypes as type}
 										<option value={type.value}>
-											{type.name}
+											{type.label}
 										</option>
 									{/each}
 								</select>
@@ -344,7 +344,7 @@
 								>
 									{#each embroideryPositions as type}
 										<option value={type.value}>
-											{type.name}
+											{type.label}
 										</option>
 									{/each}
 								</select>
@@ -428,6 +428,7 @@
 			<div class="flex justify-between my-3 text-sm font-medium uppercase">
 				{#if customers}
 					<Combobox
+						disabled
 						label="Customer"
 						name="customer"
 						list={customers.results}
@@ -505,19 +506,13 @@
 				on:click|preventDefault={() => heandleSubmit('Quotation')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
-				Create Quotation
+				Update Quotation
 			</button>
 			<button
 				on:click|preventDefault={() => heandleSubmit('Sales Order')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
-				Create Sales Order
-			</button>
-			<button
-				on:click|preventDefault={() => heandleSubmit('Invoice')}
-				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
-			>
-				Create Invoice
+				Update Sales Order
 			</button>
 		</div>
 	</div>

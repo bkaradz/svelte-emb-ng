@@ -326,7 +326,7 @@
 								>
 									{#each embroideryTypes as type}
 										<option value={type.value}>
-											{type.name}
+											{type.label}
 										</option>
 									{/each}
 								</select>
@@ -340,7 +340,7 @@
 								>
 									{#each embroideryPositions as type}
 										<option value={type.value}>
-											{type.name}
+											{type.label}
 										</option>
 									{/each}
 								</select>

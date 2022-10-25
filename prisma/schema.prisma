@@ -97,7 +97,7 @@ model Options {
   group     String
   isActive  Boolean  @default(true)
   isDefault Boolean  @default(false)
-  name      String   @unique
+  label     String   @unique
   value     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
@@ -158,4 +158,10 @@ model OrderLine {
   embroideryPositions String?
   embroideryTypes     String?
   productCategories   String
+}
+
+model Payments {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }

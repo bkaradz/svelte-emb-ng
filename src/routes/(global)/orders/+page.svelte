@@ -126,7 +126,7 @@
 
 				<div class="flex items-center space-x-1">
 					<ArrowProgressBar />
-					<button
+					<!-- <button
 						on:click={gotoAddOrders}
 						class="btn btn-primary inline-flex items-center justify-center px-3"
 					>
@@ -145,7 +145,7 @@
 						</span>
 
 						<span class="ml-2">Sales Order</span>
-					</button>
+					</button> -->
 				</div>
 			</div>
 

@@ -37,9 +37,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const allDocsPromises: any[] = [];
 
 		optionsArray.forEach(async (element) => {
-			let { name, group, value, isActive, isDefault } = element;
+			let { label, group, value, isActive, isDefault } = element;
 
-			name = name.trim();
+			label = label.trim();
 			group = group.trim();
 			value = value.trim();
 			isActive = isActive === 'true' ? true : false;
@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			const option = {
 				createdBy: createDBy,
-				name,
+				label,
 				group,
 				value,
 				isActive,

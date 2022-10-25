@@ -8,7 +8,7 @@
 
 	export let tableHeadings = [
 		'Group',
-		'Name',
+		'Label',
 		'Value',
 		'Active',
 		'Default',
@@ -53,7 +53,7 @@
 			{
 				id: id,
 				group: selectedGroup,
-				name: 'Edit...',
+				label: 'Edit...',
 				value: 'Edit...',
 				isActive: true,
 				isDefault: false
@@ -194,7 +194,7 @@
 									type="text"
 									name="name"
 									disabled={!(isEditableID === list.id)}
-									bind:value={list.name}
+									bind:value={list.label}
 								/>
 							</td>
 							<td class="px-2 py-1">
@@ -242,7 +242,7 @@
 				class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
 			>
 				<td class="px-2 py-1">Group</td>
-				<td class="px-2 py-1">Name</td>
+				<td class="px-2 py-1">Label</td>
 				<td class="px-2 py-1">value</td>
 				<td class="px-2 py-1">
 					<input disabled type="checkbox" name="isActive" checked={false} />
