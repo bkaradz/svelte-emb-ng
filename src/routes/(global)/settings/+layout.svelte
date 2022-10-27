@@ -11,7 +11,7 @@
 					<li>
 						<a
 							href={tag.url}
-							class="flex items-center rounded border border-pickled-bluewood-100 p-2 text-sm font-normal text-pickled-bluewood-900 hover:bg-pickled-bluewood-100 dark:text-white dark:hover:bg-pickled-bluewood-700 {$page
+							class="flex items-center rounded border border-pickled-bluewood-100 p-2 text-sm font-normal text-pickled-bluewood-900 hover:bg-pickled-bluewood-100  {$page
 								.url.pathname === tag.url
 								? `bg-pickled-bluewood-100 hover:bg-pickled-bluewood-300 border-royal-blue-400`
 								: ''}"

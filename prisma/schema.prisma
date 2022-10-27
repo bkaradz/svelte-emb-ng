@@ -147,7 +147,7 @@ model Orders {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt()
   accountsStatus  String
-  invoiced        Boolean
+  isInvoiced      Boolean?         @default(false)
   OrderLine       OrderLine[]
   PaymentDetails  PaymentDetails[]
 }
