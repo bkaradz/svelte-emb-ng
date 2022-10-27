@@ -8,13 +8,13 @@ export function formatDefault(dineroObject: DineroOptions<number>) {
 }
 
 export const convertPricelist = (subPricelist) => {
-	const pricelists = subPricelist.PricelistSubList.map((list: any) => {
+	const pricelists = subPricelist.PricelistDetails.map((list: any) => {
 		return {
 			...list,
 			pricePerThousandStitches: formatDefault(JSON.parse(list.pricePerThousandStitches)),
 			minimumPrice: formatDefault(JSON.parse(list.minimumPrice))
 		};
 	});
-	subPricelist.PricelistSubList = pricelists;
+	subPricelist.PricelistDetails = pricelists;
 	return subPricelist;
 };

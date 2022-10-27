@@ -36,9 +36,9 @@
 
 	let isEditableID = null;
 
-	$: if (pricelist?.PricelistSubList?.length) {
+	$: if (pricelist?.PricelistDetails?.length) {
 		groupList = new Set(['all']);
-		pricelist.PricelistSubList.forEach((list) => {
+		pricelist.PricelistDetails.forEach((list) => {
 			groupList.add(list.embroideryTypes);
 		});
 		groupList = groupList;
@@ -69,7 +69,7 @@
 	const heandleEditable = async (list: any) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
-			pricelist.PricelistSubList = pricelist.PricelistSubList.map((plist) => {
+			pricelist.PricelistDetails = pricelist.PricelistDetails.map((plist) => {
 				if (plist.id === list.id) {
 					return {
 						...plist,
@@ -81,7 +81,7 @@
 			});
 		} else {
 			isEditableID = null;
-			pricelist.PricelistSubList = pricelist.PricelistSubList.map((plist) => {
+			pricelist.PricelistDetails = pricelist.PricelistDetails.map((plist) => {
 				if (plist.id === list.id) {
 					return {
 						...plist,
@@ -98,7 +98,7 @@
 
 	const heandleDelete = (finalData: any) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		pricelist.PricelistSubList = pricelist.PricelistSubList.filter(
+		pricelist.PricelistDetails = pricelist.PricelistDetails.filter(
 			(list) => list.id !== finalData.id
 		);
 		// deleteOption(finalData);
@@ -111,8 +111,8 @@
 
 		isEditableID = id;
 		idToRemove.push(id);
-		pricelist.PricelistSubList = [
-			...pricelist.PricelistSubList,
+		pricelist.PricelistDetails = [
+			...pricelist.PricelistDetails,
 			{
 				id: id,
 				embroideryTypes: selectedGroup,
@@ -125,7 +125,7 @@
 
 	const headleSubmit = async () => {
 		try {
-			pricelist.PricelistSubList = pricelist.PricelistSubList.map((pList) => {
+			pricelist.PricelistDetails = pricelist.PricelistDetails.map((pList) => {
 				if (idToRemove.includes(pList.id)) {
 					delete pList.id;
 					idToRemove = idToRemove.filter((list) => list !== pList.id);
@@ -216,7 +216,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.PricelistSubList as list (list.id)}
+							{#each pricelist.PricelistDetails as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"

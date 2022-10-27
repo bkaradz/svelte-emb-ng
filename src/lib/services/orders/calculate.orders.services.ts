@@ -23,7 +23,7 @@ export const calculateOrder = async (reqOrder: any) => {
 				id: parseInt(reqOrder.pricelistsID)
 			},
 			include: {
-				PricelistSubList: true
+				PricelistDetails: true
 			}
 		});
 

@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				id: parseInt(params.id)
 			},
 			include: {
-				PricelistSubList: true
+				PricelistDetails: true
 			}
 		});
 

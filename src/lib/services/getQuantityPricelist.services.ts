@@ -10,7 +10,7 @@ export const getQuantityPricelist = ({
 	quantity: number;
 }) => {
 	try {
-		const pricelistsArray = pricelist?.PricelistSubList;
+		const pricelistsArray = pricelist?.PricelistDetails;
 
 		const minimumQuantityArray = pricelistsArray
 			.filter((list) => embroideryTypes.toLowerCase() === list.embroideryTypes.toLowerCase())

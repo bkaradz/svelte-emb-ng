@@ -116,7 +116,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.PricelistSubList as list (list.id)}
+							{#each pricelist.PricelistDetails as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"

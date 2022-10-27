@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const pricelistsQuery = await prisma.pricelists.findMany({
 			include: {
-				PricelistSubList: true
+				PricelistDetails: true
 			}
 		});
 
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			data: {
 				...restPricelist,
 				createdBy: createDBy,
-				PricelistSubList: { createMany: { data: subPrices } }
+				PricelistDetails: { createMany: { data: subPrices } }
 			}
 		});
 
@@ -128,7 +128,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			data: {
 				...restPricelist,
 				createdBy: createDBy,
-				PricelistSubList: { createMany: { data: subPrices } }
+				PricelistDetails: { createMany: { data: subPrices } }
 			}
 		});
 
