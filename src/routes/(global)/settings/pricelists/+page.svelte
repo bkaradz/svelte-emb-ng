@@ -7,6 +7,3 @@
 </svelte:head>
 
 <PricelistsTable />
-
-<!-- <style>
-</style> -->

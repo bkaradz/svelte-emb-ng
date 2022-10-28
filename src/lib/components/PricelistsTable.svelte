@@ -2,9 +2,19 @@
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { svgPencil, svgTrash, svgView } from '$lib/utility/svgLogos';
+	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 
-	export let tableHeadings = ['Name', 'isActive', 'isDefault', 'View', 'Edit', 'Delete'];
+	export let tableHeadings = [
+		'#',
+		'Date',
+		'Name',
+		'isActive',
+		'isDefault',
+		'View',
+		'Edit',
+		'Delete'
+	];
 
 	let pricelists = [];
 
@@ -65,9 +75,21 @@
 						<tr
 							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
+							<td class="px-2 py-1 ">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
+									type="text"
+									name="id"
+									disabled
+									bind:value={list.id}
+								/>
+							</td>
+							<td class="px-2 py-1 text-center">
+								{dayjs(list.createdAt).format('DD-MM-YYYY')}
+							</td>
 							<td class="px-2 py-1">
 								<input
-									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
 									type="text"
 									name="name"
 									disabled
