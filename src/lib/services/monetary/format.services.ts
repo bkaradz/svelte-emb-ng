@@ -1,11 +1,5 @@
 import { BWP } from '@dinero.js/currencies';
-import {
-	dinero,
-	haveSameCurrency,
-	toFormat,
-	toSnapshot,
-	type Dinero,
-} from 'dinero.js';
+import { dinero, haveSameCurrency, toFormat, toSnapshot, type Dinero } from 'dinero.js';
 import { ZWB, ZWR } from './convert.services';
 
 function intlFormat(locale: string, options = {}) {
@@ -22,29 +16,22 @@ function intlFormat(locale: string, options = {}) {
 }
 
 function formatDefault(dineroObject: Dinero<unknown>) {
-
-	if (
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })])
-	) {
+	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `Bond $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount, currency }) => `ZB$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
-	if (
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWR })])
-	) {
+	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWR })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `Rtgs $ ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount, currency }) => `ZR$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
-	if (
-		haveSameCurrency([dineroObject, dinero({ amount: 100, currency: BWP })])
-	) {
+	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: BWP })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `P ${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount, currency }) => `P${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 }
@@ -52,11 +39,10 @@ function formatDefault(dineroObject: Dinero<unknown>) {
 const formatters = {
 	USD: intlFormat('en-US'),
 	ZAR: intlFormat('en-ZA'),
-	EUR: intlFormat('fr-FR'),
+	EUR: intlFormat('fr-FR')
 };
 
 export function format(dineroObject: Dinero<number>) {
-
 	const { currency } = toSnapshot(dineroObject);
 	const formatFn = formatters[currency.code] || formatDefault;
 

@@ -107,10 +107,12 @@
 											{item?.quantity}
 										</div>
 									</td>
-									<td class="px-4 py-2 text-xs text-pickled-bluewood-500 text-right"
+									<td class="px-4 py-2 text-xs text-pickled-bluewood-500 text-right truncate"
 										>{format(dinero(item.unitPrice))}
 									</td>
-									<td class="px-4 py-2 text-xs text-pickled-bluewood-500 font-semibold text-right">
+									<td
+										class="px-4 py-2 text-xs text-pickled-bluewood-500 font-semibold text-right truncate"
+									>
 										{format(totalPrice)}
 									</td>
 								</tr>
