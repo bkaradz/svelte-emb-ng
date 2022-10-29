@@ -63,6 +63,7 @@
 		"prettier-plugin-svelte": "^2.7.0",
 		"prisma": "^4.2.1",
 		"puppeteer": "^18.2.1",
+		"superjson": "^1.11.0",
 		"svelte": "^3.44.0",
 		"svelte-check": "^2.7.1",
 		"svelte-preprocess": "^4.10.7",

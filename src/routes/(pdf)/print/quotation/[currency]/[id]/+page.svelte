@@ -130,28 +130,32 @@
 
 	const splitOrderLine = (order: any = []) => {
 		/**
-		 * first page max without totals = 16
 		 * first page max with totals = 13
+		 * first page max without totals = 16
 		 * all other pages without address and totals = 19
 		 * all other pages without address but with totals = 16
 		 */
+		const FIRST_PAGE_WITHOUT_TOTALS = 20;
+		const OTHER_PAGES_WITHOUT_TOTALS = 22;
+		const FIRST_PAGE_WITH_TOTALS = FIRST_PAGE_WITHOUT_TOTALS - 3;
+		const OTHER_PAGES_WITH_TOTALS = OTHER_PAGES_WITHOUT_TOTALS - 3;
 
 		const lineLength = order.OrderLine.length;
 
-		if (lineLength <= 13) {
-			const firstPage = partitionTwo(order.OrderLine, 13);
+		if (lineLength <= FIRST_PAGE_WITH_TOTALS) {
+			const firstPage = partitionTwo(order.OrderLine, FIRST_PAGE_WITH_TOTALS);
 			firstPage.pop();
 			return firstPage;
 		}
-		const firstPage = partitionTwo(order.OrderLine, 16);
+		const firstPage = partitionTwo(order.OrderLine, FIRST_PAGE_WITHOUT_TOTALS);
 
-		if (firstPage[1].length === 0 || firstPage[1].length <= 16) {
+		if (firstPage[1].length === 0 || firstPage[1].length <= OTHER_PAGES_WITH_TOTALS) {
 			return firstPage;
 		}
 
-		const otherPages: any[] = chunk(firstPage.pop(), 19);
+		const otherPages: any[] = chunk(firstPage.pop(), OTHER_PAGES_WITHOUT_TOTALS);
 
-		if (otherPages[otherPages.length - 1].length <= 16) {
+		if (otherPages[otherPages.length - 1].length <= OTHER_PAGES_WITH_TOTALS) {
 			return [...firstPage, ...otherPages];
 		}
 
