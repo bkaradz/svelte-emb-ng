@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import type { PageServerLoad } from './$types';
 import { dinero, toSnapshot } from 'dinero.js';
 import { getCurrencyOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';

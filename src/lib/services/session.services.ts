@@ -1,7 +1,7 @@
 import * as cookie from 'cookie';
 import config from 'config';
 import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json/+server';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import bcrypt from 'bcrypt';
 
 export const setSessionCookies = (accessToken: string, refreshToken: string) => {

@@ -1,4 +1,4 @@
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import dayjs from 'dayjs';
 import type { PageServerLoad } from './$types'
 

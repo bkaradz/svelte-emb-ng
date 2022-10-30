@@ -2,7 +2,7 @@ import logger from '$lib/utility/logger';
 import omit from 'lodash-es/omit';
 import { calculateOrder } from '$lib/services/orders';
 import type { RequestHandler } from './$types';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import pick from 'lodash-es/pick';
 import { getPagination } from '$lib/utility/pagination.util';
 import type { Prisma } from '@prisma/client';

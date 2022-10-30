@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import config from 'config';

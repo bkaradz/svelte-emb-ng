@@ -1,6 +1,6 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import { z } from 'zod';
 
 export const GET: RequestHandler = async ({ locals }) => {

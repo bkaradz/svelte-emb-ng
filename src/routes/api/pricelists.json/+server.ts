@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import { setMonetaryValue } from '$lib/services/monetary';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {

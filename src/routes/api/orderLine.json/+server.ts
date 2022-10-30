@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
 import omit from 'lodash-es/omit';
 import type { RequestHandler } from './$types';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import { getPagination } from '$lib/utility/pagination.util';
 
 const getQueryOptions = (objectKeys, finalQuery) => {

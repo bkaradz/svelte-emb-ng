@@ -11,7 +11,7 @@ import {
 } from 'dinero.js';
 import logger from '$lib/utility/logger';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 
 export const calculateOrder = async (reqOrder: any) => {
 	try {

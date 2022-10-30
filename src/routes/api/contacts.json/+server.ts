@@ -2,7 +2,7 @@ import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import { z, type TypeOf } from 'zod';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import { getPagination } from '$lib/utility/pagination.util';

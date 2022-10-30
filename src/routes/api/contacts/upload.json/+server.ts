@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import prisma from '$lib/prisma/client';
+import prisma from '$lib/server/prisma';
 import { querySelection } from '../../contacts.json/+server';
 import parseCsv from '$lib/utility/parseCsv';
 
