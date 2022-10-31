@@ -4,7 +4,7 @@
 
 	onMount(async () => {
 		const greeting = await trpcClient.query('trpc:hello');
-		console.log(greeting); // => 👈 world
+		console.log(greeting.json); // => 👈 world
 	});
 </script>
 

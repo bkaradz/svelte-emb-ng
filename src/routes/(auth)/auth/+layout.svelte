@@ -17,23 +17,6 @@
 
 	let isPageLoading = false;
 
-	// Ping to connect to database
-	const pingHealthCheck = async () => {
-		try {
-			const res = await fetch('/api/healthcheck.json');
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
-	onMount(() => {
-		pingHealthCheck();
-
-		// setTimeout(function () {
-		// 	isPageLoading = false;
-		// }, 450);
-	});
-
 	const navList = [
 		{
 			url: '/auth/signIn',

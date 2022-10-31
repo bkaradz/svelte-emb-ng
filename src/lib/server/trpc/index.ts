@@ -4,16 +4,16 @@ import trpcTransformer from 'trpc-transformer';
 // import authors from './authors';
 // import books from './books';
 // import stores from './stores';
-import trpc2 from './trpc';
+import trpc2 from './routers/trpc';
 
 export const createContext = async () => ({});
 
 export const router = trpc
-  .router<inferAsyncReturnType<typeof createContext>>()
-  .transformer(trpcTransformer)
-  // .merge('authors:', authors)
-  // .merge('books:', books)
-  // .merge('stores:', stores)
-  .merge('trpc:', trpc2);
+	.router<inferAsyncReturnType<typeof createContext>>()
+	.transformer(trpcTransformer)
+	// .merge('authors:', authors)
+	// .merge('books:', books)
+	// .merge('stores:', stores)
+	.merge('trpc:', trpc2);
 
 export type Router = typeof router;
