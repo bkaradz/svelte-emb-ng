@@ -9,7 +9,9 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 
-	if ($page.data?.user?.authenticated) {
+	export let data: any;
+
+	$: if (data.user) {
 		if (browser) {
 			goto('/');
 		}

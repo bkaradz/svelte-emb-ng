@@ -5,17 +5,22 @@
 	import Toasts from '$lib/components/Toasts.svelte';
 	import logger from '$lib/utility/logger';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import Loading from '$lib/components/Loading.svelte';
 
-	if (!$page.data?.user?.authenticated) {
+	export let data: any;
+
+	$: if (!data.user) {
 		if (browser) {
 			goto('/auth/signIn');
 		}
 	}
+	$: if (data.user) {
+		isPageLoading = false;
+	}
 
-	let showMenu = false;
+	let isPageLoading = true;
 
 	// Ping to connect to database
 	const pingHealthCheck = async () => {
@@ -31,14 +36,18 @@
 	});
 </script>
 
-<div class="app flex h-screen small-menu">
-	<SideMenu />
-	<Menu />
-	<main class="main z-0 flex flex-1 overflow-hidden bg-royal-blue-50 p-6">
-		<Toasts />
-		<slot />
-	</main>
-</div>
+{#if !isPageLoading}
+	<div class="app flex h-screen small-menu">
+		<SideMenu />
+		<Menu />
+		<main class="main z-0 flex flex-1 overflow-hidden bg-royal-blue-50 p-6">
+			<Toasts />
+			<slot />
+		</main>
+	</div>
+{:else}
+	<Loading />
+{/if}
 
 <style lang="postcss">
 	.app {

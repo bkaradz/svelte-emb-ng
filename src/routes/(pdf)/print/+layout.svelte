@@ -3,12 +3,24 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import Loading from '$lib/components/Loading.svelte';
 
-	if ($page.data?.user?.authenticated) {
+	export let data: any;
+
+	$: if (!data.user) {
 		if (browser) {
-			goto('/');
+			goto('/auth/signIn');
 		}
 	}
+	$: if (data.user) {
+		isPageLoading = false;
+	}
+
+	let isPageLoading = true;
 </script>
 
-<slot />
+{#if !isPageLoading}
+	<slot />
+{:else}
+	<Loading />
+{/if}

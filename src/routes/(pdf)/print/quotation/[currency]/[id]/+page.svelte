@@ -11,6 +11,7 @@
 	import { browser } from '$app/environment';
 	import { createConverter } from '$lib/services/monetary';
 	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
+	import { USD } from '@dinero.js/currencies';
 
 	export let data: any;
 
@@ -33,8 +34,12 @@
 	};
 
 	onMount(() => {
-		zero = dinero(data.zero);
-		updatePrint(data);
+		if (data?.zero) {
+			zero = dinero(data.zero);
+		}
+		if (data?.order) {
+			updatePrint(data);
+		}
 	});
 
 	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
@@ -164,7 +169,7 @@
 
 	let pagesCreated: any;
 
-	let zero = dinero(data.zero);
+	let zero = dinero({ amount: 0, currency: USD });
 
 	let totalCartItems = 0;
 	let subTotal = zero;
