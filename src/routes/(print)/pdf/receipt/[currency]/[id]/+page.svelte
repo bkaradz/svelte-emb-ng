@@ -1,12 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import logger from '$lib/utility/logger';
 	import type { Orders, Prisma } from '@prisma/client';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-	import chunk from 'lodash-es/chunk';
-	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
-	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { browser } from '$app/environment';
 	import { createConverter } from '$lib/services/monetary';

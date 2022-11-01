@@ -130,7 +130,7 @@ input:checked~.dot {
 .receipt {
 	position: relative;
 	background: white;
-	padding: 0.5cm;
+	/* padding: 0.5cm; */
 	width: 8cm;
 	display: block;
 	margin: 0 auto;
