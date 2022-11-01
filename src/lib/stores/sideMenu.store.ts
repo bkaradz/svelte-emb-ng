@@ -7,12 +7,12 @@ import {
 	svgChart,
 	svgQrCode,
 	svgAdjustments,
-	svgDocReport,
 	svgDollar,
 	svgClipboardList,
 	svgCart,
-	svgFloppy,
-	svgDocumentSearch
+	svgDocumentSearch,
+	svgCash,
+	svgCreditCard
 } from '$lib/utility/svgLogos';
 
 const anchorTags = [
@@ -45,6 +45,12 @@ const anchorTags = [
 		url: '/orders',
 		name: 'Sales',
 		icon: svgDollar
+	},
+	{
+		id: uuidv4(),
+		url: '/payments',
+		name: 'Payments',
+		icon: svgCreditCard
 	},
 	{
 		id: uuidv4(),
