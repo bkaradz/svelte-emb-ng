@@ -59,7 +59,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// const height_weight_ratio = await page.evaluate( () => window.innerHeight / window.innerWidth)
 		// const height = pageWidth * height_weight_ratio
 
-
 		// Download the PDF
 		// const pdfBuffer = await page.pdf({
 		// 	width: '8cm',
@@ -68,31 +67,33 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// });
 		const dimensions = await page.evaluate(() => {
 			return {
-				// width: document.getElementById('receipt').offsetWidth,
-				// height: document.getElementById('receipt').offsetHeight,
-				width: window.innerWidth,
-				height: window.innerHeight,
+				width: document.getElementById('receipt').offsetWidth,
+				height: document.getElementById('receipt').offsetHeight,
+				// width: window.innerWidth,
+				// height: window.innerHeight,
 				windowW: window.innerWidth,
 				windowH: window.innerHeight,
-				deviceScaleFactor: window.devicePixelRatio,
-			}
-		})
+				deviceScaleFactor: window.devicePixelRatio
+			};
+		});
 
-		console.log('Dimensions:', dimensions)
+		console.log('Dimensions:', dimensions);
 
 		const pdfBuffer = await page.pdf({
-			width: `${dimensions.width / 100}cm`,
-			height: `${dimensions.height / 100}cm`,
+			width: '8cm',
+			// width: `${dimensions.width}px`,
+			// height: `${dimensions.height}px`,
 			pageRanges: '1',
 			printBackground: true,
-			scale: 2,
+			preferCSSPageSize: false,
+			// scale: 2,
 			margin: {
 				top: '0px',
 				right: '0px',
 				bottom: '0px',
 				left: '0px'
-			},
-		})
+			}
+		});
 
 		await browser.close();
 

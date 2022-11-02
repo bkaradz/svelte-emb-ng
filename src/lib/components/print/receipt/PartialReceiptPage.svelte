@@ -41,13 +41,11 @@
 					<table class="w-full">
 						<thead class="">
 							<tr class="border border-pickled-bluewood-300 text-white">
-								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-left"> # </th>
-								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-left">
-									Product Name
-								</th>
-								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right"> Quantity </th>
-								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right"> Unit Price </th>
-								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right"> Total </th>
+								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-left">#</th>
+								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-left">Product</th>
+								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right">Qty</th>
+								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right">Price</th>
+								<th class="px-1 py-1 text-xs text-pickled-bluewood-500 text-right">Total</th>
 							</tr>
 						</thead>
 						<tbody class="bg-white">
@@ -60,7 +58,7 @@
 										>{item.productsID}</td
 									>
 									<td class="px-1 py-1">
-										<div class="text-xs text-pickled-bluewood-600">
+										<div class="text-[10px] text-pickled-bluewood-600">
 											{item.Products.name}
 										</div>
 									</td>
