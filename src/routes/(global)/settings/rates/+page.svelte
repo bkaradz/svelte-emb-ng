@@ -1,7 +1,9 @@
 <script lang="ts">
+	import XchangeRatesTable from '$lib/components/XchangeRatesTable.svelte';
 </script>
 
-<h1>Hi</h1>
+<svelte:head>
+	<title>Settings: Pricelists</title>
+</svelte:head>
 
-<style lang="postcss">
-</style>
+<XchangeRatesTable />
