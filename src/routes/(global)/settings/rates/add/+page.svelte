@@ -1,19 +1,15 @@
 <script lang="ts">
-	// throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
-	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import suite from '$lib/validation/client/signUp.validate';
-	import type { XchangeRate, XchangeRateDetails } from '@prisma/client';
+	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
+	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
-	import classnames from 'vest/classnames';
 
-	export let data;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 16 ~ data', data);
+	export let data: { currencyOptions: Options[] };
 
 	let result = suite.get();
 
@@ -21,12 +17,7 @@
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	const rateDetailsInit = {
-		currency: '',
-		rate: 0
-	};
-
-	const rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
 		id: 0,
 		xChangeRateDate: TODAY,
 		isActive: true,
@@ -40,16 +31,107 @@
 
 	$: groupList;
 
-	let isEditableID = 0;
+	let isEditableID: number | null = null;
+
+	let newId = 'New Id';
+
+	const getUsedCurrencies = () => {
+		return rates.XchangeRateDetails.map((rate) => rate.currency);
+
+		// const currenciesMap = new Map();
+		// data.currencyOptions.map((item: Options) => currenciesMap.set(item.value, item));
+		// usedCurrencies.map((item) => currenciesMap.delete(item));
+		// data.currencyOptions = Array.from(currenciesMap.values());
+	};
+
+	const getUnUsedCurrencies = () => {
+		return data.currencyOptions
+			.map((item) => item.value)
+			.filter((item) => !getUsedCurrencies().includes(item));
+	};
+
+	let usedCurrencies: string[] = [];
 
 	const heandleAddRow = () => {
-		rates.XchangeRateDetails.push(rateDetailsInit);
+		usedCurrencies = getUsedCurrencies();
+		const unUsedCurrencies = getUnUsedCurrencies();
+
+		isEditableID = null;
+
+		let rateDetailsInit;
+
+		if (unUsedCurrencies.length > 0) {
+			rateDetailsInit = {
+				id: uuidv4(),
+				currency: unUsedCurrencies[0],
+				rate: 1
+			};
+		} else {
+			rateDetailsInit = {
+				id: uuidv4(),
+				currency: '',
+				rate: 0
+			};
+		}
+
+		heandleEditable(rateDetailsInit);
+
+		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
 	};
+
 	const handleCurrencyType = () => {};
-	const headleSubmit = () => {};
-	const heandleEditable = () => {};
-	const heandleDelete = () => {};
-	const handleInput = () => {};
+
+	const headleSubmit = async () => {
+		const usedCurrenciesLength = getUsedCurrencies().length;
+		const numberOfCurrencies = data.currencyOptions.length;
+		if (usedCurrenciesLength < numberOfCurrencies) {
+			toasts.add({ message: 'Add all currencies', type: 'error' });
+			return;
+		}
+		if (usedCurrenciesLength < [...new Set(getUsedCurrencies())].length) {
+			toasts.add({ message: 'Duplicate currencies are not allowed', type: 'error' });
+			return;
+		}
+
+		try {
+			const res = await fetch('/api/rates.json', {
+				method: 'POST',
+				body: JSON.stringify(rates),
+				headers: { 'Content-Type': 'application/json' }
+			});
+
+			if (res.ok) {
+				const resRates = await res.json();
+				toasts.add({ message: `Exchange Rate with id ${resRates.id} was added`, type: 'success' });
+
+				rates = {
+					id: 0,
+					xChangeRateDate: TODAY,
+					isActive: true,
+					isDefault: true,
+					XchangeRateDetails: []
+				};
+			}
+		} catch (err) {
+			logger.error(`Error: ${err}`);
+			toasts.add({
+				message: 'An error has occured while updating',
+				type: 'error'
+			});
+		}
+	};
+
+	const heandleEditable = (list: Options) => {
+		if (isEditableID === null) {
+			isEditableID = list.id;
+		} else {
+			isEditableID = null;
+		}
+	};
+	const heandleDelete = (list: Options) => {
+		isEditableID = null;
+		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
+	};
 </script>
 
 {#if rates}
@@ -61,15 +143,8 @@
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
 					<label class=" text-sm" for="id"
-						>Rate Id
-						<input
-							class="input w-full"
-							type="text"
-							name="id"
-							id="id"
-							bind:value={rates.id}
-							disabled
-						/>
+						>Exchange Rate Id
+						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
 					</label>
 					<Input
 						class="input w-full"
@@ -77,7 +152,6 @@
 						label="Date Created"
 						type="datetime-local"
 						bind:value={rates.xChangeRateDate}
-						onInput={handleInput}
 						messages={result.getErrors('name')}
 					/>
 					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
@@ -121,11 +195,14 @@
 											<select
 												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
-												on:change|preventDefault={() => handleCurrencyType(item)}
-												class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
+												on:change|preventDefault={() => handleCurrencyType(list)}
+												class="text-sm border cursor-pointer p-1 border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300 w-full"
 											>
 												{#each data.currencyOptions as type}
-													<option value={type.value}>
+													<option
+														value={type.value}
+														class={usedCurrencies.includes(type.value) ? 'invisible' : ''}
+													>
 														{type.label}
 													</option>
 												{/each}
@@ -165,10 +242,12 @@
 
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
-									<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
-										><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
-										></button
-									>
+									{#if usedCurrencies.length + 1 < data.currencyOptions.length}
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
+											></button
+										>
+									{/if}
 								</td>
 							</tr>
 						</tbody>

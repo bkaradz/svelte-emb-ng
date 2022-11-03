@@ -1,26 +1,29 @@
 <script lang="ts">
-	// throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-	import { page } from '$app/stores';
-	import suite from '$lib/validation/client/signUp.validate';
-	import classnames from 'vest/classnames';
-	import { onMount } from 'svelte';
-	import logger from '$lib/utility/logger';
-	import Input from '$lib/components/Input.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
-	import { convertPricelist } from '$lib/utility/pricelists.utils';
+	import Input from '$lib/components/Input.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import suite from '$lib/validation/client/signUp.validate';
+	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
+	import logger from '$lib/utility/logger';
+	import dayjs from 'dayjs';
+	import { v4 as uuidv4 } from 'uuid';
+
+	export let data: { currencyOptions: Options[] };
 
 	let result = suite.get();
 
-	let tableHeadings = [
-		'Embroidery Type',
-		'Minimum Quantity',
-		'Minimum Price',
-		'Price per 1000 stitches'
-	];
+	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
-	const endpoint = `/api/pricelists/${$page.params.id}.json`;
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	let pricelist: any;
+	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+		id: 0,
+		xChangeRateDate: TODAY,
+		isActive: true,
+		isDefault: true,
+		XchangeRateDetails: []
+	};
 
 	let selectedGroup = 'all';
 
@@ -28,67 +31,134 @@
 
 	$: groupList;
 
-	let isEditableID = null;
+	let isEditableID: number | null = null;
 
-	$: if (pricelist?.pricelists?.length) {
-		pricelist.pricelists.forEach((list: any) => {
-			groupList.add(list.embroideryTypes);
-		});
-	}
+	let newId = 'New Id';
 
-	onMount(async () => {
-		try {
-			const res = await fetch(endpoint);
-			if (res.ok) {
-				const tempPricelist = await res.json();
+	const getUsedCurrencies = () => {
+		return rates.XchangeRateDetails.map((rate) => rate.currency);
 
-				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+		// const currenciesMap = new Map();
+		// data.currencyOptions.map((item: Options) => currenciesMap.set(item.value, item));
+		// usedCurrencies.map((item) => currenciesMap.delete(item));
+		// data.currencyOptions = Array.from(currenciesMap.values());
+	};
+
+	const getUnUsedCurrencies = () => {
+		return data.currencyOptions
+			.map((item) => item.value)
+			.filter((item) => !getUsedCurrencies().includes(item));
+	};
+
+	let usedCurrencies: string[] = [];
+
+	const heandleAddRow = () => {
+		usedCurrencies = getUsedCurrencies();
+		const unUsedCurrencies = getUnUsedCurrencies();
+
+		isEditableID = null;
+
+		let rateDetailsInit;
+
+		if (unUsedCurrencies.length > 0) {
+			rateDetailsInit = {
+				id: uuidv4(),
+				currency: unUsedCurrencies[0],
+				rate: 1
+			};
+		} else {
+			rateDetailsInit = {
+				id: uuidv4(),
+				currency: '',
+				rate: 0
+			};
 		}
-	});
 
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
+		heandleEditable(rateDetailsInit);
+
+		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
+	};
+
+	const handleCurrencyType = () => {};
+
+	const headleSubmit = async () => {
+		const usedCurrenciesLength = getUsedCurrencies().length;
+		const numberOfCurrencies = data.currencyOptions.length;
+		if (usedCurrenciesLength < numberOfCurrencies) {
+			toasts.add({ message: 'Add all currencies', type: 'error' });
+			return;
+		}
+		if (usedCurrenciesLength < [...new Set(getUsedCurrencies())].length) {
+			toasts.add({ message: 'Duplicate currencies are not allowed', type: 'error' });
+			return;
+		}
+
+		try {
+			const res = await fetch('/api/rates.json', {
+				method: 'POST',
+				body: JSON.stringify(rates),
+				headers: { 'Content-Type': 'application/json' }
+			});
+
+			if (res.ok) {
+				const resRates = await res.json();
+				toasts.add({ message: `Exchange Rate with id ${resRates.id} was added`, type: 'success' });
+
+				rates = {
+					id: 0,
+					xChangeRateDate: TODAY,
+					isActive: true,
+					isDefault: true,
+					XchangeRateDetails: []
+				};
+			}
+		} catch (err) {
+			logger.error(`Error: ${err}`);
+			toasts.add({
+				message: 'An error has occured while updating',
+				type: 'error'
+			});
+		}
+	};
+
+	const heandleEditable = (list: Options) => {
+		if (isEditableID === null) {
+			isEditableID = list.id;
+		} else {
+			isEditableID = null;
+		}
+	};
+	const heandleDelete = (list: Options) => {
+		isEditableID = null;
+		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
+	};
 </script>
 
-{#if pricelist}
+{#if rates}
 	<div class="mb-2 bg-white p-4">
-		<h1>View Exchange Rates</h1>
+		<h1>Add Exchange Rates</h1>
 	</div>
-	<form>
+	<form on:submit|preventDefault={headleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
+					<label class=" text-sm" for="id"
+						>Exchange Rate Id
+						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
+					</label>
 					<Input
-						name="name"
-						label="Name"
-						disabled={true}
-						bind:value={pricelist.name}
+						class="input w-full"
+						name="xChangeRateDate"
+						label="Date Created"
+						type="datetime-local"
+						bind:value={rates.xChangeRateDate}
 						messages={result.getErrors('name')}
-						validityClass={cn('name')}
 					/>
-					<Checkbox
-						name="isActive"
-						label="isActive"
-						disabled={true}
-						validityClass={cn('isActive')}
-						bind:checked={pricelist.isActive}
-					/>
-					<Checkbox
-						name="isDefault"
-						label="isDefault"
-						disabled={true}
-						validityClass={cn('isDefault')}
-						bind:checked={pricelist.isDefault}
-					/>
+					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
+					<Checkbox name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
 				</div>
 				<div>
-					<input class="btn btn-primary hidden" type="submit" value="Submit" />
+					<input class="btn btn-primary" type="submit" value="Submit" />
 				</div>
 			</div>
 			<!-- Table start -->
@@ -116,50 +186,70 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.PricelistDetails as list (list.id)}
-								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
-									<tr
-										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-									>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="embroideryTypes"
+							{#each rates.XchangeRateDetails as list (list.id)}
+								<tr
+									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+								>
+									<td class="px-2 py-1">
+										{#if data?.currencyOptions}
+											<select
+												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
-												bind:value={list.embroideryTypes}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumQuantity"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumQuantity}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumPrice"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumPrice}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="pricePerThousandStitches"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.pricePerThousandStitches}
-											/>
-										</td>
-									</tr>
-								{/if}
+												on:change|preventDefault={() => handleCurrencyType(list)}
+												class="text-sm border cursor-pointer p-1 border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300 w-full"
+											>
+												{#each data.currencyOptions as type}
+													<option
+														value={type.value}
+														class={usedCurrencies.includes(type.value) ? 'invisible' : ''}
+													>
+														{type.label}
+													</option>
+												{/each}
+											</select>
+										{/if}
+									</td>
+									<td class="px-2 py-1">
+										<input
+											class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+											type="text"
+											name="minimumQuantity"
+											disabled={!(isEditableID === list.id)}
+											bind:value={list.rate}
+										/>
+									</td>
+
+									<td class="p-1 text-center ">
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
+											<span class="fill-current text-pickled-bluewood-500">
+												{@html isEditableID === list.id ? svgFloppy : svgPencil}
+											</span>
+										</button>
+									</td>
+
+									<td class="p-1 text-center ">
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
+											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
+										</button>
+									</td>
+								</tr>
 							{/each}
+							<tr
+								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
+							>
+								<td class="px-2 py-1">Currency</td>
+								<td class="px-2 py-1">Rate</td>
+
+								<td class="px-2 py-1" />
+								<td class="p-1 text-center">
+									{#if usedCurrencies.length + 1 < data.currencyOptions.length}
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
+											></button
+										>
+									{/if}
+								</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>

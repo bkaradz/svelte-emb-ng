@@ -65,24 +65,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			changeCurrentDefault();
 		}
 
-		// const rate = {
-		// 	createDBy,
-		// 	isActive: true,
-		// 	isDefault: true,
-		// 	xChangeRateDate: Date.now(),
-		// 	XchangeRateDetails: [
-		// 		{
-		// 			currency: 'USD',
-		// 			rate: toSnapshot(dinero({ amount: 0, currency: USD }))
-		// 		}
-		// 	]
-		// };
+		if (reqRates?.xChangeRateDate) {
+			reqRates.xChangeRateDate = new Date(reqRates.xChangeRateDate);
+		}
 
 		const { XchangeRateDetails, ...restRates } = reqRates;
 
 		const rateDetails = XchangeRateDetails.map((list: any) => {
+			const { id, ...restObj } = list
 			return {
-				...list,
+				...restObj,
 				rate: setMonetaryValue(list.rate)
 			};
 		});

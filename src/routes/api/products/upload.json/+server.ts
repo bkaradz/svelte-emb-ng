@@ -64,13 +64,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 
-		console.log('to createMany');
-
 		const productQuery = await prisma.products.createMany({ data: allDocsPromises });
 
 		return new Response(JSON.stringify(productQuery));
 	} catch (err: any) {
-		console.error('Err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
