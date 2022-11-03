@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, Products } from '@prisma/client';
 import parseCsv from '$lib/utility/parseCsv';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -33,22 +33,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString = await file.text();
 
-		const optionsArray = await parseCsv(csvString);
+		const productsArray = (await parseCsv(csvString)) as Products[];
 
-		const allDocsPromises: any[] = [];
+		const allDocsPromises: Products[] = [];
 
-		optionsArray.forEach(async (element) => {
+		let total = 0;
+
+		productsArray.forEach(async (element) => {
 			/**
 			 * TODO: calculate the maximum price of emb logos
 			 */
-
 			try {
-				const product: Prisma.ProductsCreateInput = {
+				const product: Partial<Products> = {
 					productCategories: 'embroidery',
 					isActive: true,
 					createdBy: createDBy,
 					name: element.name,
-					stitches: parseInt(element.stitches)
+					stitches: parseInt(element?.stitches)
 				};
 
 				allDocsPromises.push(product);
@@ -63,10 +64,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 
+		console.log('to createMany');
+
 		const productQuery = await prisma.products.createMany({ data: allDocsPromises });
 
 		return new Response(JSON.stringify(productQuery));
 	} catch (err: any) {
+		console.error('Err', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

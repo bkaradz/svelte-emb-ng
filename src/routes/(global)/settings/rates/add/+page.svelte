@@ -12,23 +12,25 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import classnames from 'vest/classnames';
 
+	export let data;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 16 ~ data', data);
+
 	let result = suite.get();
 
-	let tableHeadings = [
-		'Embroidery Type',
-		'Minimum Quantity',
-		'Minimum Price',
-		'Price per 1000 stitches',
-		'Edit/Update',
-		'Delete/Add Row'
-	];
+	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+	const rateDetailsInit = {
+		currency: '',
+		rate: 0
+	};
+
+	const rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+		id: 0,
 		xChangeRateDate: TODAY,
 		isActive: true,
-		isDefault: false,
+		isDefault: true,
 		XchangeRateDetails: []
 	};
 
@@ -38,90 +40,16 @@
 
 	$: groupList;
 
-	let isEditableID = true;
+	let isEditableID = 0;
 
-	// $: if (rates?.XchangeRateDetails?.length) {
-	// 	groupList = new Set(['all']);
-	// 	rates.XchangeRateDetails.forEach((list) => {
-	// 		groupList.add(list.embroideryTypes);
-	// 	});
-	// 	groupList = groupList;
-	// }
-
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
-
-	const heandleEditable = async (list) => {
-		if (isEditableID === null) {
-			isEditableID = list.id;
-		} else {
-			// await updateOrAddOptions(list);
-			isEditableID = null;
-		}
+	const heandleAddRow = () => {
+		rates.XchangeRateDetails.push(rateDetailsInit);
 	};
-
+	const handleCurrencyType = () => {};
+	const headleSubmit = () => {};
+	const heandleEditable = () => {};
+	const heandleDelete = () => {};
 	const handleInput = () => {};
-
-	const heandleDelete = (finalData) => {
-		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((list) => list.id !== finalData.id);
-		// deleteOption(finalData);
-	};
-
-	let idToRemove = [];
-
-	$: heandleAddRow = () => {
-		const id = uuidv4();
-
-		isEditableID = id;
-		idToRemove.push(id);
-		rates.XchangeRateDetails = [
-			...rates.XchangeRateDetails,
-			{
-				id: id,
-				embroideryTypes: selectedGroup,
-				minimumPrice: 0.0,
-				minimumQuantity: 0,
-				pricePerThousandStitches: 0.0
-			}
-		];
-	};
-
-	const headleSubmit = async () => {
-		try {
-			rates.XchangeRateDetails = rates.XchangeRateDetails.map((pList) => {
-				if (idToRemove.includes(pList.id)) {
-					delete pList.id;
-					idToRemove = idToRemove.filter((list) => list !== pList.id);
-				}
-				return {
-					...pList,
-					minimumPrice: pList.minimumPrice,
-					pricePerThousandStitches: pList.pricePerThousandStitches
-				};
-			});
-			const res = await fetch('/api/pricelists.json', {
-				method: 'POST',
-				body: JSON.stringify(rates),
-				headers: { 'Content-Type': 'application/json' }
-			});
-
-			if (res.ok) {
-				// getPricelist();
-				rates = await res.json();
-				toasts.add({ message: `${rates.name} was added`, type: 'success' });
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occured while updating',
-				type: 'error'
-			});
-		}
-	};
 </script>
 
 {#if rates}
@@ -132,13 +60,17 @@
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
-					<!-- <input
-						class="input w-full"
-						type="datetime-local"
-						name="orderDate"
-						id="orderDate"
-						bind:value={mainOrder.orderDate}
-					/> -->
+					<label class=" text-sm" for="id"
+						>Rate Id
+						<input
+							class="input w-full"
+							type="text"
+							name="id"
+							id="id"
+							bind:value={rates.id}
+							disabled
+						/>
+					</label>
 					<Input
 						class="input w-full"
 						name="xChangeRateDate"
@@ -147,20 +79,9 @@
 						bind:value={rates.xChangeRateDate}
 						onInput={handleInput}
 						messages={result.getErrors('name')}
-						validityClass={cn('name')}
 					/>
-					<Checkbox
-						name="isActive"
-						label="isActive"
-						validityClass={cn('isActive')}
-						bind:checked={rates.isActive}
-					/>
-					<Checkbox
-						name="isDefault"
-						label="isDefault"
-						validityClass={cn('isDefault')}
-						bind:checked={rates.isDefault}
-					/>
+					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
+					<Checkbox name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
 				</div>
 				<div>
 					<input class="btn btn-primary" type="submit" value="Submit" />
@@ -192,72 +113,55 @@
 						</thead>
 						<tbody class="overflow-y-auto">
 							{#each rates.XchangeRateDetails as list (list.id)}
-								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
-									<tr
-										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-									>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="embroideryTypes"
+								<tr
+									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+								>
+									<td class="px-2 py-1">
+										{#if data?.currencyOptions}
+											<select
+												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
-												bind:value={list.embroideryTypes}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumQuantity"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumQuantity}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumPrice"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumPrice}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="pricePerThousandStitches"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.pricePerThousandStitches}
-											/>
-										</td>
-										<td class="p-1 text-center ">
-											<button
-												class=" m-0 p-0"
-												on:click|preventDefault={() => heandleEditable(list)}
+												on:change|preventDefault={() => handleCurrencyType(item)}
+												class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 											>
-												<span class="fill-current text-pickled-bluewood-500">
-													{@html isEditableID === list.id ? svgFloppy : svgPencil}
-												</span>
-											</button>
-										</td>
+												{#each data.currencyOptions as type}
+													<option value={type.value}>
+														{type.label}
+													</option>
+												{/each}
+											</select>
+										{/if}
+									</td>
+									<td class="px-2 py-1">
+										<input
+											class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+											type="text"
+											name="minimumQuantity"
+											disabled={!(isEditableID === list.id)}
+											bind:value={list.rate}
+										/>
+									</td>
 
-										<td class="p-1 text-center ">
-											<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
-												<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
-											</button>
-										</td>
-									</tr>
-								{/if}
+									<td class="p-1 text-center ">
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
+											<span class="fill-current text-pickled-bluewood-500">
+												{@html isEditableID === list.id ? svgFloppy : svgPencil}
+											</span>
+										</button>
+									</td>
+
+									<td class="p-1 text-center ">
+										<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
+											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
+										</button>
+									</td>
+								</tr>
 							{/each}
 							<tr
 								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
 							>
-								<td class="px-2 py-1">embroideryTypes</td>
-								<td class="px-2 py-1">minimumPrice</td>
-								<td class="px-2 py-1">minimumQuantity</td>
-								<td class="px-2 py-1">pricePerThousandStitches</td>
+								<td class="px-2 py-1">Currency</td>
+								<td class="px-2 py-1">Rate</td>
 
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">

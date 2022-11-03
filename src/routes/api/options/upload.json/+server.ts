@@ -2,6 +2,7 @@ import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import parseCsv from '$lib/utility/parseCsv';
+import type { Options } from '@prisma/client';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -32,9 +33,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString: string = await file.text();
 
-		const optionsArray = await parseCsv(csvString);
+		const optionsArray = (await parseCsv(csvString)) as Options[];
 
-		const allDocsPromises: any[] = [];
+		const allDocsPromises: Options[] = [];
 
 		optionsArray.forEach(async (element) => {
 			let { label, group, value, isActive, isDefault } = element;
@@ -42,8 +43,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			label = label.trim();
 			group = group.trim();
 			value = value.trim();
-			isActive = isActive === 'true' ? true : false;
-			isDefault = isDefault === 'true' ? true : false;
+			isActive = isActive.toLowerCase() === 'true' ? true : false;
+			isDefault = isDefault.toLowerCase() === 'true' ? true : false;
 
 			const option = {
 				createdBy: createDBy,
