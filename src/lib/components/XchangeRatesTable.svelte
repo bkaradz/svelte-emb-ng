@@ -15,7 +15,7 @@
 
 	const getRates = async () => {
 		try {
-			const res = await fetch('/api/xRates.json?');
+			const res = await fetch('/api/rates.json?');
 			rates = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -40,7 +40,7 @@
 </script>
 
 <div class="mb-2 flex items-center justify-between bg-white p-4">
-	<h1>rates</h1>
+	<h1>Exchange Rates</h1>
 	<div>
 		<button on:click={heandleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
 			>Add Rates</button

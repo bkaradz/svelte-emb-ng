@@ -7,6 +7,8 @@
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import suite from '$lib/validation/client/signUp.validate';
+	import type { XchangeRate, XchangeRateDetails } from '@prisma/client';
+	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 	import classnames from 'vest/classnames';
 
@@ -21,11 +23,13 @@
 		'Delete/Add Row'
 	];
 
-	let pricelist: Partial<any> = {
-		name: '',
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+
+	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+		xChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: false,
-		pricelists: []
+		XchangeRateDetails: []
 	};
 
 	let selectedGroup = 'all';
@@ -34,15 +38,15 @@
 
 	$: groupList;
 
-	let isEditableID = null;
+	let isEditableID = true;
 
-	$: if (pricelist?.pricelists?.length) {
-		groupList = new Set(['all']);
-		pricelist.pricelists.forEach((list) => {
-			groupList.add(list.embroideryTypes);
-		});
-		groupList = groupList;
-	}
+	// $: if (rates?.XchangeRateDetails?.length) {
+	// 	groupList = new Set(['all']);
+	// 	rates.XchangeRateDetails.forEach((list) => {
+	// 		groupList.add(list.embroideryTypes);
+	// 	});
+	// 	groupList = groupList;
+	// }
 
 	$: cn = classnames(result, {
 		warning: 'warning',
@@ -50,7 +54,7 @@
 		valid: 'success'
 	});
 
-	const heandleEditable = async (list: PricelistsSubDocument) => {
+	const heandleEditable = async (list) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -61,9 +65,9 @@
 
 	const handleInput = () => {};
 
-	const heandleDelete = (finalData: PricelistsSubDocument) => {
+	const heandleDelete = (finalData) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		pricelist.pricelists = pricelist.pricelists.filter((list) => list.id !== finalData.id);
+		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((list) => list.id !== finalData.id);
 		// deleteOption(finalData);
 	};
 
@@ -74,8 +78,8 @@
 
 		isEditableID = id;
 		idToRemove.push(id);
-		pricelist.pricelists = [
-			...pricelist.pricelists,
+		rates.XchangeRateDetails = [
+			...rates.XchangeRateDetails,
 			{
 				id: id,
 				embroideryTypes: selectedGroup,
@@ -88,7 +92,7 @@
 
 	const headleSubmit = async () => {
 		try {
-			pricelist.pricelists = pricelist.pricelists.map((pList) => {
+			rates.XchangeRateDetails = rates.XchangeRateDetails.map((pList) => {
 				if (idToRemove.includes(pList.id)) {
 					delete pList.id;
 					idToRemove = idToRemove.filter((list) => list !== pList.id);
@@ -101,14 +105,14 @@
 			});
 			const res = await fetch('/api/pricelists.json', {
 				method: 'POST',
-				body: JSON.stringify(pricelist),
+				body: JSON.stringify(rates),
 				headers: { 'Content-Type': 'application/json' }
 			});
 
 			if (res.ok) {
 				// getPricelist();
-				pricelist = await res.json();
-				toasts.add({ message: `${pricelist.name} was added`, type: 'success' });
+				rates = await res.json();
+				toasts.add({ message: `${rates.name} was added`, type: 'success' });
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -120,18 +124,27 @@
 	};
 </script>
 
-{#if pricelist}
+{#if rates}
 	<div class="mb-2 bg-white p-4">
-		<h1>Pricelist Details Edit</h1>
+		<h1>Add Exchange Rates</h1>
 	</div>
 	<form on:submit|preventDefault={headleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
+					<!-- <input
+						class="input w-full"
+						type="datetime-local"
+						name="orderDate"
+						id="orderDate"
+						bind:value={mainOrder.orderDate}
+					/> -->
 					<Input
-						name="name"
-						label="Name"
-						bind:value={pricelist.name}
+						class="input w-full"
+						name="xChangeRateDate"
+						label="Date Created"
+						type="datetime-local"
+						bind:value={rates.xChangeRateDate}
 						onInput={handleInput}
 						messages={result.getErrors('name')}
 						validityClass={cn('name')}
@@ -140,13 +153,13 @@
 						name="isActive"
 						label="isActive"
 						validityClass={cn('isActive')}
-						bind:checked={pricelist.isActive}
+						bind:checked={rates.isActive}
 					/>
 					<Checkbox
 						name="isDefault"
 						label="isDefault"
 						validityClass={cn('isDefault')}
-						bind:checked={pricelist.isDefault}
+						bind:checked={rates.isDefault}
 					/>
 				</div>
 				<div>
@@ -178,7 +191,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.pricelists as list (list.id)}
+							{#each rates.XchangeRateDetails as list (list.id)}
 								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
 									<tr
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"

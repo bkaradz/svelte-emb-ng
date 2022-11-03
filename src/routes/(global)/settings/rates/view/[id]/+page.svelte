@@ -58,7 +58,7 @@
 
 {#if pricelist}
 	<div class="mb-2 bg-white p-4">
-		<h1>Pricelist Details View</h1>
+		<h1>View Exchange Rates</h1>
 	</div>
 	<form>
 		<div class="space-y-4 bg-white p-2 shadow-lg">

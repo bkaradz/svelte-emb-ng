@@ -3,13 +3,12 @@
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import '../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
-	import logger from '$lib/utility/logger';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import Loading from '$lib/components/Loading.svelte';
+	import type { User } from '$lib/types';
 
-	export let data: any;
+	export let data: { user: User };
 
 	$: if (!data.user) {
 		if (browser) {
@@ -21,19 +20,6 @@
 	}
 
 	let isPageLoading = true;
-
-	// Ping to connect to database
-	const pingHealthCheck = async () => {
-		try {
-			const res = await fetch('/api/healthcheck.json');
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
-	onMount(() => {
-		pingHealthCheck();
-	});
 </script>
 
 {#if !isPageLoading}

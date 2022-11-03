@@ -8,19 +8,18 @@
 	import Input from '$lib/components/Input.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
 	import small_logo from '$lib/assets/small_logo.png';
+	import type { Contacts, Email } from '@prisma/client';
 
 	let result = suite.get();
 
-	interface formDataType {
-		name: string;
+	type contactRegister = Partial<Contacts> & {
+		confirmPassword: string;
 		email: string;
 		phone: string;
 		address: string;
-		password: string;
-		confirmPassword: string;
-	}
+	};
 
-	let formData: formDataType = {
+	let formData: contactRegister = {
 		name: '',
 		email: '',
 		phone: '',

@@ -15,6 +15,7 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
+	import type { Orders } from '@prisma/client';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -73,6 +74,7 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
+	type OrderType = Partial<Orders>;
 	type MainOrder = {
 		id?: number | null;
 		customersID: number | null;
@@ -254,24 +256,7 @@
 	<div class="cart">
 		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
 			<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
-			<div class="flex items-center">
-				<!-- <label class="mr-3 text-sm whitespace-nowrap">
-					Select a currency
-					<select
-						class="py-1 pl-1 text-sm border-gray-300 rounded-md shadow-sm pr-7 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-						id="currency"
-						name="currency"
-						bind:value={selectedCurrency}
-						on:change|preventDefault={handleCurrency(Array.from($cartItem.values()))}
-					>
-						{#each currencyOptions as currency}
-							<option value={currency}>
-								{` ${currency.currency} (${currency.symbol})`}
-							</option>
-						{/each}
-					</select>
-				</label> -->
-			</div>
+			<div class="flex items-center" />
 		</div>
 		{#if mainOrder.orderLine.length > 0}
 			<div class="flex px-6 mt-5 mb-5">

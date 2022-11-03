@@ -1,15 +1,14 @@
 <script lang="ts">
 	import Loading from '$lib/components/Loading.svelte';
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import '../../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
 	import { svgSignIn, svgSignUp } from '$lib/utility/svgLogos';
-	import logger from '$lib/utility/logger';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import type { User } from '$lib/types';
 
-	export let data: any;
+	export let data: { user: User };
 
 	$: if (data.user) {
 		if (browser) {
@@ -18,23 +17,6 @@
 	}
 
 	let isPageLoading = false;
-
-	// Ping to connect to database
-	const pingHealthCheck = async () => {
-		try {
-			const res = await fetch('/api/healthcheck.json');
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
-	onMount(() => {
-		pingHealthCheck();
-
-		// setTimeout(function () {
-		// 	isPageLoading = false;
-		// }, 450);
-	});
 
 	const navList = [
 		{

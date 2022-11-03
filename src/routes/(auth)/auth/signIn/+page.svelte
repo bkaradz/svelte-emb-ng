@@ -7,15 +7,13 @@
 	import Input from '$lib/components/Input.svelte';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
+	import type { Contacts, Email } from '@prisma/client';
 
 	let result = suite.get();
 
-	interface formDataType {
-		email: string;
-		password: string;
-	}
+	type ContactLogin = Pick<Contacts, 'password'> & Pick<Email, 'email'>;
 
-	let formData: formDataType = {
+	let formData: ContactLogin = {
 		email: '',
 		password: ''
 	};

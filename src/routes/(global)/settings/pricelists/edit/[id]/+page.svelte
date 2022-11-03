@@ -160,7 +160,7 @@
 
 {#if pricelist}
 	<div class="mb-2 bg-white p-4">
-		<h1>Pricelist Details Edit</h1>
+		<h1>Edit Pricelist</h1>
 	</div>
 	<form on:submit|preventDefault={headleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
