@@ -5,7 +5,7 @@
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 
-	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Edit', 'Delete'];
+	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
 	let rates: any[] = [];
 
@@ -30,9 +30,9 @@
 		goto(`/settings/rates/view/${id}`);
 	};
 
-	const editPricelist = async (id: string) => {
-		goto(`/settings/rates/edit/${id}`);
-	};
+	// const editPricelist = async (id: string) => {
+	// 	goto(`/settings/rates/edit/${id}`);
+	// };
 
 	const heandleAddPricelist = async () => {
 		goto(`/settings/rates/add`);
@@ -92,13 +92,13 @@
 									</span>
 								</button>
 							</td>
-							<td class="p-1 text-center ">
+							<!-- <td class="p-1 text-center ">
 								<button class=" m-0 p-0" on:click={() => editPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgPencil}
 									</span>
 								</button>
-							</td>
+							</td> -->
 							<td class="p-1 text-center ">
 								<button class=" m-0 p-0" on:click={() => heandleDelete(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>

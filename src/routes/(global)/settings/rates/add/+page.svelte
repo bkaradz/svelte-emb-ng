@@ -8,6 +8,8 @@
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
+	import { dinero, toUnit } from 'dinero.js';
+	import { USD, ZAR } from '@dinero.js/currencies';
 
 	export let data: { currencyOptions: Options[] };
 
@@ -16,7 +18,6 @@
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
 	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
-		id: 0,
 		xChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: true,
@@ -32,6 +33,12 @@
 	let isEditableID: number | null = null;
 
 	let newId = 'New Id';
+
+	const test = () => {
+		const rates = { ZAR: { amount: 1800, scale: 2 } };
+		const d = dinero({ amount: 500, currency: USD });
+		console.log('toUnits', toUnit(d));
+	};
 
 	const getUsedCurrencies = () => {
 		return rates.XchangeRateDetails.map((rate) => rate.currency);
@@ -51,6 +58,7 @@
 	let usedCurrencies: string[] = [];
 
 	const heandleAddRow = () => {
+		test();
 		usedCurrencies = getUsedCurrencies();
 		const unUsedCurrencies = getUnUsedCurrencies();
 
@@ -76,8 +84,6 @@
 
 		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
 	};
-
-	const handleCurrencyType = () => {};
 
 	const headleSubmit = async () => {
 		const usedCurrenciesLength = getUsedCurrencies().length;
@@ -192,7 +198,6 @@
 											<select
 												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
-												on:change|preventDefault={() => handleCurrencyType(list)}
 												class="text-sm border cursor-pointer p-1 border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300 w-full"
 											>
 												{#each data.currencyOptions as type}

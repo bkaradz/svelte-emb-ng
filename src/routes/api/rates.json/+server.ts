@@ -58,6 +58,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const reqRates = await request.json();
 
+		// const ratesCount = await prisma.xchangeRate.count();
+
 		/**
 		 * Check if isDefault is set
 		 */
@@ -72,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { XchangeRateDetails, ...restRates } = reqRates;
 
 		const rateDetails = XchangeRateDetails.map((list: any) => {
-			const { id, ...restObj } = list
+			const { id, ...restObj } = list;
 			return {
 				...restObj,
 				rate: setMonetaryValue(list.rate)
@@ -89,6 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return new Response(JSON.stringify(ratesResults));
 	} catch (err: any) {
+		console.error('Error', err);
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
