@@ -400,7 +400,6 @@
 			</div>
 		</div>
 		<!-- List of Contacts -->
-		<!-- TODO: fix overflow in list View so that the header is not hidden -->
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
 				{#each contacts.results as contact (contact.id)}

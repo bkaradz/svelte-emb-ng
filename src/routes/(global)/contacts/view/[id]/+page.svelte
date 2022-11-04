@@ -488,7 +488,6 @@
 						</div>
 					</div>
 				</div>
-				<!-- TODO use this for orders list -->
 				<div class="mt-6 flex flex-1 flex-wrap gap-4">
 					<!-- Table start -->
 					<div class="w-full bg-white py-6 shadow-lg">

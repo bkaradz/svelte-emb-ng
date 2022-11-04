@@ -393,7 +393,6 @@
 						</div>
 					</div>
 				</div>
-				<!-- TODO use this for ordersList list -->
 				<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 					<!-- Table start -->
 					<div class="w-full bg-white py-6 shadow-lg">
