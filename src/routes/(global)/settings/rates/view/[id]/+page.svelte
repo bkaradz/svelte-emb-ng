@@ -3,27 +3,26 @@
 	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/client/signUp.validate';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
+	import { format } from '$lib/services/monetary';
+	import { dinero } from 'dinero.js';
 
-	export let data: { currencyOptions: Options[] };
+	interface XchangeRate extends Record<string, any> {
+		XchangeRateDetails: XchangeRateDetails[];
+	}
 
-	let result = suite.get();
+	export let data: { resultsCurrency: Options[]; resultsRates: XchangeRate };
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
-	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+	let rates = data.resultsRates;
 
-	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
-		id: 0,
-		xChangeRateDate: TODAY,
-		isActive: true,
-		isDefault: true,
-		XchangeRateDetails: []
-	};
+	data.resultsRates.xChangeRateDate = dayjs(data.resultsRates.xChangeRateDate).format(
+		'YYYY-MM-DDTHH:mm'
+	);
 
 	let selectedGroup = 'all';
 
@@ -39,13 +38,13 @@
 		return rates.XchangeRateDetails.map((rate) => rate.currency);
 
 		// const currenciesMap = new Map();
-		// data.currencyOptions.map((item: Options) => currenciesMap.set(item.value, item));
+		// data.resultsCurrency.map((item: Options) => currenciesMap.set(item.value, item));
 		// usedCurrencies.map((item) => currenciesMap.delete(item));
-		// data.currencyOptions = Array.from(currenciesMap.values());
+		// data.resultsCurrency = Array.from(currenciesMap.values());
 	};
 
 	const getUnUsedCurrencies = () => {
-		return data.currencyOptions
+		return data.resultsCurrency
 			.map((item) => item.value)
 			.filter((item) => !getUsedCurrencies().includes(item));
 	};
@@ -83,7 +82,7 @@
 
 	const headleSubmit = async () => {
 		const usedCurrenciesLength = getUsedCurrencies().length;
-		const numberOfCurrencies = data.currencyOptions.length;
+		const numberOfCurrencies = data.resultsCurrency.length;
 		if (usedCurrenciesLength < numberOfCurrencies) {
 			toasts.add({ message: 'Add all currencies', type: 'error' });
 			return;
@@ -144,36 +143,33 @@
 				<div class="flex items-end space-x-6 ">
 					<label class=" text-sm" for="id"
 						>Exchange Rate Id
-						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
+						<input
+							class="input w-full"
+							type="text"
+							name="id"
+							id="id"
+							bind:value={rates.id}
+							disabled
+						/>
 					</label>
 					<Input
+						disabled
 						class="input w-full"
 						name="xChangeRateDate"
 						label="Date Created"
 						type="datetime-local"
 						bind:value={rates.xChangeRateDate}
-						messages={result.getErrors('name')}
 					/>
-					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
-					<Checkbox name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
+					<Checkbox disabled name="isActive" label="isActive" bind:checked={rates.isActive} />
+					<Checkbox disabled name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
 				</div>
 				<div>
-					<input class="btn btn-primary" type="submit" value="Submit" />
+					<input disabled class="btn btn-primary" type="submit" value="Submit" />
 				</div>
 			</div>
 			<!-- Table start -->
 			<div class="w-full  ">
-				<div>
-					{#each [...groupList] as list, index (index)}
-						<button
-							on:click|preventDefault={() => (selectedGroup = list)}
-							class="mx-1 mb-3 mt-2 justify-center rounded-full border border-transparent px-3 py-1 text-sm font-medium text-white {selectedGroup ===
-							list
-								? `btn-primary`
-								: `btn-tertiary`}">{list}</button
-						>
-					{/each}
-				</div>
+				<div />
 				<div class=" block ">
 					<table class="relative w-full rounded-lg text-left text-sm">
 						<thead>
@@ -191,14 +187,14 @@
 									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>
 									<td class="px-2 py-1">
-										{#if data?.currencyOptions}
+										{#if data?.resultsCurrency}
 											<select
 												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
 												on:change|preventDefault={() => handleCurrencyType(list)}
 												class="text-sm border cursor-pointer p-1 border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300 w-full"
 											>
-												{#each data.currencyOptions as type}
+												{#each data.resultsCurrency as type}
 													<option
 														value={type.value}
 														class={usedCurrencies.includes(type.value) ? 'invisible' : ''}
@@ -210,17 +206,15 @@
 										{/if}
 									</td>
 									<td class="px-2 py-1">
-										<input
-											class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-											type="text"
-											name="minimumQuantity"
-											disabled={!(isEditableID === list.id)}
-											bind:value={list.rate}
-										/>
+										<span>{format(dinero(JSON.parse(list.rate)))}</span>
 									</td>
 
 									<td class="p-1 text-center ">
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
+										<button
+											disabled
+											class=" m-0 p-0"
+											on:click|preventDefault={() => heandleEditable(list)}
+										>
 											<span class="fill-current text-pickled-bluewood-500">
 												{@html isEditableID === list.id ? svgFloppy : svgPencil}
 											</span>
@@ -228,7 +222,11 @@
 									</td>
 
 									<td class="p-1 text-center ">
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
+										<button
+											disabled
+											class=" m-0 p-0"
+											on:click|preventDefault={() => heandleDelete(list)}
+										>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>
 									</td>
@@ -242,8 +240,11 @@
 
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
-									{#if usedCurrencies.length + 1 < data.currencyOptions.length}
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+									{#if usedCurrencies.length + 1 < data.resultsCurrency.length}
+										<button
+											disabled
+											class=" m-0 p-0"
+											on:click|preventDefault={() => heandleAddRow()}
 											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 											></button
 										>

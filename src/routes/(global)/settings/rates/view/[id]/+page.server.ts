@@ -17,7 +17,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		}
 	});
 
+	const [resultsCurrency, resultsRates] = await Promise.all([currencyOptions, uniqueRates]);
+
 	return {
-		currencyOptions
+		resultsCurrency,
+		resultsRates
 	};
 };

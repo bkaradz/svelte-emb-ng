@@ -11,8 +11,6 @@
 
 	export let data: { currencyOptions: Options[] };
 
-	let result = suite.get();
-
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
@@ -152,7 +150,6 @@
 						label="Date Created"
 						type="datetime-local"
 						bind:value={rates.xChangeRateDate}
-						messages={result.getErrors('name')}
 					/>
 					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
 					<Checkbox name="isDefault" label="isDefault" bind:checked={rates.isDefault} />

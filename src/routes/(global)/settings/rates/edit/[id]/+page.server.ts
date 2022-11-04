@@ -8,7 +8,19 @@ export const load: PageServerLoad = async ({ params }) => {
 		}
 	});
 
+	const uniqueRates = await prisma.xchangeRate.findUnique({
+		where: {
+			id: parseInt(params.id)
+		},
+		include: {
+			XchangeRateDetails: true
+		}
+	});
+
+	const [resultsCurrency, resultsRates] = await Promise.all([currencyOptions, uniqueRates]);
+
 	return {
-		currencyOptions
+		resultsCurrency,
+		resultsRates
 	};
 };
