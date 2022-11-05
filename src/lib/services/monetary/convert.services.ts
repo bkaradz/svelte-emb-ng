@@ -2,6 +2,8 @@ import { dinero, convert, toSnapshot, toUnit } from 'dinero.js';
 import { USD, ZAR, BWP } from '@dinero.js/currencies';
 import logger from '$lib/utility/logger';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
+import type { XchangeRate, XchangeRateDetails } from '@prisma/client';
+
 
 export const ZWB: Currency<number> = {
 	code: 'ZWB',
@@ -15,21 +17,40 @@ export const ZWR: Currency<number> = {
 	exponent: 2
 };
 
+const currenciesObj = new Map([
+	['USD', USD],
+	['ZAR', ZAR],
+	['BWP', BWP],
+	['ZWB', ZWB],
+	['ZWR', ZWR],
+]);
+
+let currenciesRates: Map<any, any>
+
 function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
+	getCurrentCurrencies()
+	if (!currenciesRates) {
+		return
+	}
 	if (newCurrency === ZAR) {
-		return convert(dineroObject, newCurrency, { ZAR: { amount: 1800, scale: 2 } });
+		const amount = currenciesRates.get(newCurrency.code)
+		return convert(dineroObject, newCurrency, { ZAR: { amount, scale: 2 } });
 	}
 	if (newCurrency === BWP) {
-		return convert(dineroObject, newCurrency, { BWP: { amount: 1300, scale: 2 } });
+		const amount = currenciesRates.get(newCurrency.code)
+		return convert(dineroObject, newCurrency, { BWP: { amount, scale: 2 } });
 	}
 	if (newCurrency === ZWB) {
-		return convert(dineroObject, newCurrency, { ZWB: { amount: 65000, scale: 2 } });
+		const amount = currenciesRates.get(newCurrency.code)
+		return convert(dineroObject, newCurrency, { ZWB: { amount, scale: 2 } });
 	}
 	if (newCurrency === ZWR) {
-		return convert(dineroObject, newCurrency, { ZWR: { amount: 70000, scale: 2 } });
+		const amount = currenciesRates.get(newCurrency.code)
+		return convert(dineroObject, newCurrency, { ZWR: { amount, scale: 2 } });
 	}
 	if (newCurrency === USD) {
-		return convert(dineroObject, newCurrency, { USD: { amount: 100, scale: 2 } });
+		const amount = currenciesRates.get(newCurrency.code)
+		return convert(dineroObject, newCurrency, { USD: { amount, scale: 2 } });
 	}
 }
 
@@ -67,3 +88,26 @@ export function toObject(dineroObject: Dinero<number>): {
 export function getAmount(dineroObject: Dinero<unknown>): number {
 	return toUnit(dineroObject);
 }
+
+const getCurrentCurrencies = async () => {
+	const paramsObj: any = { isDefault: true }
+	try {
+		let searchParams = new URLSearchParams(paramsObj as string);
+		const res = await fetch('/api/rates.json?' + searchParams.toString());
+		if (res.ok) {
+			type Rates = Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] }
+			const rates: Rates[] = await res.json();
+			const ratesMap = new Map()
+			rates[0]?.XchangeRateDetails.map((rate) => {
+				if (!(typeof rate.rate === 'string')) {
+					return
+				}
+				ratesMap.set(rate.currency, parseInt(rate.rate) * 100)
+			})
+			currenciesRates = ratesMap
+		}
+	} catch (err: any) {
+		logger.error(`Error: ${err}`);
+	}
+}
+

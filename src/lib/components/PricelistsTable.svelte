@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { svgPencil, svgTrash, svgView } from '$lib/utility/svgLogos';
+	import type { Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 
@@ -16,10 +18,36 @@
 		'Delete'
 	];
 
-	let pricelists = [];
+	let pricelists: Pricelists[] = [];
 
-	const heandleDelete = (id: string) => {
-		return id;
+	const heandleDelete = async (list: Pricelists) => {
+		if (list.isDefault) {
+			toasts.add({
+				message: 'You can now delete the default Pricelists',
+				type: 'error'
+			});
+			return;
+		}
+		try {
+			const res = await fetch('/api/pricelists.json', {
+				method: 'DELETE',
+				body: JSON.stringify(list),
+				headers: { 'Content-Type': 'application/json' }
+			});
+			if (res.ok) {
+				toasts.add({
+					message: `Pricelists was deleted`,
+					type: 'success'
+				});
+				getPricelists();
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+			toasts.add({
+				message: 'An error has occured while updating user',
+				type: 'error'
+			});
+		}
 	};
 
 	const getPricelists = async () => {
@@ -118,7 +146,7 @@
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list.id)}>
+								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

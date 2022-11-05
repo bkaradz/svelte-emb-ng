@@ -3,6 +3,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -16,7 +17,7 @@
 		'Delete & Add Row'
 	];
 
-	let optionsList: Array<Partial<OptionsDocument>> = [];
+	let optionsList: Options[] = [];
 
 	let selectedGroup = 'all';
 
@@ -24,7 +25,7 @@
 
 	$: groupList;
 
-	let isEditableID = null;
+	let isEditableID: null | number | string = null;
 
 	$: if (optionsList.length) {
 		optionsList.forEach((list) => {
@@ -87,9 +88,16 @@
 		}
 	};
 
-	const heandleDelete = (finalData: any) => {
+	const heandleDelete = (finalData: Options) => {
+		if (finalData.isDefault) {
+			toasts.add({
+				message: 'You can now delete the default Pricelists',
+				type: 'error'
+			});
+			return;
+		}
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		deleteOption(finalData);
+		deleteOption(finalData.id);
 	};
 
 	const updateOrAddOptions = async (finalData: any) => {
@@ -230,7 +238,7 @@
 								</button>
 							</td>
 							<td class="p-1 text-center">
-								<button class="m-0 p-0" on:click|preventDefault={() => heandleDelete(list.id)}>
+								<button class="m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

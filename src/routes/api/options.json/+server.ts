@@ -23,6 +23,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		if (objectKeys) {
 			query = {
 				where: {
+					isActive: true,
 					[objectKeys]: {
 						contains: queryParams[objectKeys],
 						mode: 'insensitive'
@@ -34,6 +35,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			};
 		} else {
 			query = {
+				where: {
+					isActive: true
+				},
 				orderBy: {
 					label: 'asc'
 				}
@@ -82,7 +86,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const reqOptions = await request.json();
 
 		/**
-		 * TODO: VALIDATION usung zod
+		 * TODO: VALIDATION using zod
 		 */
 
 		let { label, group, value, isActive, isDefault } = reqOptions;
@@ -186,7 +190,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 			});
 		}
 
-		const createDBy = parseInt(locals.user.id);
+		const createdBy = parseInt(locals.user.id);
 
 		const reqOptions = await request.json();
 
@@ -194,7 +198,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 			where: {
 				id: parseInt(reqOptions.id)
 			},
-			data: { isActive: false }
+			data: { createdBy, isActive: false }
 		});
 
 		return new Response(JSON.stringify(optionsQuery));

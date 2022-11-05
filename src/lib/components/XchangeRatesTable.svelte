@@ -1,38 +1,63 @@
 <script lang="ts">
+	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
-	import { svgPencil, svgTrash, svgView } from '$lib/utility/svgLogos';
+	import { svgTrash, svgView } from '$lib/utility/svgLogos';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
+	import type { XchangeRate } from '@prisma/client';
 
 	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
-	let rates: any[] = [];
+	let rates: XchangeRate[] = [];
 
-	const heandleDelete = (id: string) => {
-		return id;
+	const heandleDelete = async (list: XchangeRate) => {
+		if (list.isDefault) {
+			toasts.add({
+				message: 'You can now delete the default Exchange Rates',
+				type: 'error'
+			});
+			return;
+		}
+		try {
+			const res = await fetch('/api/rates.json', {
+				method: 'DELETE',
+				body: JSON.stringify(list),
+				headers: { 'Content-Type': 'application/json' }
+			});
+			if (res.ok) {
+				toasts.add({
+					message: `Exchange Rate was deleted`,
+					type: 'success'
+				});
+				getRates(defaultQueryParams);
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+			toasts.add({
+				message: 'An error has occured while updating user',
+				type: 'error'
+			});
+		}
 	};
 
-	const getRates = async () => {
+	let defaultQueryParams = {};
+
+	const getRates = async (paramsObj: any) => {
 		try {
-			const res = await fetch('/api/rates.json?');
+			let searchParams = new URLSearchParams(paramsObj as string);
+			const res = await fetch('/api/rates.json?' + searchParams.toString());
 			rates = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
 	};
 
-	onMount(() => {
-		getRates();
-	});
+	onMount(() => getRates(defaultQueryParams));
 
 	const viewPricelist = async (id: string) => {
 		goto(`/settings/rates/view/${id}`);
 	};
-
-	// const editPricelist = async (id: string) => {
-	// 	goto(`/settings/rates/edit/${id}`);
-	// };
 
 	const heandleAddPricelist = async () => {
 		goto(`/settings/rates/add`);
@@ -92,15 +117,8 @@
 									</span>
 								</button>
 							</td>
-							<!-- <td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => editPricelist(list.id)}>
-									<span class="fill-current text-pickled-bluewood-500">
-										{@html svgPencil}
-									</span>
-								</button>
-							</td> -->
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list.id)}>
+								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

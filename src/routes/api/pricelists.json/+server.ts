@@ -15,6 +15,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		const pricelistsQuery = await prisma.pricelists.findMany({
+			where: {
+				isActive: true,
+			},
 			include: {
 				PricelistDetails: true
 			}
@@ -133,6 +136,49 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 		});
 
 		return new Response(JSON.stringify(pricelistsQuery));
+	} catch (err: any) {
+		logger.error(`Error: ${err}`);
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8'
+			},
+			status: 500
+		});
+	}
+};
+
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+	try {
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 401
+			});
+		}
+
+		const createdBy = parseInt(locals.user.id);
+
+		const reqPricelist = await request.json();
+
+		if (reqPricelist.isDefault) {
+			return new Response(JSON.stringify({ message: 'You can now delete the default Pricelist' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 401
+			});
+		}
+
+		const pricelistResults = await prisma.pricelists.update({
+			where: {
+				id: parseInt(reqPricelist.id)
+			},
+			data: { createdBy, isActive: false }
+		});
+
+		return new Response(JSON.stringify(pricelistResults));
 	} catch (err: any) {
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {

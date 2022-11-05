@@ -34,19 +34,8 @@
 
 	let newId = 'New Id';
 
-	const test = () => {
-		const rates = { ZAR: { amount: 1800, scale: 2 } };
-		const d = dinero({ amount: 500, currency: USD });
-		console.log('toUnits', toUnit(d));
-	};
-
 	const getUsedCurrencies = () => {
 		return rates.XchangeRateDetails.map((rate) => rate.currency);
-
-		// const currenciesMap = new Map();
-		// data.currencyOptions.map((item: Options) => currenciesMap.set(item.value, item));
-		// usedCurrencies.map((item) => currenciesMap.delete(item));
-		// data.currencyOptions = Array.from(currenciesMap.values());
 	};
 
 	const getUnUsedCurrencies = () => {
@@ -57,8 +46,9 @@
 
 	let usedCurrencies: string[] = [];
 
+	let showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
+
 	const heandleAddRow = () => {
-		test();
 		usedCurrencies = getUsedCurrencies();
 		const unUsedCurrencies = getUnUsedCurrencies();
 
@@ -83,6 +73,7 @@
 		heandleEditable(rateDetailsInit);
 
 		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
+		showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
 	};
 
 	const headleSubmit = async () => {
@@ -135,6 +126,8 @@
 	const heandleDelete = (list: Options) => {
 		isEditableID = null;
 		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
+		usedCurrencies = getUsedCurrencies();
+		showButton = usedCurrencies.length < data.currencyOptions.length;
 	};
 </script>
 
@@ -203,7 +196,7 @@
 												{#each data.currencyOptions as type}
 													<option
 														value={type.value}
-														class={usedCurrencies.includes(type.value) ? 'invisible' : ''}
+														class={usedCurrencies.includes(type.value) ? 'hidden' : ''}
 													>
 														{type.label}
 													</option>
@@ -244,7 +237,7 @@
 
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
-									{#if usedCurrencies.length + 1 < data.currencyOptions.length}
+									{#if showButton}
 										<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
 											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 											></button

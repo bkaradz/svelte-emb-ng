@@ -38,6 +38,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = {
 				...baseQuery,
 				where: {
+					isActive: true,
 					[objectKeys]: {
 						contains: finalQuery[objectKeys],
 						mode: 'insensitive'
@@ -46,6 +47,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			};
 			queryTotal = {
 				where: {
+					isActive: true,
 					[objectKeys]: {
 						contains: finalQuery[objectKeys],
 						mode: 'insensitive'
@@ -54,9 +56,16 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			};
 		} else {
 			query = {
+				where: {
+					isActive: true,
+				},
 				...baseQuery
 			};
-			queryTotal = {};
+			queryTotal = {
+				where: {
+					isActive: true,
+				}
+			};
 		}
 
 		const productsQuery = await prisma.products.findMany(query);

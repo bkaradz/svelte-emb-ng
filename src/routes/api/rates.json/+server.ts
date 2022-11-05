@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import { setMonetaryValue } from '$lib/services/monetary';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -14,11 +14,45 @@ export const GET: RequestHandler = async ({ locals }) => {
 			});
 		}
 
-		const ratesQuery = await prisma.xchangeRate.findMany({
+		const queryParams = Object.fromEntries(url.searchParams);
+
+		const objectKeys = Object.keys(queryParams)[0];
+
+		let whereQuery;
+
+		if (objectKeys === 'isDefault' || objectKeys === 'isActive') {
+			whereQuery = {
+				equals: queryParams[objectKeys] === 'true'
+			};
+		}
+
+		let query: any;
+
+		const baseQuery = {
 			include: {
 				XchangeRateDetails: true
-			}
-		});
+			},
+		};
+
+		if (objectKeys) {
+			query = {
+				...baseQuery,
+				where: {
+					isActive: true,
+					[objectKeys]: whereQuery
+				},
+
+			};
+		} else {
+			query = {
+				...baseQuery,
+				where: {
+					isActive: true,
+				}
+			};
+		}
+
+		const ratesQuery = await prisma.xchangeRate.findMany(query);
 
 		return new Response(JSON.stringify(ratesQuery));
 	} catch (err: any) {
@@ -58,8 +92,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const reqRates = await request.json();
 
-		// const ratesCount = await prisma.xchangeRate.count();
-
 		/**
 		 * Check if isDefault is set
 		 */
@@ -77,7 +109,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { id, ...restObj } = list;
 			return {
 				...restObj,
-				rate: setMonetaryValue(list.rate)
 			};
 		});
 
@@ -91,7 +122,49 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return new Response(JSON.stringify(ratesResults));
 	} catch (err: any) {
-		console.error('Error', err);
+		logger.error(`Error: ${err}`);
+		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8'
+			},
+			status: 500
+		});
+	}
+};
+
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+	try {
+		if (!locals?.user?.id) {
+			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 401
+			});
+		}
+
+		const createdBy = parseInt(locals.user.id);
+
+		const reqRates = await request.json();
+
+		if (reqRates.isDefault) {
+			return new Response(JSON.stringify({ message: 'You can now delete the default Exchange Rates' }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 401
+			});
+		}
+
+		const ratesResults = await prisma.xchangeRate.update({
+			where: {
+				id: parseInt(reqRates.id)
+			},
+			data: { createdBy, isActive: false }
+		});
+
+		return new Response(JSON.stringify(ratesResults));
+	} catch (err: any) {
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

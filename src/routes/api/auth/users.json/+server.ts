@@ -15,6 +15,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const allUsers = await prisma.contacts.findMany({
 			where: {
+				isActive: true,
 				isUser: true
 			},
 			include: {

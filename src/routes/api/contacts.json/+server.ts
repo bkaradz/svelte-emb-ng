@@ -139,6 +139,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			skip: (pagination.page - 1) * pagination.limit,
 			orderBy: {
 				name: 'asc'
+			},
+			include: {
+				email: true,
+				phone: true,
+				address: true
 			}
 		};
 
@@ -146,29 +151,28 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = {
 				...baseQuery,
 				where: {
+					isActive: true,
 					[objectKeys]: whereQuery
 				},
-				include: {
-					email: true,
-					phone: true,
-					address: true
-				}
 			};
 			queryTotal = {
 				where: {
+					isActive: true,
 					[objectKeys]: whereQuery
 				}
 			};
 		} else {
 			query = {
 				...baseQuery,
-				include: {
-					email: true,
-					phone: true,
-					address: true
-				}
+				where: {
+					isActive: true,
+				},
 			};
-			queryTotal = {};
+			queryTotal = {
+				where: {
+					isActive: true,
+				},
+			};
 		}
 
 		const contactsQuery = await prisma.contacts.findMany(query);

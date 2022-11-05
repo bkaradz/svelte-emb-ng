@@ -16,6 +16,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const allUsers = await prisma.contacts.findMany({
 			where: {
+				isActive: true,
 				isUser: true
 			},
 			include: {
@@ -116,12 +117,14 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
 		const userDelete = await request.json();
 
+		const createdBy = parseInt(locals.user.id);
+
 		const userD = await prisma.contacts.update({
 			where: {
 				id: parseInt(userDelete.id)
 			},
 			data: {
-				isActive: false
+				createdBy, isActive: false
 			}
 		});
 

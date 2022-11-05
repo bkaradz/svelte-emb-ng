@@ -56,19 +56,28 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			query = {
 				...baseQuery,
 				where: {
+					isActive: true,
 					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
 				}
 			};
 			queryTotal = {
 				where: {
+					isActive: true,
 					[objectKeys]: getQueryOptions(objectKeys, finalQuery)
 				}
 			};
 		} else {
 			query = {
+				where: {
+					isActive: true,
+				},
 				...baseQuery
 			};
-			queryTotal = {};
+			queryTotal = {
+				where: {
+					isActive: true,
+				}
+			};
 		}
 
 		const productsQuery = await prisma.orderLine.findMany(query);

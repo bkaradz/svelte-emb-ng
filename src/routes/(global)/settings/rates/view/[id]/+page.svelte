@@ -206,7 +206,7 @@
 										{/if}
 									</td>
 									<td class="px-2 py-1">
-										<span>{format(dinero(JSON.parse(list.rate)))}</span>
+										<span>${list.rate}</span>
 									</td>
 
 									<td class="p-1 text-center ">
