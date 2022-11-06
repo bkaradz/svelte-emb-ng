@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Combobox from '$lib/components/Combobox.svelte';
-	import { createConverter, format } from '$lib/services/monetary';
+	import { createConverter, format, getCurrentCurrencies } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
@@ -173,6 +173,7 @@
 	};
 
 	onMount(async () => {
+		getCurrentCurrencies()
 		embroideryTypes = await getOptions({ group: 'embroideryTypes' });
 		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
 		customers = await getCustomers(customerQueryParams);

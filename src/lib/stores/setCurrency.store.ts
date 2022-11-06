@@ -9,14 +9,14 @@ export const currencyOptions = [
 		dineroObj: USD
 	},
 	{
-		currency: 'BWP',
-		symbol: 'P',
-		dineroObj: BWP
-	},
-	{
 		currency: 'ZAR',
 		symbol: 'R',
 		dineroObj: ZAR
+	},
+	{
+		currency: 'BWP',
+		symbol: 'P',
+		dineroObj: BWP
 	},
 	{
 		currency: 'ZWB',

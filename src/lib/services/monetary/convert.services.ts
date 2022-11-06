@@ -17,15 +17,7 @@ export const ZWR: Currency<number> = {
 	exponent: 2
 };
 
-const currenciesObj = new Map([
-	['USD', USD],
-	['ZAR', ZAR],
-	['BWP', BWP],
-	['ZWB', ZWB],
-	['ZWR', ZWR],
-]);
-
-let currenciesRates: Map<any, any>
+let currenciesRates: Map<string, number>
 
 function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
 	getCurrentCurrencies()
@@ -34,22 +26,37 @@ function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) 
 	}
 	if (newCurrency === ZAR) {
 		const amount = currenciesRates.get(newCurrency.code)
+		if (!amount) {
+			return
+		}
 		return convert(dineroObject, newCurrency, { ZAR: { amount, scale: 2 } });
 	}
 	if (newCurrency === BWP) {
 		const amount = currenciesRates.get(newCurrency.code)
+		if (!amount) {
+			return
+		}
 		return convert(dineroObject, newCurrency, { BWP: { amount, scale: 2 } });
 	}
 	if (newCurrency === ZWB) {
 		const amount = currenciesRates.get(newCurrency.code)
+		if (!amount) {
+			return
+		}
 		return convert(dineroObject, newCurrency, { ZWB: { amount, scale: 2 } });
 	}
 	if (newCurrency === ZWR) {
 		const amount = currenciesRates.get(newCurrency.code)
+		if (!amount) {
+			return
+		}
 		return convert(dineroObject, newCurrency, { ZWR: { amount, scale: 2 } });
 	}
 	if (newCurrency === USD) {
 		const amount = currenciesRates.get(newCurrency.code)
+		if (!amount) {
+			return
+		}
 		return convert(dineroObject, newCurrency, { USD: { amount, scale: 2 } });
 	}
 }
@@ -89,7 +96,7 @@ export function getAmount(dineroObject: Dinero<unknown>): number {
 	return toUnit(dineroObject);
 }
 
-const getCurrentCurrencies = async () => {
+export const getCurrentCurrencies = async () => {
 	const paramsObj: any = { isDefault: true }
 	try {
 		let searchParams = new URLSearchParams(paramsObj as string);

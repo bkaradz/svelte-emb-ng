@@ -144,12 +144,12 @@ input:checked~.dot {
 	left: 0px;
 }
 
-@page {
+/* @page {
 	size: A4;
 	margin: 0;
-}
+} */
 
-@media print {
+/* @media print {
 	.page {
 		margin: 0;
 		border: initial;
@@ -160,4 +160,4 @@ input:checked~.dot {
 		background: initial;
 		page-break-after: always;
 	}
-}
+} */

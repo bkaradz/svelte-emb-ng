@@ -54,35 +54,24 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// To reflect CSS used for screens instead of print
 		await page.emulateMediaType('screen');
 
-		// const pageWidth  = 80
+		const PAGE_WIDTH = 8
 
-		// const height_weight_ratio = await page.evaluate( () => window.innerHeight / window.innerWidth)
-		// const height = pageWidth * height_weight_ratio
 
-		// Download the PDF
-		// const pdfBuffer = await page.pdf({
-		// 	width: '8cm',
-		// 	scale: 1,
-		// 	printBackground: true
-		// });
 		const dimensions = await page.evaluate(() => {
 			return {
-				width: document.getElementById('receipt').offsetWidth,
+				// width: document.getElementById('receipt').offsetWidth,
 				height: document.getElementById('receipt').offsetHeight,
-				// width: window.innerWidth,
-				// height: window.innerHeight,
-				windowW: window.innerWidth,
-				windowH: window.innerHeight,
-				deviceScaleFactor: window.devicePixelRatio
 			};
 		});
 
-		console.log('Dimensions:', dimensions);
+		if (!dimensions.height) {
+			throw new Error("The page does not have a height");
+		}
 
 		const pdfBuffer = await page.pdf({
-			width: '8cm',
-			// width: `${dimensions.width}px`,
-			// height: `${dimensions.height}px`,
+			// width: '8cm',
+			width: `${PAGE_WIDTH}cm`,
+			height: `${dimensions.height * 2.7 / 100}cm`,
 			pageRanges: '1',
 			printBackground: true,
 			preferCSSPageSize: false,

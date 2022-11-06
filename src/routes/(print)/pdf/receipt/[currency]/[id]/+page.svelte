@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
-	import type { Orders, Prisma } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import { add, dinero, multiply, toSnapshot, type DineroSnapshot } from 'dinero.js';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { browser } from '$app/environment';
 	import { createConverter } from '$lib/services/monetary';
@@ -10,9 +10,31 @@
 	import { USD } from '@dinero.js/currencies';
 	import PartialReceiptPage from '$lib/components/print/receipt/PartialReceiptPage.svelte';
 
-	export let data: any;
+	interface Orders extends Record<string, any> {
+		OrderLine: OrderLine[];
+	}
 
-	const updatePrint = async (data: { order: Orders & {} }) => {
+	// interface OrderLine extends Record<string, Products> {
+	// 	Products: Products;
+	// }
+
+	// type OrderKey = 'customerContact' | 'Pricelists' | 'OrderLine';
+	// type OrderType = Contacts | Pricelists | OrderLine;
+
+	// interface Orders extends Record<OrderKey, OrderType> {
+	// 	customerContact: Contacts;
+	// 	Pricelists: Pricelists;
+	// 	OrderLine: OrderLine;
+	// }
+
+	type DataType = {
+		selectedCurrency: CurrencyOption;
+		zero: DineroSnapshot<number>;
+		order: Orders;
+	};
+	export let data: DataType;
+
+	const updatePrint = async (data: DataType) => {
 		if (!data?.order) {
 			return;
 		}
@@ -87,8 +109,6 @@
 	$: calclculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
 
 	$: calclculatedTotal = add(calclculatedVat, subTotal);
-
-	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
 
 	let order: Orders;
 
