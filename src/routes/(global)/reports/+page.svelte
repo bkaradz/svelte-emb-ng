@@ -71,6 +71,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Reports</title>
+</svelte:head>
+
 <div>
 	<div class="btn btn-primary mt-4">
 		<button on:click={generatePDF}> Generate Quotation PDF puppetter </button>

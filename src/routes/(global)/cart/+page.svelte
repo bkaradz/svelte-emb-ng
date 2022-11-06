@@ -252,6 +252,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Cart</title>
+</svelte:head>
+
 <div class="w-full flex">
 	<div class="cart">
 		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
