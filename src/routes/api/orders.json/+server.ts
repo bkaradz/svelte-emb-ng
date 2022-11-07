@@ -5,7 +5,6 @@ import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import pick from 'lodash-es/pick';
 import { getPagination } from '$lib/utility/pagination.util';
-import type { Prisma } from '@prisma/client';
 
 const getQueryOptions = (objectKeys, finalQuery) => {
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
@@ -84,14 +83,14 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		} else {
 			query = {
 				where: {
-					isActive: true,
+					isActive: true
 				},
 				...baseQuery
 			};
 			queryTotal = {
 				where: {
-					isActive: true,
-				},
+					isActive: true
+				}
 			};
 		}
 

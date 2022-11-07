@@ -50,10 +50,6 @@
 	};
 	let corporateContacts: Partial<any>;
 
-	onMount(() => {
-		getCorporateContacts(currentCorporateQueryParams);
-	});
-
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
 			let searchParams = new URLSearchParams(paramsObj as string);
@@ -93,6 +89,7 @@
 	// $: disabled = !result.isValid();
 
 	onMount(async () => {
+		getCorporateContacts(currentCorporateQueryParams);
 		const res = await fetch(endpoint);
 		if (res.ok) {
 			const results = await res.json();

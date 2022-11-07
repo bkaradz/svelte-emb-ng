@@ -21,21 +21,26 @@
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
+	import type { Orders } from '@prisma/client';
+	import type { Pagination } from '$lib/utility/pagination.util';
 
 	const tableHeadings = [
+		{ id: 0, name: '', dbName: '' },
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
 		{ id: 2, name: 'Customer', dbName: 'customerID' },
 		{ id: 3, name: 'Pricelist', dbName: 'pricelistID' },
 		{ id: 4, name: 'Order Date', dbName: 'orderDate' },
 		{ id: 5, name: 'Delivery Date', dbName: 'deliveryDate' },
-		// { id: 6, name: 'Required Date', dbName: 'requiredDate' },
-		// { id: 7, name: 'Balance Due', dbName: 'balance' },
 		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
 		{ id: 9, name: 'View', dbName: null },
 		{ id: 10, name: 'Edit', dbName: null }
 	];
 
-	let orders;
+	type newOrder = Orders & { selected: boolean };
+
+	type OrdersNew = Pagination & { results: newOrder[] };
+
+	let orders: OrdersNew;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -57,7 +62,7 @@
 		goto(`/cart/view/${id}`);
 	};
 
-	const editOrder = async (order: number) => {
+	const editOrder = async (order: newOrder) => {
 		if (order.accountsStatus === 'invoice') {
 			toasts.add({
 				message: 'Editing an Invoice is not allowed',
@@ -67,10 +72,6 @@
 		}
 
 		goto(`/cart/edit/${order.id}`);
-	};
-
-	const gotoAddOrders = async () => {
-		goto(`/orders/add`);
 	};
 
 	let gridView = false;
@@ -106,10 +107,38 @@
 		try {
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
-			orders = await res.json();
+			if (res.ok) {
+				const resOrders = await res.json();
+				resOrders.results = resOrders.results.map((item: newOrder) => {
+					item.selected = false;
+					return item;
+				});
+				orders = resOrders;
+			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
+	};
+
+	let selectedOrder: number | null = null;
+
+	const handleSelected = (item: Orders & { selected: boolean }) => {
+		if (item.selected && selectedOrder) {
+			// un Select the selected order
+			orders.results = orders.results.map((list) => {
+				if (list.id === selectedOrder) {
+					list.selected = false;
+				}
+				return list;
+			});
+			selectedOrder = item.id;
+			return;
+		}
+		if (item.selected && !selectedOrder) {
+			selectedOrder = item.id;
+			return;
+		}
+		selectedOrder = null;
 	};
 </script>
 
@@ -121,31 +150,13 @@
 	<div class="flex flex-1 flex-col overflow-hidden">
 		<div>
 			<!-- Heading and Buttons Bar -->
-			<div class="main-header flex flex-row items-center justify-between">
+			<div class="main-header flex flex-row items-center justify-between h-11">
 				<h1 class="text-slate-700 text-2xl font-medium">Sales</h1>
 
 				<div class="flex items-center space-x-1">
-					<ArrowProgressBar />
-					<!-- <button
-						on:click={gotoAddOrders}
-						class="btn btn-primary inline-flex items-center justify-center px-3"
-					>
-						<span>
-							{@html svgPlus}
-						</span>
-
-						<span class="ml-2">Quotation</span>
-					</button>
-					<button
-						on:click={gotoAddOrders}
-						class="btn btn-primary inline-flex items-center justify-center px-3"
-					>
-						<span>
-							{@html svgPlus}
-						</span>
-
-						<span class="ml-2">Sales Order</span>
-					</button> -->
+					{#if selectedOrder}
+						<ArrowProgressBar />
+					{/if}
 				</div>
 			</div>
 
@@ -433,6 +444,15 @@
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
+											<td class="px-2 py-1 w-8">
+												<input
+													bind:checked={order.selected}
+													on:change={(e) => handleSelected(order)}
+													type="checkbox"
+													name="select"
+													id="select"
+												/>
+											</td>
 											<td class="px-2 py-1">{generateSONumber(order?.id)}</td>
 											<td class="px-2 py-1"
 												>{`${order?.customerContact?.name}`}

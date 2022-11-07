@@ -173,11 +173,17 @@
 	};
 
 	onMount(async () => {
-		getCurrentCurrencies()
-		embroideryTypes = await getOptions({ group: 'embroideryTypes' });
-		embroideryPositions = await getOptions({ group: 'embroideryPositions' });
-		customers = await getCustomers(customerQueryParams);
-		pricelists = await getPricelists({});
+		getCurrentCurrencies();
+		const embroideryTypesPromise = getOptions({ group: 'embroideryTypes' });
+		const embroideryPositionsPromise = getOptions({ group: 'embroideryPositions' });
+		const customersPromise = getCustomers(customerQueryParams);
+		const pricelistsPromise = getPricelists({});
+		[embroideryTypes, embroideryPositions, customers, pricelists] = await Promise.all([
+			embroideryTypesPromise,
+			embroideryPositionsPromise,
+			customersPromise,
+			pricelistsPromise
+		]);
 		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	});
 

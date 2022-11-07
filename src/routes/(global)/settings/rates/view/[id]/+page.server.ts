@@ -2,13 +2,13 @@ import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const currencyOptions = await prisma.options.findMany({
+	const currencyOptionsPromise = prisma.options.findMany({
 		where: {
 			group: 'currency'
 		}
 	});
 
-	const uniqueRates = await prisma.xchangeRate.findUnique({
+	const uniqueRatesPromise = prisma.xchangeRate.findUnique({
 		where: {
 			id: parseInt(params.id)
 		},
@@ -17,7 +17,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		}
 	});
 
-	const [resultsCurrency, resultsRates] = await Promise.all([currencyOptions, uniqueRates]);
+	const [resultsCurrency, resultsRates] = await Promise.all([
+		currencyOptionsPromise,
+		uniqueRatesPromise
+	]);
 
 	return {
 		resultsCurrency,

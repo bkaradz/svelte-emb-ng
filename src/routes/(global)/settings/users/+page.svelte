@@ -78,7 +78,6 @@
 	};
 
 	onMount(() => {
-		// heandleEditable(-1, true);
 		getUsers();
 	});
 
