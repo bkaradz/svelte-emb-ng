@@ -74,7 +74,6 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
-	type OrderType = Partial<Orders>;
 	type MainOrder = {
 		id?: number | null;
 		customersID: number | null;

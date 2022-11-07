@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
-	import { format } from '$lib/services/monetary';
-	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
@@ -12,7 +10,7 @@
 		svgGrid,
 		svgList,
 		svgPencil,
-		svgPlus,
+		svgPrinter,
 		svgSearch,
 		svgSelector,
 		svgView
@@ -23,9 +21,12 @@
 	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 	import type { Orders } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
+	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
+	import { Buffer } from 'buffer';
+	import { getCurrentCurrencies } from '$lib/services/monetary';
 
 	const tableHeadings = [
-		{ id: 0, name: '', dbName: '' },
+		{ id: 0, name: '', dbName: null },
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
 		{ id: 2, name: 'Customer', dbName: 'customerID' },
 		{ id: 3, name: 'Pricelist', dbName: 'pricelistID' },
@@ -33,7 +34,8 @@
 		{ id: 5, name: 'Delivery Date', dbName: 'deliveryDate' },
 		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
 		{ id: 9, name: 'View', dbName: null },
-		{ id: 10, name: 'Edit', dbName: null }
+		{ id: 10, name: 'Edit', dbName: null },
+		{ id: 11, name: 'Print', dbName: null }
 	];
 
 	type newOrder = Orders & { selected: boolean };
@@ -139,6 +141,40 @@
 			return;
 		}
 		selectedOrder = null;
+	};
+
+	const generatePDF = async (order: newOrder) => {
+		try {
+			const res = await fetch('/api/pdf/quotation', {
+				method: 'POST',
+				body: JSON.stringify({
+					url: 'http://localhost:5173/pdf/quotation/',
+					currency: $selectedCurrency.currency,
+					id: order.id
+				}),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+
+				const pdfBuffer = Buffer.from(json.pdf, 'base64');
+
+				const file = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+				const fileURL = URL.createObjectURL(file);
+
+				const pdfWindow = window.open();
+
+				if (pdfWindow) {
+					pdfWindow.location.href = fileURL;
+				}
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
 	};
 </script>
 
@@ -489,6 +525,13 @@
 												<button class=" m-0 p-0" on:click={() => editOrder(order)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgPencil}</span
+													></button
+												>
+											</td>
+											<td class="p-1 text-center">
+												<button class=" m-0 p-0" on:click={() => generatePDF(order)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgPrinter}</span
 													></button
 												>
 											</td>
