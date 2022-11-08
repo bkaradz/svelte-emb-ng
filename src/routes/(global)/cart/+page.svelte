@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Combobox from '$lib/components/Combobox.svelte';
-	import { createConverter, format, getCurrentCurrencies } from '$lib/services/monetary';
+	import { createConverter, format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
@@ -15,7 +15,6 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
-	import type { Orders } from '@prisma/client';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -172,7 +171,7 @@
 	};
 
 	onMount(async () => {
-		getCurrentCurrencies();
+		// getCurrentCurrencies();
 		const embroideryTypesPromise = getOptions({ group: 'embroideryTypes' });
 		const embroideryPositionsPromise = getOptions({ group: 'embroideryPositions' });
 		const customersPromise = getCustomers(customerQueryParams);

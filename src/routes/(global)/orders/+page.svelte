@@ -23,7 +23,6 @@
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { Buffer } from 'buffer';
-	import { getCurrentCurrencies } from '$lib/services/monetary';
 
 	const tableHeadings = [
 		{ id: 0, name: '', dbName: null },

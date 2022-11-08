@@ -400,39 +400,41 @@
 			</div>
 		</div>
 		<!-- List of Contacts -->
-		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
+		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto items-start">
 			{#if gridView}
-				{#each contacts.results as contact (contact.id)}
-					<div
-						on:click|preventDefault={() => viewContact(contact.id)}
-						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
-					>
-						<div class="flex h-full items-center">
-							<span
-								class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
-							>
-								{contact?.id}
-							</span>
-							<h4
-								class="relative truncate pt-6 pb-2 pr-5 text-base font-medium text-pickled-bluewood-600"
-							>
-								{contact?.name}
-							</h4>
-						</div>
+				<div class="grid w-full grid-cols-6 justify-items-auto gap-2">
+					{#each contacts.results as contact (contact.id)}
 						<div
-							class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+							on:click|preventDefault={() => viewContact(contact.id)}
+							class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100"
 						>
-							<div class="p-1">
-								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
-								<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
+							<div class="flex h-full items-center">
+								<span
+									class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
+								>
+									{contact?.id}
+								</span>
+								<h4
+									class="relative truncate pt-6 pb-2 pr-5 text-base font-medium text-pickled-bluewood-600"
+								>
+									{contact?.name}
+								</h4>
 							</div>
-							<div class="p-1">
-								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
-								<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
+							<div
+								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+							>
+								<div class="p-1">
+									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
+									<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
+								</div>
+								<div class="p-1">
+									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
+									<span class="p-1 text-base font-bold text-pickled-bluewood-500" />
+								</div>
 							</div>
 						</div>
-					</div>
-				{/each}
+					{/each}
+				</div>
 			{:else}
 				<div class="flex flex-1 flex-wrap gap-4">
 					<!-- Table start -->
