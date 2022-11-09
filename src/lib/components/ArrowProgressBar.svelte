@@ -1,7 +1,12 @@
 <script lang="ts">
-	const list = ['Quotation', 'Sales Order', 'Invoice', 'Receipt'];
-	let currentSelection = 0;
-	const handleClick = (item: number) => {
+	export let list = ['Add list Array'];
+	export let currentSelection = 0;
+	$: console.log(
+		'🚀 ~ file: ArrowProgressBar.svelte ~ line 4 ~ currentSelection',
+		currentSelection
+	);
+	export let onChange = () => {};
+	const onClick = (item: number) => {
 		if (item <= currentSelection) {
 			return;
 		}
@@ -15,7 +20,8 @@
 			<div class="arrow-steps clearfix">
 				{#each list as item, index (item)}
 					<div
-						on:click={() => handleClick(index)}
+						on:click={() => onClick(index)}
+						on:change={onChange}
 						class="step {index === currentSelection ? 'current' : ''} {index < currentSelection
 							? 'done cursor-not-allowed'
 							: 'cursor-pointer'}"

@@ -124,8 +124,9 @@
 	let selectedOrder: number | null = null;
 
 	const handleSelected = (item: Orders & { selected: boolean }) => {
+		getIdexOfAccounts(item);
 		if (item.selected && selectedOrder) {
-			// un Select the selected order
+			// unSelect the selected order
 			orders.results = orders.results.map((list) => {
 				if (list.id === selectedOrder) {
 					list.selected = false;
@@ -175,6 +176,23 @@
 			logger.error(`Error: ${err}`);
 		}
 	};
+	let currentSelection = 1;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 179 ~ currentSelection', currentSelection);
+
+	const list = new Map([
+		[0, 'Quotation'],
+		[1, 'Sales Order'],
+		[2, 'Invoice'],
+		[3, 'Receipt']
+	]);
+
+	const getIdexOfAccounts = (order: newOrder) => {
+		list.forEach((value, key) => {
+			if (value === order.accountsStatus) {
+				currentSelection = key;
+			}
+		});
+	};
 </script>
 
 <svelte:head>
@@ -190,7 +208,7 @@
 
 				<div class="flex items-center space-x-1">
 					{#if selectedOrder}
-						<ArrowProgressBar />
+						<ArrowProgressBar list={Array.from(list.values())} {currentSelection} />
 					{/if}
 				</div>
 			</div>
@@ -488,7 +506,7 @@
 													id="select"
 												/>
 											</td>
-											<td class="px-2 py-1">{generateSONumber(order?.id)}</td>
+											<td class="px-2 py-1 w-24">{generateSONumber(order?.id)}</td>
 											<td class="px-2 py-1"
 												>{`${order?.customerContact?.name}`}
 												<span
@@ -505,8 +523,10 @@
 													{order?.Pricelists?.id}
 												</span>
 											</td>
-											<td class="px-2 py-1">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
-											<td class="px-2 py-1">{dayjs(order?.deliveryDate).format('DD/MM/YYYY')}</td>
+											<td class="px-2 py-1 w-28">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
+											<td class="px-2 py-1 w-28"
+												>{dayjs(order?.deliveryDate).format('DD/MM/YYYY')}</td
+											>
 											<td class=" text-left justify-end px-2 py-1">
 												<span
 													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"
