@@ -19,6 +19,7 @@
 		<div class="wrapper">
 			<div class="arrow-steps clearfix">
 				{#each list as item, index (item)}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
 						on:click={() => onClick(index)}
 						on:change={onChange}

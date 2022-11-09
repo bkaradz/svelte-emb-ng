@@ -166,11 +166,10 @@
 
 				const fileURL = URL.createObjectURL(file);
 
-				const pdfWindow = window.open();
-
-				if (pdfWindow) {
-					pdfWindow.location.href = fileURL;
-				}
+				var fileLink = document.createElement('a');
+				fileLink.href = fileURL;
+				fileLink.download = `${generateSONumber(order.id)}.pdf`;
+				fileLink.click();
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -209,6 +208,20 @@
 				<div class="flex items-center space-x-1">
 					{#if selectedOrder}
 						<ArrowProgressBar list={Array.from(list.values())} {currentSelection} />
+						<!-- <div class="flex items-center justify-center">
+							<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg" role="group">
+								{#each Array.from(list.values()) as item (item)}
+									<button
+										on:click={() => generatePDF(item)}
+										type="button"
+										class="flex items-center px-6 py-2.5 bg-royal-blue-300 text-white font-medium text-xs leading-tight uppercase hover:bg-royal-blue-700 focus:bg-royal-blue-700 focus:outline-none focus:ring-0 active:bg-royal-blue-800 transition duration-150 ease-in-out"
+									>
+										<span class="pr-2">{@html svgPrinter}</span>
+										{item}
+									</button>
+								{/each}
+							</div>
+						</div> -->
 					{/if}
 				</div>
 			</div>
@@ -238,6 +251,7 @@
 							>
 								<div class="py-1" role="none">
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="name"
@@ -252,6 +266,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="organisation"
@@ -264,6 +279,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="phone"
@@ -275,6 +291,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="email"
@@ -287,6 +304,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="vatNo"
@@ -298,6 +316,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="balanceDue"
@@ -310,6 +329,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="state"
@@ -450,6 +470,7 @@
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
 				{#each orders.results as order (order.id)}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
 						on:click|preventDefault={() => viewOrder(order.id)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
