@@ -404,6 +404,7 @@
 			{#if gridView}
 				<div class="grid w-full grid-cols-6 justify-items-auto gap-2">
 					{#each contacts.results as contact (contact.id)}
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<div
 							on:click|preventDefault={() => viewContact(contact.id)}
 							class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100"
