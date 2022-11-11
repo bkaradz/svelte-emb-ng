@@ -1,17 +1,15 @@
 <script lang="ts">
 	export let list = ['Add list Array'];
 	export let currentSelection = 0;
-	$: console.log(
-		'🚀 ~ file: ArrowProgressBar.svelte ~ line 4 ~ currentSelection',
-		currentSelection
-	);
-	export let onChange = () => {};
-	const onClick = (item: number) => {
-		if (item <= currentSelection) {
-			return;
-		}
-		currentSelection = item;
-	};
+
+	export let onClick = (x: number) => {};
+
+	// const onClick = (item: number) => {
+	// 	if (item <= currentSelection) {
+	// 		return;
+	// 	}
+	// 	currentSelection = item;
+	// };
 </script>
 
 <div>
@@ -22,7 +20,6 @@
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
 						on:click={() => onClick(index)}
-						on:change={onChange}
 						class="step {index === currentSelection ? 'current' : ''} {index < currentSelection
 							? 'done cursor-not-allowed'
 							: 'cursor-pointer'}"

@@ -132,23 +132,24 @@ model PricelistDetails {
 }
 
 model Orders {
-  id              Int              @id @default(autoincrement())
-  createdOrder    Contacts         @relation("createdBy", fields: [createdBy], references: [id])
+  id              Int         @id @default(autoincrement())
+  createdOrder    Contacts    @relation("createdBy", fields: [createdBy], references: [id])
   createdBy       Int
-  customerContact Contacts         @relation("customerID", fields: [customersID], references: [id])
+  customerContact Contacts    @relation("customerID", fields: [customersID], references: [id])
   customersID     Int
-  Pricelists      Pricelists       @relation(fields: [pricelistsID], references: [id])
+  Pricelists      Pricelists  @relation(fields: [pricelistsID], references: [id])
   pricelistsID    Int
+  Payments        Payments    @relation(fields: [paymentsId], references: [id])
+  paymentsId      Int
   comment         String?
   isActive        Boolean
-  orderDate       DateTime         @default(now())
+  orderDate       DateTime    @default(now())
   deliveryDate    DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt()
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt()
   accountsStatus  String
-  isInvoiced      Boolean?         @default(false)
+  isInvoiced      Boolean?    @default(false)
   OrderLine       OrderLine[]
-  PaymentDetails  PaymentDetails[]
 }
 
 model OrderLine {
@@ -173,37 +174,38 @@ model Payments {
   createdBy       Int
   customerContact Contacts         @relation("customerID", fields: [customersID], references: [id])
   customersID     Int
-  amount          Json
   PaymentDetails  PaymentDetails[]
-  PaymentType     PaymentType[]
-  XchangeRate     XchangeRate      @relation(fields: [xchangeRateId], references: [id])
-  xchangeRateId   Int
-  paymentDate     DateTime         @default(now())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt()
+
+  Orders        Orders[]
+  XchangeRate   XchangeRate @relation(fields: [xchangeRateId], references: [id])
+  xchangeRateId Int
+  paymentDate   DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt()
 }
 
 model PaymentDetails {
-  id             Int      @id @default(autoincrement())
-  createdPayment Contacts @relation("createdBy", fields: [createdBy], references: [id])
+  id             Int           @id @default(autoincrement())
+  createdPayment Contacts      @relation("createdBy", fields: [createdBy], references: [id])
   createdBy      Int
-  Payments       Payments @relation(fields: [paymentsId], references: [id])
+  Payments       Payments      @relation(fields: [paymentsId], references: [id])
   paymentsId     Int
-  Orders         Orders   @relation(fields: [ordersId], references: [id])
-  ordersId       Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt()
+  PaymentType    PaymentType[]
+  amount         Json
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt()
 }
 
 model PaymentType {
-  id             Int      @id @default(autoincrement())
-  createdPayment Contacts @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy      Int
-  Payments       Payments @relation(fields: [paymentsId], references: [id])
-  paymentsId     Int
+  id               Int             @id @default(autoincrement())
+  createdPayment   Contacts        @relation("createdBy", fields: [createdBy], references: [id])
+  createdBy        Int
+  PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetailsId Int?
+
   // TODO: Added fields
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model XchangeRate {

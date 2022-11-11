@@ -121,25 +121,29 @@
 		}
 	};
 
-	let selectedOrder: number | null = null;
+	let selectedOrderId: number | null = null;
+	let selectedOrder: newOrder | null = null;
 
 	const handleSelected = (item: Orders & { selected: boolean }) => {
 		getIdexOfAccounts(item);
-		if (item.selected && selectedOrder) {
+		if (item.selected && selectedOrderId) {
 			// unSelect the selected order
 			orders.results = orders.results.map((list) => {
-				if (list.id === selectedOrder) {
+				if (list.id === selectedOrderId) {
 					list.selected = false;
 				}
 				return list;
 			});
-			selectedOrder = item.id;
+			selectedOrderId = item.id;
+			selectedOrder = item;
 			return;
 		}
-		if (item.selected && !selectedOrder) {
-			selectedOrder = item.id;
+		if (item.selected && !selectedOrderId) {
+			selectedOrderId = item.id;
+			selectedOrder = item;
 			return;
 		}
+		selectedOrderId = null;
 		selectedOrder = null;
 	};
 
@@ -192,6 +196,44 @@
 			}
 		});
 	};
+
+	const onClick = async (item: number) => {
+		if (item <= currentSelection) {
+			return;
+		}
+		currentSelection = item;
+
+		try {
+			const salesStatus = list.get(item);
+			console.log('🚀 ~ file: +page.svelte ~ line 208 ~ onClick ~ salesStatus', salesStatus);
+			console.log('🚀 ~ selectedOrder', selectedOrder);
+			const data: Partial<{ id: number; accountsStatus: string; isInvoiced: boolean }> = {};
+			if (selectedOrder && salesStatus) {
+				// selectedOrder.accountsStatus = salesStatus;
+				data.id = selectedOrder.id;
+				data.accountsStatus = salesStatus;
+				if (salesStatus === 'Invoice') {
+					// selectedOrder.isInvoiced = true;
+					data.isInvoiced = true;
+				}
+			}
+
+			const res = await fetch('/api/orders.json', {
+				method: 'PUT',
+				body: JSON.stringify(data),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+				getOrders(currentGlobalParams);
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+	};
 </script>
 
 <svelte:head>
@@ -206,8 +248,8 @@
 				<h1 class="text-slate-700 text-2xl font-medium">Sales</h1>
 
 				<div class="flex items-center space-x-1">
-					{#if selectedOrder}
-						<ArrowProgressBar list={Array.from(list.values())} {currentSelection} />
+					{#if selectedOrderId}
+						<ArrowProgressBar list={Array.from(list.values())} {currentSelection} {onClick} />
 						<!-- <div class="flex items-center justify-center">
 							<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg" role="group">
 								{#each Array.from(list.values()) as item (item)}

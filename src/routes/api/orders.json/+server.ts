@@ -211,7 +211,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 };
 
-export const PUT: RequestHandler = async ({ locals }) => {
+export const PUT: RequestHandler = async ({ locals, request }) => {
 	try {
 		if (!locals?.user?.id) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -222,7 +222,22 @@ export const PUT: RequestHandler = async ({ locals }) => {
 			});
 		}
 
-		return new Response(JSON.stringify({ message: 'Success' }));
+		const createdBy = parseInt(locals.user.id);
+
+		const reqOrder = await request.json();
+		console.log('🚀 ~ file: +server.ts ~ line 228 ~ constPUT:RequestHandler= ~ reqOrder', reqOrder);
+
+		const orderQuery = await prisma.orders.update({
+			where: {
+				id: parseInt(reqOrder.id)
+			},
+			data: {
+				...reqOrder,
+				createdBy
+			}
+		});
+
+		return new Response(JSON.stringify(orderQuery));
 	} catch (err: any) {
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
