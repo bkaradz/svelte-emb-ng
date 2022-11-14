@@ -115,7 +115,6 @@ if (browser) {
 				currenciesRates = ratesMap;
 			}
 		} catch (err: unknown) {
-			console.log('🚀 ~ file: convert.services.ts ~ line 137 ~ err', err);
 			logger.error(`Error: ${err}`);
 		}
 	})();

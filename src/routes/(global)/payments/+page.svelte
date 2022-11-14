@@ -28,9 +28,7 @@
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
 		{ id: 2, name: 'Customer', dbName: 'customerID' },
 		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
-		{ id: 9, name: 'View', dbName: null },
-		{ id: 10, name: 'Edit', dbName: null },
-		{ id: 11, name: 'Print', dbName: null }
+		{ id: 9, name: 'View', dbName: null }
 	];
 
 	type newOrder = Orders & { selected: boolean };
@@ -56,23 +54,8 @@
 		getOrders(currentGlobalParams);
 	});
 
-	const viewOrder = async (id: number) => {
-		goto(`/cart/view/${id}`);
-	};
-
-	const editOrder = async (order: newOrder) => {
-		if (
-			order.accountsStatus.toLowerCase() === 'invoice' ||
-			order.accountsStatus.toLowerCase() === 'receipt'
-		) {
-			toasts.add({
-				message: 'Editing an Invoice is not allowed',
-				type: 'error'
-			});
-			return;
-		}
-
-		goto(`/cart/edit/${order.id}`);
+	const viewPayment = async (order: newOrder) => {
+		goto(`payments/customer/${order.id}`);
 	};
 
 	let gridView = false;
@@ -147,40 +130,7 @@
 		selectedOrder = null;
 	};
 
-	const generatePDF = async (order: newOrder) => {
-		try {
-			const res = await fetch('/api/pdf/quotation', {
-				method: 'POST',
-				body: JSON.stringify({
-					url: 'http://localhost:5173/pdf/quotation/',
-					currency: $selectedCurrency.currency,
-					id: order.id
-				}),
-				headers: {
-					Accept: 'application/json'
-				}
-			});
-
-			if (res.ok) {
-				const json = await res.json();
-
-				const pdfBuffer = Buffer.from(json.pdf, 'base64');
-
-				const file = new Blob([pdfBuffer], { type: 'application/pdf' });
-
-				const fileURL = URL.createObjectURL(file);
-
-				var fileLink = document.createElement('a');
-				fileLink.href = fileURL;
-				fileLink.download = `${generateSONumber(order.id)}.pdf`;
-				fileLink.click();
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
 	let currentSelection = 1;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 179 ~ currentSelection', currentSelection);
 
 	const list = new Map([
 		[0, 'Quotation'],
@@ -195,46 +145,6 @@
 				currentSelection = key;
 			}
 		});
-	};
-
-	const onClick = async (item: number) => {
-		if (item <= currentSelection) {
-			return;
-		}
-		currentSelection = item;
-
-		try {
-			const salesStatus = list.get(item);
-			console.log('🚀 ~ file: +page.svelte ~ line 208 ~ onClick ~ salesStatus', salesStatus);
-			console.log('🚀 ~ selectedOrder', selectedOrder);
-			const data: Partial<{ id: number; accountsStatus: string; isInvoiced: boolean }> = {};
-			if (selectedOrder && salesStatus) {
-				// selectedOrder.accountsStatus = salesStatus;
-				data.id = selectedOrder.id;
-				data.accountsStatus = salesStatus;
-				if (salesStatus === 'Invoice') {
-					// selectedOrder.isInvoiced = true;
-					data.isInvoiced = true;
-				}
-			}
-
-			const res = await fetch('/api/orders.json', {
-				method: 'PUT',
-				body: JSON.stringify(data),
-				headers: {
-					Accept: 'application/json'
-				}
-			});
-
-			if (res.ok) {
-				const json = await res.json();
-				console.log('🚀 ~ file: +page.svelte ~ line 231 ~ onClick ~ json', json);
-				getOrders(currentGlobalParams);
-				handleSelected(json);
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
 	};
 </script>
 
@@ -560,23 +470,9 @@
 												>
 											</td>
 											<td class="p-1 text-center">
-												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
+												<button class=" m-0 p-0" on:click={() => viewPayment(order)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
-													></button
-												>
-											</td>
-											<td class="p-1 text-center">
-												<button class=" m-0 p-0" on:click={() => editOrder(order)}
-													><span class="fill-current text-pickled-bluewood-500"
-														>{@html svgPencil}</span
-													></button
-												>
-											</td>
-											<td class="p-1 text-center">
-												<button class=" m-0 p-0" on:click={() => generatePDF(order)}
-													><span class="fill-current text-pickled-bluewood-500"
-														>{@html svgPrinter}</span
 													></button
 												>
 											</td>

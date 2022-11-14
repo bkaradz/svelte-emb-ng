@@ -230,7 +230,6 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 		const createdBy = parseInt(locals.user.id);
 
 		const reqOrder = await request.json();
-		console.log('🚀 ~ file: +server.ts ~ line 228 ~ constPUT:RequestHandler= ~ reqOrder', reqOrder);
 
 		const orderQuery = await prisma.orders.update({
 			where: {

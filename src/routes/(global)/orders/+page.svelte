@@ -226,7 +226,6 @@
 	};
 
 	let currentSelection = 1;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 179 ~ currentSelection', currentSelection);
 
 	const list = new Map([
 		[0, 'Quotation'],
@@ -251,14 +250,12 @@
 
 		try {
 			const salesStatus = list.get(item);
-			console.log('🚀 ~ file: +page.svelte ~ line 208 ~ onClick ~ salesStatus', salesStatus);
-			console.log('🚀 ~ selectedOrder', selectedOrder);
 			const data: Partial<{ id: number; accountsStatus: string; isInvoiced: boolean }> = {};
 			if (selectedOrder && salesStatus) {
 				// selectedOrder.accountsStatus = salesStatus;
 				data.id = selectedOrder.id;
 				data.accountsStatus = salesStatus;
-				if (salesStatus === 'Invoice') {
+				if (salesStatus === 'Invoice' || salesStatus === 'Receipt') {
 					// selectedOrder.isInvoiced = true;
 					data.isInvoiced = true;
 				}
@@ -274,7 +271,6 @@
 
 			if (res.ok) {
 				const json = await res.json();
-				console.log('🚀 ~ file: +page.svelte ~ line 231 ~ onClick ~ json', json);
 				getOrders(currentGlobalParams);
 				handleSelected(json);
 			}

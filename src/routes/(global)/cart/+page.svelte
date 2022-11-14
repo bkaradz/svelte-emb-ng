@@ -15,6 +15,7 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
+	import type { Orders } from '@prisma/client';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -85,12 +86,12 @@
 		orderLine: any[];
 	};
 
-	let mainOrderInit: MainOrder = {
-		id: null,
-		customersID: null,
-		pricelistsID: 0,
+	let mainOrderInit: Partial<Orders> = {
+		id: undefined,
+		customersID: undefined,
+		pricelistsID: -1,
 		isActive: true,
-		accountsStatus: null,
+		accountsStatus: undefined,
 		orderDate: TODAY,
 		deliveryDate: FOUR_DAYS,
 		orderLine: Array.from($cartItem.values()) || []
@@ -237,6 +238,9 @@
 		}
 
 		mainOrder.accountsStatus = status;
+		if (status === 'Invoice') {
+			mainOrder.isInvoiced = true;
+		}
 
 		try {
 			const res = await fetch('/api/orders.json', {
