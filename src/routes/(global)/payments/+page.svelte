@@ -1,37 +1,596 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import Loading from '$lib/components/Loading.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
+	import logger from '$lib/utility/logger';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import {
+		svgChevronLeft,
+		svgChevronRight,
+		svgGrid,
+		svgList,
+		svgPencil,
+		svgPrinter,
+		svgSearch,
+		svgSelector,
+		svgView
+	} from '$lib/utility/svgLogos';
+	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
+	import dayjs from 'dayjs';
+	import { onMount } from 'svelte';
+	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
+	import type { Orders } from '@prisma/client';
+	import type { Pagination } from '$lib/utility/pagination.util';
+	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
+	import { Buffer } from 'buffer';
+
+	const tableHeadings = [
+		{ id: 1, name: 'Order #', dbName: 'orderID' },
+		{ id: 2, name: 'Customer', dbName: 'customerID' },
+		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
+		{ id: 9, name: 'View', dbName: null },
+		{ id: 10, name: 'Edit', dbName: null },
+		{ id: 11, name: 'Print', dbName: null }
+	];
+
+	type newOrder = Orders & { selected: boolean };
+
+	type OrdersNew = Pagination & { results: newOrder[] };
+
+	let orders: OrdersNew;
+	let limit = 15;
+	let currentGlobalParams = {
+		limit,
+		page: 1,
+		sort: 'name',
+		isInvoiced: true
+	};
+
+	const checkValue = () => {
+		if (limit < 1) {
+			limit = 1;
+		}
+	};
+
+	onMount(() => {
+		getOrders(currentGlobalParams);
+	});
+
+	const viewOrder = async (id: number) => {
+		goto(`/cart/view/${id}`);
+	};
+
+	const editOrder = async (order: newOrder) => {
+		if (
+			order.accountsStatus.toLowerCase() === 'invoice' ||
+			order.accountsStatus.toLowerCase() === 'receipt'
+		) {
+			toasts.add({
+				message: 'Editing an Invoice is not allowed',
+				type: 'error'
+			});
+			return;
+		}
+
+		goto(`/cart/edit/${order.id}`);
+	};
+
+	let gridView = false;
+	let searchInputValue = '';
+	let searchOption = 'name';
+
+	const searchNamesOptions = {
+		name: 'Name',
+		organisation: 'Organisation',
+		phone: 'Phone',
+		email: 'Email',
+		vatNo: 'Vat Number',
+		balanceDue: 'Balance Due',
+		state: 'State'
+	};
+
+	const heandleSearchSelection = (event: MouseEvent) => {
+		searchOption = (event.target as HTMLInputElement).name;
+		searchInputValue = '';
+	};
+
+	const heandleSearch = async (
+		event: Event & { currentTarget: EventTarget & HTMLInputElement }
+	) => {
+		currentGlobalParams.page = 1;
+		let searchWord = (event.target as HTMLInputElement).value;
+		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
+		getOrders(currentGlobalParams);
+	};
+
+	// Input must be of the form {limit, page, sort, query}
+	const getOrders = async (paramsObj: any) => {
+		try {
+			let searchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orders.json?' + searchParams.toString());
+			if (res.ok) {
+				const resOrders = await res.json();
+				resOrders.results = resOrders.results.map((item: newOrder) => {
+					item.selected = false;
+					return item;
+				});
+				orders = resOrders;
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+	};
+
+	let selectedOrderId: number | null = null;
+	let selectedOrder: newOrder | null = null;
+
+	const handleSelected = (item: Orders & { selected: boolean }) => {
+		getIdexOfAccounts(item);
+		if (item.selected && selectedOrderId) {
+			// unSelect the selected order
+			orders.results = orders.results.map((list) => {
+				if (list.id === selectedOrderId) {
+					list.selected = false;
+				}
+				return list;
+			});
+			selectedOrderId = item.id;
+			selectedOrder = item;
+			return;
+		}
+		if (item.selected && !selectedOrderId) {
+			selectedOrderId = item.id;
+			selectedOrder = item;
+			return;
+		}
+		selectedOrderId = null;
+		selectedOrder = null;
+	};
+
+	const generatePDF = async (order: newOrder) => {
+		try {
+			const res = await fetch('/api/pdf/quotation', {
+				method: 'POST',
+				body: JSON.stringify({
+					url: 'http://localhost:5173/pdf/quotation/',
+					currency: $selectedCurrency.currency,
+					id: order.id
+				}),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+
+				const pdfBuffer = Buffer.from(json.pdf, 'base64');
+
+				const file = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+				const fileURL = URL.createObjectURL(file);
+
+				var fileLink = document.createElement('a');
+				fileLink.href = fileURL;
+				fileLink.download = `${generateSONumber(order.id)}.pdf`;
+				fileLink.click();
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+	};
+	let currentSelection = 1;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 179 ~ currentSelection', currentSelection);
+
+	const list = new Map([
+		[0, 'Quotation'],
+		[1, 'Sales Order'],
+		[2, 'Invoice'],
+		[3, 'Receipt']
+	]);
+
+	const getIdexOfAccounts = (order: newOrder) => {
+		list.forEach((value, key) => {
+			if (value === order.accountsStatus) {
+				currentSelection = key;
+			}
+		});
+	};
+
+	const onClick = async (item: number) => {
+		if (item <= currentSelection) {
+			return;
+		}
+		currentSelection = item;
+
+		try {
+			const salesStatus = list.get(item);
+			console.log('🚀 ~ file: +page.svelte ~ line 208 ~ onClick ~ salesStatus', salesStatus);
+			console.log('🚀 ~ selectedOrder', selectedOrder);
+			const data: Partial<{ id: number; accountsStatus: string; isInvoiced: boolean }> = {};
+			if (selectedOrder && salesStatus) {
+				// selectedOrder.accountsStatus = salesStatus;
+				data.id = selectedOrder.id;
+				data.accountsStatus = salesStatus;
+				if (salesStatus === 'Invoice') {
+					// selectedOrder.isInvoiced = true;
+					data.isInvoiced = true;
+				}
+			}
+
+			const res = await fetch('/api/orders.json', {
+				method: 'PUT',
+				body: JSON.stringify(data),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+				console.log('🚀 ~ file: +page.svelte ~ line 231 ~ onClick ~ json', json);
+				getOrders(currentGlobalParams);
+				handleSelected(json);
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+	};
 </script>
 
 <svelte:head>
-	<title>Payments</title>
+	<title>Sales</title>
 </svelte:head>
 
-<div class="w-full flex">
-	<div class="customer">
-		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
-			<h1 class="text-2xl font-semibold capitalize">Customer</h1>
-			<div class="relative mx-2 text-danger" />
-		</div>
-	</div>
-	<div class="cart">
-		<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
-			<h1 class="text-2xl font-semibold capitalize">Payments Details</h1>
-			<div class="flex items-center" />
-		</div>
-	</div>
-</div>
+{#if orders}
+	<div class="flex flex-1 flex-col overflow-hidden">
+		<div>
+			<!-- Heading and Buttons Bar -->
+			<div class="main-header flex flex-row items-center justify-between h-11">
+				<h1 class="text-slate-700 text-2xl font-medium">Payments</h1>
 
-<style lang="postcss">
-	.cart {
-		flex-grow: 9;
-		border-radius: 4px 0 0 4px;
-		@apply bg-pickled-bluewood-50 p-4;
-	}
-	.customer {
-		flex-grow: 3;
-		border-radius: 0 4px 4px 0;
-		@apply bg-royal-blue-100 p-4;
-	}
-	.scrollHeight {
-		height: calc(100% - 75px);
-	}
-</style>
+				<div class="flex items-center space-x-1" />
+			</div>
+
+			<!-- Search and View Bar -->
+			<div class="z-10 mt-4 flex h-14 w-full flex-row items-center justify-between bg-white">
+				<div>
+					<div class="relative flex flex-row items-center text-left">
+						<Menu as="div" class="relative">
+							<MenuButton
+								class="btn inline-flex w-full items-center justify-center px-2 py-2 text-xs text-pickled-bluewood-500 hover:bg-pickled-bluewood-50 focus:outline-none focus:ring-royal-blue-50 focus:ring-offset-transparent"
+								id="menu-button"
+								aria-expanded="true"
+								aria-haspopup="true"
+							>
+								Search by {searchNamesOptions[searchOption]}
+								<span>
+									{@html svgSelector}
+								</span>
+							</MenuButton>
+
+							<MenuItems
+								class=" absolute left-2 top-9 z-10 mt-2 w-40 origin-top-right divide-y divide-pickled-bluewood-100 bg-white shadow-lg ring-1 ring-royal-blue-300 focus:outline-none"
+								role="menu"
+								aria-orientation="vertical"
+								aria-labelledby="menu-button"
+							>
+								<div class="py-1" role="none">
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="name"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-0"
+										>
+											Name
+										</a>
+									</MenuItem>
+
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="organisation"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-1">Organisation</a
+										>
+									</MenuItem>
+
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="phone"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-2">Phone</a
+										>
+									</MenuItem>
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="email"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-3">Email</a
+										>
+									</MenuItem>
+
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="vatNo"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-4">Vat Number</a
+										>
+									</MenuItem>
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="balanceDue"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-5">Balance Due</a
+										>
+									</MenuItem>
+
+									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
+										<a
+											on:click={heandleSearchSelection}
+											name="state"
+											class={`${
+												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
+											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
+											role="menuitem"
+											id="menu-item-6">State</a
+										>
+									</MenuItem>
+								</div>
+							</MenuItems>
+						</Menu>
+
+						<div class="relative text-pickled-bluewood-100">
+							<input
+								class="input focus:shadow-outline h-10 w-full pl-8 pr-3 text-base placeholder-pickled-bluewood-400"
+								type="text"
+								placeholder="Search..."
+								bind:value={searchInputValue}
+								on:input={heandleSearch}
+							/>
+							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2">
+								{@html svgSearch}
+							</div>
+						</div>
+					</div>
+					<div />
+				</div>
+				<!-- Veiw list Buttons -->
+				<div class="flex flex-row items-center ">
+					<div class="container mx-auto mr-4 flex justify-center">
+						<ul class="flex">
+							<li>
+								<div class="inline-flex items-center">
+									<span class="mr-2 text-xs text-pickled-bluewood-500"
+										>Page {orders.current.page} of {orders.totalPages}({orders.totalRecords} items)</span
+									>
+									<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit">Display</label>
+									<input
+										class="input w-16 border"
+										type="number"
+										name="limit"
+										id="limit"
+										bind:value={limit}
+										on:change={() => {
+											currentGlobalParams = {
+												...currentGlobalParams,
+												...orders.current,
+												limit: limit
+											};
+											getOrders(currentGlobalParams);
+										}}
+										on:input={checkValue}
+									/>
+
+									<label class="mx-2 text-xs text-pickled-bluewood-500" for="limit">per page</label>
+								</div>
+							</li>
+							<li>
+								<button
+									disabled={!orders.previous}
+									on:click|preventDefault={() => {
+										currentGlobalParams = { ...currentGlobalParams, ...orders.previous };
+										getOrders(currentGlobalParams);
+									}}
+									class="{!orders.previous
+										? 'hidden'
+										: ''} btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+									>{@html svgChevronLeft}</button
+								>
+							</li>
+							<li>
+								<button
+									disabled={!orders.previous}
+									on:click|preventDefault={() => {
+										currentGlobalParams = { ...currentGlobalParams, ...orders.previous };
+										getOrders(currentGlobalParams);
+									}}
+									class="{!orders.previous
+										? 'hidden'
+										: ''} btn border border-r-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+									>{!orders.previous ? '' : orders.previous.page}</button
+								>
+							</li>
+							<li>
+								<button
+									disabled
+									class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+									>{orders.current.page}</button
+								>
+							</li>
+							<li>
+								<button
+									disabled={!orders.next}
+									on:click|preventDefault={() => {
+										currentGlobalParams = { ...currentGlobalParams, ...orders.next };
+										getOrders(currentGlobalParams);
+									}}
+									class="{!orders.next
+										? 'hidden'
+										: ''} btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+									>{!orders.next ? '' : orders.next.page}</button
+								>
+							</li>
+							<li>
+								<button
+									disabled={!orders.next}
+									on:click|preventDefault={() => {
+										currentGlobalParams = { ...currentGlobalParams, ...orders.next };
+										getOrders(currentGlobalParams);
+									}}
+									class=" {!orders.next
+										? 'hidden'
+										: ''} btn border border-l-0 border-pickled-bluewood-300 bg-white px-4 text-pickled-bluewood-500 hover:bg-pickled-bluewood-200 disabled:bg-pickled-bluewood-200"
+									>{@html svgChevronRight}</button
+								>
+							</li>
+						</ul>
+					</div>
+					<!-- List and Grid Buttons -->
+					<button
+						on:click={() => (gridView = true)}
+						class="{gridView ? 'btn-primary' : 'bg-pickled-bluewood-600'} btn btn-md mr-4 p-0"
+					>
+						{@html svgGrid}
+					</button>
+					<button
+						on:click={() => (gridView = false)}
+						class="{!gridView ? 'btn-primary' : 'bg-pickled-bluewood-600'} btn btn-md mr-6 p-0"
+					>
+						{@html svgList}
+					</button>
+				</div>
+			</div>
+		</div>
+		<!-- List of Contacts -->
+		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
+			{#if gridView}
+				{#each orders.results as order (order.id)}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<div
+						on:click|preventDefault={() => viewOrder(order.id)}
+						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
+					>
+						<div class="flex h-full items-center">
+							<h4 class="truncate p-4 text-base font-medium text-pickled-bluewood-600">
+								{generateSONumber(order?.id)}
+							</h4>
+						</div>
+						<div
+							class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+						>
+							<div class="p-1">
+								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>
+								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
+									<!-- {format(dinero(order?.balance))} -->
+								</span>
+							</div>
+							<div class="p-1">
+								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
+								<span class="p-1 text-base font-bold text-pickled-bluewood-500">
+									<!-- {format(dinero(order.totalReceipts))} -->
+								</span>
+							</div>
+						</div>
+					</div>
+				{/each}
+			{:else}
+				<div class="flex flex-1 flex-wrap gap-4">
+					<!-- Table start -->
+					<div class="w-full bg-white py-6 shadow-lg">
+						<div class="mx-6 block">
+							<table class="w-full text-left text-sm">
+								<thead class="sticky top-0">
+									<tr
+										class="border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
+									>
+										{#each tableHeadings as header (header.id)}
+											<th class="px-2 py-2">{header.name}</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#each orders.results as order (order.id)}
+										<tr
+											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+										>
+											<td class="px-2 py-1 w-24">{generateSONumber(order?.id)}</td>
+											<td class="px-2 py-1"
+												>{`${order?.customerContact?.name}`}
+												<span
+													class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
+												>
+													{order?.customerContact?.id}
+												</span>
+											</td>
+											<td class=" text-left justify-end px-2 py-1">
+												<span
+													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"
+													>{order.accountsStatus}</span
+												>
+											</td>
+											<td class="p-1 text-center">
+												<button class=" m-0 p-0" on:click={() => viewOrder(order.id)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgView}</span
+													></button
+												>
+											</td>
+											<td class="p-1 text-center">
+												<button class=" m-0 p-0" on:click={() => editOrder(order)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgPencil}</span
+													></button
+												>
+											</td>
+											<td class="p-1 text-center">
+												<button class=" m-0 p-0" on:click={() => generatePDF(order)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgPrinter}</span
+													></button
+												>
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- Table End -->
+				</div>
+			{/if}
+		</div>
+	</div>
+{:else}
+	<Loading />
+{/if}

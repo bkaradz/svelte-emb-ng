@@ -7,7 +7,12 @@ import pick from 'lodash-es/pick';
 import { getPagination } from '$lib/utility/pagination.util';
 
 const getQueryOptions = (objectKeys, finalQuery) => {
-	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+	if (
+		objectKeys === 'isCorporate' ||
+		objectKeys === 'isActive' ||
+		objectKeys === 'isUser' ||
+		objectKeys === 'isInvoiced'
+	) {
 		return {
 			equals: finalQuery[objectKeys] === 'true'
 		};

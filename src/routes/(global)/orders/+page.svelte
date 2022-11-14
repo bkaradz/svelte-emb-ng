@@ -64,10 +64,13 @@
 	};
 
 	const editOrder = async (order: newOrder) => {
-		if (order.accountsStatus === 'invoice') {
+		if (
+			order.accountsStatus.toLowerCase() === 'invoice' ||
+			order.accountsStatus.toLowerCase() === 'receipt'
+		) {
 			toasts.add({
 				message: 'Editing an Invoice is not allowed',
-				type: 'warning'
+				type: 'error'
 			});
 			return;
 		}
@@ -147,7 +150,7 @@
 		selectedOrder = null;
 	};
 
-	const generatePDF = async (order: newOrder) => {
+	const generateQuotation = async (order: newOrder) => {
 		try {
 			const res = await fetch('/api/pdf/quotation', {
 				method: 'POST',
@@ -172,13 +175,56 @@
 
 				var fileLink = document.createElement('a');
 				fileLink.href = fileURL;
-				fileLink.download = `${generateSONumber(order.id)}.pdf`;
+				fileLink.download = `${generateSONumber(order.id)}-${order.accountsStatus}.pdf`;
 				fileLink.click();
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
 	};
+
+	const generateReceipt = async (order: newOrder) => {
+		try {
+			const res = await fetch('/api/pdf/receipt', {
+				method: 'POST',
+				body: JSON.stringify({
+					url: 'http://localhost:5173/pdf/receipt/',
+					currency: $selectedCurrency.currency,
+					id: order.id
+				}),
+				headers: {
+					Accept: 'application/json'
+				}
+			});
+
+			if (res.ok) {
+				const json = await res.json();
+
+				const pdfBuffer = Buffer.from(json.pdf, 'base64');
+
+				const file = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+				const fileURL = URL.createObjectURL(file);
+
+				var fileLink = document.createElement('a');
+				fileLink.href = fileURL;
+				fileLink.download = `${generateSONumber(order.id)}-${order.accountsStatus}.pdf`;
+				fileLink.click();
+			}
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+	};
+
+	const generatePDF = async (order: newOrder) => {
+		if (order.accountsStatus.toLowerCase() === 'receipt') {
+			generateReceipt(order);
+			return;
+		}
+
+		generateQuotation(order);
+	};
+
 	let currentSelection = 1;
 	$: console.log('🚀 ~ file: +page.svelte ~ line 179 ~ currentSelection', currentSelection);
 
@@ -228,7 +274,9 @@
 
 			if (res.ok) {
 				const json = await res.json();
+				console.log('🚀 ~ file: +page.svelte ~ line 231 ~ onClick ~ json', json);
 				getOrders(currentGlobalParams);
+				handleSelected(json);
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);

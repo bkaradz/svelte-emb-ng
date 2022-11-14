@@ -139,8 +139,8 @@ model Orders {
   customersID     Int
   Pricelists      Pricelists  @relation(fields: [pricelistsID], references: [id])
   pricelistsID    Int
-  Payments        Payments    @relation(fields: [paymentsId], references: [id])
-  paymentsId      Int
+  Payments        Payments?   @relation(fields: [paymentsId], references: [id])
+  paymentsId      Int?
   comment         String?
   isActive        Boolean
   orderDate       DateTime    @default(now())
@@ -175,13 +175,12 @@ model Payments {
   customerContact Contacts         @relation("customerID", fields: [customersID], references: [id])
   customersID     Int
   PaymentDetails  PaymentDetails[]
-
-  Orders        Orders[]
-  XchangeRate   XchangeRate @relation(fields: [xchangeRateId], references: [id])
-  xchangeRateId Int
-  paymentDate   DateTime    @default(now())
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt()
+  Orders          Orders[]
+  XchangeRate     XchangeRate      @relation(fields: [xchangeRateId], references: [id])
+  xchangeRateId   Int
+  paymentDate     DateTime         @default(now())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt()
 }
 
 model PaymentDetails {
