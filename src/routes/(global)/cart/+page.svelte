@@ -74,17 +74,17 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
-	type MainOrder = {
-		id?: number | null;
-		customersID: number | null;
-		pricelistsID: number | null;
-		isActive: boolean;
-		accountsStatus: string | null;
-		orderDate: string | null;
-		deliveryDate?: string | null;
-		comment?: string;
-		orderLine: any[];
-	};
+	// type MainOrder = {
+	// 	id?: number | null;
+	// 	customersID: number | null;
+	// 	pricelistsID: number | null;
+	// 	isActive: boolean;
+	// 	accountsStatus: string | null;
+	// 	orderDate: string | null;
+	// 	deliveryDate?: string | null;
+	// 	comment?: string;
+	// 	orderLine: any[];
+	// };
 
 	let mainOrderInit: Partial<Orders> = {
 		id: undefined,

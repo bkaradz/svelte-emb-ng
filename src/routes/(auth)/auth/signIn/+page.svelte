@@ -7,19 +7,18 @@
 	import Input from '$lib/components/Input.svelte';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
-	import type { Contacts, Email } from '@prisma/client';
 
 	let result = suite.get();
 
-	type ContactLogin = Pick<Contacts, 'password'> & Pick<Email, 'email'>;
-
-	let formData: ContactLogin = {
+	let formData = {
 		email: '',
 		password: ''
 	};
 
+	type formDataKeys =  keyof typeof formData
+
 	const handleInput = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
-		let name = (event.target as HTMLInputElement).name;
+		let name = (event.target as HTMLInputElement).name as formDataKeys;
 		let value = (event.target as HTMLInputElement).value;
 		formData[name] = value;
 		result = suite(formData, name);

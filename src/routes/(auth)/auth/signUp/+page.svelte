@@ -12,14 +12,7 @@
 
 	let result = suite.get();
 
-	type contactRegister = Partial<Contacts> & {
-		confirmPassword: string;
-		email: string;
-		phone: string;
-		address: string;
-	};
-
-	let formData: contactRegister = {
+	let formData = {
 		name: '',
 		email: '',
 		phone: '',
@@ -28,8 +21,10 @@
 		confirmPassword: ''
 	};
 
+	type formDataKeys =  keyof typeof formData
+
 	const handleInput = (event: any) => {
-		let name = (event.target as HTMLInputElement).name;
+		let name = (event.target as HTMLInputElement).name as formDataKeys;
 		let value = (event.target as HTMLInputElement).value;
 		formData[name] = value;
 		result = suite(formData, name);
@@ -63,7 +58,6 @@
 			});
 
 			if (res.ok) {
-				// const data = await res.json();
 
 				resetForm();
 
