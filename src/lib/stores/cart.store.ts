@@ -1,21 +1,22 @@
+import type { OrderLine, Products } from '@prisma/client';
 import dayjs from 'dayjs';
 import { writable } from 'svelte/store';
 
 function addCartItems() {
-  const { subscribe, set, update } = writable<Map<number, unknown>>(new Map<number, unknown>());
+  const { subscribe, set, update } = writable<Map<number, OrderLine>>(new Map<number, OrderLine>());
 
   return {
     subscribe,
-    add: (product) => update((products) => products.set(product.id, {
+    add: (product: Partial<OrderLine>) => update((products) => products.set(product.id, {
       ...product, quantity: 1, embroideryPositions: 'frontLeft', embroideryTypes: 'flat',
       productsID: product.id
     })),
-    update: (product, payload) => update((products) => products.set(product.id, { ...product, ...payload })),
-    remove: (product) => update((products) => {
+    update: (product: Partial<OrderLine> , payload: Partial<OrderLine>) => update((products) => products.set(product.id, { ...product, ...payload })),
+    remove: (product: Partial<OrderLine> ) => update((products) => {
       products.delete(product.id)
       return products
     }),
-    reset: () => set(new Map<number, unknown>())
+    reset: () => set(new Map<number, OrderLine>())
   };
 }
 

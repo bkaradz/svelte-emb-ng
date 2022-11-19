@@ -15,7 +15,7 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
-	import type { Orders } from '@prisma/client';
+	import type { OrderLine, Orders, Products } from '@prisma/client';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -74,19 +74,21 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
-	// type MainOrder = {
-	// 	id?: number | null;
-	// 	customersID: number | null;
-	// 	pricelistsID: number | null;
-	// 	isActive: boolean;
-	// 	accountsStatus: string | null;
-	// 	orderDate: string | null;
-	// 	deliveryDate?: string | null;
-	// 	comment?: string;
-	// 	orderLine: any[];
-	// };
+	type MainOrder = {
+		id?: number | null;
+		customersID: number | undefined;
+		pricelistsID: number | null;
+		isActive: boolean;
+		accountsStatus: string | undefined;
+		orderDate: string | null;
+		deliveryDate?: string | null;
+		comment?: string;
+		orderLine: OrderLine[];
+	};
 
-	let mainOrderInit: Partial<Orders> = {
+	// type mainOrderType = Partial<Orders> & {orderLine: OrderLine[], orderDate: string | Date, deliveryDate: string}
+
+	let mainOrderInit: MainOrder = {
 		id: undefined,
 		customersID: undefined,
 		pricelistsID: -1,
@@ -189,7 +191,10 @@
 	const removeItem = (item: any) => {
 		cartItem.remove(item);
 	};
-	const onDecrease = (item: { quantity: number }) => {
+	const onDecrease = (item: Partial<OrderLine>) => {
+		if (!item.quantity) {
+			return
+		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
 	const onIncrease = (item: { quantity: number }) => {
