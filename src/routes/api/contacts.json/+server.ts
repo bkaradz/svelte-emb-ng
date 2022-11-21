@@ -131,8 +131,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			};
 		}
 
-		let query: any;
-		let queryTotal: any;
+		let query;
+		let queryTotal;
 
 		const baseQuery = {
 			take: pagination.limit,
@@ -180,7 +180,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
 		if (pagination.endIndex >= pagination.totalRecords) {
-			pagination.next = null;
+			pagination.next = undefined;
 		}
 
 		return new Response(JSON.stringify({ results: contactsQuery, ...pagination }));

@@ -1,9 +1,9 @@
 
 type Limit = number | string;
 type Page = number | string;
-type Previous = { page: number; limit: number } | null;
+type Previous = { page: number; limit: number } | undefined;
 type Current = { page: number; limit: number };
-type Next = { page: number; limit: number } | null;
+type Next = { page: number; limit: number } | undefined;
 
 export interface Pagination {
   next: Next;
@@ -24,7 +24,7 @@ export const getPagination = (queryParams: any) => {
   const startIndex: number = (page - 1) * limit;
   const endIndex: number = page * limit;
 
-  let previous: Previous = null;
+  let previous: Previous = undefined;
   const next: Next = {
     page: page + 1,
     limit

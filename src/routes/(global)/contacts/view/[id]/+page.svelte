@@ -19,11 +19,16 @@
 	import { format } from '$lib/services/monetary';
 	import { add, dinero, multiply } from 'dinero.js';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type { Prisma } from '@prisma/client';
+	import type { Address, Contacts, Email, Phone, Prisma } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { USD } from '@dinero.js/currencies';
 
 	const endpoint = `/api/contacts/${$page.params.id}.json`;
+
+	type newContacts = Contacts & Email & Phone & Address;
+
+	export let data: newContacts;
+	$: console.log('🚀 ~ file: +page.svelte ~ line 31 ~ data', data);
 
 	const tableHeading = ['Order #', 'Date', 'Date Due', 'Total', 'Status', 'View'];
 
@@ -113,6 +118,7 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
 			orders = await res.json();
+			console.log('🚀 ~ file: +page.svelte ~ line 121 ~ getOrders ~ orders', orders);
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}

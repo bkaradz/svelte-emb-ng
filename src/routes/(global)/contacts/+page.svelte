@@ -3,6 +3,7 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
 	import logger from '$lib/utility/logger';
+	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
 		svgChevronLeft,
 		svgChevronRight,
@@ -13,9 +14,15 @@
 		svgSelector,
 		svgView
 	} from '$lib/utility/svgLogos';
+	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
-	import { dinero } from 'dinero.js';
 	import { onMount } from 'svelte';
+
+	type newContacts = Contacts & Email & Phone & Address;
+
+	type CustomersTypes = Pagination & { results: newContacts[] };
+
+	export let data: { customers: CustomersTypes };
 
 	interface ContentIterface {
 		results: [
@@ -45,7 +52,7 @@
 		next: { page: number; limit: number };
 	}
 
-	interface getContactsInterface {
+	interface GlobalParamsTypes {
 		limit: number;
 		page: number;
 		sort?: string;
@@ -76,9 +83,9 @@
 		{ id: 11, name: 'View', dbName: null }
 	];
 
-	let contacts: ContentIterface;
+	let contacts: CustomersTypes = data.customers;
 	let limit = 15;
-	let currentGlobalParams: getContactsInterface = {
+	let currentGlobalParams: GlobalParamsTypes = {
 		limit,
 		page: 1,
 		sort: 'name'
@@ -90,9 +97,10 @@
 		}
 	};
 
-	onMount(() => {
-		getContacts(currentGlobalParams);
-	});
+	// onMount(async () => {
+	// 	const customersPromise = await getContacts(currentGlobalParams);
+	// 	[contacts] = await Promise.all([customersPromise]);
+	// });
 
 	const viewContact = async (id: string) => {
 		goto(`/contacts/view/${id}`);
@@ -121,13 +129,18 @@
 		searchInputValue = '';
 	};
 
+	const customerChanges = async (currentGlobalParams: GlobalParamsTypes) => {
+		const customersPromise = await getContacts(currentGlobalParams);
+		[contacts] = await Promise.all([customersPromise]);
+	};
+
 	const heandleSearch = async (
 		event: Event & { currentTarget: EventTarget & HTMLInputElement }
 	) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
-		getContacts(currentGlobalParams);
+		await customerChanges(currentGlobalParams);
 	};
 
 	// Input must be of the form {limit, page, sort, query}
@@ -135,7 +148,10 @@
 		try {
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
-			contacts = await res.json();
+			if (res.ok) {
+				const contacts = await res.json();
+				return contacts;
+			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -191,6 +207,7 @@
 							>
 								<div class="py-1" role="none">
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="name"
@@ -205,6 +222,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="organisation"
@@ -217,6 +235,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="phone"
@@ -228,6 +247,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="email"
@@ -240,6 +260,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="vatNo"
@@ -251,6 +272,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="balanceDue"
@@ -263,6 +285,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="state"
@@ -308,13 +331,14 @@
 										name="limit"
 										id="limit"
 										bind:value={limit}
-										on:change={() => {
+										on:change={async () => {
 											currentGlobalParams = {
 												...currentGlobalParams,
 												...contacts.current,
 												limit: limit
 											};
-											getContacts(currentGlobalParams);
+											await customerChanges(currentGlobalParams);
+											// getContacts(currentGlobalParams);
 										}}
 										on:input={checkValue}
 									/>
@@ -325,9 +349,10 @@
 							<li>
 								<button
 									disabled={!contacts.previous}
-									on:click|preventDefault={() => {
+									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.previous };
-										getContacts(currentGlobalParams);
+										await customerChanges(currentGlobalParams);
+										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.previous
 										? 'hidden'
@@ -338,9 +363,10 @@
 							<li>
 								<button
 									disabled={!contacts.previous}
-									on:click|preventDefault={() => {
+									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.previous };
-										getContacts(currentGlobalParams);
+										await customerChanges(currentGlobalParams);
+										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.previous
 										? 'hidden'
@@ -358,9 +384,10 @@
 							<li>
 								<button
 									disabled={!contacts.next}
-									on:click|preventDefault={() => {
+									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.next };
-										getContacts(currentGlobalParams);
+										await customerChanges(currentGlobalParams);
+										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.next
 										? 'hidden'
@@ -371,9 +398,10 @@
 							<li>
 								<button
 									disabled={!contacts.next}
-									on:click|preventDefault={() => {
+									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.next };
-										getContacts(currentGlobalParams);
+										await customerChanges(currentGlobalParams);
+										// getContacts(currentGlobalParams);
 									}}
 									class=" {!contacts.next
 										? 'hidden'
