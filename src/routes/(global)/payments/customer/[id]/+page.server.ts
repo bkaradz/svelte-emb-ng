@@ -2,7 +2,6 @@ import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
-	console.log('🚀 ~ file: +page.server.ts ~ line 6 ~ constload:PageServerLoad= ~ params', params);
 
 	const order = await prisma.orders.findUnique({
 		where: {

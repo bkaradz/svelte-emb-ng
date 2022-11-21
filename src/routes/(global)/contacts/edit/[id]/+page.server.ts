@@ -3,7 +3,6 @@ import type { PageServerLoad } from './$types'
 import { getPagination } from '$lib/utility/pagination.util';
 
 export const load: PageServerLoad = async ({ params }) => {
-  console.log("🚀 ~ file: +page.server.ts ~ line 6 ~ constload:PageServerLoad= ~ params", params)
 
   const queryParams = {
     limit: 15,

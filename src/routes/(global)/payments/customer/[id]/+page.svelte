@@ -1,6 +1,5 @@
 <script lang="ts">
 	export let data;
-	console.log('🚀 ~ file: +page.svelte ~ line 3 ~ data', data);
 	let customer = data.customer;
 </script>
 

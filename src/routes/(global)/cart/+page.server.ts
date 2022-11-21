@@ -23,6 +23,7 @@ export const load: PageServerLoad = async ({ params }) => {
       PricelistDetails: true
     }
   })
+
   const customersPromise = await prisma.contacts.findMany({
     take: 7,
     skip: 0,
@@ -50,10 +51,10 @@ export const load: PageServerLoad = async ({ params }) => {
     (list: { isDefault: boolean }) => list.isDefault === true
   );
 
-  let pricelistValue
+  let defaultPricelistId
 
   if (defaultPricelist) {
-    pricelistValue = defaultPricelist.id;
+    defaultPricelistId = defaultPricelist.id;
   }
 
   const newCustomers = { results: customers }
@@ -63,7 +64,7 @@ export const load: PageServerLoad = async ({ params }) => {
     embroideryPositions,
     customers: newCustomers,
     pricelists,
-    pricelistValue
+    defaultPricelistId
   };
 
 };

@@ -4,7 +4,14 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import logger from '$lib/utility/logger';
-	import { svgBellSolid, svgCart, svgLogout, svgSettings, svgUser } from '$lib/utility/svgLogos';
+	import {
+		svgBellSolid,
+		svgCart,
+		svgLogout,
+		svgSettings,
+		svgShoppingBag,
+		svgUser
+	} from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 
 	let signInMenuOpen = false;
@@ -58,11 +65,12 @@
 			</select>
 		</label>
 	</div>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<span
 		on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/cart`) : '')}
 		class="relative hover:cursor-pointer mr-8 inline-block text-danger"
 	>
-		{@html svgCart}
+		{@html svgShoppingBag}
 		<span
 			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
 			>{$cartItem.size}</span

@@ -19,42 +19,62 @@
 	import { format } from '$lib/services/monetary';
 	import { add, dinero, multiply } from 'dinero.js';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type { Address, Contacts, Email, Phone, Prisma } from '@prisma/client';
+	import type {
+		Address,
+		Contacts,
+		Email,
+		OrderLine,
+		Orders,
+		Phone,
+		Pricelists,
+		Prisma,
+		Products
+	} from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { USD } from '@dinero.js/currencies';
 
 	const endpoint = `/api/contacts/${$page.params.id}.json`;
 
-	type newContacts = Contacts & Email & Phone & Address;
+	type OrdersResuitsType = (Orders & {
+		Pricelists: Pricelists;
+		OrderLine: (OrderLine & { Products: Products })[];
+	})[];
 
-	export let data: newContacts;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 31 ~ data', data);
+	type ContactsTypes = Contacts & Email & Phone & Address;
+
+	// type OrderLineTypes = OrderLine & Products;
+
+	// type AllOrderTypes = Orders & Pricelists & OrderLineTypes;
+
+	type OrdersType = Pagination & { results: OrdersResuitsType[] };
+
+	export let data: { customer: ContactsTypes; orders: OrdersType };
 
 	const tableHeading = ['Order #', 'Date', 'Date Due', 'Total', 'Status', 'View'];
 
 	// type Contacts = Prisma.ContactsGetPayload<Prisma.ContactsArgs>;
 
-	interface ContactIterface {
-		id: string;
-		name: string;
-		isCorporate: boolean;
-		notes: string;
-		vatOrBpNo: string;
-		email: string;
-		phone: string;
-		address: string;
-		balanceDue: number;
-		totalReceipts: number;
-		isActive: boolean;
-		organizationID: {
-			name: string;
-		};
-	}
+	// interface ContactIterface {
+	// 	id: string;
+	// 	name: string;
+	// 	isCorporate: boolean;
+	// 	notes: string;
+	// 	vatOrBpNo: string;
+	// 	email: string;
+	// 	phone: string;
+	// 	address: string;
+	// 	balanceDue: number;
+	// 	totalReceipts: number;
+	// 	isActive: boolean;
+	// 	organizationID: {
+	// 		name: string;
+	// 	};
+	// }
 
-	type Orders = Pagination & { results: Prisma.OrdersGetPayload<Prisma.OrdersArgs>[] };
+	// type Orders = Pagination & { results: Prisma.OrdersGetPayload<Prisma.OrdersArgs>[] };
 
-	let contact: ContactIterface;
-	let orders: Orders;
+	let contact = data.customer;
+	let orders = data.orders;
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -118,7 +138,6 @@
 			let searchParams = new URLSearchParams(paramsObj);
 			const res = await fetch('/api/orders.json?' + searchParams.toString());
 			orders = await res.json();
-			console.log('🚀 ~ file: +page.svelte ~ line 121 ~ getOrders ~ orders', orders);
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -200,6 +219,7 @@
 						>
 							<div class="py-1" role="none">
 								<MenuItem>
+									<!-- svelte-ignore a11y-click-events-have-key-events -->
 									<a
 										on:click={() => heandleEdit($page.params.id)}
 										class="block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white"
@@ -295,6 +315,7 @@
 									>
 										<div class="py-1" role="none">
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="id"
@@ -309,6 +330,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="organisation"
@@ -321,6 +343,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="phone"
@@ -332,6 +355,7 @@
 												>
 											</MenuItem>
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="email"
@@ -344,6 +368,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="vatNo"
@@ -355,6 +380,7 @@
 												>
 											</MenuItem>
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="balanceDue"
@@ -367,6 +393,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="state"

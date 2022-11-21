@@ -15,11 +15,32 @@
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
-	import type { Contacts, Options, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import type {
+		Address,
+		Contacts,
+		Email,
+		Options,
+		OrderLine,
+		Orders,
+		Phone,
+		Pricelists,
+		Products
+	} from '@prisma/client';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
 
-	export let data: any;
-	$: console.log('🚀 ~ file: +page.svelte ~ line 22 ~ data', data);
+	type customersType = (Contacts & {
+		email: Email[];
+		phone: Phone[];
+		address: Address[];
+	})[];
+
+	export let data: {
+		customers: { results: customersType };
+		embroideryTypes: Options[];
+		embroideryPositions: Options[];
+		pricelists: Pricelists;
+		defaultPricelistId: number;
+	};
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -105,12 +126,13 @@
 	let mainOrder = mainOrderInit;
 
 	let idValue = generateSONumber(mainOrder.id);
-	let embroideryPositions: Options[];
-	let embroideryTypes: Options[];
-	let customers: { results: Contacts[] };
-	let pricelists: Pricelists[];
+	let embroideryPositions = data.embroideryPositions;
+	let embroideryTypes = data.embroideryTypes;
+	let customers = data.customers;
+	let pricelists = data.pricelists;
 
-	let pricelistValue: number | undefined;
+	let defaultPricelistId = data.defaultPricelistId;
+	$: mainOrder.pricelistsID = data.defaultPricelistId;
 
 	type customerQueryType = { limit: number; page: number; name: string };
 
@@ -143,15 +165,15 @@
 		subTotal = totals.subTotal;
 	};
 
-	const getOptions = async (paramsObj: any) => {
-		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/options.json?' + searchParams.toString());
-			return await res.json();
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
+	// const getOptions = async (paramsObj: any) => {
+	// 	try {
+	// 		let searchParams = new URLSearchParams(paramsObj);
+	// 		const res = await fetch('/api/options.json?' + searchParams.toString());
+	// 		return await res.json();
+	// 	} catch (err: any) {
+	// 		logger.error(`Error: ${err}`);
+	// 	}
+	// };
 
 	const getCustomers = async (paramsObj: any) => {
 		try {
@@ -163,35 +185,34 @@
 		}
 	};
 
-	const getPricelists = async (paramsObj: any) => {
-		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/pricelists.json?' + searchParams.toString());
-			const jsonRes = await res.json();
-			const defaultPricelist = jsonRes.find(
-				(list: { isDefault: boolean }) => list.isDefault === true
-			);
-			pricelistValue = defaultPricelist.id;
-			mainOrder.pricelistsID = defaultPricelist.id;
-			return jsonRes;
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
+	// const getPricelists = async (paramsObj: any) => {
+	// 	try {
+	// 		let searchParams = new URLSearchParams(paramsObj);
+	// 		const res = await fetch('/api/pricelists.json?' + searchParams.toString());
+	// 		const jsonRes = await res.json();
+	// 		const defaultPricelist = jsonRes.find(
+	// 			(list: { isDefault: boolean }) => list.isDefault === true
+	// 		);
+	// 		defaultPricelistId = defaultPricelist.id;
+	// 		mainOrder.pricelistsID = defaultPricelist.id;
+	// 		return jsonRes;
+	// 	} catch (err: any) {
+	// 		logger.error(`Error: ${err}`);
+	// 	}
+	// };
 
 	onMount(async () => {
-		const embroideryTypesPromise = getOptions({ group: 'embroideryTypes' });
-		const embroideryPositionsPromise = getOptions({ group: 'embroideryPositions' });
-		const customersPromise = getCustomers(customerQueryParams);
-		const pricelistsPromise = getPricelists({});
-		[embroideryTypes, embroideryPositions, customers, pricelists] = await Promise.all([
-			embroideryTypesPromise,
-			embroideryPositionsPromise,
-			customersPromise,
-			pricelistsPromise
-		]);
+		// const embroideryTypesPromise = getOptions({ group: 'embroideryTypes' });
+		// const embroideryPositionsPromise = getOptions({ group: 'embroideryPositions' });
+		// const customersPromise = getCustomers(customerQueryParams);
+		// const pricelistsPromise = getPricelists({});
+		// [embroideryTypes, embroideryPositions, customers, pricelists] = await Promise.all([
+		// 	embroideryTypesPromise,
+		// 	embroideryPositionsPromise,
+		// 	customersPromise,
+		// 	pricelistsPromise
+		// ]);
 		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
-		console.log('object', await handleCartCalculations(mainOrderInit, $selectedCurrency));
 	});
 
 	const removeItem = (item: any) => {

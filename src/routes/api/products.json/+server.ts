@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
 		if (pagination.endIndex >= pagination.totalRecords) {
-			pagination.next = null;
+			pagination.next = undefined;
 		}
 
 		return new Response(JSON.stringify({ results: productsQuery, ...pagination }));

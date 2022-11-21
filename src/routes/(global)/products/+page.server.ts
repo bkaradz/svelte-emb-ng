@@ -17,11 +17,6 @@ export const load: PageServerLoad = async ({ params }) => {
     orderBy: {
       name: 'asc'
     },
-    include: {
-      email: true,
-      phone: true,
-      address: true
-    }
   };
 
   const query = {
@@ -36,10 +31,10 @@ export const load: PageServerLoad = async ({ params }) => {
     },
   };
 
-  const customersPromise = prisma.contacts.findMany(query);
-  const totalRecordsPromise = prisma.contacts.count(queryTotal);
+  const productsPromise = prisma.products.findMany(query);
+  const totalRecordsPromise = prisma.products.count(queryTotal);
 
-  const [customers, totalRecords] = await Promise.all([customersPromise, totalRecordsPromise]);
+  const [products, totalRecords] = await Promise.all([productsPromise, totalRecordsPromise]);
 
   pagination.totalRecords = totalRecords
   pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -48,10 +43,10 @@ export const load: PageServerLoad = async ({ params }) => {
     pagination.next = undefined;
   }
 
-  const newCustomers = { results: customers, ...pagination }
+  const newProducts = { results: products, ...pagination }
 
   return {
-    customers: newCustomers,
+    products: newProducts,
   };
 
 };

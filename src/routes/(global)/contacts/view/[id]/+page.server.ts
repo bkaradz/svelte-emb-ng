@@ -1,8 +1,8 @@
 import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types'
+import { getPagination } from '$lib/utility/pagination.util';
 
 export const load: PageServerLoad = async ({ params }) => {
-  console.log("🚀 ~ file: +page.server.ts ~ line 6 ~ constload:PageServerLoad= ~ params", params)
 
   const customerBaseQuery = {
     include: {
@@ -19,7 +19,19 @@ export const load: PageServerLoad = async ({ params }) => {
     },
   };
 
+  const customerPromise = prisma.contacts.findUnique(customerQuery);
+
+  const queryParams = {
+    limit: 15,
+    page: 1
+  }
+
+  const pagination = getPagination(queryParams);
+
+
   const ordersBaseQuery = {
+    take: pagination.limit,
+    skip: (pagination.page - 1) * pagination.limit,
     include: {
       Pricelists: true,
       OrderLine: {
@@ -33,19 +45,34 @@ export const load: PageServerLoad = async ({ params }) => {
   const ordersQuery = {
     ...ordersBaseQuery,
     where: {
+      isActive: true,
+      customersID: parseInt(params.id),
+    },
+  };
+  const orderQueryTotal = {
+    where: {
+      isActive: true,
       customersID: parseInt(params.id),
     },
   };
 
+  const ordersPromise = prisma.orders.findMany(ordersQuery);
+  const totalRecordsPromise = prisma.orders.count(orderQueryTotal);
 
-  const customerPromise = await prisma.contacts.findUnique(customerQuery);
-  const ordersPromise = await prisma.orders.findMany(ordersQuery);
+  const [customer, orders, totalRecords] = await Promise.all([customerPromise, ordersPromise, totalRecordsPromise]);
 
-  const [customer, orders] = await Promise.all([customerPromise, ordersPromise]);
+  pagination.totalRecords = totalRecords
+  pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
+
+  if (pagination.endIndex >= pagination.totalRecords) {
+    pagination.next = undefined;
+  }
+
+  const newOrders = { results: orders, ...pagination }
 
   return {
     customer,
-    orders
+    orders: newOrders
   };
 
 };

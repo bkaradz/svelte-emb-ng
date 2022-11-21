@@ -193,6 +193,7 @@
 									>
 										<div class="py-1" role="none">
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="id"
@@ -207,6 +208,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="organisation"
@@ -219,6 +221,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="phone"
@@ -230,6 +233,7 @@
 												>
 											</MenuItem>
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="email"
@@ -242,6 +246,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="vatNo"
@@ -253,6 +258,7 @@
 												>
 											</MenuItem>
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="balanceDue"
@@ -265,6 +271,7 @@
 											</MenuItem>
 
 											<MenuItem let:active>
+												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
 													on:click={heandleSearchSelection}
 													name="state"

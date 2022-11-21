@@ -19,6 +19,8 @@
 	import { cartItem } from '$lib/stores/cart.store';
 	import { dinero } from 'dinero.js';
 
+	export let data: { products: productIterface };
+
 	interface productIterface {
 		results: [
 			{
@@ -40,7 +42,7 @@
 		next: { page: number; limit: number };
 	}
 
-	let products: productIterface;
+	let products: productIterface = data.products;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -54,9 +56,9 @@
 		}
 	};
 
-	onMount(() => {
-		getProducts(currentGlobalParams);
-	});
+	// onMount(() => {
+	// 	getProducts(currentGlobalParams);
+	// });
 
 	const viewProducts = async (id: string) => {
 		goto(`/products/view/${id}`);
@@ -157,6 +159,7 @@
 							>
 								<div class="py-1" role="none">
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="name"
@@ -170,6 +173,7 @@
 										</a>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="id"
@@ -182,6 +186,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="description"
@@ -194,6 +199,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="unitPrice"
@@ -205,6 +211,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="productCategories"
@@ -217,6 +224,7 @@
 									</MenuItem>
 
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="stitches"
@@ -228,6 +236,7 @@
 										>
 									</MenuItem>
 									<MenuItem let:active>
+										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
 											on:click={heandleSearchSelection}
 											name="units"
@@ -384,6 +393,7 @@
 								class="relative truncate w-full pt-6 pb-0 pr-5 text-base font-medium text-pickled-bluewood-600"
 							>
 								{product?.name}
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<span
 									on:click|preventDefault={() => addToCart(product)}
 									class="absolute top-3 right-5 inline-flex hover:cursor-pointer translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full text-xs font-bold leading-none text-danger"
