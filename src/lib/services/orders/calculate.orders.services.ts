@@ -27,7 +27,11 @@ export const calculateOrder = async (reqOrder: any) => {
 			}
 		});
 
-		const asyncOrderline = reqOrder.orderLine.map(async (item: any) => {
+		if (!pricelist) {
+			throw new Error("Pricelist not found");
+		}
+
+		const asyncOrderLine = reqOrder.orderLine.map(async (item: any) => {
 			const { quantity = 1, embroideryTypes = 'flat' } = item;
 			/**
 			 * Get product
@@ -78,9 +82,9 @@ export const calculateOrder = async (reqOrder: any) => {
 			}
 		});
 
-		const newOrderline = await Promise.all(asyncOrderline);
+		const newOrderLine = await Promise.all(asyncOrderLine);
 
-		return newOrderline;
+		return newOrderLine;
 	} catch (err: any) {
 		logger.error(`Error: ${err}`);
 		throw new Error(`Error:  ${err?.message}`);

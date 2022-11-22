@@ -43,57 +43,57 @@
 		defaultPricelistId: number;
 	};
 
-	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
+	// $: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray: OrderLine[] = []) => {
-		try {
-			const res = await fetch('/api/cart.json', {
-				method: 'POST',
-				body: JSON.stringify({
-					pricelistsID: mainOrder.pricelistsID,
-					orderLine: lineArray
-				})
-			});
-			if (res.ok) {
-				const cartData = await res.json();
-				return cartData;
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
-		}
-	};
+	// const handleCalculations = async (lineArray: OrderLine[] = []) => {
+	// 	try {
+	// 		const res = await fetch('/api/cart.json', {
+	// 			method: 'POST',
+	// 			body: JSON.stringify({
+	// 				pricelistsID: mainOrder.pricelistsID,
+	// 				orderLine: lineArray
+	// 			})
+	// 		});
+	// 		if (res.ok) {
+	// 			const cartData = await res.json();
+	// 			return cartData;
+	// 		}
+	// 	} catch (err: any) {
+	// 		logger.error(`Error: ${err}`);
+	// 		toasts.add({ message: 'An error has occured', type: 'error' });
+	// 	}
+	// };
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
 
-	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
-		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
-		/**
-		 * Calculate using the cart default usd currency
-		 */
-		let newArray;
-		if (browser) {
-			newArray = await handleCalculations(lineArray);
-			console.log('🚀 ~ file: +page.svelte ~ line 79 ~ handleCurrency ~ newArray', newArray);
-		}
-		if (!Array.isArray(newArray)) {
-			return;
-		}
+	// const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
+	// 	zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
+	// 	/**
+	// 	 * Calculate using the cart default usd currency
+	// 	 */
+	// 	let newArray;
+	// 	if (browser) {
+	// 		newArray = await handleCalculations(lineArray);
+	// 		console.log('🚀 ~ file: +page.svelte ~ line 79 ~ handleCurrency ~ newArray', newArray);
+	// 	}
+	// 	if (!Array.isArray(newArray)) {
+	// 		return;
+	// 	}
 
-		const convert = createConverter(selectedCurrency.dineroObj);
-		mainOrder.orderLine = newArray.map((item) => {
-			let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
-			if (!unitPrice) {
-				unitPrice = zero;
-			}
+	// 	const convert = createConverter(selectedCurrency.dineroObj);
+	// 	mainOrder.orderLine = newArray.map((item) => {
+	// 		let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+	// 		if (!unitPrice) {
+	// 			unitPrice = zero;
+	// 		}
 
-			return { ...item, unitPrice: toSnapshot(unitPrice) };
-		});
+	// 		return { ...item, unitPrice: toSnapshot(unitPrice) };
+	// 	});
 
-		getCountAndSubTotal(mainOrder.orderLine);
-	};
+	// 	getCountAndSubTotal(mainOrder.orderLine);
+	// };
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
@@ -119,7 +119,7 @@
 	let mainOrderInit: Partial<MainOrder> = {
 		id: undefined,
 		customersID: undefined,
-		pricelistsID: -1,
+		pricelistsID: data.defaultPricelistId,
 		isActive: true,
 		accountsStatus: undefined,
 		orderDate: TODAY,
@@ -136,7 +136,7 @@
 	let pricelists = data.pricelists;
 
 	let defaultPricelistId = data.defaultPricelistId;
-	$: mainOrder.pricelistsID = data.defaultPricelistId;
+	// $: mainOrder.pricelistsID = data.defaultPricelistId;
 
 	type customerQueryType = { limit: number; page: number; name: string };
 
@@ -155,19 +155,19 @@
 
 	$: calculatedTotal = add(calculatedVat, subTotal);
 
-	const getCountAndSubTotal = (cart: any[]) => {
-		const totals = cart.reduce(
-			(acc, item) => {
-				return {
-					totalCartItems: acc.totalCartItems + item.quantity,
-					subTotal: add(acc.subTotal, multiply(dinero(item.unitPrice), item.quantity))
-				};
-			},
-			{ totalCartItems: 0, subTotal: zero }
-		);
-		totalCartItems = totals.totalCartItems;
-		subTotal = totals.subTotal;
-	};
+	// const getCountAndSubTotal = (cart: any[]) => {
+	// 	const totals = cart.reduce(
+	// 		(acc, item) => {
+	// 			return {
+	// 				totalCartItems: acc.totalCartItems + item.quantity,
+	// 				subTotal: add(acc.subTotal, multiply(dinero(item.unitPrice), item.quantity))
+	// 			};
+	// 		},
+	// 		{ totalCartItems: 0, subTotal: zero }
+	// 	);
+	// 	totalCartItems = totals.totalCartItems;
+	// 	subTotal = totals.subTotal;
+	// };
 
 	// const getOptions = async (paramsObj: any) => {
 	// 	try {
@@ -216,25 +216,35 @@
 		// 	customersPromise,
 		// 	pricelistsPromise
 		// ]);
-		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
+		// handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	});
 
 	const removeItem = (item: any) => {
 		cartItem.remove(item);
+		mainOrderInit.orderLine = Array.from($cartItem.values());
+		// handleCartCalculations(mainOrderInit, $selectedCurrency);
 	};
+
 	const onDecrease = (item: Partial<OrderLine>) => {
 		if (!item.quantity) {
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
+		mainOrderInit.orderLine = Array.from($cartItem.values());
+		// handleCartCalculations(mainOrderInit, $selectedCurrency);
 	};
+
 	const onIncrease = (item: { quantity: number }) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
+		mainOrderInit.orderLine = Array.from($cartItem.values());
+		// handleCartCalculations(mainOrderInit, $selectedCurrency);
 	};
 
 	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
-		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
+		// handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
+		mainOrderInit.orderLine = Array.from($cartItem.values());
+		// handleCartCalculations(mainOrderInit, $selectedCurrency);
 	};
 
 	let customerSearch: any = { name: null };
@@ -310,7 +320,7 @@
 				<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
 				<div class="flex items-center" />
 			</div>
-			{#if order?.OrderLine?.length > 0}
+			{#if order?.orderLine?.length > 0}
 				<div class="flex px-6 mt-5 mb-5">
 					<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 						Product
@@ -347,7 +357,7 @@
 					</span>
 				</div>
 				<div class="scrollHeight overflow-y-auto">
-					{#each order.OrderLine as item (item.id)}
+					{#each order.orderLine as item (item.id)}
 						{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 						<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 							<div class="flex w-2/6">
@@ -488,8 +498,11 @@
 							name="pricelist"
 							id="pricelist"
 							bind:value={mainOrder.pricelistsID}
-							on:change|preventDefault={() =>
-								handleCurrency(Array.from($cartItem.values()), $selectedCurrency)}
+							on:change|preventDefault={() => {
+								// handleCurrency(Array.from($cartItem.values()), $selectedCurrency)
+								mainOrderInit.orderLine = Array.from($cartItem.values());
+								// handleCartCalculations(mainOrderInit, $selectedCurrency);
+							}}
 							class="text-sm input grow"
 						>
 							{#each pricelists as pricelist}
@@ -742,7 +755,7 @@
 						id="pricelist"
 						bind:value={mainOrder.pricelistsID}
 						on:change|preventDefault={() =>
-							handleCurrency(Array.from($cartItem.values()), $selectedCurrency)}
+							// handleCurrency(Array.from($cartItem.values()), $selectedCurrency)}
 						class="text-sm input grow"
 					>
 						{#each pricelists as pricelist}

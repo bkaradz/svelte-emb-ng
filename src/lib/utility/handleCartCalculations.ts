@@ -38,14 +38,14 @@ const handleCalculations = async (lineArray: OrderLine[] = [], pricelistsId: num
     }
 };
 
-const handleCurrency = async (order: Orders & { OrderLine: OrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
+const handleCurrency = async (order: Orders & { orderLine: OrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
 
     /**
      * Calculate using the cart default usd currency
      */
     let newArray;
     if (browser) {
-        newArray = await handleCalculations(order.OrderLine, order.pricelistsID);
+        newArray = await handleCalculations(order.orderLine, order.pricelistsID);
         console.log("🚀 ~ file: handleCartCalculations.ts ~ line 49 ~ handleCurrency ~ newArray", newArray)
     }
     if (!Array.isArray(newArray)) {
@@ -53,7 +53,7 @@ const handleCurrency = async (order: Orders & { OrderLine: OrderLine[] }, select
     }
 
     const convert = createConverter(selectedCurrency.dineroObj);
-    order.OrderLine = newArray.map((item) => {
+    order.orderLine = newArray.map((item) => {
         let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
         if (!unitPrice) {
             unitPrice = zero;
@@ -85,11 +85,11 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
 
     const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 
-    oldOrder.OrderLine = oldOrder?.orderLine
+    // oldOrder.OrderLine = oldOrder?.orderLine
 
-    delete oldOrder?.orderLine
+    // delete oldOrder?.orderLine
 
-    const order: Orders & { OrderLine: OrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
+    const order: Orders & { orderLine: OrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
 
     const newOrder = await handleCurrency(order, selectedCurrency, zero);
     console.log("🚀 ~ file: handleCartCalculations.ts ~ line 94 ~ handleCartCalculations ~ newOrder", newOrder)
@@ -98,7 +98,7 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
         throw new Error("Error in calculations");
     }
 
-    const subTotalsCalc = getCountAndSubTotal(newOrder.OrderLine, zero);
+    const subTotalsCalc = getCountAndSubTotal(newOrder.orderLine, zero);
 
     /**
      * TODO: User the vat rate in the database

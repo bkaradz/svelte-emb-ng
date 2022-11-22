@@ -14,6 +14,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const reqCart = await request.json();
+		console.log("🚀 ~ file: +server.ts ~ line 17 ~ constPOST:RequestHandler= ~ reqCart", reqCart)
 
 		const newOrderLine = await calculateOrder(reqCart);
 
