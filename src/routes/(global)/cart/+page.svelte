@@ -27,6 +27,7 @@
 		Products
 	} from '@prisma/client';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
+	import Loading from '$lib/components/Loading.svelte';
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -65,6 +66,8 @@
 		}
 	};
 
+	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
+
 	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
@@ -73,6 +76,7 @@
 		let newArray;
 		if (browser) {
 			newArray = await handleCalculations(lineArray);
+			console.log('🚀 ~ file: +page.svelte ~ line 79 ~ handleCurrency ~ newArray', newArray);
 		}
 		if (!Array.isArray(newArray)) {
 			return;
@@ -297,14 +301,16 @@
 	<title>Cart</title>
 </svelte:head>
 
-{#await handleCartCalculations(mainOrderInit, $selectedCurrency) then data}
+{#await promise}
+	<Loading />
+{:then { totalCartItems, subTotal, calculatedVat, grandTotal, order }}
 	<div class="w-full flex">
 		<div class="cart">
 			<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
 				<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
 				<div class="flex items-center" />
 			</div>
-			{#if mainOrder?.orderLine?.length > 0}
+			{#if order?.OrderLine?.length > 0}
 				<div class="flex px-6 mt-5 mb-5">
 					<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 						Product
@@ -341,7 +347,7 @@
 					</span>
 				</div>
 				<div class="scrollHeight overflow-y-auto">
-					{#each mainOrder.orderLine as item (item.id)}
+					{#each order.OrderLine as item (item.id)}
 						{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 						<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 							<div class="flex w-2/6">

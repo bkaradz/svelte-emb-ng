@@ -46,6 +46,7 @@ const handleCurrency = async (order: Orders & { OrderLine: OrderLine[] }, select
     let newArray;
     if (browser) {
         newArray = await handleCalculations(order.OrderLine, order.pricelistsID);
+        console.log("🚀 ~ file: handleCartCalculations.ts ~ line 49 ~ handleCurrency ~ newArray", newArray)
     }
     if (!Array.isArray(newArray)) {
         return;
@@ -91,6 +92,7 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
     const order: Orders & { OrderLine: OrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
 
     const newOrder = await handleCurrency(order, selectedCurrency, zero);
+    console.log("🚀 ~ file: handleCartCalculations.ts ~ line 94 ~ handleCartCalculations ~ newOrder", newOrder)
 
     if (!newOrder) {
         throw new Error("Error in calculations");
