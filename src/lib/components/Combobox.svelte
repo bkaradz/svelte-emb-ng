@@ -145,6 +145,7 @@
 						{#each list as listItem, index (listItem.id)}
 							<li class="list--item group">
 								<!-- svelte-ignore a11y-missing-attribute -->
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
 								<a
 									on:click|preventDefault={() => {
 										value = listItem;
