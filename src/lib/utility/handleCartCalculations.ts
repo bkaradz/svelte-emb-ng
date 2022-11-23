@@ -46,15 +46,18 @@ const handleCurrency = async (order: Orders & { orderLine: OrderLine[] }, select
     let newArray;
     if (browser) {
         newArray = await handleCalculations(order.orderLine, order.pricelistsID);
-        console.log("🚀 ~ file: handleCartCalculations.ts ~ line 49 ~ handleCurrency ~ newArray", newArray)
     }
     if (!Array.isArray(newArray)) {
         return;
     }
 
     const convert = createConverter(selectedCurrency.dineroObj);
+    console.log("🚀 ~ file: handleCartCalculations.ts ~ line 56 ~ handleCurrency ~ convert", convert)
+
     order.orderLine = newArray.map((item) => {
+        console.log("🚀 ~ file: handleCartCalculations.ts ~ line 58 ~ order.orderLine=newArray.map ~ item", item)
         let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+        console.log("🚀 ~ file: handleCartCalculations.ts ~ line 60 ~ order.orderLine=newArray.map ~ unitPrice", unitPrice)
         if (!unitPrice) {
             unitPrice = zero;
         }
@@ -92,7 +95,6 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
     const order: Orders & { orderLine: OrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
 
     const newOrder = await handleCurrency(order, selectedCurrency, zero);
-    console.log("🚀 ~ file: handleCartCalculations.ts ~ line 94 ~ handleCartCalculations ~ newOrder", newOrder)
 
     if (!newOrder) {
         throw new Error("Error in calculations");
@@ -114,6 +116,7 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
         subTotal: subTotalsCalc.subTotal,
         calculatedVat,
         grandTotal: calculatedTotal,
-        order: newOrder
+        order: newOrder,
+        vat
     }
 }
