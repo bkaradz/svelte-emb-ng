@@ -112,6 +112,9 @@ if (browser) {
 					}
 					ratesMap.set(rate.currency, parseInt(rate.rate) * 100);
 				});
+				if (ratesMap.size === 0) {
+					throw new Error("Exchange Rates not found");
+				}
 				currenciesRates = ratesMap;
 			}
 		} catch (err: unknown) {
