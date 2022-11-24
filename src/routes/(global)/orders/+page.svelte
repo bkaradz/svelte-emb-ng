@@ -24,6 +24,12 @@
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { Buffer } from 'buffer';
 
+	type newOrder = Orders & { selected: boolean };
+
+	type OrdersNew = Pagination & { results: newOrder[] };
+
+	export let data: { orders: OrdersNew };
+
 	const tableHeadings = [
 		{ id: 0, name: '', dbName: null },
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
@@ -37,11 +43,7 @@
 		{ id: 11, name: 'Print', dbName: null }
 	];
 
-	type newOrder = Orders & { selected: boolean };
-
-	type OrdersNew = Pagination & { results: newOrder[] };
-
-	let orders: OrdersNew;
+	let orders = data.orders;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -55,9 +57,9 @@
 		}
 	};
 
-	onMount(() => {
-		getOrders(currentGlobalParams);
-	});
+	// onMount(() => {
+	// 	getOrders(currentGlobalParams);
+	// });
 
 	const viewOrder = async (id: number) => {
 		goto(`/cart/view/${id}`);

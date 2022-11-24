@@ -408,7 +408,7 @@
 				{#each orders.results as order (order.id)}
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<div
-						on:click|preventDefault={() => viewOrder(order.id)}
+						on:click|preventDefault={() => viewPayment(order)}
 						class=" flex h-44 w-full max-w-xs grow flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg hover:cursor-pointer hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
