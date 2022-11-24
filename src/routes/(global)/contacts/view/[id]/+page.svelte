@@ -10,7 +10,6 @@
 		svgSelector,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import dayjs from 'dayjs';
@@ -27,13 +26,10 @@
 		Orders,
 		Phone,
 		Pricelists,
-		Prisma,
 		Products
 	} from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { USD } from '@dinero.js/currencies';
-
-	const endpoint = `/api/contacts/${$page.params.id}.json`;
 
 	type OrdersResuitsType = (Orders & {
 		Pricelists: Pricelists;
@@ -42,36 +38,11 @@
 
 	type ContactsTypes = Contacts & Email & Phone & Address;
 
-	// type OrderLineTypes = OrderLine & Products;
-
-	// type AllOrderTypes = Orders & Pricelists & OrderLineTypes;
-
 	type OrdersType = Pagination & { results: OrdersResuitsType[] };
 
 	export let data: { customer: ContactsTypes; orders: OrdersType };
 
 	const tableHeading = ['Order #', 'Date', 'Date Due', 'Total', 'Status', 'View'];
-
-	// type Contacts = Prisma.ContactsGetPayload<Prisma.ContactsArgs>;
-
-	// interface ContactIterface {
-	// 	id: string;
-	// 	name: string;
-	// 	isCorporate: boolean;
-	// 	notes: string;
-	// 	vatOrBpNo: string;
-	// 	email: string;
-	// 	phone: string;
-	// 	address: string;
-	// 	balanceDue: number;
-	// 	totalReceipts: number;
-	// 	isActive: boolean;
-	// 	organizationID: {
-	// 		name: string;
-	// 	};
-	// }
-
-	// type Orders = Pagination & { results: Prisma.OrdersGetPayload<Prisma.OrdersArgs>[] };
 
 	let contact = data.customer;
 	let orders = data.orders;
@@ -132,7 +103,6 @@
 		getOrders(currentGlobalParams);
 	};
 
-	// Input must be of the form {limit, page, query}
 	const getOrders = async (paramsObj: any) => {
 		try {
 			let searchParams = new URLSearchParams(paramsObj);
@@ -142,18 +112,6 @@
 			logger.error(`Error: ${err}`);
 		}
 	};
-
-	onMount(async () => {
-		try {
-			getOrders(currentGlobalParams);
-			const res = await fetch(endpoint);
-			if (res.ok) {
-				contact = await res.json();
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	});
 
 	const gotoContacts = async () => {
 		goto(`/contacts`);

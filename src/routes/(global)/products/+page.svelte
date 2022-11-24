@@ -109,6 +109,7 @@
 	const addToCart = (item) => {
 		cartItem.add(item);
 	};
+	
 </script>
 
 <svelte:head>

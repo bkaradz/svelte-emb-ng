@@ -9,7 +9,6 @@
 		svgSelector,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import dayjs from 'dayjs';
@@ -18,13 +17,23 @@
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import logger from '$lib/utility/logger';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import type { Contacts, OrderLine, Orders, Products } from '@prisma/client';
+	import type { Pagination } from '$lib/utility/pagination.util';
 
-	const endpoint = `/api/products/${$page.params.id}.json`;
+	type newOrder = Pagination & {
+		results: (OrderLine & {
+			Orders: Orders & {
+				customerContact: Contacts;
+			};
+		})[];
+	};
+
+	export let data: { product: Products; orders: newOrder };
 
 	const tableHeadings = ['Order #', 'Date', 'Customer', 'Due Date', 'State', 'View'];
 
-	let product;
-	let ordersList;
+	let product = data.product;
+	let ordersList = data.orders;
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -77,23 +86,11 @@
 		}
 	};
 
-	onMount(async () => {
-		try {
-			getOrdersList(currentGlobalParams);
-			const res = await fetch(endpoint);
-			if (res.ok) {
-				product = await res.json();
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	});
-
 	const gotoProducts = async () => {
 		goto(`/products`);
 	};
 
-	const viewOrder = async (id: string) => {
+	const viewOrder = async (id: number) => {
 		goto(`/cart/view/${id}`);
 	};
 </script>
