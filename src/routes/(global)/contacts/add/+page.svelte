@@ -1,17 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import suite from '$lib/validation/signUp.validate';
 	import logger from '$lib/utility/logger';
 	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
-	import classnames from 'vest/classnames';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
 	import Input from '$lib/components/Input.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Combobox from '$lib/components/Combobox.svelte';
+	import type { Contacts } from '@prisma/client';
+	import type { Pagination } from '$lib/utility/pagination.util';
 
-	let result = suite.get();
+	let errorMessages = new Map();
+
+	type ContactsTypes = Pagination & { results: Contacts[] };
+
+	export let data: { contacts: ContactsTypes }
+	$: console.log("🚀 ~ file: +page.svelte ~ line 15 ~ data", data)
+
 
 	interface contactsInterface {
 		results: Array<Omit<any, 'createdAt' | 'updatedAt' | 'password' | 'userRole'>>;
@@ -78,16 +84,10 @@
 		const name = (event.target as HTMLInputElement).name;
 		const value = (event.target as HTMLInputElement).value;
 		formData[name] = value;
-		result = suite(formData, name);
 	};
 
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
 
-	// $: disabled = !result.isValid();
+	$: disabled = false;
 
 	$: resetForm = () => {
 		formData = {
@@ -99,8 +99,7 @@
 			address: ''
 		};
 		corporateSearch = { name: '' };
-		suite.reset();
-		result = suite.get();
+		
 	};
 
 	const handleSubmit = async () => {
@@ -148,25 +147,11 @@
 		}
 	};
 
-	// const makeMatchBold = (searchMatchString: string) => {
-	// 	let MatchedWords = [];
-	// 	if (corporateSearch.name) {
-	// 		const regex = new RegExp(corporateSearch.name, 'ig');
-	// 		MatchedWords = searchMatchString.trim().match(regex);
-	// 	}
-
-	// 	let makeBold = `<strong>${MatchedWords[0]}</strong>`;
-	// 	let boldedStr = searchMatchString.replace(MatchedWords[0], makeBold);
-
-	// 	return boldedStr;
-	// };
-
 	const handleComboInput = (e: any) => {
 		currentCorporateQueryParams = {
 			...currentCorporateQueryParams,
 			name: e.target.value
 		};
-		// getCorporateContacts(currentCorporateQueryParams);
 	};
 </script>
 
@@ -221,19 +206,19 @@
 	<div class="mx-auto mt-2 h-full w-full max-w-md space-y-8">
 		<form class="mt-2 space-y-6" on:submit|preventDefault={handleSubmit}>
 			<div class="space-y-2 shadow-sm">
-				<Input
-					name="name"
-					label="Name"
-					bind:value={formData.name}
-					onInput={handleInput}
-					messages={result.getErrors('name')}
-					validityClass={cn('name')}
-				/>
+				<label for="name" class="flex justify-between text-sm">
+					<span>Name</span>
+					<span class="text-xs text-danger"
+						>{errorMessages.get('name') ? errorMessages.get('name') : ''}</span
+					>
+				</label>
+				<input type="text" name="name" class="input" bind:value={formData.name} />
+
+				
 
 				<Checkbox
 					name="isCorporate"
 					label="Individual or Corparate"
-					validityClass={cn('isCorporate')}
 					bind:checked={formData.isCorporate}
 				/>
 
@@ -248,33 +233,35 @@
 					/>
 				{/if}
 
-				<Input
-					name="email"
-					label="Email"
-					bind:value={formData.email}
-					onInput={handleInput}
-					type="email"
-					messages={result.getErrors('email')}
-					validityClass={cn('email')}
-				/>
+				<label for="email" class="flex justify-between text-sm">
+					<span>Email</span>
+					<span class="text-xs text-danger"
+						>{errorMessages.get('email') ? errorMessages.get('email') : ''}</span
+					>
+				</label>
+				<input type="email" name="email" class="input" bind:value={formData.email} />
 
-				<Input
-					name="phone"
-					label="Phone"
-					bind:value={formData.phone}
-					onInput={handleInput}
-					messages={result.getErrors('phone')}
-					validityClass={cn('phone')}
-				/>
+				
 
-				<Textarea
-					name="address"
-					label="Address"
-					bind:value={formData.address}
-					onInput={handleInput}
-					messages={result.getErrors('address')}
-					validityClass={cn('address')}
-				/>
+				<label for="phone" class="flex justify-between text-sm">
+					<span>Phone</span>
+					<span class="text-xs text-danger"
+						>{errorMessages.get('phone') ? errorMessages.get('phone') : ''}</span
+					>
+				</label>
+				<input type="text" name="phone" class="input" bind:value={formData.phone} />
+
+			
+
+				<label for="address" class="flex justify-between text-sm">
+					<span>Address</span>
+					<span class="text-xs text-danger"
+						>{errorMessages.get('address') ? errorMessages.get('address') : ''}</span
+					>
+				</label>
+				<textarea name="address" class="input" bind:value={formData.address} cols="10" rows="5" />
+
+			
 
 				<div class="mt-6 flex space-x-2">
 					<button

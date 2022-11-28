@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
-	import { svgSignUp } from '$lib/utility/svgLogos';
+	import { svgEyeClose, svgEyeOpen, svgSignUp } from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 
@@ -11,16 +11,25 @@
 
 	const resetForm = () => {
 		return {
-			name: '',
-			email: '',
-			phone: '',
-			address: '',
-			password: '',
-			confirmPassword: ''
+			name: undefined,
+			email: undefined,
+			phone: undefined,
+			address: undefined,
+			password: undefined,
+			confirmPassword: undefined
 		};
 	};
 
-	let formData = resetForm();
+	type FormData = {
+		name: string | undefined,
+		email: string | undefined,
+		phone: string | undefined,
+		address: string | undefined,
+		password: string | undefined,
+		confirmPassword: string | undefined
+	}
+
+	let formData: FormData = resetForm();
 
 	type formDataKeys = keyof typeof formData;
 
@@ -31,8 +40,15 @@
 	};
 
 	$: disabled = false;
+	
+	let passwordIsVisible = false
+    $: passwordType = passwordIsVisible ? 'text' : 'password'
+	
+	let confirmPasswordIsVisible = false
+    $: confirmPasswordType = confirmPasswordIsVisible ? 'text' : 'password'
 
 	const handleSignUp = async () => {
+		
 		const parsedUser = UserSignUpSchema.safeParse(formData);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
@@ -40,6 +56,7 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
+			disabled = false
 			return;
 		}
 		try {
@@ -115,7 +132,22 @@
 					>{errorMessages.get('password') ? errorMessages.get('password') : ''}</span
 				>
 			</label>
-			<input type="password" name="password" class="input" bind:value={formData.password} />
+			<div class="relative block w-full">
+				<div class="absolute right-4 items-center ml-2 h-full">
+					<button class="pt-2" on:click|preventDefault={() => passwordIsVisible = !passwordIsVisible}>
+					  {#if passwordIsVisible}          
+					  <div>
+						  {@html svgEyeOpen}
+					  </div>
+					  {:else}
+					  <div>
+						  {@html svgEyeClose}
+					  </div>
+					  {/if}
+					</button>
+				</div>
+				<input type={passwordType} name="password" class="input" on:input={handleInput} >
+			</div>
 
 			<label for="confirmPassword" class="flex justify-between text-sm">
 				<span>Confirm Password</span>
@@ -123,18 +155,29 @@
 					>{errorMessages.get('confirmPassword') ? errorMessages.get('confirmPassword') : ''}</span
 				>
 			</label>
-			<input
-				type="password"
-				name="confirmPassword"
-				class="input"
-				bind:value={formData.confirmPassword}
-			/>
+			<div class="relative block w-full">
+				<div class="absolute right-4 items-center ml-2 h-full">
+					<button class="pt-2" on:click|preventDefault={() => confirmPasswordIsVisible = !confirmPasswordIsVisible}>
+					  {#if confirmPasswordIsVisible}          
+					  <div>
+						  {@html svgEyeOpen}
+					  </div>
+					  {:else}
+					  <div>
+						  {@html svgEyeClose}
+					  </div>
+					  {/if}
+					</button>
+				</div>
+				<input type={confirmPasswordType} name="confirmPassword" class="input" on:input={handleInput} >
+			</div>
 
 			<div>
 				<button
 					{disabled}
+					on:change|preventDefault={() => disabled = true}
 					type="submit"
-					class="group relative flex w-full justify-center border border-transparent  bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+					class="group relative flex w-full mt-5 justify-center border border-transparent  bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					<span class="absolute inset-y-0 left-0 flex items-center pl-3">
 						{@html svgSignUp}

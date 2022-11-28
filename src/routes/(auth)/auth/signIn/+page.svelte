@@ -1,7 +1,7 @@
 <script lang="ts">
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
-	import { svgSignIn } from '$lib/utility/svgLogos';
+	import { svgEyeClose, svgEyeOpen, svgSignIn } from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
 	import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
@@ -9,14 +9,19 @@
 
 	let errorMessages = new Map();
 
+	type FormData = {
+		email: string | undefined,
+		password: string | undefined,
+	}
+
 	const resetForm = () => {
 		return {
-			email: '',
-			password: ''
+			email: undefined,
+			password: undefined
 		};
 	};
 
-	let formData = resetForm();
+	let formData: FormData = resetForm();
 
 	type formDataKeys = keyof loginCredentials;
 
@@ -24,9 +29,6 @@
 		let name = (event.target as HTMLInputElement).name as formDataKeys;
 		let value = (event.target as HTMLInputElement).value;
 		formData[name] = value;
-		// result = suite(formData, name);
-		// const parsedUser = loginCredentialsSchema.safeParse(formData);
-		// console.log('🚀 ~ file: +page.svelte ~ line 27 ~ handleInput ~ parsedUser', parsedUser);
 	};
 
 	$: disabled = false;
@@ -39,6 +41,7 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
+			disabled = false
 			return;
 		}
 		try {
@@ -73,6 +76,9 @@
 			toasts.add({ message: 'An error has occured', type: 'error' });
 		}
 	};
+	let isVisible = false
+    $: type = isVisible ? 'text' : 'password'
+	
 </script>
 
 <svelte:head>
@@ -85,7 +91,7 @@
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Login</h2>
 	</div>
 
-	<form novalidate class="mt-8 space-y-6" on:submit|preventDefault={handleSignIn}>
+	<form class="mt-8 space-y-6" on:submit|preventDefault={handleSignIn}>
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="email" class="flex justify-between text-sm">
@@ -102,13 +108,29 @@
 					>{errorMessages.get('password') ? errorMessages.get('password') : ''}</span
 				>
 			</label>
-			<input type="email" name="password" class="input" bind:value={formData.password} />
+			<div class="relative block w-full">
+				<div class="absolute right-4 items-center ml-2 h-full">
+					<button class="pt-2" on:click|preventDefault={() => isVisible = !isVisible}>
+					  {#if isVisible}          
+					  <div>
+						  {@html svgEyeOpen}
+					  </div>
+					  {:else}
+					  <div>
+						  {@html svgEyeClose}
+					  </div>
+					  {/if}
+					</button>
+				</div>
+				<input {type} name="password" class="input" on:input={handleInput} >
+			</div>
 		</div>
 
 		<div>
 			<button
 				id="submit"
 				{disabled}
+				on:change|preventDefault={() => disabled = true}
 				type="submit"
 				class="relative flex w-full justify-center border border-transparent bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
 			>

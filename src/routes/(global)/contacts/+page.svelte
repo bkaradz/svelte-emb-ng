@@ -16,7 +16,6 @@
 	} from '$lib/utility/svgLogos';
 	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
-	import { onMount } from 'svelte';
 
 	type newContacts = Contacts & Email & Phone & Address;
 
@@ -96,11 +95,6 @@
 			limit = 1;
 		}
 	};
-
-	// onMount(async () => {
-	// 	const customersPromise = await getContacts(currentGlobalParams);
-	// 	[contacts] = await Promise.all([customersPromise]);
-	// });
 
 	const viewContact = async (id: string) => {
 		goto(`/contacts/view/${id}`);
