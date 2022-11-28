@@ -3,7 +3,7 @@
 	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/client/signUp.validate';
+	import suite from '$lib/validation/signUp.validate';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';

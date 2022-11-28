@@ -1,34 +1,14 @@
-// import { invalid, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
-import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import config from 'config';
+import { UserSignUpSchema, type UserSignUp } from '$lib/validation/signUp.validate';
 
-export const UserSignUpSchema = z
-	.object({
-		name: z
-			.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
-			.trim(),
-		email: z
-			.string({ required_error: 'Email is required' })
-			.email({ message: 'Not a valid email' }),
-		phone: z.string({ required_error: 'Phone is required' }),
-		address: z.string({ required_error: 'Address is required' }),
-		password: z.string({ required_error: 'Password is required' }),
-		confirmPassword: z.string({ required_error: 'Confirm Password is required' })
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: 'Passwords do not match',
-		path: ['confirmPassword']
-	});
-
-export type User = z.infer<typeof UserSignUpSchema>;
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const reqUser: User = await request.json();
+		const reqUser: UserSignUp = await request.json();
 
 		const parsedUser = UserSignUpSchema.safeParse(reqUser);
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import suite from '$lib/validation/client/signUp.validate';
+	import suite from '$lib/validation/signUp.validate';
 	import classnames from 'vest/classnames';
 	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';

@@ -1,6 +1,6 @@
 import * as cookie from 'cookie';
 import config from 'config';
-import { loginCredentialsSchema, type loginCredentials } from '../../routes/api/auth/signIn.json/+server';
+import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 
@@ -99,7 +99,7 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 
 	const userRes = await prisma.contacts.findUnique({
 		where: {
-			id: parseInt(emailRes.contactsId),
+			id: emailRes.contactsId,
 		},
 		select: {
 			id: true,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import suite from '$lib/validation/client/signUp.validate';
+	import suite from '$lib/validation/signUp.validate';
 	import logger from '$lib/utility/logger';
 	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
 	import classnames from 'vest/classnames';

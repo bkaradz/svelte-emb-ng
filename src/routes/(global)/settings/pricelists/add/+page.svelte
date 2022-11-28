@@ -4,7 +4,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/client/signUp.validate';
+	import suite from '$lib/validation/signUp.validate';
 	import { v4 as uuidv4 } from 'uuid';
 	import classnames from 'vest/classnames';
 

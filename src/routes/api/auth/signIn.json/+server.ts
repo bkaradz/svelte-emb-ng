@@ -7,19 +7,9 @@ import {
 	createSession,
 	validateUserPassword
 } from '$lib/services/session.services';
-import { z } from 'zod';
 import type { User } from '$lib/types';
+import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
 
-export const loginCredentialsSchema = z
-	.object({
-		email: z
-			.string({ required_error: 'Email is required' })
-			.email({ message: 'Not a valid email' }),
-		password: z.string({ required_error: 'Address is required' })
-	})
-	.strict();
-
-export type loginCredentials = z.infer<typeof loginCredentialsSchema>;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {

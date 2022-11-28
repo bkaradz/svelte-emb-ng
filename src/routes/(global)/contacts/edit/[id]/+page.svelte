@@ -9,7 +9,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgArrow, svgRefresh, svgXCircle } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/client/signUp.validate';
+	import suite from '$lib/validation/signUp.validate';
 	import { onMount } from 'svelte';
 	import classnames from 'vest/classnames';
 
