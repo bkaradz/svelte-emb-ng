@@ -15,9 +15,8 @@
 
 	type ContactsTypes = Pagination & { results: Contacts[] };
 
-	export let data: { contacts: ContactsTypes }
-	$: console.log("🚀 ~ file: +page.svelte ~ line 15 ~ data", data)
-
+	export let data: { contacts: ContactsTypes };
+	$: console.log('🚀 ~ file: +page.svelte ~ line 15 ~ data', data);
 
 	interface contactsInterface {
 		results: Array<Omit<any, 'createdAt' | 'updatedAt' | 'password' | 'userRole'>>;
@@ -38,7 +37,6 @@
 	let defaultCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
 		limit: 7,
 		page: 1,
-		sort: 'name',
 		isCorporate: true
 	};
 	let currentCorporateQueryParams = defaultCorporateQueryParams;
@@ -51,8 +49,10 @@
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
 			let searchParams = new URLSearchParams(paramsObj as string);
+
 			const res = await fetch('/api/contacts.json?' + searchParams.toString());
 			contacts = await res.json();
+			console.log('🚀 ~ file: +page.svelte ~ line 56 ~ getCorporateContacts ~ contacts', contacts);
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
@@ -86,7 +86,6 @@
 		formData[name] = value;
 	};
 
-
 	$: disabled = false;
 
 	$: resetForm = () => {
@@ -99,7 +98,6 @@
 			address: ''
 		};
 		corporateSearch = { name: '' };
-		
 	};
 
 	const handleSubmit = async () => {
@@ -214,8 +212,6 @@
 				</label>
 				<input type="text" name="name" class="input" bind:value={formData.name} />
 
-				
-
 				<Checkbox
 					name="isCorporate"
 					label="Individual or Corparate"
@@ -241,8 +237,6 @@
 				</label>
 				<input type="email" name="email" class="input" bind:value={formData.email} />
 
-				
-
 				<label for="phone" class="flex justify-between text-sm">
 					<span>Phone</span>
 					<span class="text-xs text-danger"
@@ -251,8 +245,6 @@
 				</label>
 				<input type="text" name="phone" class="input" bind:value={formData.phone} />
 
-			
-
 				<label for="address" class="flex justify-between text-sm">
 					<span>Address</span>
 					<span class="text-xs text-danger"
@@ -260,8 +252,6 @@
 					>
 				</label>
 				<textarea name="address" class="input" bind:value={formData.address} cols="10" rows="5" />
-
-			
 
 				<div class="mt-6 flex space-x-2">
 					<button

@@ -111,6 +111,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
+		console.log("🚀 ~ file: +server.ts ~ line 114 ~ constGET:RequestHandler= ~ queryParams", queryParams)
 
 		const pagination = getPagination(queryParams);
 
@@ -137,9 +138,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const baseQuery = {
 			take: pagination.limit,
 			skip: (pagination.page - 1) * pagination.limit,
-			orderBy: {
-				name: 'asc'
-			},
 			include: {
 				email: true,
 				phone: true,
@@ -176,6 +174,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const contactsQuery = await prisma.contacts.findMany(query);
+		console.log("🚀 ~ file: +server.ts ~ line 180 ~ constGET:RequestHandler= ~ contactsQuery", contactsQuery)
 		pagination.totalRecords = await prisma.contacts.count(queryTotal);
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
