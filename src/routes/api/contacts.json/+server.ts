@@ -6,22 +6,12 @@ import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import { getPagination } from '$lib/utility/pagination.util';
+import { addContactsSchema, type AddContact } from '$lib/validation/addContact.validate';
 
-const ContactsSchema = z.object({
-	name: z
-		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
-		.trim(),
-	email: z.string().email({ message: 'Not a valid email' }).optional(),
-	phone: z.string({ required_error: 'Phone is required' }),
-	address: z.string().optional(),
-	isCorporate: z.boolean({ required_error: 'Corporate or Individual is required' }),
-	organizationID: z.string().optional(),
-	vatOrBpNo: z.string().optional()
-});
 
-export type Contacts = z.infer<typeof ContactsSchema>;
 
-export const querySelection = (reqContact: any, createDBy: string) => {
+
+export const querySelection = (reqContact: any, createDBy: number) => {
 	let { name, email, phone, address } = reqContact;
 
 	name = name.trim();
@@ -111,7 +101,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const queryParams = Object.fromEntries(url.searchParams);
-		console.log("🚀 ~ file: +server.ts ~ line 114 ~ constGET:RequestHandler= ~ queryParams", queryParams)
 
 		const pagination = getPagination(queryParams);
 
@@ -174,7 +163,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		const contactsQuery = await prisma.contacts.findMany(query);
-		console.log("🚀 ~ file: +server.ts ~ line 180 ~ constGET:RequestHandler= ~ contactsQuery", contactsQuery)
 		pagination.totalRecords = await prisma.contacts.count(queryTotal);
 		pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
@@ -207,8 +195,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const createDBy = parseInt(locals.user.id);
 
-		let reqContact = await request.json();
+		let reqContact: AddContact = await request.json();
 
+
+		// validate the user's password
+		const parsedContact = addContactsSchema.safeParse(reqContact);
+
+		if (!parsedContact.success) {
+			return new Response(JSON.stringify({ message: parsedContact.error }), {
+				headers: {
+					'content-type': 'application/json; charset=utf-8'
+				},
+				status: 400
+			});
+		}
+
+		
 		const contact = querySelection(reqContact, createDBy);
 
 		const contactsQuery = await prisma.contacts.create({ data: contact });

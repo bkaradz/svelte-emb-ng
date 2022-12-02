@@ -14,9 +14,6 @@ export const load: PageServerLoad = async ({ params }) => {
   const baseQuery = {
     take: pagination.limit,
     skip: (pagination.page - 1) * pagination.limit,
-    // orderBy: {
-    //   name: 'asc'
-    // },
     include: {
       email: true,
       phone: true,

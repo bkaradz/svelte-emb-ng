@@ -4,9 +4,8 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
   const queryParams = {
-    limit: 7,
+    limit: 3,
     page: 1,
-    isCorporate: true
   }
 
   const pagination = getPagination(queryParams);
