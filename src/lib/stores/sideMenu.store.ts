@@ -1,6 +1,5 @@
 import { readable } from 'svelte/store';
 
-import { v4 as uuidv4 } from 'uuid';
 import {
 	svgContacts,
 	svgShoppingBag,
@@ -11,67 +10,66 @@ import {
 	svgClipboardList,
 	svgCart,
 	svgDocumentSearch,
-	svgCash,
 	svgCreditCard
 } from '$lib/utility/svgLogos';
 
 const anchorTags = [
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/',
 		name: 'Dashboard',
 		icon: svgChart
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/contacts',
 		name: 'Customer',
 		icon: svgContacts
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/products',
 		name: 'Products',
 		icon: svgShoppingBag
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/cart',
 		name: 'Cart',
 		icon: svgCart
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/orders',
 		name: 'Sales',
 		icon: svgDollar
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/payments',
 		name: 'Payments',
 		icon: svgCreditCard
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/reports',
 		name: 'Reports',
 		icon: svgDocumentSearch
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/production',
 		name: 'Production',
 		icon: svgClipboardList
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/test',
 		name: 'Test',
 		icon: svgQrCode
 	},
 	{
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		url: '/settings',
 		name: 'Settings',
 		icon: svgAdjustments

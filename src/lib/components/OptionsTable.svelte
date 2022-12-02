@@ -1,11 +1,9 @@
 <script lang="ts">
-	import type { OptionsDocument } from '$lib/models/options.models';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
-	import { v4 as uuidv4 } from 'uuid';
 
 	export let tableHeadings = [
 		'Group',
@@ -34,7 +32,7 @@
 		groupList = groupList;
 	}
 
-	const heandleEditable = async (list: Partial<OptionsDocument>) => {
+	const heandleEditable = async (list: Partial<Options>) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -46,7 +44,7 @@
 	let idToRemove = [];
 
 	$: heandleAddRow = () => {
-		const id = uuidv4();
+		const id = crypto.randomUUID();
 		isEditableID = id;
 		idToRemove.push(id);
 		optionsList = [

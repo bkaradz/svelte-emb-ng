@@ -7,7 +7,6 @@
 	import Input from '$lib/components/Input.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import { svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import { v4 as uuidv4 } from 'uuid';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
 
@@ -105,7 +104,7 @@
 	let idToRemove = [];
 
 	$: heandleAddRow = () => {
-		const id = uuidv4();
+		const id = crypto.randomUUID();
 
 		isEditableID = id;
 		idToRemove.push(id);

@@ -5,7 +5,6 @@
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import suite from '$lib/validation/signUp.validate';
-	import { v4 as uuidv4 } from 'uuid';
 	import classnames from 'vest/classnames';
 
 	let result = suite.get();
@@ -68,7 +67,7 @@
 	let idToRemove = [];
 
 	$: heandleAddRow = () => {
-		const id = uuidv4();
+		const id = crypto.randomUUID();
 
 		isEditableID = id;
 		idToRemove.push(id);

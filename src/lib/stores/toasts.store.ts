@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface toastInterface {
 	message: string;
@@ -13,7 +12,7 @@ function createToast() {
 	return {
 		subscribe,
 		add: ({ message = 'Default message', type = 'info' }: { message: string, type: toastInterface['type'] }) => {
-			const id = uuidv4();
+			const id = crypto.randomUUID();
 			update((allToasts) => [{ id, message, type }, ...allToasts]);
 		},
 		remove: (id: string) =>

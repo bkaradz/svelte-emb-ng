@@ -6,7 +6,6 @@
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
-	import { v4 as uuidv4 } from 'uuid';
 	import { format } from '$lib/services/monetary';
 	import { dinero } from 'dinero.js';
 
@@ -61,13 +60,13 @@
 
 		if (unUsedCurrencies.length > 0) {
 			rateDetailsInit = {
-				id: uuidv4(),
+				id: crypto.randomUUID(),
 				currency: unUsedCurrencies[0],
 				rate: 1
 			};
 		} else {
 			rateDetailsInit = {
-				id: uuidv4(),
+				id: crypto.randomUUID(),
 				currency: '',
 				rate: 0
 			};

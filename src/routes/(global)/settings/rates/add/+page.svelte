@@ -3,11 +3,9 @@
 	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/signUp.validate';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
-	import { v4 as uuidv4 } from 'uuid';
 	import { dinero, toUnit } from 'dinero.js';
 	import { USD, ZAR } from '@dinero.js/currencies';
 
@@ -58,13 +56,13 @@
 
 		if (unUsedCurrencies.length > 0) {
 			rateDetailsInit = {
-				id: uuidv4(),
+				id: crypto.randomUUID(),
 				currency: unUsedCurrencies[0],
 				rate: 1
 			};
 		} else {
 			rateDetailsInit = {
-				id: uuidv4(),
+				id: crypto.randomUUID(),
 				currency: '',
 				rate: 0
 			};
