@@ -1,19 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import suite from '$lib/validation/signUp.validate';
 	import logger from '$lib/utility/logger';
 	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
-	import classnames from 'vest/classnames';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
-	import Input from '$lib/components/Input.svelte';
-	import Textarea from '$lib/components/Textarea.svelte';
-	import Combobox from '$lib/components/Combobox.svelte';
-	import type { OptionsDocument } from '$lib/models/options.models';
+	import type { Options, Products } from '@prisma/client';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { addProductsSchema } from '$lib/validation/addProduct.validate';
 
-	let result = suite.get();
+	let errorMessages = new Map();
 
-	let productCategories: Array<OptionsDocument>;
+	let productCategories: Array<Options>;
 
 	onMount(() => {
 		getProductCategories();
@@ -33,51 +31,53 @@
 		}
 	};
 
-	// interface productInterface {
-	// 	name: string;
-	// 	description: string;
-	// 	unitPrice: number | string;
-	// 	productCategories: { name: string; value: string };
-	// 	stitches: number | string;
-	// 	isActive: boolean;
-	// }
+	const resetForm = () => {
+		formData = { ...initFromData };
+	};
 
-	const initFromData = {
-		name: '',
-		description: '',
-		unitPrice: 0,
-		productCategories: '',
-		stitches: 0,
-		units: 0,
+	const initFromData: Partial<Products> = {
+		name: undefined,
+		description: undefined,
+		unitPrice: undefined,
+		productCategories: undefined,
+		stitches: undefined,
+		units: undefined,
 		isActive: true
 	};
 
 	let formData = { ...initFromData };
 
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
-
-	$: resetForm = () => {
-		formData = { ...initFromData };
-		suite.reset();
-		result = suite.get();
-	};
+	$: disabled = false;
 
 	const handleSubmit = async () => {
+		disabled = true;
+
+		const parsedContact = addProductsSchema.safeParse(formData);
+		console.log(
+			'🚀 ~ file: addProduct.validate.ts:13 ~ data',
+			formData.productCategories === 'embroidery' && !formData.stitches
+		);
+		console.log('🚀 ~ file: +page.svelte:56 ~ handleSubmit ~ parsedContact', parsedContact);
+		console.log('🚀 ~ file: +page.svelte:56 ~ handleSubmit ~ formData', formData);
+
+		if (!parsedContact.success) {
+			const errorMap = zodErrorMessagesMap(parsedContact);
+
+			if (errorMap) {
+				errorMessages = errorMap;
+			}
+			disabled = false;
+			return;
+		}
 		try {
-			const { productCategories, ...otherData } = formData;
-			const finalData = { ...otherData, productCategories: productCategories.value };
 			const res = await fetch('/api/products.json', {
 				method: 'POST',
-				body: JSON.stringify(finalData),
+				body: JSON.stringify(formData),
 				headers: { 'Content-Type': 'application/json' }
 			});
 
 			if (res.ok) {
-				resetForm();
+				// resetForm();
 				toasts.add({ message: 'The Product was added', type: 'success' });
 			}
 		} catch (err: any) {
@@ -109,17 +109,6 @@
 			toasts.add({ message: 'An error has occured while uploading products', type: 'error' });
 		}
 	};
-
-	/**
-	 * TODO: impliment filter
-	 */
-	// const handleComboInput = (e: SubmitEvent) => {
-	// 	// onInput={handleComboInput}
-	// 	formData = {
-	// 		...formData,
-	// 		productCategories: e.target.value
-	// 	};
-	// };
 </script>
 
 <svelte:head>
@@ -173,23 +162,43 @@
 	<div class="mx-auto mt-2 h-full w-full max-w-md space-y-8">
 		<form class="mt-2 space-y-6" on:submit|preventDefault={handleSubmit}>
 			<div class="space-y-2 shadow-sm">
-				<Input
+				<label for="name" class="flex justify-between text-sm">
+					<span>Name</span>
+					<span class="text-xs text-danger">
+						{errorMessages.get('name') ? errorMessages.get('name') : ''}
+					</span>
+				</label>
+				<input
+					use:selectTextOnFocus
+					type="text"
 					name="name"
-					label="Name"
+					class="input"
 					bind:value={formData.name}
-					messages={result.getErrors('name')}
-					validityClass={cn('name')}
 				/>
-				<Textarea
+
+				<label for="description" class="flex justify-between text-sm">
+					<span>Description</span>
+					<span class="text-xs text-danger">
+						{errorMessages.get('description') ? errorMessages.get('description') : ''}
+					</span>
+				</label>
+				<textarea
+					use:selectTextOnFocus
 					name="description"
-					label="Description"
+					class="input"
 					bind:value={formData.description}
-					messages={result.getErrors('description')}
-					validityClass={cn('description')}
+					cols="10"
+					rows="5"
 				/>
 
 				{#if Array.isArray(productCategories)}
-					<select bind:value={formData.productCategories} class="input">
+					<label for="productCategories" class="flex justify-between text-sm">
+						<span>Product Category</span>
+						<span class="text-xs text-danger">
+							{errorMessages.get('productCategories') ? errorMessages.get('productCategories') : ''}
+						</span>
+					</label>
+					<select bind:value={formData.productCategories} name="productCategories" class="input">
 						{#each productCategories as type}
 							<option value={type.value}>
 								{type.label}
@@ -199,34 +208,49 @@
 				{/if}
 
 				{#if formData?.productCategories === 'embroidery'}
-					<Input
-						name="stitches"
-						label="Stitches"
+					<label for="stitches" class="flex justify-between text-sm">
+						<span>Stitches</span>
+						<span class="text-xs text-danger">
+							{errorMessages.get('stitches') ? errorMessages.get('stitches') : ''}
+						</span>
+					</label>
+					<input
+						use:selectTextOnFocus
 						type="number"
+						name="stitches"
+						class="input"
 						bind:value={formData.stitches}
-						messages={result.getErrors('stitches')}
-						validityClass={cn('stitches')}
 					/>
 				{/if}
 
 				{#if formData?.productCategories !== 'embroidery'}
-					<Input
-						name="unitPrice"
-						label="Unit Price"
+					<label for="unitPrice" class="flex justify-between text-sm">
+						<span>Unit Price</span>
+						<span class="text-xs text-danger">
+							{errorMessages.get('unitPrice') ? errorMessages.get('unitPrice') : ''}
+						</span>
+					</label>
+					<input
+						use:selectTextOnFocus
 						type="number"
+						name="unitPrice"
+						class="input"
 						bind:value={formData.unitPrice}
-						messages={result.getErrors('unitPrice')}
-						validityClass={cn('unitPrice')}
 					/>
 				{/if}
 				{#if formData?.productCategories !== 'embroidery'}
-					<Input
-						name="units"
-						label="Quantity"
+					<label for="units" class="flex justify-between text-sm">
+						<span>Quantity</span>
+						<span class="text-xs text-danger">
+							{errorMessages.get('units') ? errorMessages.get('units') : ''}
+						</span>
+					</label>
+					<input
+						use:selectTextOnFocus
 						type="number"
-						bind:value={formData.units}
-						messages={result.getErrors('units')}
-						validityClass={cn('units')}
+						name="units"
+						class="input"
+						bind:value={formData.unitPrice}
 					/>
 				{/if}
 				<div class="mt-6 flex space-x-2">

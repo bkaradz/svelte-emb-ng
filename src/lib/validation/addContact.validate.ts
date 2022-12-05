@@ -10,9 +10,6 @@ export const addContactsSchema = z.object({
 	isCorporate: z.boolean({ required_error: 'Corporate or Individual is required' }),
 	organizationID: z.number().optional(),
 	vatOrBpNo: z.string().optional()
-}).refine(data => !(data.isCorporate === false && !data.organizationID), {
-	message: 'Organization is required',
-	path: ['organizationID']
 });
 
 

@@ -1,7 +1,6 @@
 import omit from 'lodash-es/omit';
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import { z, type TypeOf } from 'zod';
 import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
@@ -9,10 +8,8 @@ import { getPagination } from '$lib/utility/pagination.util';
 import { addContactsSchema, type AddContact } from '$lib/validation/addContact.validate';
 
 
-
-
 export const querySelection = (reqContact: any, createDBy: number) => {
-	let { name, email, phone, address } = reqContact;
+	let { name, email, phone, address, ...restContact } = reqContact;
 
 	name = name.trim();
 	if (email) {
@@ -32,6 +29,7 @@ export const querySelection = (reqContact: any, createDBy: number) => {
 	let contact: Prisma.ContactsCreateInput;
 
 	contact = {
+		...restContact,
 		name,
 		createdBy: createDBy,
 		isActive: true,
@@ -210,7 +208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		
+
 		const contact = querySelection(reqContact, createDBy);
 
 		const contactsQuery = await prisma.contacts.create({ data: contact });

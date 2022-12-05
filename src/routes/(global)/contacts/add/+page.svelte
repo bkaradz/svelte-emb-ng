@@ -53,48 +53,35 @@
 		}
 	};
 
-	let formData: Omit<AddContact, 'name' | 'phone' | 'organizationID'> & {
-		name: string | undefined;
-		phone: string | undefined;
-		organizationID: number | undefined | Partial<Contacts>;
-	} = {
+	$: disabled = false;
+
+	$: resetForm = () => {
+		formData = { ...initFromData };
+		corporateSearch = Object.create({ name: undefined });
+	};
+
+	const initFromData = {
 		isCorporate: false,
-		organizationID: undefined,
+		organizationID: { name: undefined },
 		name: undefined,
 		email: undefined,
 		phone: undefined,
 		address: undefined
 	};
 
-	// const handleInput = (event: any) => {
-	// 	const name = (event.target as HTMLInputElement).name;
-	// 	const value = (event.target as HTMLInputElement).value;
-	// 	formData[name] = value;
-	// };
-
-	$: disabled = false;
-
-	$: resetForm = () => {
-		formData = {
-			isCorporate: false,
-			organizationID: { name: undefined },
-			name: undefined,
-			email: undefined,
-			phone: undefined,
-			address: undefined
-		};
-		corporateSearch = { name: undefined };
-	};
+	let formData: Omit<AddContact, 'name' | 'phone' | 'organizationID'> & {
+		name: string | undefined;
+		phone: string | undefined;
+		organizationID: number | undefined | Partial<Contacts>;
+	} = { ...initFromData };
 
 	const handleSubmit = async () => {
 		disabled = true;
 
 		const parsedContact = addContactsSchema.safeParse(formData);
-		console.log('🚀 ~ file: +page.svelte:91 ~ handleSubmit ~ formData', formData);
 
 		if (!parsedContact.success) {
 			const errorMap = zodErrorMessagesMap(parsedContact);
-			console.log('🚀 ~ file: +page.svelte:95 ~ handleSubmit ~ errorMap', errorMap);
 
 			if (errorMap) {
 				errorMessages = errorMap;
@@ -236,12 +223,12 @@
 						{errorMessages}
 					/>
 				{:else}
-				<label for="vatOrBpNo" class="flex justify-between text-sm">
-					<span>VAT or BP Number</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('vatOrBpNo') ? errorMessages.get('vatOrBpNo') : ''}</span
-					>
-				</label>
+					<label for="vatOrBpNo" class="flex justify-between text-sm">
+						<span>VAT or BP Number</span>
+						<span class="text-xs text-danger"
+							>{errorMessages.get('vatOrBpNo') ? errorMessages.get('vatOrBpNo') : ''}</span
+						>
+					</label>
 					<input
 						use:selectTextOnFocus
 						type="text"
