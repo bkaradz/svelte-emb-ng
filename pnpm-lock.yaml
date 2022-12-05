@@ -55,7 +55,6 @@ specifiers:
   tslib: ^2.3.1
   typescript: ^4.7.4
   validator: ^13.7.0
-  vest: ^4.5.0
   vite: ^3.0.0
   vitest: ^0.19.1
   zod: ^3.17.10
@@ -115,7 +114,6 @@ devDependencies:
   tslib: 2.4.1
   typescript: 4.9.3
   validator: 13.7.0
-  vest: 4.6.8
   vite: 3.2.4
   vitest: 0.19.1_hnmgco3pytrfcoecvdcdxpkfpu
   zod: 3.19.1
@@ -1358,12 +1356,6 @@ packages:
 
   /console-control-strings/1.1.0:
     resolution: {integrity: sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==}
-    dev: true
-
-  /context/3.0.4:
-    resolution: {integrity: sha512-kjRlThxjda9o3L4lFXO7dOmxVXfO+v8q8A9dCyJxZ07XudYq6/TAFmF2bV5Plb4afi+oLSox2rXkJtI/nFB9Aw==}
-    dependencies:
-      vest-utils: 0.0.4
     dev: true
 
   /convert-source-map/1.9.0:
@@ -3060,13 +3052,6 @@ packages:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
 
-  /n4s/4.3.4:
-    resolution: {integrity: sha512-g/kWJkB6WszbA9Pfe3dV/lw/Z8cRjidFtSFbTLyQdsQum5SHC+SKEL2bukpm4chyfbP9WBpTC0gxQCegtjAa2A==}
-    dependencies:
-      context: 3.0.4
-      vest-utils: 0.0.4
-    dev: true
-
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -4580,29 +4565,6 @@ packages:
   /validator/13.7.0:
     resolution: {integrity: sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==}
     engines: {node: '>= 0.10'}
-    dev: true
-
-  /vast/1.0.14:
-    resolution: {integrity: sha512-w3iCRS3G+qOR/wkGpLz6b5/kdVQU3w/SHKZ8S9f0UTEwIZ3cE/IXuEZYZrFJkxL9AotyUk7b1WPxkA0cxq1fPA==}
-    dependencies:
-      vest-utils: 0.0.3
-    dev: true
-
-  /vest-utils/0.0.3:
-    resolution: {integrity: sha512-ZVeNgF0CSf+35/jFd639savGiYiH8FO5PAOGKeUbyd6PwfiPkqm84XwAnErq5qcXoCZT3N9cw94YevduFTUTjg==}
-    dev: true
-
-  /vest-utils/0.0.4:
-    resolution: {integrity: sha512-H9YiK3yjg2CG+0KF5BzoFJYW38fFnfC+Z/5xDvJpRmGBe7J3X2Y29iHihgp1iQJl93JmEv/Kch8cjIQ+H3ilyg==}
-    dev: true
-
-  /vest/4.6.8:
-    resolution: {integrity: sha512-5DOq2O9n30Ty/4wyf4e/ZdZMXYVNzRznJ/jJEhEnI3Eyf50o6sQqCirHcT3QxQNV+4Y7ih6P6LtPqgcBV6AkhQ==}
-    dependencies:
-      context: 3.0.4
-      n4s: 4.3.4
-      vast: 1.0.14
-      vest-utils: 0.0.4
     dev: true
 
   /vite/3.2.4:

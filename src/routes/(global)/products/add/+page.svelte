@@ -53,12 +53,6 @@
 		disabled = true;
 
 		const parsedContact = addProductsSchema.safeParse(formData);
-		console.log(
-			'🚀 ~ file: addProduct.validate.ts:13 ~ data',
-			formData.productCategories === 'embroidery' && !formData.stitches
-		);
-		console.log('🚀 ~ file: +page.svelte:56 ~ handleSubmit ~ parsedContact', parsedContact);
-		console.log('🚀 ~ file: +page.svelte:56 ~ handleSubmit ~ formData', formData);
 
 		if (!parsedContact.success) {
 			const errorMap = zodErrorMessagesMap(parsedContact);

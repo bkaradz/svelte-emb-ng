@@ -13,6 +13,11 @@
 
 	let errorMessages = new Map();
 
+	/**
+	 * TODO: correct this error when loading Edit page it occures even when tha page is empty
+	 * Error: Cannot read properties of null (reading 'getAttribute')
+	*/
+
 	type ContactsTypes = Pagination & { results: Contacts[] };
 
 	export let data: { corporateContacts: ContactsTypes; contact: Contacts };

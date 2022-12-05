@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import suite from '$lib/validation/signUp.validate';
-	import classnames from 'vest/classnames';
 	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
 	import Input from '$lib/components/Input.svelte';
@@ -9,8 +7,10 @@
 	import { svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 
-	let result = suite.get();
+	let errorMessages = new Map();
 
 	let tableHeadings = [
 		'Embroidery Type',
@@ -55,12 +55,6 @@
 
 	onMount(async () => {
 		getPricelist();
-	});
-
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
 	});
 
 	const heandleEditable = async (list: any) => {
@@ -163,24 +157,29 @@
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
-					<Input
+					<label for="name" class="flex justify-between text-sm">
+						<span>Name</span>
+						<span class="text-xs text-danger"
+							>{errorMessages.get('name') ? errorMessages.get('name') : ''}</span
+						>
+					</label>
+					<input
+						use:selectTextOnFocus
+						type="text"
 						name="name"
-						label="Name"
+						class="input"
 						bind:value={pricelist.name}
-						onInput={handleInput}
-						messages={result.getErrors('name')}
-						validityClass={cn('name')}
 					/>
-					<Checkbox
+					<Checkbox2
 						name="isActive"
 						label="isActive"
-						validityClass={cn('isActive')}
+						errorMessages={errorMessages.get('isActive')}
 						bind:checked={pricelist.isActive}
 					/>
-					<Checkbox
+					<Checkbox2
 						name="isDefault"
 						label="isDefault"
-						validityClass={cn('isDefault')}
+						errorMessages={errorMessages.get('isDefault')}
 						bind:checked={pricelist.isDefault}
 					/>
 				</div>
@@ -220,6 +219,7 @@
 									>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="embroideryTypes"
@@ -229,6 +229,7 @@
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumQuantity"
@@ -238,6 +239,7 @@
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumPrice"
@@ -247,6 +249,7 @@
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="pricePerThousandStitches"

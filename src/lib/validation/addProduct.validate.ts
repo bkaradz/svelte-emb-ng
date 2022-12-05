@@ -17,21 +17,16 @@ export const addProductsSchema = z.object({
 			message: `Stitches are required`,
 			path: ["stitches"]
 		});
+		z.NEVER
 	}
-	if (data.productCategories !== 'embroidery' && !data.unitPrice) {
+	if (data.productCategories !== 'embroidery' && !(data.unitPrice && data.units)) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
-			message: `Unit Price is required`,
-			path: ["unitPrice"]
+			message: `Unit Price and Units are required`,
+			path: ["unitPrice", "units"]
 		});
 	}
-	if (data.productCategories !== 'embroidery' && !data.units) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			message: `Number of Units are required`,
-			path: ["units"]
-		});
-	}
+	
 });
 
 

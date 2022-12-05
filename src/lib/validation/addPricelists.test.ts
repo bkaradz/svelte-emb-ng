@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
-import { addProductsSchema, type AddProduct } from "./addProduct.validate";
+import { addPricelistSchema, type AddPricelists } from "./addPricelists.validate";
 
 
-export const validateFormInput = (values: AddProduct) => {
-  const parsedData = addProductsSchema.parse(values);
+export const validateFormInput = (values: AddPricelists) => {
+  const parsedData = addPricelistSchema.parse(values);
 
   return parsedData;
 };

@@ -15,15 +15,15 @@ const config = {
     // in-source testing
     includeSource: ['src/**/*.{js,ts,svelte}'],
     // Add @testing-library/jest-dom matchers & setup MSW
-    setupFiles: ['./setupTest.js', './src/mocks/setup.ts'],
+    // setupFiles: ['./setupTest.js', './src/mocks/setup.ts'],
     // Exclude files in c8
-    coverage: {
-      exclude: ['setupTest.js', 'src/mocks']
-    },
-    deps: {
-      // Put Svelte component here, e.g., inline: [/svelte-multiselect/, /msw/]
-      inline: [/msw/]
-    },
+    // coverage: {
+    //   exclude: ['setupTest.js', 'src/mocks']
+    // },
+    // deps: {
+    //   // Put Svelte component here, e.g., inline: [/svelte-multiselect/, /msw/]
+    //   inline: [/msw/]
+    // },
     // Exclude playwright tests folder
     exclude: [...configDefaults.exclude, './src/tests']
   }

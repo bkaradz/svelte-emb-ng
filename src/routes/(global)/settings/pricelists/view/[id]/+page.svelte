@@ -1,14 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import suite from '$lib/validation/signUp.validate';
-	import classnames from 'vest/classnames';
 	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
-	import Input from '$lib/components/Input.svelte';
-	import Checkbox from '$lib/components/Checkbox.svelte';
 	import { convertPricelist } from '$lib/utility/pricelists.utils';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 
-	let result = suite.get();
+	let errorMessages = new Map();
 
 	let tableHeadings = [
 		'Embroidery Type',
@@ -48,11 +46,7 @@
 		}
 	});
 
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
+
 </script>
 
 {#if pricelist}
@@ -63,26 +57,30 @@
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
-					<Input
+					<label for="name" class="flex justify-between text-sm">
+						<span>Name</span>
+						<span class="text-xs text-danger"
+							>{errorMessages.get('name') ? errorMessages.get('name') : ''}</span
+						>
+					</label>
+					<input
+						use:selectTextOnFocus
+						type="text"
 						name="name"
-						label="Name"
-						disabled={true}
+						class="input"
 						bind:value={pricelist.name}
-						messages={result.getErrors('name')}
-						validityClass={cn('name')}
 					/>
-					<Checkbox
+					
+					<Checkbox2
 						name="isActive"
 						label="isActive"
-						disabled={true}
-						validityClass={cn('isActive')}
+						errorMessages={errorMessages.get('isActive')}
 						bind:checked={pricelist.isActive}
 					/>
-					<Checkbox
+					<Checkbox2
 						name="isDefault"
 						label="isDefault"
-						disabled={true}
-						validityClass={cn('isDefault')}
+						errorMessages={errorMessages.get('isDefault')}
 						bind:checked={pricelist.isDefault}
 					/>
 				</div>

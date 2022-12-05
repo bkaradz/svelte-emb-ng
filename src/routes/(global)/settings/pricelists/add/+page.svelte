@@ -1,13 +1,18 @@
 <script lang="ts">
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import Input from '$lib/components/Input.svelte';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import suite from '$lib/validation/signUp.validate';
-	import classnames from 'vest/classnames';
+	import { addPricelistSchema } from '$lib/validation/addPricelists.validate';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import type { Options } from '@prisma/client';
+	import dayjs from 'dayjs';
 
-	let result = suite.get();
+	export let data: { embroideryTypes: Options };
+	$: console.log('🚀 ~ file: +page.svelte:12 ~ data', data);
+
+	let errorMessages = new Map();
 
 	let tableHeadings = [
 		'Embroidery Type',
@@ -18,8 +23,10 @@
 		'Delete/Add Row'
 	];
 
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
+
 	let pricelist: Partial<any> = {
-		name: '',
+		name: TODAY,
 		isActive: true,
 		isDefault: false,
 		pricelists: []
@@ -31,7 +38,7 @@
 
 	$: groupList;
 
-	let isEditableID = null;
+	let isEditableID: string | null = null;
 
 	$: if (pricelist?.pricelists?.length) {
 		groupList = new Set(['all']);
@@ -40,12 +47,6 @@
 		});
 		groupList = groupList;
 	}
-
-	$: cn = classnames(result, {
-		warning: 'warning',
-		invalid: 'error',
-		valid: 'success'
-	});
 
 	const heandleEditable = async (list: PricelistsSubDocument) => {
 		if (isEditableID === null) {
@@ -64,7 +65,7 @@
 		// deleteOption(finalData);
 	};
 
-	let idToRemove = [];
+	let idToRemove: string[] = [];
 
 	$: heandleAddRow = () => {
 		const id = crypto.randomUUID();
@@ -83,7 +84,11 @@
 		];
 	};
 
+	$: disabled = false;
+
 	const headleSubmit = async () => {
+		disabled = true;
+
 		try {
 			pricelist.pricelists = pricelist.pricelists.map((pList) => {
 				if (idToRemove.includes(pList.id)) {
@@ -96,6 +101,19 @@
 					pricePerThousandStitches: pList.pricePerThousandStitches
 				};
 			});
+
+			const parsedPricelist = addPricelistSchema.safeParse(pricelist);
+
+			if (!parsedPricelist.success) {
+				const errorMap = zodErrorMessagesMap(parsedPricelist);
+
+				if (errorMap) {
+					errorMessages = errorMap;
+				}
+				disabled = false;
+				return;
+			}
+
 			const res = await fetch('/api/pricelists.json', {
 				method: 'POST',
 				body: JSON.stringify(pricelist),
@@ -125,24 +143,29 @@
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
-					<Input
+					<label for="name" class="flex justify-between text-sm">
+						<span>Name</span>
+						<span class="text-xs text-danger"
+							>{errorMessages.get('name') ? errorMessages.get('name') : ''}</span
+						>
+					</label>
+					<input
+						use:selectTextOnFocus
+						type="text"
 						name="name"
-						label="Name"
+						class="input"
 						bind:value={pricelist.name}
-						onInput={handleInput}
-						messages={result.getErrors('name')}
-						validityClass={cn('name')}
 					/>
-					<Checkbox
+					<Checkbox2
 						name="isActive"
 						label="isActive"
-						validityClass={cn('isActive')}
+						errorMessages={errorMessages.get('isActive')}
 						bind:checked={pricelist.isActive}
 					/>
-					<Checkbox
+					<Checkbox2
 						name="isDefault"
 						label="isDefault"
-						validityClass={cn('isDefault')}
+						errorMessages={errorMessages.get('isDefault')}
 						bind:checked={pricelist.isDefault}
 					/>
 				</div>
@@ -181,16 +204,23 @@
 										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 									>
 										<td class="px-2 py-1">
-											<input
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="embroideryTypes"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.embroideryTypes}
-											/>
+											{#if Array.isArray(data.embroideryTypes)}
+												<select
+													bind:value={list.embroideryTypes}
+													class="text-sm w-full border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
+												>
+													{#each data.embroideryTypes as type}
+														<option value={type.value}>
+															{type.label}
+														</option>
+													{/each}
+												</select>
+											{/if}
+											
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumQuantity"
@@ -200,6 +230,7 @@
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumPrice"
@@ -209,6 +240,7 @@
 										</td>
 										<td class="px-2 py-1">
 											<input
+												use:selectTextOnFocus
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="pricePerThousandStitches"
