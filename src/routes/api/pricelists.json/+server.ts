@@ -69,9 +69,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			changeCurrentDefault();
 		}
 
-		const { pricelists, ...restPricelist } = reqPricelists;
+		const { pricelistDetails, ...restPricelist } = reqPricelists;
 
-		const subPrices = reqPricelists.pricelists.map((list: any) => {
+		const subPrices = reqPricelists.pricelistDetails.map((list: any) => {
 			return {
 				...list,
 				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
@@ -114,9 +114,9 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const reqPricelists = await request.json();
 
-		const { pricelists, ...restPricelist } = reqPricelists;
+		const { pricelistDetails, ...restPricelist } = reqPricelists;
 
-		const subPrices = reqPricelists.pricelists.map((list: any) => {
+		const subPrices = reqPricelists.pricelistDetails.map((list: any) => {
 			return {
 				...list,
 				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),

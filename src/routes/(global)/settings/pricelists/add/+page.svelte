@@ -6,11 +6,10 @@
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { addPricelistSchema } from '$lib/validation/addPricelists.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import type { Options } from '@prisma/client';
+	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
 
 	export let data: { embroideryTypes: Options };
-	$: console.log('🚀 ~ file: +page.svelte:12 ~ data', data);
 
 	let errorMessages = new Map();
 
@@ -25,12 +24,20 @@
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	let pricelist: Partial<any> = {
+	type PricelistsDetails = Omit<PricelistDetails, 'id' | 'pricelistsId'> & { id: string };
+
+	type PricelistType = Pick<Pricelists, 'name' | 'isActive' | 'isDefault'> & {
+		pricelistDetails: PricelistsDetails[];
+	};
+
+	const initPricelist: Partial<PricelistType> = {
 		name: TODAY,
 		isActive: true,
 		isDefault: false,
-		pricelists: []
+		pricelistDetails: []
 	};
+
+	let pricelist = { ...initPricelist };
 
 	let selectedGroup = 'all';
 
@@ -40,15 +47,15 @@
 
 	let isEditableID: string | null = null;
 
-	$: if (pricelist?.pricelists?.length) {
+	$: if (pricelist?.pricelistDetails?.length) {
 		groupList = new Set(['all']);
-		pricelist.pricelists.forEach((list) => {
+		pricelist.pricelistDetails.forEach((list) => {
 			groupList.add(list.embroideryTypes);
 		});
 		groupList = groupList;
 	}
 
-	const heandleEditable = async (list: PricelistsSubDocument) => {
+	const heandleEditable = async (list: PricelistsDetails) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -57,12 +64,11 @@
 		}
 	};
 
-	const handleInput = () => {};
-
-	const heandleDelete = (finalData: PricelistsSubDocument) => {
+	const heandleDelete = (finalData: PricelistsDetails) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
-		pricelist.pricelists = pricelist.pricelists.filter((list) => list.id !== finalData.id);
-		// deleteOption(finalData);
+		pricelist.pricelistDetails = pricelist?.pricelistDetails?.filter(
+			(list) => list.id !== finalData.id
+		);
 	};
 
 	let idToRemove: string[] = [];
@@ -70,10 +76,14 @@
 	$: heandleAddRow = () => {
 		const id = crypto.randomUUID();
 
+		if (!Array.isArray(pricelist?.pricelistDetails)) {
+			return;
+		}
+
 		isEditableID = id;
 		idToRemove.push(id);
-		pricelist.pricelists = [
-			...pricelist.pricelists,
+		pricelist.pricelistDetails = [
+			...pricelist.pricelistDetails,
 			{
 				id: id,
 				embroideryTypes: selectedGroup,
@@ -90,18 +100,6 @@
 		disabled = true;
 
 		try {
-			pricelist.pricelists = pricelist.pricelists.map((pList) => {
-				if (idToRemove.includes(pList.id)) {
-					delete pList.id;
-					idToRemove = idToRemove.filter((list) => list !== pList.id);
-				}
-				return {
-					...pList,
-					minimumPrice: pList.minimumPrice,
-					pricePerThousandStitches: pList.pricePerThousandStitches
-				};
-			});
-
 			const parsedPricelist = addPricelistSchema.safeParse(pricelist);
 
 			if (!parsedPricelist.success) {
@@ -116,13 +114,14 @@
 
 			const res = await fetch('/api/pricelists.json', {
 				method: 'POST',
-				body: JSON.stringify(pricelist),
+				body: JSON.stringify(parsedPricelist.data),
 				headers: { 'Content-Type': 'application/json' }
 			});
 
 			if (res.ok) {
-				// getPricelist();
 				pricelist = await res.json();
+				pricelist = { ...initPricelist };
+				disabled = false;
 				toasts.add({ message: `${pricelist.name} was added`, type: 'success' });
 			}
 		} catch (err: any) {
@@ -170,7 +169,7 @@
 					/>
 				</div>
 				<div>
-					<input class="btn btn-primary" type="submit" value="Submit" />
+					<input {disabled} class="btn btn-primary" type="submit" value="Submit" />
 				</div>
 			</div>
 			<!-- Table start -->
@@ -198,75 +197,81 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each pricelist.pricelists as list (list.id)}
-								{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
-									<tr
-										class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
-									>
-										<td class="px-2 py-1">
-											{#if Array.isArray(data.embroideryTypes)}
-												<select
-													bind:value={list.embroideryTypes}
-													class="text-sm w-full border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
+							{#if Array.isArray(pricelist?.pricelistDetails)}
+								{#each pricelist?.pricelistDetails as list (list?.id)}
+									{#if selectedGroup === list.embroideryTypes || selectedGroup === 'all'}
+										<tr
+											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+										>
+											<td class="px-2 py-1">
+												{#if Array.isArray(data.embroideryTypes)}
+													<select
+														bind:value={list.embroideryTypes}
+														class="text-sm w-full border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
+													>
+														{#each data.embroideryTypes as type}
+															<option value={type.value}>
+																{type.label}
+															</option>
+														{/each}
+													</select>
+												{/if}
+											</td>
+											<td class="px-2 py-1">
+												<input
+													use:selectTextOnFocus
+													class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+													type="number"
+													name="minimumQuantity"
+													disabled={!(isEditableID === list.id)}
+													bind:value={list.minimumQuantity}
+												/>
+											</td>
+											<td class="px-2 py-1">
+												<input
+													use:selectTextOnFocus
+													class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+													type="number"
+													name="minimumPrice"
+													disabled={!(isEditableID === list.id)}
+													bind:value={list.minimumPrice}
+												/>
+											</td>
+											<td class="px-2 py-1">
+												<input
+													use:selectTextOnFocus
+													class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+													type="number"
+													name="pricePerThousandStitches"
+													disabled={!(isEditableID === list.id)}
+													bind:value={list.pricePerThousandStitches}
+												/>
+											</td>
+											<td class="p-1 text-center ">
+												<button
+													class=" m-0 p-0"
+													on:click|preventDefault={() => heandleEditable(list)}
 												>
-													{#each data.embroideryTypes as type}
-														<option value={type.value}>
-															{type.label}
-														</option>
-													{/each}
-												</select>
-											{/if}
-											
-										</td>
-										<td class="px-2 py-1">
-											<input
-												use:selectTextOnFocus
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumQuantity"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumQuantity}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												use:selectTextOnFocus
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="minimumPrice"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.minimumPrice}
-											/>
-										</td>
-										<td class="px-2 py-1">
-											<input
-												use:selectTextOnFocus
-												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-												type="text"
-												name="pricePerThousandStitches"
-												disabled={!(isEditableID === list.id)}
-												bind:value={list.pricePerThousandStitches}
-											/>
-										</td>
-										<td class="p-1 text-center ">
-											<button
-												class=" m-0 p-0"
-												on:click|preventDefault={() => heandleEditable(list)}
-											>
-												<span class="fill-current text-pickled-bluewood-500">
-													{@html isEditableID === list.id ? svgFloppy : svgPencil}
-												</span>
-											</button>
-										</td>
+													<span class="fill-current text-pickled-bluewood-500">
+														{@html isEditableID === list.id ? svgFloppy : svgPencil}
+													</span>
+												</button>
+											</td>
 
-										<td class="p-1 text-center ">
-											<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
-												<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
-											</button>
-										</td>
-									</tr>
-								{/if}
-							{/each}
+											<td class="p-1 text-center ">
+												<button
+													class=" m-0 p-0"
+													on:click|preventDefault={() => heandleDelete(list)}
+												>
+													<span class="fill-current text-pickled-bluewood-500"
+														>{@html svgTrash}</span
+													>
+												</button>
+											</td>
+										</tr>
+									{/if}
+								{/each}
+							{/if}
 							<tr
 								class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 bg-royal-blue-300 font-normal text-white"
 							>

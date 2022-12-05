@@ -3,9 +3,10 @@ import { z } from 'zod';
 export const addProductsSchema = z.object({
 	name: z
 		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
+		.min(1)
 		.trim(),
 	description: z.string().optional(),
-	productCategories: z.string({ required_error: 'Product Category is required' }),
+	productCategories: z.string({ required_error: 'Product Category is required' }).min(1),
 	stitches: z.number().optional(),
 	unitPrice: z.number().optional(),
 	units: z.number().optional(),
@@ -26,7 +27,7 @@ export const addProductsSchema = z.object({
 			path: ["unitPrice", "units"]
 		});
 	}
-	
+
 });
 
 

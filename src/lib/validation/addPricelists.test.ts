@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { addPricelistSchema, type AddPricelists } from "./addPricelists.validate";
 
 
-export const validateFormInput = (values: AddPricelists) => {
+export const validateFormInput = (values: any) => {
   const parsedData = addPricelistSchema.parse(values);
 
   return parsedData;
@@ -10,56 +10,163 @@ export const validateFormInput = (values: AddPricelists) => {
 
 // TESTS
 
-it("Should fail if productCategories is embroidery but stitches are not provided", async () => {
+it("Should fail if name is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "embroidery",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
     }),
-  ).toThrowError("Stitches are required");
+  ).toThrowError("Name is required");
 });
-it("Should pass if productCategories is embroidery and stitches are provided", async () => {
+it("Should fail if isActive is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "embroidery",
-      stitches: 12345,
+      name: "pricelist1",
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
     }),
-  ).not.toThrowError();
+  ).toThrowError("isActive is required");
 });
-it("Should fail if productCategories is not embroidery and unitPrice and units are not provided", async () => {
+it("Should fail if isDefault is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "golfShirt",
+      name: "pricelist1",
+      isActive: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
     }),
-  ).toThrowError("Unit Price and Units are required");
+  ).toThrowError("isDefault is required");
 });
-it("Should fail if productCategories is not embroidery and units are not provided", async () => {
+it("Should fail if pricelistDetails is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "golfShirt",
-      unitPrice: 10,
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
     }),
-  ).toThrowError("Unit Price and Units are required");
+  ).toThrowError("pricelistDetails is required");
 });
-it("Should fail if productCategories is not embroidery and unitPrice is not provided", async () => {
+it("Should fail if embroideryTypes is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "golfShirt",
-      units: 10,
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
     }),
-  ).toThrowError("Unit Price and Units are required");
+  ).toThrowError("embroideryTypes is required");
 });
-it("Should pass if productCategories is not embroidery and unitPrice and units are provided", async () => {
+it("Should fail if minimumPrice is not provided", async () => {
   expect(() =>
     validateFormInput({
-      name: "New Product",
-      productCategories: "golfShirt",
-      unitPrice: 10,
-      units: 10,
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
+    }),
+  ).toThrowError("Minimum Price is required");
+});
+it("Should fail if minimumQuantity is not provided", async () => {
+  expect(() =>
+    validateFormInput({
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
+    }),
+  ).toThrowError("Minimum Quantity is required");
+});
+it("Should fail if pricePerThousandStitches is not provided", async () => {
+  expect(() =>
+    validateFormInput({
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+        }
+      ]
+    }),
+  ).toThrowError("Price Per Thousand Stitches is required");
+});
+it("Should fail if pricePerThousandStitches is not provided", async () => {
+  expect(() =>
+    validateFormInput({
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        },
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+        }
+      ]
+    }),
+  ).toThrowError("Price Per Thousand Stitches is required");
+});
+it("Should pass if all fields are provided", async () => {
+  expect(() =>
+    validateFormInput({
+      name: "pricelist1",
+      isActive: true,
+      isDefault: true,
+      pricelistDetails: [
+        {
+          embroideryTypes: "flat",
+          minimumPrice: 0.0,
+          minimumQuantity: 0,
+          pricePerThousandStitches: 0.0
+        }
+      ]
     }),
   ).not.toThrowError();
 });

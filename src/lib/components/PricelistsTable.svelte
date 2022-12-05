@@ -7,16 +7,7 @@
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 
-	export let tableHeadings = [
-		'#',
-		'Date',
-		'Name',
-		'isActive',
-		'isDefault',
-		'View',
-		'Edit',
-		'Delete'
-	];
+	export let tableHeadings = ['Name', 'Id #', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
 	let pricelists: Pricelists[] = [];
 
@@ -103,6 +94,15 @@
 						<tr
 							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
+							<td class="px-2 py-1">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
+									type="text"
+									name="name"
+									disabled
+									bind:value={list.name}
+								/>
+							</td>
 							<td class="px-2 py-1 ">
 								<input
 									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
@@ -115,15 +115,6 @@
 							<td class="px-2 py-1 text-center">
 								{dayjs(list.createdAt).format('DD-MM-YYYY')}
 							</td>
-							<td class="px-2 py-1">
-								<input
-									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
-									type="text"
-									name="name"
-									disabled
-									bind:value={list.name}
-								/>
-							</td>
 
 							<td class="px-2 py-1 text-center">
 								<input disabled bind:checked={list.isActive} type="checkbox" name="isActive" />
@@ -135,13 +126,6 @@
 								<button class=" m-0 p-0" on:click={() => viewPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgView}
-									</span>
-								</button>
-							</td>
-							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => editPricelist(list.id)}>
-									<span class="fill-current text-pickled-bluewood-500">
-										{@html svgPencil}
 									</span>
 								</button>
 							</td>
