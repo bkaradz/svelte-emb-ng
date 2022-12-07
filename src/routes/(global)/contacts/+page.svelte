@@ -104,7 +104,9 @@
 
 	let gridView = false;
 	let searchInputValue = '';
+	$: console.log('🚀 ~ searchInputValue', searchInputValue);
 	let searchOption = 'name';
+	$: console.log('🚀 ~ searchOption', searchOption);
 
 	const searchNamesOptions = [
 		{ value: 'name', label: 'Name' },
@@ -116,7 +118,6 @@
 	];
 
 	const heandleSearchSelection = (event: MouseEvent) => {
-		searchOption = (event.target as HTMLInputElement).name;
 		searchInputValue = '';
 	};
 
@@ -184,6 +185,8 @@
 								class="input w-full pl-8 pr-3 text-base bg-pickled-bluewood-50 placeholder-pickled-bluewood-400 outline-none border-none focus:border-none"
 								type="text"
 								placeholder="Search..."
+								bind:value={searchInputValue}
+								on:input={heandleSearch}
 							/>
 							<div
 								class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-pickled-bluewood-400"
@@ -198,6 +201,7 @@
 								{#if Array.isArray(searchNamesOptions)}
 									<select
 										bind:value={searchOption}
+										on:change={() => heandleSearchSelection}
 										class="text-sm border-none cursor-pointer bg-white input"
 									>
 										{#each searchNamesOptions as type}
@@ -210,7 +214,7 @@
 							</span>
 						</div>
 						<button
-							class="  bg-pickled-bluewood-600 text-white text-sm px-3 mx-1 py-1 font-semibold hover:shadow-lg transition duration-3000"
+							class="hidden bg-pickled-bluewood-600 text-white text-sm px-3 mx-1 py-1 font-semibold hover:shadow-lg transition duration-3000"
 						>
 							Search
 						</button>
