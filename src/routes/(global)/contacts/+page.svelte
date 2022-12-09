@@ -87,6 +87,7 @@
 		page: 1,
 		sort: 'name'
 	};
+	$: console.log("🚀 ~ file: +page.svelte:86 ~ currentGlobalParams", currentGlobalParams)
 
 	const checkValue = () => {
 		if (limit < 1) {
@@ -117,7 +118,7 @@
 		{ value: 'balanceDue', label: 'Balance Due' }
 	];
 
-	const heandleSearchSelection = (event: MouseEvent) => {
+	const handleSearchSelection = (event: MouseEvent) => {
 		searchInputValue = '';
 	};
 
@@ -126,7 +127,7 @@
 		[contacts] = await Promise.all([customersPromise]);
 	};
 
-	const heandleSearch = async (
+	const handleSearch = async (
 		event: Event & { currentTarget: EventTarget & HTMLInputElement }
 	) => {
 		currentGlobalParams.page = 1;
@@ -186,7 +187,7 @@
 								type="text"
 								placeholder="Search..."
 								bind:value={searchInputValue}
-								on:input={heandleSearch}
+								on:input={handleSearch}
 							/>
 							<div
 								class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-pickled-bluewood-400"
@@ -201,7 +202,7 @@
 								{#if Array.isArray(searchNamesOptions)}
 									<select
 										bind:value={searchOption}
-										on:change={() => heandleSearchSelection}
+										on:select={() => handleSearchSelection}
 										class="text-sm border-none cursor-pointer bg-white input"
 									>
 										{#each searchNamesOptions as type}
