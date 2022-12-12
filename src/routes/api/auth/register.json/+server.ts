@@ -3,14 +3,14 @@ import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import { UserSignUpSchema, type UserSignUp } from '$lib/validation/signUp.validate';
+import { UserRegisterSchema, type UserRegister } from '$lib/validation/register.validate';
 
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const reqUser: UserSignUp = await request.json();
+		const reqUser: UserRegister = await request.json();
 
-		const parsedUser = UserSignUpSchema.safeParse(reqUser);
+		const parsedUser = UserRegisterSchema.safeParse(reqUser);
 
 		if (!parsedUser.success) {
 			return new Response(JSON.stringify({ message: parsedUser.error }), {
@@ -47,13 +47,15 @@ export const POST: RequestHandler = async ({ request }) => {
 			role = {
 				userRole: 'ADMIN',
 				isUser: true,
-				isActive: true
+				isActive: true,
+				isUserActive: true
 			};
 		} else {
 			role = {
 				userRole: 'USER',
 				isUser: true,
-				isActive: false
+				isActive: true,
+				isUserActive: false
 			};
 		}
 

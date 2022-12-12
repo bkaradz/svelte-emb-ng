@@ -1,11 +1,12 @@
-import * as cookie from 'cookie';
+// import * as cookie from 'cookie';
 import config from 'config';
-import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
+import type { loginCredentials } from '$lib/validation/login.validate';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
+import type { Cookies } from '@sveltejs/kit';
 
-export const setSessionCookies = (accessToken: string, refreshToken: string) => {
-	const accessTokenSerial = cookie.serialize('accessToken', accessToken, {
+export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
+	const accessTokenSerial = cookies.serialize('accessToken', accessToken, {
 		maxAge: config.get('cookieAccessTokenTtl'), // 15min
 		httpOnly: config.get('httpOnly'),
 		domain: 'localhost',
@@ -14,21 +15,13 @@ export const setSessionCookies = (accessToken: string, refreshToken: string) => 
 		secure: config.get('secure')
 	})
 
-	const refreshTokenSerial = cookie.serialize('refreshToken', refreshToken, {
-		maxAge: config.get('cookieRefreshTokenTtl'), // 1year
-		httpOnly: config.get('httpOnly'),
-		domain: 'localhost',
-		path: '/',
-		sameSite: config.get('sameSite'),
-		secure: config.get('secure')
-	})
 	return {
-		'Set-Cookie': `${[accessTokenSerial, refreshTokenSerial]}`
+		'Set-Cookie': `${[accessTokenSerial]}`
 	};
 };
 
-export const deleteSessionCookies = () => {
-	const accessTokenSerial = cookie.serialize('accessToken', '', {
+export const deleteSessionCookies = (cookies: Cookies) => {
+	const accessTokenSerial = cookies.serialize('accessToken', '', {
 		expires: new Date(0),
 		httpOnly: true,
 		domain: 'localhost',
@@ -36,16 +29,9 @@ export const deleteSessionCookies = () => {
 		sameSite: 'lax',
 		secure: false
 	})
-	const refreshTokenSerial = cookie.serialize('refreshToken', '', {
-		expires: new Date(0),
-		httpOnly: true,
-		domain: 'localhost',
-		path: '/',
-		sameSite: 'lax',
-		secure: false
-	})
+
 	return {
-		'Set-Cookie': `${[accessTokenSerial, refreshTokenSerial]}`
+		'Set-Cookie': `${[accessTokenSerial]}`
 	};
 };
 
@@ -75,12 +61,6 @@ export async function findSessions(query: string) {
  */
 export async function validateUserPassword(userCredentials: loginCredentials) {
 
-	const parsedUser = loginCredentialsSchema.safeParse(userCredentials)
-
-	if (!parsedUser.success) {
-		throw new Error(`${parsedUser.error}`);
-	}
-
 	const { email, password } = userCredentials
 
 	const emailRes = await prisma.email.findUnique({
@@ -89,11 +69,7 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 		}
 	})
 
-	if (!emailRes) {
-		return null;
-	}
-
-	if (!emailRes.contactsId) {
+	if (!emailRes?.contactsId) {
 		throw new Error(`email not found`);
 	}
 
@@ -105,6 +81,7 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 			id: true,
 			name: true,
 			isActive: true,
+			isUserActive: true,
 			isUser: true,
 			userRole: true,
 			password: true
@@ -112,17 +89,17 @@ export async function validateUserPassword(userCredentials: loginCredentials) {
 	})
 
 	if (!userRes) {
-		return null;
+		throw new Error(`User not found`);
 	}
 
 	if (!userRes?.password) {
-		return null;
+		throw new Error(`Not a valid not found`);
 	}
 
 	const isValid = await bcrypt.compare(password, userRes.password).catch(() => false);
 
 	if (!isValid) {
-		return null;
+		throw new Error(`Email or Password not valid`);
 	}
 
 	{	// scope to remove password

@@ -29,6 +29,7 @@ model Contacts {
   balanceDue           Json?            @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   totalReceipts        Json?            @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   isActive             Boolean          @default(true)
+  isUserActive         Boolean          @default(false)
   isUser               Boolean          @default(false)
   userRole             String           @default("USER")
   password             String?

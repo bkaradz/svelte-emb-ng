@@ -21,7 +21,7 @@
 
 	export let data: { customers: CustomersTypes };
 
-	interface ContentIterface {
+	interface ContentInterface {
 		results: [
 			{
 				id: string;
@@ -87,7 +87,6 @@
 		page: 1,
 		sort: 'name'
 	};
-	$: console.log("🚀 ~ file: +page.svelte:86 ~ currentGlobalParams", currentGlobalParams)
 
 	const checkValue = () => {
 		if (limit < 1) {
@@ -105,9 +104,7 @@
 
 	let gridView = false;
 	let searchInputValue = '';
-	$: console.log('🚀 ~ searchInputValue', searchInputValue);
 	let searchOption = 'name';
-	$: console.log('🚀 ~ searchOption', searchOption);
 
 	const searchNamesOptions = [
 		{ value: 'name', label: 'Name' },
@@ -127,9 +124,7 @@
 		[contacts] = await Promise.all([customersPromise]);
 	};
 
-	const handleSearch = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };

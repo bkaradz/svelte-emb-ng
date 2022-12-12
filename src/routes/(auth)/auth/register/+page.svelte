@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { UserSignUpSchema } from '$lib/validation/signUp.validate';
+	import { UserRegisterSchema } from '$lib/validation/register.validate';
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
@@ -8,7 +8,7 @@
 		svgEyeOpen,
 		svgMinusCircle,
 		svgPlusCircle,
-		svgSignUp
+		svgRegister
 	} from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
@@ -55,8 +55,8 @@
 	let confirmPasswordIsVisible = false;
 	$: confirmPasswordType = confirmPasswordIsVisible ? 'text' : 'password';
 
-	const handleSignUp = async () => {
-		const parsedUser = UserSignUpSchema.safeParse(formData);
+	const handleRegister = async () => {
+		const parsedUser = UserRegisterSchema.safeParse(formData);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 
@@ -67,7 +67,7 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/auth/signUp.json', {
+			const res = await fetch('/api/auth/register.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
 				headers: { 'Content-Type': 'application/json' }
@@ -77,14 +77,14 @@
 				formData = resetForm();
 
 				toasts.add({
-					message: 'Sign Up was successful',
+					message: 'Register was successful',
 					type: 'success'
 				});
-				goto('/auth/signIn');
+				goto('/auth/login');
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 
@@ -106,7 +106,7 @@
 </script>
 
 <svelte:head>
-	<title>Sign Up</title>
+	<title>Register</title>
 </svelte:head>
 
 <div class="h-full w-full max-w-md space-y-8">
@@ -114,7 +114,7 @@
 		<img class="mx-auto h-12 w-auto" src={small_logo} alt="Lilian Logo" />
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Register</h2>
 	</div>
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleSignUp}>
+	<form class="mt-8 space-y-6" on:submit|preventDefault={handleRegister}>
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="name" class="flex justify-between text-sm">
@@ -236,7 +236,7 @@
 					class="group relative flex w-full mt-5 justify-center border border-transparent  bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					<span class="absolute inset-y-0 left-0 flex items-center pl-3">
-						{@html svgSignUp}
+						{@html svgRegister}
 					</span>
 					Register
 				</button>

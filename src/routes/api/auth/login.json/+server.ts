@@ -7,11 +7,10 @@ import {
 	createSession,
 	validateUserPassword
 } from '$lib/services/session.services';
-import type { User } from '$lib/types';
-import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
+import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/login.validate';
 
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ cookies, request, locals }) => {
 	try {
 		const reqUser: loginCredentials = await request.json();
 
@@ -38,7 +37,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		if (!user.isActive) {
+		if (!user.isUserActive) {
 			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 				headers: {
 					'content-type': 'application/json; charset=utf-8'
@@ -52,16 +51,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const body = { ...user, sessionID: session.id, authenticated: true };
 
-		locals.user = body as unknown as User;
-
 		// create an access token
 		const accessToken = signJwt(body, { expiresIn: config.get('accessTokenTtl') });
 
-		// create a refresh token
-		const refreshToken = signJwt(body, { expiresIn: config.get('refreshTokenTtl') });
-
-		// return access & refresh tokens
-		const headers = setSessionCookies(accessToken, refreshToken);
+		// return access tokens
+		const headers = setSessionCookies(accessToken, cookies);
 
 		return new Response(JSON.stringify(body), { headers: headers });
 	} catch (err: any) {

@@ -12,7 +12,7 @@
 
 	$: if (!data.user) {
 		if (browser) {
-			goto('/auth/signIn');
+			goto('/auth/login');
 		}
 	}
 	$: if (data.user) {

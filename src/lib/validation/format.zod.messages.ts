@@ -1,6 +1,6 @@
 import type { SafeParseError, SafeParseReturnType, ZodError } from "zod";
 
-export const zodErrorMessagesMap = (error: SafeParseError<any>) => {
+export const zodErrorMessagesMap = <T>(error: SafeParseError<T>) => {
 
   if (!error.success) {
     const formatErrors = error.error.format()

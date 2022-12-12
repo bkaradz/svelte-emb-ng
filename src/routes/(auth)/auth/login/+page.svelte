@@ -1,10 +1,10 @@
 <script lang="ts">
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
-	import { svgEyeClose, svgEyeOpen, svgSignIn } from '$lib/utility/svgLogos';
+	import { svgEyeClose, svgEyeOpen, svgLogin } from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
-	import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/signIn.validate';
+	import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/login.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 
 	let errorMessages = new Map();
@@ -35,7 +35,7 @@
 
 	$: disabled = false;
 
-	const handleSignIn = async () => {
+	const handleLogin = async () => {
 		const parsedUser = loginCredentialsSchema.safeParse(formData);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
@@ -47,7 +47,7 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/auth/signIn.json', {
+			const res = await fetch('/api/auth/login.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
 				headers: { 'Content-Type': 'application/json' },
@@ -59,7 +59,7 @@
 
 				formData = resetForm();
 				toasts.add({
-					message: `Sign In successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
+					message: `Login successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
 					type: 'success'
 				});
 				goto('/');
@@ -75,7 +75,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 	let isVisible = false;
@@ -83,7 +83,7 @@
 </script>
 
 <svelte:head>
-	<title>Sign In</title>
+	<title>Login</title>
 </svelte:head>
 
 <div class="h-full w-full max-w-md space-y-8">
@@ -92,7 +92,7 @@
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Login</h2>
 	</div>
 
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleSignIn}>
+	<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin}>
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="email" class="flex justify-between text-sm">
@@ -136,7 +136,7 @@
 				class="relative flex w-full justify-center border border-transparent bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
 			>
 				<span class="absolute inset-y-0 left-0 flex items-center pl-3">
-					{@html svgSignIn}
+					{@html svgLogin}
 				</span>
 				Login
 			</button>

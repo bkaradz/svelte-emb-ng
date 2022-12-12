@@ -1,14 +1,16 @@
-import * as cookie from 'cookie';
 import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 
-	const accessToken = cookies.accessToken;
+	const cookies = event.cookies.get('accessToken');
 
-	const { decoded } = verifyJwt(accessToken);
+	let decoded
+
+	if (cookies) {
+		decoded = verifyJwt(cookies).decoded;
+	}
 
 	if (decoded) {
 		const session = await findSessions(decoded?.sessionID);

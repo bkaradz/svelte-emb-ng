@@ -6,7 +6,6 @@
 	import logger from '$lib/utility/logger';
 	import {
 		svgBellSolid,
-		svgCart,
 		svgLogout,
 		svgSettings,
 		svgShoppingBag,
@@ -14,28 +13,27 @@
 	} from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 
-	let signInMenuOpen = false;
+	let loginMenuOpen = false;
 
 	function handleKeyDown(event: { key: string }) {
 		if (event.key === 'Escape') {
-			signInMenuOpen = !signInMenuOpen;
+			loginMenuOpen = !loginMenuOpen;
 		}
 	}
 
-	const handleSignOut = async () => {
+	const handleLogout = async () => {
 		try {
-			const res = await fetch('/api/auth/signOut.json', {
+			const res = await fetch('/api/auth/logout.json', {
 				method: 'POST'
 			});
 
 			if (res.ok) {
 				const data = await res.json();
-				// $session = {};
 				toasts.add({
 					message: `${data.message}`,
 					type: 'success'
 				});
-				goto('/auth/signIn');
+				goto('/auth/login');
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -138,7 +136,7 @@
 						} flex items-center px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
 						role="menuitem"
 						id="menu-item-2"
-						on:click={handleSignOut}
+						on:click|preventDefault={handleLogout}
 					>
 						<div class="mr-3">
 							{@html svgLogout}

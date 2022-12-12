@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 	import '../../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
-	import { svgSignIn, svgSignUp } from '$lib/utility/svgLogos';
+	import { svgLogin, svgRegister } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import type { User } from '$lib/types';
@@ -20,14 +20,14 @@
 
 	const navList = [
 		{
-			url: '/auth/signIn',
-			name: 'Sign In',
-			icon: svgSignIn
+			url: '/auth/login',
+			name: 'Login',
+			icon: svgLogin
 		},
 		{
-			url: '/auth/signUp',
-			name: 'Sign Up',
-			icon: svgSignUp
+			url: '/auth/register',
+			name: 'Register',
+			icon: svgRegister
 		}
 	];
 </script>
