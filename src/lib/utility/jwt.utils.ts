@@ -11,10 +11,10 @@ export interface userSessionInterface {
 	isUserActive: boolean,
 	isUser: boolean,
 	userRole: 'ADMIN' | 'USER',
-	sessionID: Number,
+	sessionID: number,
 	authenticated: boolean,
-	iat: Number,
-	exp: Number
+	iat: number,
+	exp: number
 }
 
 export const signJwt = (object: Object, options?: jwt.SignOptions | undefined) => {

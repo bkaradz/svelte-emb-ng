@@ -1,19 +1,16 @@
 import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types'
 import { getPagination } from '$lib/utility/pagination.util';
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async (event) => {
 
-  const productBaseQuery = {};
+  const product = await router.createCaller(await createContext(event)).products.getById(parseInt(event.params.id));
 
-  const productQuery = {
-    ...productBaseQuery,
-    where: {
-      id: parseInt(params.id),
-    },
-  };
-
-  const productPromise = prisma.products.findUnique(productQuery);
+  if (!product) {
+    throw new Error("Product not found");
+  }
 
   const queryParams = {
     limit: 15,
@@ -38,19 +35,19 @@ export const load: PageServerLoad = async ({ params }) => {
   const ordersQuery = {
     ...ordersBaseQuery,
     where: {
-      productsID: parseInt(params.id),
+      productsID: parseInt(event.params.id),
     },
   };
   const orderQueryTotal = {
     where: {
-      productsID: parseInt(params.id),
+      productsID: parseInt(event.params.id),
     },
   };
 
   const ordersPromise = prisma.orderLine.findMany(ordersQuery);
   const totalRecordsPromise = prisma.orderLine.count(orderQueryTotal);
 
-  const [product, orders, totalRecords] = await Promise.all([productPromise, ordersPromise, totalRecordsPromise]);
+  const [ orders, totalRecords] = await Promise.all([ ordersPromise, totalRecordsPromise]);
 
   pagination.totalRecords = totalRecords
   pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);

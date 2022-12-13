@@ -46,10 +46,10 @@ export async function createSession(createDBy: any, userAgent: string) {
 	return session;
 }
 
-export async function findSessions(query: string) {
+export async function findSessions(query: number) {
 	const session = await prisma.sessions.findUnique({
 		where: {
-			id: parseInt(query),
+			id: query,
 		}
 	})
 	return session;

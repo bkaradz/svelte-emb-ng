@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
 		}
 
 		if (!user.isUserActive) {
-			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+			return new Response(JSON.stringify({ message: 'Unauthorized not Active' }), {
 				headers: {
 					'content-type': 'application/json; charset=utf-8'
 				},
@@ -59,6 +59,7 @@ export const POST: RequestHandler = async ({ cookies, request, locals }) => {
 
 		return new Response(JSON.stringify(body), { headers: headers });
 	} catch (err: any) {
+		console.log("🚀 ~ file: +server.ts:62 ~ constPOST:RequestHandler= ~ err", err)
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

@@ -1,66 +1,65 @@
 import prisma from '$lib/prisma/client';
 import { getPagination } from '$lib/utility/pagination.util';
 import type { PageServerLoad } from './$types';
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async (event) => {
+
   const queryParams = {
-    limit: 3,
+    limit: 5,
     page: 1,
   }
 
-  const pagination = getPagination(queryParams);
+  const contacts = await router.createCaller(await createContext(event)).contacts.getById(parseInt(event.params.id));
+  const corporate = await router.createCaller(await createContext(event)).contacts.getCorporate(queryParams);
 
-  const baseQuery = {
-    take: pagination.limit,
-    skip: (pagination.page - 1) * pagination.limit,
-    include: {
-      email: true,
-      phone: true,
-      address: true
-    }
-  };
+ 
 
-  const query = {
-    ...baseQuery,
-    where: {
-      isActive: true,
-      isCorporate: true
-    },
-  };
+  // const pagination = getPagination(queryParams);
 
-  const baseContactQuery = {
-    include: {
-      email: true,
-      phone: true,
-      address: true
-    }
-  };
+  // const baseQuery = {
+  //   take: pagination.limit,
+  //   skip: (pagination.page - 1) * pagination.limit,
+  //   include: {
+  //     email: true,
+  //     phone: true,
+  //     address: true
+  //   }
+  // };
 
-  const contactQuery = {
-    ...baseContactQuery,
-    where: {
-      id: parseInt(params.id),
-    },
-  };
+  // const query = {
+  //   ...baseQuery,
+  //   where: {
+  //     isActive: true,
+  //     isCorporate: true
+  //   },
+  // };
 
-  const corporatePromise = await prisma.contacts.findMany(query);
-  const contactPromise = await prisma.contacts.findUnique(contactQuery);
+  // const baseContactQuery = {
+  //   include: {
+  //     email: true,
+  //     phone: true,
+  //     address: true
+  //   }
+  // };
 
-  const [resCorporateContacts, contact] = await Promise.all([corporatePromise, contactPromise]);
+  // const contactQuery = {
+  //   ...baseContactQuery,
+  //   where: {
+  //     id: parseInt(event.params.id),
+  //   },
+  // };
 
-  if (Array.isArray(contact?.email)) {
-    contact.email = contact?.email.join(', ')
-  }
+  // const corporatePromise = await prisma.contacts.findMany(query);
+  // const contactPromise = await prisma.contacts.findUnique(contactQuery);
 
-  if (Array.isArray(contact?.phone)) {
-    contact.phone = contact.phone.map((p) => p.phone)
-    contact.phone = contact.phone.join(', ')
-  }
+  // const [resCorporateContacts, contact] = await Promise.all([corporatePromise, contactPromise]);
 
-  const corporateContacts = { results: resCorporateContacts, ...pagination }
+  // const corporateContacts = { results: resCorporateContacts, ...pagination }
 
   return {
-    corporateContacts,
-    contact
+    corporateContacts: corporate,
+    contact: contacts
   };
 };

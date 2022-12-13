@@ -1,25 +1,12 @@
 import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types'
 import { getPagination } from '$lib/utility/pagination.util';
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async (event) => {
 
-  const customerBaseQuery = {
-    include: {
-      email: true,
-      phone: true,
-      address: true
-    }
-  };
-
-  const customerQuery = {
-    ...customerBaseQuery,
-    where: {
-      id: parseInt(params.id),
-    },
-  };
-
-  const customerPromise = prisma.contacts.findUnique(customerQuery);
+  const contact = await router.createCaller(await createContext(event)).contacts.getById(parseInt(event.params.id));
 
   const queryParams = {
     limit: 15,
@@ -27,7 +14,6 @@ export const load: PageServerLoad = async ({ params }) => {
   }
 
   const pagination = getPagination(queryParams);
-
 
   const ordersBaseQuery = {
     take: pagination.limit,
@@ -46,20 +32,20 @@ export const load: PageServerLoad = async ({ params }) => {
     ...ordersBaseQuery,
     where: {
       isActive: true,
-      customersID: parseInt(params.id),
+      customersID: parseInt(event.params.id),
     },
   };
   const orderQueryTotal = {
     where: {
       isActive: true,
-      customersID: parseInt(params.id),
+      customersID: parseInt(event.params.id),
     },
   };
 
   const ordersPromise = prisma.orders.findMany(ordersQuery);
   const totalRecordsPromise = prisma.orders.count(orderQueryTotal);
 
-  const [customer, orders, totalRecords] = await Promise.all([customerPromise, ordersPromise, totalRecordsPromise]);
+  const [orders, totalRecords] = await Promise.all([ordersPromise, totalRecordsPromise]);
 
   pagination.totalRecords = totalRecords
   pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -71,7 +57,7 @@ export const load: PageServerLoad = async ({ params }) => {
   const newOrders = { results: orders, ...pagination }
 
   return {
-    customer,
+    customer: contact,
     orders: newOrders
   };
 

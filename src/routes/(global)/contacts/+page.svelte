@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
+	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
@@ -20,34 +21,6 @@
 	type CustomersTypes = Pagination & { results: newContacts[] };
 
 	export let data: { customers: CustomersTypes };
-
-	interface ContentInterface {
-		results: [
-			{
-				id: string;
-				name: string;
-				isCorporate: boolean;
-				notes: string;
-				vatOrBpNo: string;
-				email: string;
-				phone: string;
-				address: string;
-				balanceDue: number;
-				totalReceipts: number;
-				isActive: boolean;
-				organizationID: {
-					name: string;
-				};
-			}
-		];
-		id: string;
-		totalRecords: number;
-		totalPages: number;
-		limit: number;
-		previous: { page: number; limit: number };
-		current: { page: number; limit: number };
-		next: { page: number; limit: number };
-	}
 
 	interface GlobalParamsTypes {
 		limit: number;
@@ -94,7 +67,7 @@
 		}
 	};
 
-	const viewContact = async (id: string) => {
+	const viewContact = async (id: number) => {
 		goto(`/contacts/view/${id}`);
 	};
 
@@ -121,6 +94,9 @@
 
 	const customerChanges = async (currentGlobalParams: GlobalParamsTypes) => {
 		const customersPromise = await getContacts(currentGlobalParams);
+		if (!customersPromise) {
+			return
+		}
 		[contacts] = await Promise.all([customersPromise]);
 	};
 
@@ -131,15 +107,17 @@
 		await customerChanges(currentGlobalParams);
 	};
 
-	// Input must be of the form {limit, page, sort, query}
-	const getContacts = async (paramsObj: any) => {
+	const getContacts = async (paramsObj: GlobalParamsTypes) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/contacts.json?' + searchParams.toString());
-			if (res.ok) {
-				const contacts = await res.json();
-				return contacts;
-			}
+			try {
+			const contacts = (await trpc().contacts.getContacts.query(
+				paramsObj
+			)) as unknown as CustomersTypes;
+			return contacts;
+		} catch (err: any) {
+			logger.error(`Error: ${err}`);
+		}
+			
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -239,7 +217,6 @@
 												limit: limit
 											};
 											await customerChanges(currentGlobalParams);
-											// getContacts(currentGlobalParams);
 										}}
 										on:input={checkValue}
 									/>
@@ -253,7 +230,6 @@
 									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.previous };
 										await customerChanges(currentGlobalParams);
-										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.previous
 										? 'hidden'
@@ -267,7 +243,6 @@
 									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.previous };
 										await customerChanges(currentGlobalParams);
-										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.previous
 										? 'hidden'
@@ -288,7 +263,6 @@
 									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.next };
 										await customerChanges(currentGlobalParams);
-										// getContacts(currentGlobalParams);
 									}}
 									class="{!contacts.next
 										? 'hidden'
@@ -302,7 +276,6 @@
 									on:click|preventDefault={async () => {
 										currentGlobalParams = { ...currentGlobalParams, ...contacts.next };
 										await customerChanges(currentGlobalParams);
-										// getContacts(currentGlobalParams);
 									}}
 									class=" {!contacts.next
 										? 'hidden'
@@ -388,7 +361,7 @@
 											<td class="px-2 py-1">{contact.id}</td>
 											<td class="px-2 py-1">{contact.name}</td>
 											<td class="px-2 py-1">
-												{contact?.organizationID ? contact?.organizationID : '...'}
+												{contact?.organisationID ? contact?.organisationID : '...'}
 											</td>
 											<td class="px-2 py-1"
 												>{contact?.phone.map((item) => item.phone).join(', ')}</td

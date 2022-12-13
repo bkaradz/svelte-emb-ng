@@ -5,6 +5,7 @@ import { getPagination } from '$lib/utility/pagination.util';
 import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
+import { z } from 'zod';
 
 export const products = router({
   getProducts: protectedProcedure
@@ -72,6 +73,19 @@ export const products = router({
       }
 
       return { results: productsQuery, ...pagination }
+
+    }),
+  getById: protectedProcedure
+    .input(z.number())
+    .query(async ({ input }) => {
+
+      const product = await prisma.products.findUnique({
+        where: {
+          id: input
+        }
+      });
+
+      return product
 
     }),
 });
