@@ -11,38 +11,21 @@
 		svgView
 	} from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
 	import { Menu, MenuButton, MenuItems, MenuItem } from '@rgossiaux/svelte-headlessui';
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
 	import { dinero } from 'dinero.js';
+	import { trpc } from '$lib/trpc/client';
+	import type { OrderLine, Products } from '@prisma/client';
+	import type { Pagination } from '$lib/utility/pagination.util';
 
-	export let data: { products: productIterface };
+	type productInterface = { results: Products[] } & Pagination;
 
-	interface productIterface {
-		results: [
-			{
-				id: number;
-				name: string;
-				description: string;
-				unitPrice: string;
-				productCategories: string;
-				stitches: string;
-				utilisation: number;
-				isActive: boolean;
-			}
-		];
-		totalRecords: number;
-		totalPages: number;
-		limit: number;
-		previous: { page: number; limit: number };
-		current: { page: number; limit: number };
-		next: { page: number; limit: number };
-	}
+	export let data: { products: productInterface };
 
-	let products: productIterface = data.products;
+	let products = data.products;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -56,11 +39,7 @@
 		}
 	};
 
-	// onMount(() => {
-	// 	getProducts(currentGlobalParams);
-	// });
-
-	const viewProducts = async (id: string) => {
+	const viewProducts = async (id: number) => {
 		goto(`/products/view/${id}`);
 	};
 
@@ -82,14 +61,12 @@
 		productCategories: 'Category'
 	};
 
-	const heandleSearchSelection = (event: MouseEvent) => {
+	const handleSearchSelection = (event: MouseEvent) => {
 		searchOption = (event.target as HTMLInputElement).name;
 		searchInputValue = '';
 	};
 
-	const heandleSearch = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
@@ -98,18 +75,17 @@
 
 	const getProducts = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/products.json?' + searchParams.toString());
-			products = await res.json();
+			products = (await trpc().products.getProducts.query(
+				paramsObj
+			)) as unknown as productInterface;
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
 	};
 
-	const addToCart = (item) => {
+	const addToCart = (item: Partial<OrderLine>) => {
 		cartItem.add(item);
 	};
-	
 </script>
 
 <svelte:head>
@@ -162,7 +138,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="name"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -176,7 +152,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="id"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -189,7 +165,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="description"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -202,7 +178,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="unitPrice"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -214,7 +190,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="productCategories"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -227,7 +203,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="stitches"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -239,7 +215,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={heandleSearchSelection}
+											on:click={handleSearchSelection}
 											name="units"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -258,7 +234,7 @@
 								type="text"
 								placeholder="Search..."
 								bind:value={searchInputValue}
-								on:input={heandleSearch}
+								on:input={handleSearch}
 							/>
 							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2">
 								{@html svgSearch}

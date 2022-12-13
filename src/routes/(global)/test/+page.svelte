@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { svgChevronDown, svgEyeClose, svgEyeOpen, svgSearch, svgSearchIcon } from '$lib/utility/svgLogos';
 	import type { Options } from '@prisma/client';
 
@@ -80,4 +80,39 @@
 			</div>
 		</div>
 	</div>
+</div> -->
+<script lang="ts">
+	import { page } from '$app/stores';
+	console.log('🚀 ~ file: +page.svelte:86 ~ page', $page);
+	import { trpc } from '$lib/trpc/client';
+
+	let greeting: {
+		id: number;
+		name: string;
+	}[];
+	let loading = false;
+
+	const loadData = async () => {
+		loading = true;
+		greeting = await trpc().test.getContacts.query();
+		loading = false;
+	};
+</script>
+
+<div class="flex flex-col space-y-5">
+	<h6>Loading data in<br /><code>+page.svelte</code></h6>
+	<div>
+		<a
+			href="#load"
+			role="button"
+			class="btn btn-primary"
+			aria-busy={loading}
+			on:click|preventDefault={loadData}>Load</a
+		>
+	</div>
+	{#if Array.isArray(greeting)}
+		{#each greeting as test}
+			{test.name}
+		{/each}
+	{/if}
 </div>
