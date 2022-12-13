@@ -46,7 +46,7 @@
 
 	let showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
 
-	const heandleAddRow = () => {
+	const handleAddRow = () => {
 		usedCurrencies = getUsedCurrencies();
 		const unUsedCurrencies = getUnUsedCurrencies();
 
@@ -68,7 +68,7 @@
 			};
 		}
 
-		heandleEditable(rateDetailsInit);
+		handleEditable(rateDetailsInit);
 
 		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
 		showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
@@ -108,20 +108,20 @@
 		} catch (err) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating',
+				message: 'An error has occurred while updating',
 				type: 'error'
 			});
 		}
 	};
 
-	const heandleEditable = (list: Options) => {
+	const handleEditable = (list: Options) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
 			isEditableID = null;
 		}
 	};
-	const heandleDelete = (list: Options) => {
+	const handleDelete = (list: Options) => {
 		isEditableID = null;
 		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
 		usedCurrencies = getUsedCurrencies();
@@ -213,7 +213,7 @@
 									</td>
 
 									<td class="p-1 text-center ">
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleEditable(list)}>
+										<button class=" m-0 p-0" on:click|preventDefault={() => handleEditable(list)}>
 											<span class="fill-current text-pickled-bluewood-500">
 												{@html isEditableID === list.id ? svgFloppy : svgPencil}
 											</span>
@@ -221,7 +221,7 @@
 									</td>
 
 									<td class="p-1 text-center ">
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleDelete(list)}>
+										<button class=" m-0 p-0" on:click|preventDefault={() => handleDelete(list)}>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>
 									</td>
@@ -236,7 +236,7 @@
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
 									{#if showButton}
-										<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+										<button class=" m-0 p-0" on:click|preventDefault={() => handleAddRow()}
 											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 											></button
 										>

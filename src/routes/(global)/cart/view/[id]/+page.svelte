@@ -52,7 +52,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 
@@ -214,7 +214,7 @@
 		customers = await getCustomers(customerQueryParams);
 	};
 
-	const heandleSubmit = async (status: string) => {
+	const handleSubmit = async (status: string) => {
 		/**
 		 * Check if the fields are filled
 		 */
@@ -251,7 +251,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 </script>

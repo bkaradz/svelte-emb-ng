@@ -27,7 +27,7 @@
 		removeToast(id);
 	}
 
-	const heandleDelete = () => {
+	const handleDelete = () => {
 		clearInterval(intervalId);
 		intervalId = null;
 		removeToast(id);
@@ -67,7 +67,7 @@
 	</span>
 
 	<span class="mr-2 flex-none">
-		<button on:click={heandleDelete}>
+		<button on:click={handleDelete}>
 			{@html svgXSmall}
 		</button>
 	</span>

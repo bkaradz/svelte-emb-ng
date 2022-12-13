@@ -11,7 +11,7 @@
 
 	let rates: XchangeRate[] = [];
 
-	const heandleDelete = async (list: XchangeRate) => {
+	const handleDelete = async (list: XchangeRate) => {
 		if (list.isDefault) {
 			toasts.add({
 				message: 'You can now delete the default Exchange Rates',
@@ -35,7 +35,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating user',
+				message: 'An error has occurred while updating user',
 				type: 'error'
 			});
 		}
@@ -59,7 +59,7 @@
 		goto(`/settings/rates/view/${id}`);
 	};
 
-	const heandleAddPricelist = async () => {
+	const handleAddPricelist = async () => {
 		goto(`/settings/rates/add`);
 	};
 </script>
@@ -67,7 +67,7 @@
 <div class="mb-2 flex items-center justify-between bg-white p-4">
 	<h1>Exchange Rates</h1>
 	<div>
-		<button on:click={heandleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
+		<button on:click={handleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
 			>Add Rates</button
 		>
 	</div>
@@ -118,7 +118,7 @@
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
+								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

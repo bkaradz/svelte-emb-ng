@@ -1,6 +1,6 @@
 <script lang="ts">
 	import logger from '$lib/utility/logger';
-	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
+	import { svgAddUser, svgArrow, svgMinusCircle, svgPlus, svgPlusCircle, svgUpload, svgX } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
 	import type { Contacts } from '@prisma/client';
@@ -10,6 +10,7 @@
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
+	import { string } from 'zod';
 
 	let errorMessages = new Map();
 
@@ -47,7 +48,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while getting corporate contacts',
+				message: 'An error has occurred while getting corporate contacts',
 				type: 'error'
 			});
 		}
@@ -64,16 +65,12 @@
 		isCorporate: false,
 		organizationID: { name: undefined },
 		name: undefined,
-		email: undefined,
-		phone: undefined,
+		email: [''],
+		phone: [''],
 		address: undefined
 	};
 
-	let formData: Omit<AddContact, 'name' | 'phone' | 'organizationID'> & {
-		name: string | undefined;
-		phone: string | undefined;
-		organizationID: number | undefined | Partial<Contacts>;
-	} = { ...initFromData };
+	let formData  = { ...initFromData };
 
 	const handleSubmit = async () => {
 		disabled = true;
@@ -103,7 +100,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured while adding the contact', type: 'error' });
+			toasts.add({ message: 'An error has occurred while adding the contact', type: 'error' });
 		}
 	};
 
@@ -127,7 +124,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured while uploading contacts', type: 'error' });
+			toasts.add({ message: 'An error has occurred while uploading contacts', type: 'error' });
 		}
 	};
 
@@ -137,6 +134,21 @@
 			name: e.target.value
 		};
 		getCorporateContacts(currentCorporateQueryParams);
+	};
+	const addEmailField = (index: number) => {
+		if (index === formData.email.length - 1) {
+			formData.email = [...formData.email, ''];
+			return;
+		}
+		formData.email = formData.email.filter((email, i) => i !== index);
+	};
+
+	const addPhoneField = (index: number) => {
+		if (index === formData.phone.length - 1) {
+			formData.phone = [...formData.phone, ''];
+			return;
+		}
+		formData.phone = formData.phone.filter((phone, i) => i !== index);
 	};
 </script>
 
@@ -207,7 +219,7 @@
 
 				<Checkbox2
 					name="isCorporate"
-					label="Individual or Corparate"
+					label="Individual or Corporate"
 					bind:checked={formData.isCorporate}
 					errorMessages={errorMessages.get('isCorporate')}
 				/>
@@ -240,31 +252,41 @@
 
 				<label for="email" class="flex justify-between text-sm">
 					<span>Email</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('email') ? errorMessages.get('email') : ''}</span
-					>
+					<span class="text-xs text-danger">
+						{errorMessages.get('email') ? errorMessages.get('email') : ''}
+					</span>
 				</label>
-				<input
-					use:selectTextOnFocus
-					type="email"
-					name="email"
-					class="input"
-					bind:value={formData.email}
-				/>
-
+				{#each formData.email as v, i (i)}
+					<div class="flex items-center space-x-2">
+						<input type="email" name="email" class="input" bind:value={v} />
+						<button on:click|preventDefault={() => addEmailField(i)}>
+							{#if i < formData.email.length - 1}
+								{@html svgMinusCircle}
+							{:else}
+								{@html svgPlusCircle}
+							{/if}
+						</button>
+					</div>
+				{/each}
+	
 				<label for="phone" class="flex justify-between text-sm">
 					<span>Phone</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('phone') ? errorMessages.get('phone') : ''}</span
-					>
+					<span class="text-xs text-danger">
+						{errorMessages.get('phone') ? errorMessages.get('phone') : ''}
+					</span>
 				</label>
-				<input
-					use:selectTextOnFocus
-					type="text"
-					name="phone"
-					class="input"
-					bind:value={formData.phone}
-				/>
+				{#each formData.phone as v, i (i)}
+					<div class=" flex items-center space-x-2">
+						<input type="text" name="phone" class="input" bind:value={v} />
+						<button on:click|preventDefault={() => addPhoneField(i)}>
+							{#if i < formData.phone.length - 1}
+								{@html svgMinusCircle}
+							{:else}
+								{@html svgPlusCircle}
+							{/if}
+						</button>
+					</div>
+				{/each}
 
 				<label for="address" class="flex justify-between text-sm">
 					<span>Address</span>

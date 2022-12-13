@@ -84,7 +84,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 

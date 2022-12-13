@@ -47,7 +47,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating user',
+				message: 'An error has occurred while updating user',
 				type: 'error'
 			});
 		}
@@ -71,7 +71,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating user',
+				message: 'An error has occurred while updating user',
 				type: 'error'
 			});
 		}
@@ -81,7 +81,7 @@
 		getUsers();
 	});
 
-	const heandleEditable = async (list: Partial<any>) => {
+	const handleEditable = async (list: Partial<any>) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -90,7 +90,7 @@
 		}
 	};
 
-	const heandleDelete = async (list: Partial<any>) => {
+	const handleDelete = async (list: Partial<any>) => {
 		await deleteUser(list);
 	};
 </script>
@@ -182,14 +182,14 @@
 								/>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleEditable(list)}>
+								<button class=" m-0 p-0" on:click={() => handleEditable(list)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html isEditableID === list.id ? svgLockClosed : svgPencil}
 									</span>
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
+								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

@@ -50,7 +50,7 @@
 
 	let usedCurrencies: string[] = [];
 
-	const heandleAddRow = () => {
+	const handleAddRow = () => {
 		usedCurrencies = getUsedCurrencies();
 		const unUsedCurrencies = getUnUsedCurrencies();
 
@@ -72,7 +72,7 @@
 			};
 		}
 
-		heandleEditable(rateDetailsInit);
+		handleEditable(rateDetailsInit);
 
 		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
 	};
@@ -113,20 +113,20 @@
 		} catch (err) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating',
+				message: 'An error has occurred while updating',
 				type: 'error'
 			});
 		}
 	};
 
-	const heandleEditable = (list: Options) => {
+	const handleEditable = (list: Options) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
 			isEditableID = null;
 		}
 	};
-	const heandleDelete = (list: Options) => {
+	const handleDelete = (list: Options) => {
 		isEditableID = null;
 		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
 	};
@@ -212,7 +212,7 @@
 										<button
 											disabled
 											class=" m-0 p-0"
-											on:click|preventDefault={() => heandleEditable(list)}
+											on:click|preventDefault={() => handleEditable(list)}
 										>
 											<span class="fill-current text-pickled-bluewood-500">
 												{@html isEditableID === list.id ? svgFloppy : svgPencil}
@@ -224,7 +224,7 @@
 										<button
 											disabled
 											class=" m-0 p-0"
-											on:click|preventDefault={() => heandleDelete(list)}
+											on:click|preventDefault={() => handleDelete(list)}
 										>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>
@@ -243,7 +243,7 @@
 										<button
 											disabled
 											class=" m-0 p-0"
-											on:click|preventDefault={() => heandleAddRow()}
+											on:click|preventDefault={() => handleAddRow()}
 											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 											></button
 										>

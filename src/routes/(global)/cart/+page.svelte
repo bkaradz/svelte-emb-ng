@@ -23,6 +23,7 @@
 		Pricelists
 	} from '@prisma/client';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
+	import Loading from '$lib/components/Loading.svelte';
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -134,7 +135,7 @@
 		customers = await getCustomers(customerQueryParams);
 	};
 
-	const heandleSubmit = async (status: string) => {
+	const handleSubmit = async (status: string) => {
 		/**
 		 * Check if the fields are filled
 		 */
@@ -173,7 +174,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 </script>
@@ -182,7 +183,9 @@
 	<title>Cart</title>
 </svelte:head>
 
-{#await promise then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
+{#await promise}
+	<Loading />
+{:then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
 	<div class="w-full flex">
 		<div class="cart">
 			<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
@@ -427,19 +430,19 @@
 					</span>
 				</div>
 				<button
-					on:click|preventDefault={() => heandleSubmit('Quotation')}
+					on:click|preventDefault={() => handleSubmit('Quotation')}
 					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 				>
 					Create Quotation
 				</button>
 				<button
-					on:click|preventDefault={() => heandleSubmit('Sales Order')}
+					on:click|preventDefault={() => handleSubmit('Sales Order')}
 					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 				>
 					Create Sales Order
 				</button>
 				<button
-					on:click|preventDefault={() => heandleSubmit('Invoice')}
+					on:click|preventDefault={() => handleSubmit('Invoice')}
 					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 				>
 					Create Invoice

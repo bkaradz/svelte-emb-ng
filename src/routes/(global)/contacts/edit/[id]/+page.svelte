@@ -52,7 +52,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while getting corporate contacts',
+				message: 'An error has occurred while getting corporate contacts',
 				type: 'error'
 			});
 		}
@@ -110,7 +110,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured while adding the contact', type: 'error' });
+			toasts.add({ message: 'An error has occurred while adding the contact', type: 'error' });
 		}
 	};
 
@@ -174,7 +174,7 @@
 
 				<Checkbox2
 					name="isCorporate"
-					label="Individual or Corparate"
+					label="Individual or Corporate"
 					bind:checked={formData.isCorporate}
 					errorMessages={errorMessages.get('isCorporate')}
 				/>

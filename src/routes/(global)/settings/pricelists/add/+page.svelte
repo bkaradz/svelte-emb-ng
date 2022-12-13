@@ -55,7 +55,7 @@
 		groupList = groupList;
 	}
 
-	const heandleEditable = async (list: PricelistsDetails) => {
+	const handleEditable = async (list: PricelistsDetails) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
@@ -64,7 +64,7 @@
 		}
 	};
 
-	const heandleDelete = (finalData: PricelistsDetails) => {
+	const handleDelete = (finalData: PricelistsDetails) => {
 		idToRemove = idToRemove.filter((list) => list !== finalData.id);
 		pricelist.pricelistDetails = pricelist?.pricelistDetails?.filter(
 			(list) => list.id !== finalData.id
@@ -73,7 +73,7 @@
 
 	let idToRemove: string[] = [];
 
-	$: heandleAddRow = () => {
+	$: handleAddRow = () => {
 		const id = crypto.randomUUID();
 
 		if (!Array.isArray(pricelist?.pricelistDetails)) {
@@ -127,7 +127,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating',
+				message: 'An error has occurred while updating',
 				type: 'error'
 			});
 		}
@@ -250,7 +250,7 @@
 											<td class="p-1 text-center ">
 												<button
 													class=" m-0 p-0"
-													on:click|preventDefault={() => heandleEditable(list)}
+													on:click|preventDefault={() => handleEditable(list)}
 												>
 													<span class="fill-current text-pickled-bluewood-500">
 														{@html isEditableID === list.id ? svgFloppy : svgPencil}
@@ -261,7 +261,7 @@
 											<td class="p-1 text-center ">
 												<button
 													class=" m-0 p-0"
-													on:click|preventDefault={() => heandleDelete(list)}
+													on:click|preventDefault={() => handleDelete(list)}
 												>
 													<span class="fill-current text-pickled-bluewood-500"
 														>{@html svgTrash}</span
@@ -282,7 +282,7 @@
 
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
-									<button class=" m-0 p-0" on:click|preventDefault={() => heandleAddRow()}
+									<button class=" m-0 p-0" on:click|preventDefault={() => handleAddRow()}
 										><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 										></button
 									>

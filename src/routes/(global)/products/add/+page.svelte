@@ -25,7 +25,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while getting product categories',
+				message: 'An error has occurred while getting product categories',
 				type: 'error'
 			});
 		}
@@ -76,7 +76,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured while adding the product', type: 'error' });
+			toasts.add({ message: 'An error has occurred while adding the product', type: 'error' });
 		}
 	};
 
@@ -100,7 +100,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured while uploading products', type: 'error' });
+			toasts.add({ message: 'An error has occurred while uploading products', type: 'error' });
 		}
 	};
 </script>

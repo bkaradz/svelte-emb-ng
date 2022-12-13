@@ -95,33 +95,33 @@ export const contacts = router({
         .input(searchParamsSchema.passthrough())
         .query(async ({ input }) => {
 
-              const pagination = getPagination(input);
-            
-              const baseQuery = {
+            const pagination = getPagination(input);
+
+            const baseQuery = {
                 take: pagination.limit,
                 skip: (pagination.page - 1) * pagination.limit,
                 include: {
-                  email: true,
-                  phone: true,
-                  address: true
+                    email: true,
+                    phone: true,
+                    address: true
                 }
-              };
-            
-              const query = {
+            };
+
+            const query = {
                 ...baseQuery,
                 where: {
-                  isActive: true,
-                  isCorporate: true
+                    isActive: true,
+                    isCorporate: true
                 },
-              };
+            };
 
-              const queryTotal = {
+            const queryTotal = {
                 where: {
-                  isActive: true,
-                  isCorporate: true
+                    isActive: true,
+                    isCorporate: true
                 },
-              };
-            
+            };
+
             const contactsQuery = await prisma.contacts.findMany(query);
             pagination.totalRecords = await prisma.contacts.count(queryTotal);
             pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -151,7 +151,18 @@ export const contacts = router({
             return product
 
         }),
-  
+    deleteById: protectedProcedure
+        .input(z.number())
+        .mutation(async ({ input }) => {
+            const product = await prisma.contacts.update({
+                where: {
+                    id: input
+                },
+                data: { isActive: false }
+            });
+            return product
+        }),
+
     saveContact: protectedProcedure
         .input(addContactsSchema)
         .mutation(async ({ input, ctx }) => {

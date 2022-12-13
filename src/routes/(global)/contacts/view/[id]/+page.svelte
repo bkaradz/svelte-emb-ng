@@ -90,12 +90,12 @@
 		state: 'State'
 	};
 
-	const heandleSearchSelection = (event: MouseEvent) => {
+	const handleSearchSelection = (event: MouseEvent) => {
 		searchOption = (event.target as HTMLInputElement).name;
 		searchInputValue = '';
 	};
 
-	const heandleSearch = async (
+	const handleSearch = async (
 		event: Event & { currentTarget: EventTarget & HTMLInputElement }
 	) => {
 		currentGlobalParams.page = 1;
@@ -237,7 +237,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="id"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -252,7 +252,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="organisation"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -265,7 +265,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="phone"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -277,7 +277,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="email"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -290,7 +290,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="vatNo"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -302,7 +302,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="balanceDue"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -315,7 +315,7 @@
 											<MenuItem let:active>
 												<!-- svelte-ignore a11y-click-events-have-key-events -->
 												<a
-													on:click={heandleSearchSelection}
+													on:click={handleSearchSelection}
 													name="state"
 													class={`${
 														active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -335,7 +335,7 @@
 									type="text"
 									placeholder="Search..."
 									bind:value={searchInputValue}
-									on:input={heandleSearch}
+									on:input={handleSearch}
 								/>
 								<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2">
 									{@html svgSearch}

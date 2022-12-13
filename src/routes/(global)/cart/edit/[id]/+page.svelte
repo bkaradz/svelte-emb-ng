@@ -53,7 +53,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 
@@ -234,7 +234,7 @@
 		customers = await getCustomers(customerQueryParams);
 	};
 
-	const heandleSubmit = async (status: string) => {
+	const handleSubmit = async (status: string) => {
 		/**
 		 * Check if the fields are filled
 		 */
@@ -271,7 +271,7 @@
 			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occured', type: 'error' });
+			toasts.add({ message: 'An error has occurred', type: 'error' });
 		}
 	};
 </script>
@@ -509,13 +509,13 @@
 				</span>
 			</div>
 			<button
-				on:click|preventDefault={() => heandleSubmit('Quotation')}
+				on:click|preventDefault={() => handleSubmit('Quotation')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Update Quotation
 			</button>
 			<button
-				on:click|preventDefault={() => heandleSubmit('Sales Order')}
+				on:click|preventDefault={() => handleSubmit('Sales Order')}
 				class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
 			>
 				Update Sales Order

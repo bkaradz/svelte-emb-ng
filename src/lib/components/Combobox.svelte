@@ -28,7 +28,7 @@
 		}
 	}
 
-	const heandleReset = () => {
+	const handleReset = () => {
 		if (!userEnter) {
 			value = { name: '' };
 		}
@@ -120,7 +120,7 @@
 						</div>
 					{/if}
 					<!-- Reset Button -->
-					<button on:click|preventDefault={heandleReset} class="icons">
+					<button on:click|preventDefault={handleReset} class="icons">
 						{@html svgXSmall}
 					</button>
 					<!-- Dropdown Label -->

@@ -11,7 +11,7 @@
 
 	let pricelists: Pricelists[] = [];
 
-	const heandleDelete = async (list: Pricelists) => {
+	const handleDelete = async (list: Pricelists) => {
 		if (list.isDefault) {
 			toasts.add({
 				message: 'You can now delete the default Pricelists',
@@ -35,7 +35,7 @@
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
-				message: 'An error has occured while updating user',
+				message: 'An error has occurred while updating user',
 				type: 'error'
 			});
 		}
@@ -62,7 +62,7 @@
 		goto(`/settings/pricelists/edit/${id}`);
 	};
 
-	const heandleAddPricelist = async () => {
+	const handleAddPricelist = async () => {
 		goto(`/settings/pricelists/add`);
 	};
 </script>
@@ -70,7 +70,7 @@
 <div class="mb-2 flex items-center justify-between bg-white p-4">
 	<h1>Pricelists</h1>
 	<div>
-		<button on:click={heandleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
+		<button on:click={handleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
 			>Add Pricelists</button
 		>
 	</div>
@@ -130,7 +130,7 @@
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => heandleDelete(list)}>
+								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

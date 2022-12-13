@@ -39,7 +39,9 @@
 
 	let formData: FormData = { ...initFromData };
 
-	type formDataKeys = keyof typeof formData;
+	type HandleInputFields = Pick<FormData, "password" | "confirmPassword">
+
+	type formDataKeys = keyof HandleInputFields;
 
 	const handleInput = (event: any) => {
 		let name = (event.target as HTMLInputElement).name as formDataKeys;

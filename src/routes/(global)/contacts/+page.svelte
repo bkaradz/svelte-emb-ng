@@ -10,8 +10,10 @@
 		svgChevronRight,
 		svgGrid,
 		svgList,
+		svgPencil,
 		svgPlus,
 		svgSearch,
+		svgTrash,
 		svgView
 	} from '$lib/utility/svgLogos';
 	import type { Address, Contacts, Email, Phone } from '@prisma/client';
@@ -50,7 +52,9 @@
 		{ id: 8, name: 'Balance Due', dbName: 'balanceDue' },
 		{ id: 9, name: 'Total Receipts', dbName: 'totalReceipts' },
 		{ id: 10, name: 'State', dbName: null },
-		{ id: 11, name: 'View', dbName: null }
+		{ id: 11, name: 'View', dbName: null },
+		{ id: 12, name: 'Edit', dbName: null },
+		{ id: 13, name: 'Delete', dbName: null }
 	];
 
 	let contacts: CustomersTypes = data.customers;
@@ -69,6 +73,15 @@
 
 	const viewContact = async (id: number) => {
 		goto(`/contacts/view/${id}`);
+	};
+
+	const editContact = async (id: number) => {
+		goto(`/contacts/edit/${id}`);
+	};
+
+	const deleteContact = async (id: number) => {
+		await trpc().contacts.deleteById.mutate(id);
+		await customerChanges(currentGlobalParams);
 	};
 
 	const gotoAddContact = async () => {
@@ -95,7 +108,7 @@
 	const customerChanges = async (currentGlobalParams: GlobalParamsTypes) => {
 		const customersPromise = await getContacts(currentGlobalParams);
 		if (!customersPromise) {
-			return
+			return;
 		}
 		[contacts] = await Promise.all([customersPromise]);
 	};
@@ -110,14 +123,13 @@
 	const getContacts = async (paramsObj: GlobalParamsTypes) => {
 		try {
 			try {
-			const contacts = (await trpc().contacts.getContacts.query(
-				paramsObj
-			)) as unknown as CustomersTypes;
-			return contacts;
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-			
+				const contacts = (await trpc().contacts.getContacts.query(
+					paramsObj
+				)) as unknown as CustomersTypes;
+				return contacts;
+			} catch (err: any) {
+				logger.error(`Error: ${err}`);
+			}
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -194,7 +206,7 @@
 						</button>
 					</div>
 				</div>
-				<!-- Veiw list Buttons -->
+				<!-- View list Buttons -->
 				<div class="flex flex-row items-center ">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">
@@ -391,6 +403,20 @@
 												<button class=" m-0 p-0" on:click={() => viewContact(contact?.id)}
 													><span class="fill-current text-pickled-bluewood-500"
 														>{@html svgView}</span
+													></button
+												>
+											</td>
+											<td class="p-1 text-center ">
+												<button class=" m-0 p-0" on:click={() => editContact(contact?.id)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgPencil}</span
+													></button
+												>
+											</td>
+											<td class="p-1 text-center ">
+												<button class=" m-0 p-0" on:click={() => deleteContact(contact?.id)}
+													><span class="fill-current text-pickled-bluewood-500"
+														>{@html svgTrash}</span
 													></button
 												>
 											</td>
