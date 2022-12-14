@@ -16,6 +16,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
+		return
+
 		const createDBy = parseInt(locals.user.id);
 
 		const data = await request.formData();

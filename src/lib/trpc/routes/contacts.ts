@@ -180,6 +180,7 @@ export const contacts = router({
     updateContact: protectedProcedure
         .input(addContactsSchema)
         .mutation(async ({ input, ctx }) => {
+        console.log("🚀 ~ file: contacts.ts:183 ~ .mutation ~ input", input)
 
             if (!ctx.userId) {
                 throw new Error("User not found");
@@ -197,8 +198,9 @@ export const contacts = router({
             return contact
         }),
     uploadContact: protectedProcedure
-        .input(z.string().nullish())
+        .input(z.record(z.string()))
         .mutation(async ({ input, ctx }) => {
+        console.log("🚀 ~ file: contacts.ts:203 ~ .mutation ~ input", input)
 
             if (!ctx.userId) {
                 throw new Error("User not found");
@@ -208,6 +210,7 @@ export const contacts = router({
             }
 
             const data = await input.formData();
+            console.log("🚀 ~ file: contacts.ts:211 ~ .mutation ~ data", data)
 
             const file = data.get('contacts');
 

@@ -1,6 +1,14 @@
 <script lang="ts">
 	import logger from '$lib/utility/logger';
-	import { svgAddUser, svgArrow, svgMinusCircle, svgPlus, svgPlusCircle, svgUpload, svgX } from '$lib/utility/svgLogos';
+	import {
+		svgAddUser,
+		svgArrow,
+		svgMinusCircle,
+		svgPlus,
+		svgPlusCircle,
+		svgUpload,
+		svgX
+	} from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
 	import type { Contacts } from '@prisma/client';
@@ -10,7 +18,7 @@
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
-	import { string } from 'zod';
+	import { trpc } from '$lib/trpc/client';
 
 	let errorMessages = new Map();
 
@@ -70,7 +78,7 @@
 		address: undefined
 	};
 
-	let formData  = { ...initFromData };
+	let formData = { ...initFromData };
 
 	const handleSubmit = async () => {
 		disabled = true;
@@ -112,6 +120,9 @@
 		try {
 			const formElm = e.target as HTMLFormElement;
 			const formData = new FormData(formElm);
+
+			const upload = await trpc().contacts.uploadContact.mutate(formData)
+			console.log("🚀 ~ file: +page.svelte:120 ~ upload", upload)
 
 			const res = await fetch('/api/contacts/upload.json', {
 				method: 'POST',
@@ -268,7 +279,7 @@
 						</button>
 					</div>
 				{/each}
-	
+
 				<label for="phone" class="flex justify-between text-sm">
 					<span>Phone</span>
 					<span class="text-xs text-danger">
