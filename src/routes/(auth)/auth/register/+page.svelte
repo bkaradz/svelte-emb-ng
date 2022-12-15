@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { UserRegisterSchema } from '$lib/validation/register.validate';
+	import { UserRegisterSchema } from '$lib/validation/userRegister.validate';
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
@@ -12,6 +12,7 @@
 	} from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { trpc } from '$lib/trpc/client';
 
 	let errorMessages = new Map();
 
@@ -21,25 +22,25 @@
 
 	const initFromData = {
 		name: undefined,
-		email: [''],
-		phone: [''],
-		address: undefined,
+		email: [{ email: '' }],
+		phone: [{ phone: '' }],
+		address: [{ address: '' }],
 		password: undefined,
 		confirmPassword: undefined
 	};
 
 	type FormData = {
 		name: string | undefined;
-		email: string[];
-		phone: string[];
-		address: string | undefined;
+		email: { email: string }[];
+		phone: { phone: string }[];
+		address: { address: string }[];
 		password: string | undefined;
 		confirmPassword: string | undefined;
 	};
 
 	let formData: FormData = { ...initFromData };
 
-	type HandleInputFields = Pick<FormData, "password" | "confirmPassword">
+	type HandleInputFields = Pick<FormData, 'password' | 'confirmPassword'>;
 
 	type formDataKeys = keyof HandleInputFields;
 
@@ -59,6 +60,7 @@
 
 	const handleRegister = async () => {
 		const parsedUser = UserRegisterSchema.safeParse(formData);
+		console.log('🚀 ~ file: +page.svelte:62 ~ handleRegister ~ parsedUser', parsedUser);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 
@@ -69,6 +71,9 @@
 			return;
 		}
 		try {
+			const contact = await trpc().authentication.registerOrUpdateContact.mutate(parsedUser.data)
+			console.log("🚀 ~ file: +page.svelte:75 ~ handleRegister ~ contact", contact)
+			return
 			const res = await fetch('/api/auth/register.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),
@@ -92,7 +97,7 @@
 
 	const addEmailField = (index: number) => {
 		if (index === formData.email.length - 1) {
-			formData.email = [...formData.email, ''];
+			formData.email = [...formData.email, { email: '' }];
 			return;
 		}
 		formData.email = formData.email.filter((email, i) => i !== index);
@@ -100,10 +105,18 @@
 
 	const addPhoneField = (index: number) => {
 		if (index === formData.phone.length - 1) {
-			formData.phone = [...formData.phone, ''];
+			formData.phone = [...formData.phone, { phone: '' }];
 			return;
 		}
 		formData.phone = formData.phone.filter((phone, i) => i !== index);
+	};
+
+	const addAddressField = (index: number) => {
+		if (index === formData.address.length - 1) {
+			formData.address = [...formData.address, { address: '' }];
+			return;
+		}
+		formData.address = formData.address.filter((address, i) => i !== index);
 	};
 </script>
 
@@ -135,7 +148,7 @@
 			</label>
 			{#each formData.email as v, i (i)}
 				<div class="flex items-center space-x-2">
-					<input type="email" name="email" class="input" bind:value={v} />
+					<input type="email" name="email" class="input" bind:value={v.email} />
 					<button on:click|preventDefault={() => addEmailField(i)}>
 						{#if i < formData.email.length - 1}
 							{@html svgMinusCircle}
@@ -154,7 +167,7 @@
 			</label>
 			{#each formData.phone as v, i (i)}
 				<div class=" flex items-center space-x-2">
-					<input type="text" name="phone" class="input" bind:value={v} />
+					<input type="text" name="phone" class="input" bind:value={v.phone} />
 					<button on:click|preventDefault={() => addPhoneField(i)}>
 						{#if i < formData.phone.length - 1}
 							{@html svgMinusCircle}
@@ -171,7 +184,18 @@
 					{errorMessages.get('address') ? errorMessages.get('address') : ''}
 				</span>
 			</label>
-			<textarea name="address" class="input" bind:value={formData.address} cols="10" rows="5" />
+			{#each formData.address as v, i (i)}
+				<div class=" flex items-center space-x-2">
+					<textarea name="address" class="input" bind:value={v.address} cols="10" rows="5" />
+					<button on:click|preventDefault={() => addAddressField(i)}>
+						{#if i < formData.address.length - 1}
+							{@html svgMinusCircle}
+						{:else}
+							{@html svgPlusCircle}
+						{/if}
+					</button>
+				</div>
+			{/each}
 
 			<label for="password" class="flex justify-between text-sm">
 				<span>Password</span>

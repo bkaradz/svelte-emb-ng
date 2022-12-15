@@ -3,7 +3,7 @@ import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import { UserRegisterSchema, type UserRegister } from '$lib/validation/register.validate';
+import { UserRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
 
 
 export const POST: RequestHandler = async ({ request }) => {
