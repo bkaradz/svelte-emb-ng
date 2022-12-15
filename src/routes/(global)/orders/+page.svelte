@@ -17,7 +17,6 @@
 	} from '$lib/utility/svgLogos';
 	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 	import dayjs from 'dayjs';
-	import { onMount } from 'svelte';
 	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 	import type { Orders } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
@@ -99,9 +98,7 @@
 		searchInputValue = '';
 	};
 
-	const handleSearch = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
@@ -296,20 +293,6 @@
 				<div class="flex items-center space-x-1">
 					{#if selectedOrderId}
 						<ArrowProgressBar list={Array.from(list.values())} {currentSelection} {onClick} />
-						<!-- <div class="flex items-center justify-center">
-							<div class="inline-flex shadow-md hover:shadow-lg focus:shadow-lg" role="group">
-								{#each Array.from(list.values()) as item (item)}
-									<button
-										on:click={() => generatePDF(item)}
-										type="button"
-										class="flex items-center px-6 py-2.5 bg-royal-blue-300 text-white font-medium text-xs leading-tight uppercase hover:bg-royal-blue-700 focus:bg-royal-blue-700 focus:outline-none focus:ring-0 active:bg-royal-blue-800 transition duration-150 ease-in-out"
-									>
-										<span class="pr-2">{@html svgPrinter}</span>
-										{item}
-									</button>
-								{/each}
-							</div>
-						</div> -->
 					{/if}
 				</div>
 			</div>

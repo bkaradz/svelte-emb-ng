@@ -18,7 +18,6 @@
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
-	import { trpc } from '$lib/trpc/client';
 
 	let errorMessages = new Map();
 
@@ -36,7 +35,7 @@
 
 	let corporateSearch: Partial<Contacts> = { name: '' };
 
-	$: formData.organizationID = corporateSearch?.id;
+	$: formData.organisationID = corporateSearch?.id;
 
 	let defaultCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
 		limit: 3,
@@ -71,7 +70,7 @@
 
 	const initFromData = {
 		isCorporate: false,
-		organizationID: { name: undefined },
+		organisationID: { name: undefined },
 		name: undefined,
 		email: [''],
 		phone: [''],
@@ -121,9 +120,6 @@
 			const formElm = e.target as HTMLFormElement;
 			const formData = new FormData(formElm);
 
-			const upload = await trpc().contacts.uploadContact.mutate(formData)
-			console.log("🚀 ~ file: +page.svelte:120 ~ upload", upload)
-
 			const res = await fetch('/api/contacts/upload.json', {
 				method: 'POST',
 				body: formData
@@ -146,6 +142,7 @@
 		};
 		getCorporateContacts(currentCorporateQueryParams);
 	};
+
 	const addEmailField = (index: number) => {
 		if (index === formData.email.length - 1) {
 			formData.email = [...formData.email, ''];
@@ -238,7 +235,7 @@
 				{#if !formData.isCorporate}
 					<Combobox2
 						label="Organization"
-						name="organizationID"
+						name="organisationID"
 						list={contacts.results}
 						bind:value={corporateSearch}
 						onInput={handleComboInput}

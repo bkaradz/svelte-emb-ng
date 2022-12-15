@@ -2,7 +2,7 @@ import { parseString } from '@fast-csv/parse';
 
 export default function parseCsv(csvString: string) {
 	return new Promise((resolve, reject) => {
-		const data: [] = [];
+		const data: unknown[] = [];
 
 		parseString(csvString, {
 			// headers: (headers) => headers.map((h) => h?.toLowerCase())

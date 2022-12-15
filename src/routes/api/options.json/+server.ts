@@ -1,7 +1,6 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
-import type { Prisma } from '@prisma/client';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
@@ -59,7 +58,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 };
 
 export const changeCurrentDefault = async (group: string) => {
-	const updatedAllToFalse = await prisma.options.updateMany({
+	await prisma.options.updateMany({
 		where: {
 			group,
 			isDefault: {

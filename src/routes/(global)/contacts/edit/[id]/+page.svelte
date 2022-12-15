@@ -1,9 +1,9 @@
 <script lang="ts">
 	import logger from '$lib/utility/logger';
-	import { svgAddUser, svgArrow } from '$lib/utility/svgLogos';
+	import { svgAddUser, svgArrow, svgMinusCircle, svgPlusCircle } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { Contacts } from '@prisma/client';
+	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { addContactsSchema, type AddContact } from '$lib/validation/addContact.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
@@ -13,14 +13,15 @@
 
 	let errorMessages = new Map();
 
-	/**
-	 * TODO: correct this error when loading Edit page it occures even when tha page is empty
-	 * Error: Cannot read properties of null (reading 'getAttribute')
-	*/
+	type ContactType = Contacts & {
+		email: Partial<Email>[];
+		phone: Partial<Phone>[];
+		address: Partial<Address>[];
+	};
 
-	type ContactsTypes = Pagination & { results: Contacts[] };
+	type CorporateContactsTypes = Pagination & { results: ContactType[] };
 
-	export let data: { corporateContacts: ContactsTypes; contact: Contacts };
+	export let data: { corporateContacts: CorporateContactsTypes; contact: ContactType };
 
 	interface corporateQueryParamsInterface {
 		limit: number;
@@ -32,7 +33,7 @@
 
 	let corporateSearch: Partial<Contacts> = { name: '' };
 
-	$: formData.organizationID = corporateSearch?.id;
+	$: formData.organisationID = corporateSearch?.id;
 
 	let defaultCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
 		limit: 3,
@@ -75,11 +76,11 @@
 
 	const initFromData = {
 		isCorporate: false,
-		organizationID: { name: undefined },
+		organisationID: { name: undefined },
 		name: undefined,
-		email: undefined,
-		phone: undefined,
-		address: undefined
+		email: [''],
+		phone: [''],
+		address: ['']
 	};
 
 	const handleSubmit = async () => {
@@ -124,6 +125,30 @@
 			name: e.target.value
 		};
 		getCorporateContacts(currentCorporateQueryParams);
+	};
+
+	const addEmailField = (index: number) => {
+		if (index === formData.email.length - 1) {
+			formData.email = [...formData.email, { email: '' }];
+			return;
+		}
+		formData.email = formData.email.filter((email, i) => i !== index);
+	};
+
+	const addPhoneField = (index: number) => {
+		if (index === formData.phone.length - 1) {
+			formData.phone = [...formData.phone, { phone: '' }];
+			return;
+		}
+		formData.phone = formData.phone.filter((phone, i) => i !== index);
+	};
+
+	const addAddressField = (index: number) => {
+		if (index === formData.address.length - 1) {
+			formData.address = [...formData.address, { address: '' }];
+			return;
+		}
+		formData.address = formData.address.filter((address, i) => i !== index);
 	};
 </script>
 
@@ -182,7 +207,7 @@
 				{#if !formData.isCorporate}
 					<Combobox2
 						label="Organization"
-						name="organizationID"
+						name="organisationID"
 						list={contacts.results}
 						bind:value={corporateSearch}
 						onInput={handleComboInput}
@@ -207,46 +232,60 @@
 
 				<label for="email" class="flex justify-between text-sm">
 					<span>Email</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('email') ? errorMessages.get('email') : ''}</span
-					>
+					<span class="text-xs text-danger">
+						{errorMessages.get('email') ? errorMessages.get('email') : ''}
+					</span>
 				</label>
-				<input
-					use:selectTextOnFocus
-					type="email"
-					name="email"
-					class="input"
-					bind:value={formData.email}
-				/>
+				{#each formData.email as v, i (i)}
+					<div class="flex items-center space-x-2">
+						<input type="email" name="email" class="input" bind:value={v.email} />
+						<button on:click|preventDefault={() => addEmailField(i)}>
+							{#if i < formData.email.length - 1}
+								{@html svgMinusCircle}
+							{:else}
+								{@html svgPlusCircle}
+							{/if}
+						</button>
+					</div>
+				{/each}
 
 				<label for="phone" class="flex justify-between text-sm">
 					<span>Phone</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('phone') ? errorMessages.get('phone') : ''}</span
-					>
+					<span class="text-xs text-danger">
+						{errorMessages.get('phone') ? errorMessages.get('phone') : ''}
+					</span>
 				</label>
-				<input
-					use:selectTextOnFocus
-					type="text"
-					name="phone"
-					class="input"
-					bind:value={formData.phone}
-				/>
+				{#each formData.phone as v, i (i)}
+					<div class=" flex items-center space-x-2">
+						<input type="text" name="phone" class="input" bind:value={v.phone} />
+						<button on:click|preventDefault={() => addPhoneField(i)}>
+							{#if i < formData.phone.length - 1}
+								{@html svgMinusCircle}
+							{:else}
+								{@html svgPlusCircle}
+							{/if}
+						</button>
+					</div>
+				{/each}
 
 				<label for="address" class="flex justify-between text-sm">
 					<span>Address</span>
-					<span class="text-xs text-danger"
-						>{errorMessages.get('address') ? errorMessages.get('address') : ''}</span
-					>
+					<span class="text-xs text-danger">
+						{errorMessages.get('address') ? errorMessages.get('address') : ''}
+					</span>
 				</label>
-				<textarea
-					use:selectTextOnFocus
-					name="address"
-					class="input"
-					bind:value={formData.address}
-					cols="10"
-					rows="5"
-				/>
+				{#each formData.address as v, i (i)}
+					<div class=" flex items-center space-x-2">
+						<input type="text" name="address" class="input" bind:value={v.address} />
+						<button on:click|preventDefault={() => addAddressField(i)}>
+							{#if i < formData.address.length - 1}
+								{@html svgMinusCircle}
+							{:else}
+								{@html svgPlusCircle}
+							{/if}
+						</button>
+					</div>
+				{/each}
 
 				<div class="mt-6 flex space-x-2">
 					<button

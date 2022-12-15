@@ -1,9 +1,9 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
-import { z } from 'zod';
 import prisma from '$lib/prisma/client';
 import { querySelection } from '../../contacts.json/+server';
 import parseCsv from '$lib/utility/parseCsv';
+import type { Contacts } from '@prisma/client';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -15,8 +15,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				status: 401
 			});
 		}
-
-		return
 
 		const createDBy = parseInt(locals.user.id);
 
@@ -34,18 +32,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const csvString = await file.text();
+		const csvString = await file.text() as string;
 
-		const optionsArray = await parseCsv(csvString);
+		type pContact = Partial<Contacts>
 
-		const allDocsPromises: any[] = [];
+		const optionsArray = await parseCsv(csvString) as pContact[];
+
+		const allDocsPromises: pContact[] = [];
 
 		optionsArray.forEach(async (element) => {
 			try {
 				const contact = querySelection(element, createDBy);
 				const contactsQuery = await prisma.contacts.create({ data: contact });
 				allDocsPromises.push(contactsQuery);
-			} catch (err: any) {
+			} catch (err: unknown) {
 				logger.error(`Error: ${err}`);
 				return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 					headers: {
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const allDocs = await Promise.all(allDocsPromises);
 
 		return new Response(JSON.stringify(allDocs));
-	} catch (err: any) {
+	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {

@@ -9,8 +9,6 @@ import { z } from 'zod';
 import { addContactsSchema } from '$lib/validation/addContact.validate';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import type { Prisma } from '@prisma/client';
-import logger from '$lib/utility/logger';
-import parseCsv from '$lib/utility/parseCsv';
 
 export const contacts = router({
     getContacts: protectedProcedure
@@ -180,8 +178,6 @@ export const contacts = router({
     updateContact: protectedProcedure
         .input(addContactsSchema)
         .mutation(async ({ input, ctx }) => {
-        console.log("🚀 ~ file: contacts.ts:183 ~ .mutation ~ input", input)
-
             if (!ctx.userId) {
                 throw new Error("User not found");
             }
@@ -196,62 +192,6 @@ export const contacts = router({
             });
 
             return contact
-        }),
-    uploadContact: protectedProcedure
-        .input(z.record(z.string()))
-        .mutation(async ({ input, ctx }) => {
-        console.log("🚀 ~ file: contacts.ts:203 ~ .mutation ~ input", input)
-
-            if (!ctx.userId) {
-                throw new Error("User not found");
-            }
-            if (!input) {
-                throw new Error("input not found");
-            }
-
-            const data = await input.formData();
-            console.log("🚀 ~ file: contacts.ts:211 ~ .mutation ~ data", data)
-
-            const file = data.get('contacts');
-
-            if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
-                logger.error('File is empty');
-                return new Response(JSON.stringify({ message: 'File is empty' }), {
-                    headers: {
-                        'content-type': 'application/json; charset=utf-8'
-                    },
-                    status: 400
-                });
-            }
-
-            const csvString = await file.text();
-
-            const optionsArray = await parseCsv(csvString);
-
-            const allDocsPromises: any[] = [];
-
-            if (!Array.isArray(optionsArray)) {
-                throw new Error("Products not found");
-            }
-
-            optionsArray.forEach(async (element) => {
-                try {
-                    const contact = querySelection(element, ctx.userId);
-                    const contactsQuery = await prisma.contacts.create({ data: contact });
-                    allDocsPromises.push(contactsQuery);
-                } catch (err: any) {
-                    logger.error(`Error: ${err}`);
-                    return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
-                        headers: {
-                            'content-type': 'application/json; charset=utf-8'
-                        },
-                        status: 500
-                    });
-                }
-            });
-
-            const allDocs = await Promise.all(allDocsPromises);
-            return allDocs
         }),
 });
 

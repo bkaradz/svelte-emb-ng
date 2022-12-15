@@ -83,7 +83,6 @@
 </div> -->
 <script lang="ts">
 	import { page } from '$app/stores';
-	console.log('🚀 ~ file: +page.svelte:86 ~ page', $page);
 	import { trpc } from '$lib/trpc/client';
 
 	let greeting: {

@@ -95,9 +95,7 @@
 		searchInputValue = '';
 	};
 
-	const handleSearch = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
@@ -177,7 +175,7 @@
 					<div class="p-2">
 						<p class="p-2 text-sm font-semibold text-pickled-bluewood-500">Organisation</p>
 						<p class="p-2 text-sm text-pickled-bluewood-500">
-							{contact?.organizationID?.name ? contact?.organizationID?.name : '...'}
+							{contact?.organisationID?.name ? contact?.organisationID?.name : '...'}
 						</p>
 					</div>
 					<div class="p-2">

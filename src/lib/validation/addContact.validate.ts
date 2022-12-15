@@ -9,7 +9,7 @@ export const addContactsSchema = z.object({
 	phone: z.string({ required_error: 'Phone is required' }).min(1),
 	address: z.string().optional(),
 	isCorporate: z.boolean({ required_error: 'Corporate or Individual is required' }),
-	organizationID: z.number().optional(),
+	organisationID: z.number().optional(),
 	vatOrBpNo: z.string().optional()
 });
 

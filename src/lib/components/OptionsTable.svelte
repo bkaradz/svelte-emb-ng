@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
+	import { TRPCClientError } from '@trpc/client';
+	import { string } from 'zod';
 
 	export let tableHeadings = [
 		'Group',
@@ -41,7 +44,7 @@
 		}
 	};
 
-	let idToRemove = [];
+	let idToRemove: string[] = [];
 
 	$: handleAddRow = () => {
 		const id = crypto.randomUUID();
@@ -60,36 +63,36 @@
 		];
 	};
 
-	const deleteOption = async (finalData: any) => {
+	const deleteOption = async (id: number) => {
 		try {
-			// let searchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/options.json', {
-				method: 'DELETE',
-				body: JSON.stringify(finalData),
-				headers: { 'Content-Type': 'application/json' }
-			});
-			if (res.ok) {
-				const user = await res.json();
-				toasts.add({
-					message: `${user.name} was deleted`,
-					type: 'success'
-				});
-				getOptions();
-			}
+			await trpc().options.deleteById.mutate(id);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			if (err instanceof TRPCClientError) {
+				logger.error(`Error: ${JSON.parse(err.message)}`);
+				toasts.add({
+					message: 'An error occurred while deleting the option',
+					type: 'error'
+				});
+			} else {
+				logger.error(`Error: ${err}`);
+				toasts.add({
+					message: 'An error occurred while deleting the option',
+					type: 'error'
+				});
+			}
+		} finally {
 			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
+				message: `Option was deleted`,
+				type: 'success'
 			});
-			// error = `Error: ${err}`;
+			getOptions();
 		}
 	};
 
 	const handleDelete = (finalData: Options) => {
 		if (finalData.isDefault) {
 			toasts.add({
-				message: 'You can now delete the default Pricelists',
+				message: 'You can not delete the default Pricelists',
 				type: 'error'
 			});
 			return;
@@ -98,7 +101,7 @@
 		deleteOption(finalData.id);
 	};
 
-	const updateOrAddOptions = async (finalData: any) => {
+	const updateOrAddOptions = async (finalData: Partial<Options>) => {
 		try {
 			// let searchParams = new URLSearchParams(paramsObj as string);
 			if (idToRemove.includes(finalData.id)) {
@@ -106,42 +109,45 @@
 				delete finalData.id;
 				idToRemove = idToRemove.filter((list) => list !== finalData.id);
 
-				const res = await fetch('/api/options.json', {
-					method: 'POST',
-					body: JSON.stringify(finalData),
-					headers: { 'Content-Type': 'application/json' }
-				});
-				if (res.ok) {
-					const option = await res.json();
-					toasts.add({ message: `${option.name} was added`, type: 'success' });
-				}
-			} else {
-				const res = await fetch('/api/options.json', {
-					method: 'PUT',
-					body: JSON.stringify(finalData),
-					headers: { 'Content-Type': 'application/json' }
-				});
-				if (res.ok) {
-					const option = await res.json();
-					toasts.add({ message: `${option.name} was updated`, type: 'success' });
-				}
+				// const res = await fetch('/api/options.json', {
+				// 	method: 'POST',
+				// 	body: JSON.stringify(finalData),
+				// 	headers: { 'Content-Type': 'application/json' }
+				// });
+				// if (res.ok) {
+				// 	const option = await res.json();
+				// 	toasts.add({ message: `${option.name} was added`, type: 'success' });
+				// }
 			}
-			getOptions();
+			// else {
+			// 	const res = await fetch('/api/options.json', {
+			// 		method: 'PUT',
+			// 		body: JSON.stringify(finalData),
+			// 		headers: { 'Content-Type': 'application/json' }
+			// 	});
+			// 	if (res.ok) {
+			// 		const option = await res.json();
+			// 		toasts.add({ message: `${option.name} was updated`, type: 'success' });
+			// 	}
+			// }
+			await trpc().options.saveOrUpdateOption.mutate(finalData);
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
 				message: 'An error has occurred while updating user',
 				type: 'error'
 			});
-			// error = `Error: ${err}`;
+		} finally {
+			getOptions();
+			toasts.add({ message: `Option was saved or updated successfully`, type: 'success' });
 		}
 	};
 
 	const getOptions = async () => {
 		try {
-			// let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/options.json?');
-			optionsList = await res.json();
+			optionsList = (await trpc().options.getOptions.query({})) as unknown as Options[];
+			// const res = await fetch('/api/options.json?');
+			// optionsList = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			// error = `Error: ${err}`;

@@ -18,7 +18,7 @@
 	} from '$lib/utility/svgLogos';
 	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 
-	type newContacts = Contacts & Email & Phone & Address;
+	type newContacts = Contacts & { email: Email[]; phone: Phone[]; address: Address[] };
 
 	type CustomersTypes = Pagination & { results: newContacts[] };
 
@@ -44,7 +44,7 @@
 	const tableHeadings = [
 		{ id: 1, name: 'ID', dbName: 'id' },
 		{ id: 2, name: 'Customer', dbName: 'name' },
-		{ id: 3, name: 'Organization', dbName: 'organizationID' },
+		{ id: 3, name: 'Organization', dbName: 'organisationID' },
 		{ id: 4, name: 'Phone', dbName: 'phone' },
 		{ id: 5, name: 'Email', dbName: 'email' },
 		{ id: 6, name: 'Corporate', dbName: 'isCorporate' },
