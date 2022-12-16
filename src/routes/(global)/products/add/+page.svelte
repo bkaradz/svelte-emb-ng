@@ -7,7 +7,7 @@
 	import type { Options, Products } from '@prisma/client';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { addProductsSchema } from '$lib/validation/addProduct.validate';
+	import { addProductsSchema } from '$lib/validation/saveProduct.validate';
 
 	let errorMessages = new Map();
 

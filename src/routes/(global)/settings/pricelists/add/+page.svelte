@@ -4,7 +4,7 @@
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import { addPricelistSchema } from '$lib/validation/addPricelists.validate';
+	import { addPricelistSchema } from '$lib/validation/savePricelists.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';

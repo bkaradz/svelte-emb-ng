@@ -5,7 +5,7 @@ import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import { getPagination } from '$lib/utility/pagination.util';
-import { addContactsSchema, type AddContact } from '$lib/validation/addContact.validate';
+import { addContactsSchema, type AddContact } from '$lib/validation/saveContact.validate';
 
 
 export const querySelection = (reqContact: any, createDBy: number) => {

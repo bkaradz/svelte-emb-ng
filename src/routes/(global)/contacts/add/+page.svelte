@@ -13,7 +13,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import type { Contacts } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
-	import { addContactsSchema, type AddContact } from '$lib/validation/addContact.validate';
+	import { addContactsSchema, type AddContact } from '$lib/validation/saveContact.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { addContactsSchema, type AddContact  } from "./addContact.validate";
+import { addContactsSchema, type AddContact  } from "./saveContact.validate";
 
 
 export const validateFormInput = (values: Partial<AddContact>) => {

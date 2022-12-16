@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { addPricelistSchema, type AddPricelists } from "./addPricelists.validate";
+import { addPricelistSchema, type AddPricelists } from "./savePricelists.validate";
 
 
 export const validateFormInput = (values: any) => {

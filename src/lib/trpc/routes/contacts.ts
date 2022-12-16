@@ -6,7 +6,7 @@ import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { z } from 'zod';
-import { addContactsSchema } from '$lib/validation/addContact.validate';
+import { addContactsSchema } from '$lib/validation/saveContact.validate';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import type { Prisma } from '@prisma/client';
 

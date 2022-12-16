@@ -63,6 +63,7 @@
 		const parsedUser = UserRegisterSchema.safeParse(formData);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
+			console.log("🚀 ~ file: +page.svelte:66 ~ handleRegister ~ errorMap", errorMap)
 
 			if (errorMap) {
 				errorMessages = errorMap;
@@ -72,29 +73,12 @@
 		}
 		try {
 			const contact = await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
-			// const res = await fetch('/api/auth/register.json', {
-			// 	method: 'POST',
-			// 	body: JSON.stringify(formData),
-			// 	headers: { 'Content-Type': 'application/json' }
-			// });
-
-			// if (res.ok) {
-			// 	formData = resetForm();
-
-			// 	toasts.add({
-			// 		message: 'Register was successful',
-			// 		type: 'success'
-			// 	});
-			// 	goto('/auth/login');
-			// }
 		} catch (err: any) {
 			handleErrors(err);
-			// logger.error(`Error: ${err}`);
-			// toasts.add({ message: 'An error has occurred', type: 'error' });
 		} finally {
 			formData = resetForm();
 			toasts.add({
-				message: 'Register was successful',
+				message: 'Registration was successful',
 				type: 'success'
 			});
 			goto('/auth/login');
