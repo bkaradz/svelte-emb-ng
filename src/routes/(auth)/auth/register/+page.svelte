@@ -13,6 +13,7 @@
 	import small_logo from '$lib/assets/small_logo.png';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	let errorMessages = new Map();
 
@@ -60,7 +61,6 @@
 
 	const handleRegister = async () => {
 		const parsedUser = UserRegisterSchema.safeParse(formData);
-		console.log('🚀 ~ file: +page.svelte:62 ~ handleRegister ~ parsedUser', parsedUser);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 
@@ -71,27 +71,33 @@
 			return;
 		}
 		try {
-			const contact = await trpc().authentication.registerOrUpdateContact.mutate(parsedUser.data)
-			console.log("🚀 ~ file: +page.svelte:75 ~ handleRegister ~ contact", contact)
-			return
-			const res = await fetch('/api/auth/register.json', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' }
-			});
+			const contact = await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
+			// const res = await fetch('/api/auth/register.json', {
+			// 	method: 'POST',
+			// 	body: JSON.stringify(formData),
+			// 	headers: { 'Content-Type': 'application/json' }
+			// });
 
-			if (res.ok) {
-				formData = resetForm();
+			// if (res.ok) {
+			// 	formData = resetForm();
 
-				toasts.add({
-					message: 'Register was successful',
-					type: 'success'
-				});
-				goto('/auth/login');
-			}
+			// 	toasts.add({
+			// 		message: 'Register was successful',
+			// 		type: 'success'
+			// 	});
+			// 	goto('/auth/login');
+			// }
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred', type: 'error' });
+			handleErrors(err);
+			// logger.error(`Error: ${err}`);
+			// toasts.add({ message: 'An error has occurred', type: 'error' });
+		} finally {
+			formData = resetForm();
+			toasts.add({
+				message: 'Register was successful',
+				type: 'success'
+			});
+			goto('/auth/login');
 		}
 	};
 

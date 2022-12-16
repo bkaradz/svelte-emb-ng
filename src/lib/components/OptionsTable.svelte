@@ -6,7 +6,7 @@
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { TRPCClientError } from '@trpc/client';
-	import { string } from 'zod';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	export let tableHeadings = [
 		'Group',
@@ -67,19 +67,16 @@
 		try {
 			await trpc().options.deleteById.mutate(id);
 		} catch (err: any) {
-			if (err instanceof TRPCClientError) {
-				logger.error(`Error: ${JSON.parse(err.message)}`);
-				toasts.add({
-					message: 'An error occurred while deleting the option',
-					type: 'error'
-				});
-			} else {
-				logger.error(`Error: ${err}`);
-				toasts.add({
-					message: 'An error occurred while deleting the option',
-					type: 'error'
-				});
-			}
+			handleErrors(err);
+			// if (err instanceof TRPCClientError) {
+			// 	logger.error(`Error: ${JSON.parse(err.message)}`);
+			// } else {
+			// 	logger.error(`Error: ${err}`);
+			// }
+			// toasts.add({
+			// 	message: 'An error occurred',
+			// 	type: 'error'
+			// });
 		} finally {
 			toasts.add({
 				message: `Option was deleted`,
@@ -132,11 +129,12 @@
 			// }
 			await trpc().options.saveOrUpdateOption.mutate(finalData);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
-			});
+			handleErrors(err);
+			// logger.error(`Error: ${err}`);
+			// toasts.add({
+			// 	message: 'An error has occurred while updating user',
+			// 	type: 'error'
+			// });
 		} finally {
 			getOptions();
 			toasts.add({ message: `Option was saved or updated successfully`, type: 'success' });
