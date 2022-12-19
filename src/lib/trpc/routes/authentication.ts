@@ -236,7 +236,6 @@ export const authentication = router({
 
             // return access tokens
             const headers = setSessionCookies(accessToken, ctx.event.cookies);
-            console.log("🚀 ~ file: authentication.ts:238 ~ .mutation ~ headers", headers)
             ctx.event.cookies.set('accessToken', accessToken, {
                 maxAge: config.get('cookieAccessTokenTtl'), // 15min
                 httpOnly: config.get('httpOnly'),

@@ -49,7 +49,6 @@
 		}
 		try {
 			// const test = await trpc().authentication.loginUser.mutate(parsedUser.data);
-			// console.log('🚀 ~ file: +page.svelte:52 ~ handleLogin ~ test', test);
 
 			// return;
 			const res = await fetch('/api/auth/login.json', {
