@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			});
 		}
 
-		const queryParams = Object.fromEntries(url.searchParams);
+		const queryParams = Object.fromEntries(url.SearchParams);
 
 		const objectKeys = Object.keys(queryParams)[0];
 

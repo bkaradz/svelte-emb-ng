@@ -84,7 +84,7 @@
 		await customerChanges(currentGlobalParams);
 	};
 
-	const gotoAddContact = async () => {
+	const gotoSaveContact = async () => {
 		goto(`/contacts/add`);
 	};
 
@@ -148,7 +148,7 @@
 				<h1 class="text-slate-700 text-2xl font-medium">Contacts</h1>
 				<div class="flex items-center">
 					<button
-						on:click={gotoAddContact}
+						on:click={gotoSaveContact}
 						class="btn btn-primary inline-flex items-center justify-center px-3"
 					>
 						<span>

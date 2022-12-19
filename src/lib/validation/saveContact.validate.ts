@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const addContactsSchema = z.object({
+export const saveContactsSchema = z.object({
 	name: z
 		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
 		.min(1)
@@ -14,5 +14,5 @@ export const addContactsSchema = z.object({
 });
 
 
-export type AddContact = z.infer<typeof addContactsSchema>;
-export type AddContactKeys = keyof AddContact;
+export type SaveContact = z.infer<typeof saveContactsSchema>;
+export type SaveContactKeys = keyof SaveContact;

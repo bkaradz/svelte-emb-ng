@@ -39,7 +39,7 @@
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
-			await updateOrAddOptions(list);
+			await updateOrSaveOptions(list);
 			isEditableID = null;
 		}
 	};
@@ -98,9 +98,9 @@
 		deleteOption(finalData.id);
 	};
 
-	const updateOrAddOptions = async (finalData: Partial<Options>) => {
+	const updateOrSaveOptions = async (finalData: Partial<Options>) => {
 		try {
-			// let searchParams = new URLSearchParams(paramsObj as string);
+			// let SearchParams = new URLSearchParams(paramsObj as string);
 			if (idToRemove.includes(finalData.id)) {
 				// Remove id
 				delete finalData.id;

@@ -4,8 +4,9 @@
 	import { svgEyeClose, svgEyeOpen, svgLogin } from '$lib/utility/svgLogos';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
-	import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/login.validate';
+	import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { trpc } from '$lib/trpc/client';
 
 	let errorMessages = new Map();
 
@@ -25,7 +26,7 @@
 
 	let formData: FormData = { ...initFromData };
 
-	type formDataKeys = keyof loginCredentials;
+	type formDataKeys = keyof LoginCredentials;
 
 	const handleInput = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		let name = (event.target as HTMLInputElement).name as formDataKeys;
@@ -47,6 +48,10 @@
 			return;
 		}
 		try {
+			// const test = await trpc().authentication.loginUser.mutate(parsedUser.data);
+			// console.log('🚀 ~ file: +page.svelte:52 ~ handleLogin ~ test', test);
+
+			// return;
 			const res = await fetch('/api/auth/login.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),

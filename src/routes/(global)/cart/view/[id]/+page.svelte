@@ -135,8 +135,8 @@
 
 	const getOptions = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/options.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/options.json?' + SearchParams.toString());
 			return await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -145,8 +145,8 @@
 
 	const getCustomers = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/contacts.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
 			return await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -155,8 +155,8 @@
 
 	const getPricelists = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/pricelists.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/pricelists.json?' + SearchParams.toString());
 			const jsonRes = await res.json();
 			const defaultPricelist = jsonRes.find(
 				(list: { isDefault: boolean }) => list.isDefault === true

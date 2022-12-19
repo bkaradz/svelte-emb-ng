@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { UserRegisterSchema } from '$lib/validation/userRegister.validate';
+	import { userRegisterSchema } from '$lib/validation/userRegister.validate';
 	import { goto } from '$app/navigation';
 	import logger from '$lib/utility/logger';
 	import { toasts } from '$lib/stores/toasts.store';
@@ -60,10 +60,12 @@
 	$: confirmPasswordType = confirmPasswordIsVisible ? 'text' : 'password';
 
 	const handleRegister = async () => {
-		const parsedUser = UserRegisterSchema.safeParse(formData);
+		/**
+		 * TODO: improve error catching using zod only
+		 */
+		const parsedUser = userRegisterSchema.safeParse(formData);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
-			console.log("🚀 ~ file: +page.svelte:66 ~ handleRegister ~ errorMap", errorMap)
 
 			if (errorMap) {
 				errorMessages = errorMap;

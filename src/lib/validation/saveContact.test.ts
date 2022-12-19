@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
-import { addContactsSchema, type AddContact  } from "./saveContact.validate";
+import { saveContactsSchema, type SaveContact } from "./saveContact.validate";
 
 
-export const validateFormInput = (values: Partial<AddContact>) => {
-  const parsedData = addContactsSchema.parse(values);
+export const validateFormInput = (values: Partial<SaveContact>) => {
+  const parsedData = saveContactsSchema.parse(values);
 
   return parsedData;
 };
@@ -22,7 +22,7 @@ it("Should fail if name is not provided", async () => {
   expect(() =>
     validateFormInput({
       isCorporate: false,
-	  phone: "0733251281",
+      phone: "0733251281",
     }),
   ).toThrowError("Name is required");
 });
@@ -37,9 +37,9 @@ it("Should fail isCorporate is not provided", async () => {
 it("Should pass if productCategories is embroidery and stitches are provided", async () => {
   expect(() =>
     validateFormInput({
-		name: "Jane Williams",
-		isCorporate: false,
-		phone: "0733251281"
+      name: "Jane Williams",
+      isCorporate: false,
+      phone: "0733251281"
     }),
   ).not.toThrowError();
 });

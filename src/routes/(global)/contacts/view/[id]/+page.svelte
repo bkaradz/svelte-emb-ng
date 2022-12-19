@@ -104,8 +104,8 @@
 
 	const getOrders = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/orders.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orders.json?' + SearchParams.toString());
 			orders = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);

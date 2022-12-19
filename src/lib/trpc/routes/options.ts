@@ -2,7 +2,7 @@ import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
 import { protectedProcedure } from '../middleware/auth';
 import { z } from 'zod';
-import { addOptionsSchema } from '$lib/validation/saveOption.validate';
+import { saveOptionsSchema } from '$lib/validation/saveOption.validate';
 import type { Prisma } from '@prisma/client';
 
 export const options = router({
@@ -51,7 +51,7 @@ export const options = router({
 
     return option;
   }),
-  saveOrUpdateOption: protectedProcedure.input(addOptionsSchema).mutation(async ({ input, ctx }) => {
+  saveOrUpdateOption: protectedProcedure.input(saveOptionsSchema).mutation(async ({ input, ctx }) => {
 
     if (!ctx?.userId) {
       throw new Error("User not authorised");

@@ -7,12 +7,12 @@ import {
 	createSession,
 	validateUserPassword
 } from '$lib/services/session.services';
-import { loginCredentialsSchema, type loginCredentials } from '$lib/validation/login.validate';
+import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
 
 
 export const POST: RequestHandler = async ({ cookies, request, locals }) => {
 	try {
-		const reqUser: loginCredentials = await request.json();
+		const reqUser: LoginCredentials = await request.json();
 
 		// validate the user's password
 		const parsedUser = loginCredentialsSchema.safeParse(reqUser);

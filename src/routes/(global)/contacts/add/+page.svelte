@@ -13,7 +13,7 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import type { Contacts } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
-	import { addContactsSchema, type AddContact } from '$lib/validation/saveContact.validate';
+	import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
@@ -48,9 +48,9 @@
 
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj as string);
+			let SearchParams = new URLSearchParams(paramsObj as string);
 
-			const res = await fetch('/api/contacts.json?' + searchParams.toString());
+			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
 			contacts = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -82,7 +82,7 @@
 	const handleSubmit = async () => {
 		disabled = true;
 
-		const parsedContact = addContactsSchema.safeParse(formData);
+		const parsedContact = saveContactsSchema.safeParse(formData);
 
 		if (!parsedContact.success) {
 			const errorMap = zodErrorMessagesMap(parsedContact);

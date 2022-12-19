@@ -45,8 +45,8 @@
 
 	const getRates = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/rates.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj as string);
+			const res = await fetch('/api/rates.json?' + SearchParams.toString());
 			rates = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);

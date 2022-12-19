@@ -100,8 +100,8 @@ if (browser) {
 	(async () => {
 		const paramsObj: unknown = { isDefault: true };
 		try {
-			const searchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/rates.json?' + searchParams.toString());
+			const SearchParams = new URLSearchParams(paramsObj as string);
+			const res = await fetch('/api/rates.json?' + SearchParams.toString());
 			if (res.ok) {
 				type Rates = Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] };
 				const rates: Rates[] = await res.json();

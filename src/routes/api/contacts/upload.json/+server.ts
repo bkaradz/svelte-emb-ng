@@ -36,11 +36,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		type pContact = Partial<Contacts>
 
-		const optionsArray = await parseCsv(csvString) as pContact[];
+		const contactsArray = await parseCsv(csvString) as pContact[];
 
 		const allDocsPromises: pContact[] = [];
 
-		optionsArray.forEach(async (element) => {
+		contactsArray.forEach(async (element) => {
 			try {
 				const contact = querySelection(element, createDBy);
 				const contactsQuery = await prisma.contacts.create({ data: contact });

@@ -6,7 +6,7 @@ import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { z } from 'zod';
-import { addContactsSchema } from '$lib/validation/saveContact.validate';
+import { saveContactsSchema } from '$lib/validation/saveContact.validate';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import type { Prisma } from '@prisma/client';
 
@@ -161,8 +161,8 @@ export const contacts = router({
             return product
         }),
 
-    saveContact: protectedProcedure
-        .input(addContactsSchema)
+    SaveContact: protectedProcedure
+        .input(saveContactsSchema)
         .mutation(async ({ input, ctx }) => {
 
             if (!ctx.userId) {
@@ -176,7 +176,7 @@ export const contacts = router({
             return contact
         }),
     updateContact: protectedProcedure
-        .input(addContactsSchema)
+        .input(saveContactsSchema)
         .mutation(async ({ input, ctx }) => {
             if (!ctx.userId) {
                 throw new Error("User not found");

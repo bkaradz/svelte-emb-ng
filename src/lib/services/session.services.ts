@@ -1,6 +1,6 @@
 // import * as cookie from 'cookie';
 import config from 'config';
-import type { loginCredentials } from '$lib/validation/login.validate';
+import type { LoginCredentials } from '$lib/validation/login.validate';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 import type { Cookies } from '@sveltejs/kit';
@@ -14,6 +14,15 @@ export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
 		sameSite: config.get('sameSite'),
 		secure: config.get('secure')
 	})
+
+	// return cookies.set('accessToken', accessToken, {
+	// 	maxAge: config.get('cookieAccessTokenTtl'), // 15min
+	// 	httpOnly: config.get('httpOnly'),
+	// 	domain: 'localhost',
+	// 	path: '/',
+	// 	sameSite: config.get('sameSite'),
+	// 	secure: config.get('secure')
+	// })
 
 	return {
 		'Set-Cookie': `${[accessTokenSerial]}`
@@ -35,10 +44,10 @@ export const deleteSessionCookies = (cookies: Cookies) => {
 	};
 };
 
-export async function createSession(createDBy: any, userAgent: string) {
+export async function createSession(createDBy: number, userAgent: string) {
 	const session = await prisma.sessions.create({
 		data: {
-			contactsId: parseInt(createDBy),
+			contactsId: createDBy,
 			userAgent,
 			valid: true
 		}
@@ -59,7 +68,7 @@ export async function findSessions(query: number) {
  * @param userCredentials 
  * @returns 
  */
-export async function validateUserPassword(userCredentials: loginCredentials) {
+export async function validateUserPassword(userCredentials: LoginCredentials) {
 
 	const { email, password } = userCredentials
 

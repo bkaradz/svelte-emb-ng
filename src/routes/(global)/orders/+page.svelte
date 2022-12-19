@@ -108,8 +108,8 @@
 	// Input must be of the form {limit, page, sort, query}
 	const getOrders = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/orders.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orders.json?' + SearchParams.toString());
 			if (res.ok) {
 				const resOrders = await res.json();
 				resOrders.results = resOrders.results.map((item: newOrder) => {

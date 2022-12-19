@@ -30,7 +30,7 @@
 
 	const updateUser = async (finalData: Partial<any>) => {
 		try {
-			// let searchParams = new URLSearchParams(paramsObj as string);
+			// let SearchParams = new URLSearchParams(paramsObj as string);
 			const res = await fetch('/api/auth.json', {
 				method: 'PUT',
 				body: JSON.stringify(finalData),
@@ -54,7 +54,7 @@
 	};
 	const deleteUser = async (finalData: Partial<any>) => {
 		try {
-			// let searchParams = new URLSearchParams(paramsObj as string);
+			// let SearchParams = new URLSearchParams(paramsObj as string);
 			const res = await fetch('/api/auth.json', {
 				method: 'DELETE',
 				body: JSON.stringify(finalData),

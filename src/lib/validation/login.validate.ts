@@ -9,6 +9,6 @@ export const loginCredentialsSchema = z
 	})
 	.strict();
 
-export type loginCredentials = z.infer<typeof loginCredentialsSchema>;
-export type loginCredentialsKeys = keyof loginCredentials;
+export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
+export type LoginCredentialsKeys = keyof LoginCredentials;
 

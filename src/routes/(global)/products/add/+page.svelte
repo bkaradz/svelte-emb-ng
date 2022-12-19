@@ -7,7 +7,7 @@
 	import type { Options, Products } from '@prisma/client';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { addProductsSchema } from '$lib/validation/saveProduct.validate';
+	import { saveProductsSchema } from '$lib/validation/saveProduct.validate';
 
 	let errorMessages = new Map();
 
@@ -19,8 +19,8 @@
 
 	const getProductCategories = async () => {
 		try {
-			let searchParams = new URLSearchParams({ group: 'productCategories' });
-			const res = await fetch('/api/options.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams({ group: 'productCategories' });
+			const res = await fetch('/api/options.json?' + SearchParams.toString());
 			productCategories = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -52,7 +52,7 @@
 	const handleSubmit = async () => {
 		disabled = true;
 
-		const parsedContact = addProductsSchema.safeParse(formData);
+		const parsedContact = saveProductsSchema.safeParse(formData);
 
 		if (!parsedContact.success) {
 			const errorMap = zodErrorMessagesMap(parsedContact);

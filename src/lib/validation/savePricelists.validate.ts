@@ -7,7 +7,7 @@ const PricelistsItem = z.object({
 	pricePerThousandStitches: z.number({ required_error: 'Price Per Thousand Stitches is required' }),
 });
 
-export const addPricelistSchema = z.object({
+export const savePricelistSchema = z.object({
 	name: z.string({ required_error: 'Name is required' }).min(1),
 	isActive: z.boolean({ required_error: 'isActive is required' }),
 	isDefault: z.boolean({ required_error: 'isDefault is required' }),
@@ -15,5 +15,5 @@ export const addPricelistSchema = z.object({
 });
 
 
-export type AddPricelists = z.infer<typeof addPricelistSchema>;
-export type AddPricelistsKeys = keyof AddPricelists;
+export type SavePricelists = z.infer<typeof savePricelistSchema>;
+export type SavePricelistsKeys = keyof SavePricelists;

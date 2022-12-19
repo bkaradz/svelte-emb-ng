@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const UserRegisterSchema = z
+export const userRegisterSchema = z
 	.object({
 		name: z
 			.string({
@@ -13,26 +13,23 @@ export const UserRegisterSchema = z
 			z.object({
 				email: z
 					.string({
-						required_error: "Email is required",
-						invalid_type_error: "Email must be a string",
+						required_error: "Email is required"
 					}).email()
 			}).passthrough()),
 		phone: z.array(
 			z.object({
 				phone: z.string({
-					required_error: "Phone is required",
-					invalid_type_error: "Phone must be a string",
+					required_error: "Phone is required"
 				})
-			}).passthrough()
-		),
+					.refine((data) => !data)
+			}).passthrough()),
 		address: z.array(
 			z.object({
 				address: z.string({
-					required_error: "Address is required",
-					invalid_type_error: "Address must be a string",
+					required_error: "Address is required"
 				})
-			}).passthrough()
-		),
+					.refine((data) => !data)
+			}).passthrough()),
 		password: z.string({
 			required_error: "Password is required",
 			invalid_type_error: "Password must be a string",
@@ -45,7 +42,16 @@ export const UserRegisterSchema = z
 	.refine((data) => data.password === data.confirmPassword, {
 		message: 'Passwords do not match',
 		path: ['confirmPassword']
-	});
+	}).refine((data) => data.email.length !== 0, {
+		message: 'Email array must have at least one email',
+		path: ['email']
+	}).refine((data) => data.phone.length !== 0, {
+		message: 'Phone array must have at least one phone number',
+		path: ['phone']
+	}).refine((data) => data.address.length !== 0, {
+		message: 'Address array must have at least one address',
+		path: ['address']
+	})
 
-export type UserRegister = z.infer<typeof UserRegisterSchema>;
-export type UserRegisterSchemaKeys = keyof UserRegister;
+export type UserRegister = z.infer<typeof userRegisterSchema>;
+export type UserRegisterKeys = keyof UserRegister;

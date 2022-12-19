@@ -8,5 +8,5 @@ export const searchParamsSchema = z
   })
 
 
-export type searchParams = z.infer<typeof searchParamsSchema>;
-export type searchParamsSchemaKeys = keyof searchParams;
+export type SearchParams = z.infer<typeof searchParamsSchema>;
+export type SearchParamsKeys = keyof SearchParams;

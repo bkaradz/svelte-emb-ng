@@ -5,10 +5,11 @@ import prisma from '$lib/prisma/client';
 import type { Prisma } from '@prisma/client';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import { getPagination } from '$lib/utility/pagination.util';
-import { addContactsSchema, type AddContact } from '$lib/validation/saveContact.validate';
+import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
 
 
 export const querySelection = (reqContact: any, createDBy: number) => {
+	// eslint-disable-next-line prefer-const
 	let { name, email, phone, address, ...restContact } = reqContact;
 
 	name = name.trim();
@@ -29,7 +30,7 @@ export const querySelection = (reqContact: any, createDBy: number) => {
 	let contact: Prisma.ContactsCreateInput;
 
 	contact = {
-		...restContact,
+		// ...restContact,
 		name,
 		createdBy: createDBy,
 		isActive: true,
@@ -98,7 +99,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			});
 		}
 
-		const queryParams = Object.fromEntries(url.searchParams);
+		const queryParams = Object.fromEntries(url.SearchParams);
 
 		const pagination = getPagination(queryParams);
 
@@ -193,11 +194,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const createDBy = parseInt(locals.user.id);
 
-		let reqContact: AddContact = await request.json();
+		let reqContact: SaveContact = await request.json();
 
 
 		// validate the user's password
-		const parsedContact = addContactsSchema.safeParse(reqContact);
+		const parsedContact = saveContactsSchema.safeParse(reqContact);
 
 		if (!parsedContact.success) {
 			return new Response(JSON.stringify({ message: parsedContact.error }), {

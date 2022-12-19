@@ -66,9 +66,7 @@
 		searchInputValue = '';
 	};
 
-	const handleSearch = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		currentGlobalParams.page = 1;
 		let searchWord = (event.target as HTMLInputElement).value;
 		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
@@ -78,8 +76,8 @@
 	// Input must be of the form {limit, page, query}
 	const getOrdersList = async (paramsObj: any) => {
 		try {
-			let searchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/orderLine.json?' + searchParams.toString());
+			let SearchParams = new URLSearchParams(paramsObj);
+			const res = await fetch('/api/orderLine.json?' + SearchParams.toString());
 			ordersList = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);

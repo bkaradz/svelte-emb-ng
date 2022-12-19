@@ -6,15 +6,15 @@ import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { z } from 'zod';
-import { addContactsSchema } from '$lib/validation/saveContact.validate';
 import normalizePhone from '$lib/utility/normalizePhone.util';
 import type { Prisma } from '@prisma/client';
-import { UserRegisterSchema } from '$lib/validation/userRegister.validate';
+import { userRegisterSchema } from '$lib/validation/userRegister.validate';
 import bcrypt from 'bcrypt';
 import config from 'config';
 import { createSession, setSessionCookies, validateUserPassword } from '$lib/services/session.services';
 import { signJwt } from '$lib/utility/jwt.utils';
 import { loginCredentialsSchema } from '$lib/validation/login.validate';
+import { redirect } from '@sveltejs/kit';
 
 export const authentication = router({
     getUser: protectedProcedure
@@ -127,7 +127,7 @@ export const authentication = router({
             return product
         }),
     registerOrUpdateUser: publicProcedure
-        .input(UserRegisterSchema)
+        .input(userRegisterSchema)
         .mutation(async ({ input, ctx }) => {
 
             const userExist = await prisma.email.findUnique({
@@ -204,7 +204,7 @@ export const authentication = router({
         .input(loginCredentialsSchema)
         .mutation(async ({ input, ctx }) => {
 
-            let user = await validateUserPassword(input);
+            const user = await validateUserPassword(input);
 
             if (!user) {
                 return new Response(JSON.stringify({ message: 'Invalid email or password' }), {
@@ -232,11 +232,26 @@ export const authentication = router({
             // create an access token
             const accessToken = signJwt(body, { expiresIn: config.get('accessTokenTtl') });
 
+
+
             // return access tokens
             const headers = setSessionCookies(accessToken, ctx.event.cookies);
+            console.log("🚀 ~ file: authentication.ts:238 ~ .mutation ~ headers", headers)
+            ctx.event.cookies.set('accessToken', accessToken, {
+                maxAge: config.get('cookieAccessTokenTtl'), // 15min
+                httpOnly: config.get('httpOnly'),
+                domain: 'localhost',
+                path: '/',
+                sameSite: config.get('sameSite'),
+                secure: config.get('secure')
+            })
 
-            return new Response(JSON.stringify(body), { headers: headers });
+            ctx.event.request.headers.set('set-cookie', headers['Set-Cookie'])
 
+            // throw redirect(302, '/')
+
+            // return new Response(JSON.stringify(body), { headers: headers });
+            return 'Done';
         }),
 })
 

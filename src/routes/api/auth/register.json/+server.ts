@@ -3,14 +3,14 @@ import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import { UserRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
+import { userRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
 
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const reqUser: UserRegister = await request.json();
 
-		const parsedUser = UserRegisterSchema.safeParse(reqUser);
+		const parsedUser = userRegisterSchema.safeParse(reqUser);
 
 		if (!parsedUser.success) {
 			return new Response(JSON.stringify({ message: parsedUser.error }), {

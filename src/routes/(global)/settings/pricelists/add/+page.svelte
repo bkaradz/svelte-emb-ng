@@ -4,7 +4,7 @@
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import { addPricelistSchema } from '$lib/validation/savePricelists.validate';
+	import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
@@ -59,7 +59,7 @@
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
-			// await updateOrAddOptions(list);
+			// await updateOrSaveOptions(list);
 			isEditableID = null;
 		}
 	};
@@ -100,7 +100,7 @@
 		disabled = true;
 
 		try {
-			const parsedPricelist = addPricelistSchema.safeParse(pricelist);
+			const parsedPricelist = savePricelistSchema.safeParse(pricelist);
 
 			if (!parsedPricelist.success) {
 				const errorMap = zodErrorMessagesMap(parsedPricelist);
@@ -259,10 +259,7 @@
 											</td>
 
 											<td class="p-1 text-center ">
-												<button
-													class=" m-0 p-0"
-													on:click|preventDefault={() => handleDelete(list)}
-												>
+												<button class=" m-0 p-0" on:click|preventDefault={() => handleDelete(list)}>
 													<span class="fill-current text-pickled-bluewood-500"
 														>{@html svgTrash}</span
 													>
