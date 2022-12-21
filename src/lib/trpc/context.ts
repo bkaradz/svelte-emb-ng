@@ -8,8 +8,6 @@ import type { inferAsyncReturnType } from '@trpc/server';
 export async function createContext(event: RequestEvent) {
   const cookies = event.cookies.get('accessToken');
 
-
-
   let decoded: userSessionInterface | null = null
 
   if (cookies) {

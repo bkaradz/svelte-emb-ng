@@ -1,9 +1,12 @@
 import type { Context } from '$lib/trpc/context';
 import { initTRPC } from '@trpc/server';
+import superjson from 'superjson';
 // import { isAuthenticated } from './middleware/auth';
 // import { isAuthenticated } from './middleware/auth';
 
-export const t = initTRPC.context<Context>().create();
+export const t = initTRPC.context<Context>().create({
+    transformer: superjson
+});
 
 export const router = t.router;
 
