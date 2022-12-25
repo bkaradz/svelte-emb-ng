@@ -14,7 +14,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			});
 		}
 
-		const queryParams = Object.fromEntries(url.SearchParams);
+		const queryParams = Object.fromEntries(url.searchParams);
 
 		const objectKeys = Object.keys(queryParams)[0];
 
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const ratesQuery = await prisma.xchangeRate.findMany(query);
 
 		return new Response(JSON.stringify(ratesQuery));
-	} catch (err: any) {
+	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
 		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
 			headers: {
