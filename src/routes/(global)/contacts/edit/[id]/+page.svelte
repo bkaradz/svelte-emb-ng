@@ -10,8 +10,13 @@
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
+	import { trpc } from '$lib/trpc/client';
 
 	let errorMessages = new Map();
+
+	type newContacts = Contacts & { email: Email[]; phone: Phone[]; address: Address[] };
+
+	type CustomersTypes = Pagination & { results: newContacts[] };
 
 	type ContactType = Contacts & {
 		email: Partial<Email>[];
@@ -47,6 +52,11 @@
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
 			let SearchParams = new URLSearchParams(paramsObj as string);
+
+			const contactsAll = (await trpc().contacts.getContacts.query(
+				paramsObj
+			)) as unknown as CustomersTypes;
+			console.log('🚀 ~ file: +page.svelte:59 ~ getCorporateContacts ~ contactsAll', contactsAll);
 
 			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
 			contacts = await res.json();
@@ -197,12 +207,21 @@
 					bind:value={formData.name}
 				/>
 
-				<Checkbox2
-					name="isCorporate"
-					label="Individual or Corporate"
-					bind:checked={formData.isCorporate}
-					errorMessages={errorMessages.get('isCorporate')}
-				/>
+				{#if formData.isCorporate}
+					<Checkbox2
+						name="isCorporate"
+						label="Corporate"
+						bind:checked={formData.isCorporate}
+						errorMessages={errorMessages.get('isCorporate')}
+					/>
+				{:else}
+					<Checkbox2
+						name="isCorporate"
+						label="Individual"
+						bind:checked={formData.isCorporate}
+						errorMessages={errorMessages.get('isCorporate')}
+					/>
+				{/if}
 
 				{#if !formData.isCorporate}
 					<Combobox2

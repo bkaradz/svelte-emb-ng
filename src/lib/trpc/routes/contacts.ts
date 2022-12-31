@@ -95,6 +95,27 @@ export const contacts = router({
 
             const pagination = getPagination(input);
 
+            const finalQuery = omit(input, ['page', 'limit', 'sort']);
+
+            const objectKeys = Object.keys(finalQuery)[0];
+
+            let whereQuery;
+
+            if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+                whereQuery = {
+                    equals: finalQuery[objectKeys] === 'true'
+                };
+            } else {
+                whereQuery = {
+                    contains: finalQuery[objectKeys],
+                    mode: 'insensitive'
+                };
+            }
+
+
+            let query;
+            let queryTotal;
+
             const baseQuery = {
                 take: pagination.limit,
                 skip: (pagination.page - 1) * pagination.limit,
@@ -102,23 +123,39 @@ export const contacts = router({
                     email: true,
                     phone: true,
                     address: true
+                },
+                orderBy: {
+                    name: 'asc'
                 }
             };
 
-            const query = {
-                ...baseQuery,
-                where: {
-                    isActive: true,
-                    isCorporate: true
-                },
-            };
-
-            const queryTotal = {
-                where: {
-                    isActive: true,
-                    isCorporate: true
-                },
-            };
+            if (objectKeys) {
+                query = {
+                    ...baseQuery,
+                    where: {
+                        isActive: true,
+                        [objectKeys]: whereQuery
+                    },
+                };
+                queryTotal = {
+                    where: {
+                        isActive: true,
+                        [objectKeys]: whereQuery
+                    }
+                };
+            } else {
+                query = {
+                    ...baseQuery,
+                    where: {
+                        isActive: true,
+                    },
+                };
+                queryTotal = {
+                    where: {
+                        isActive: true,
+                    },
+                };
+            }
 
             const contactsQuery = await prisma.contacts.findMany(query);
             pagination.totalRecords = await prisma.contacts.count(queryTotal);

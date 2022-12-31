@@ -1,5 +1,3 @@
-import prisma from '$lib/prisma/client';
-import { getPagination } from '$lib/utility/pagination.util';
 import type { PageServerLoad } from './$types';
 import { router } from '$lib/trpc/router';
 import { createContext } from '$lib/trpc/context';
@@ -7,7 +5,7 @@ import { createContext } from '$lib/trpc/context';
 export const load: PageServerLoad = async (event) => {
 
   const queryParams = {
-    limit: 5,
+    limit: 3,
     page: 1,
   }
 

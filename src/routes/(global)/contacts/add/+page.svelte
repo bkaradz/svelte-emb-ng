@@ -11,15 +11,21 @@
 	} from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { Contacts } from '@prisma/client';
+	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	let errorMessages = new Map();
+
+	type newContacts = Contacts & { email: Email[]; phone: Phone[]; address: Address[] };
+
+	type CustomersTypes = Pagination & { results: newContacts[] };
 
 	type ContactsTypes = Pagination & { results: Contacts[] };
 
@@ -39,8 +45,7 @@
 
 	let defaultCorporateQueryParams: Partial<corporateQueryParamsInterface> = {
 		limit: 3,
-		page: 1,
-		isCorporate: true
+		page: 1
 	};
 
 	let currentCorporateQueryParams = defaultCorporateQueryParams;
@@ -48,10 +53,7 @@
 
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj as string);
-
-			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
-			contacts = await res.json();
+			contacts = (await trpc().contacts.getCorporate.query(paramsObj)) as unknown as CustomersTypes;
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({
@@ -66,6 +68,7 @@
 	$: resetForm = () => {
 		formData = { ...initFromData };
 		corporateSearch = Object.create({ name: undefined });
+		getCorporateContacts(defaultCorporateQueryParams);
 	};
 
 	const initFromData = {
@@ -94,20 +97,30 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/contacts.json', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' }
-			});
+			const contacts = (await trpc().contacts.SaveContact.mutate(
+				parsedContact.data
+			)) as unknown as CustomersTypes;
+			console.log('🚀 ~ file: +page.svelte:99 ~ handleSubmit ~ contacts', contacts);
+			// const res = await fetch('/api/contacts.json', {
+			// 	method: 'POST',
+			// 	body: JSON.stringify(formData),
+			// 	headers: { 'Content-Type': 'application/json' }
+			// });
 
-			if (res.ok) {
-				// const data = await res.json();
-				resetForm();
-				toasts.add({ message: 'The Contact was added', type: 'success' });
-			}
+			// if (res.ok) {
+			// 	// const data = await res.json();
+			// 	resetForm();
+			// 	toasts.add({ message: 'The Contact was added', type: 'success' });
+			// }
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred while adding the contact', type: 'error' });
+			handleErrors(err);
+		} finally {
+			console.log('contact saved');
+			resetForm();
+			toasts.add({
+				message: 'Contact was successfully added',
+				type: 'success'
+			});
 		}
 	};
 
@@ -136,6 +149,7 @@
 	};
 
 	const handleComboInput = (e: any) => {
+		console.log('test entered');
 		currentCorporateQueryParams = {
 			...currentCorporateQueryParams,
 			name: e.target.value
@@ -225,12 +239,21 @@
 					bind:value={formData.name}
 				/>
 
-				<Checkbox2
-					name="isCorporate"
-					label="Individual or Corporate"
-					bind:checked={formData.isCorporate}
-					errorMessages={errorMessages.get('isCorporate')}
-				/>
+				{#if formData.isCorporate}
+					<Checkbox2
+						name="isCorporate"
+						label="Corporate"
+						bind:checked={formData.isCorporate}
+						errorMessages={errorMessages.get('isCorporate')}
+					/>
+				{:else}
+					<Checkbox2
+						name="isCorporate"
+						label="Individual"
+						bind:checked={formData.isCorporate}
+						errorMessages={errorMessages.get('isCorporate')}
+					/>
+				{/if}
 
 				{#if !formData.isCorporate}
 					<Combobox2
