@@ -1,26 +1,32 @@
 <script lang="ts">
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
-	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
-	import { dinero, toUnit } from 'dinero.js';
-	import { USD, ZAR } from '@dinero.js/currencies';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { saveXchangeRateSchema } from '$lib/validation/saveXchangeRate.validate';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+
+	let errorMessages = new Map();
 
 	export let data: { currencyOptions: Options[] };
+
+	$: disabled = false;
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+	const initRate: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
 		xChangeRateDate: TODAY,
 		isActive: true,
-		isDefault: true,
+		isDefault: false,
 		XchangeRateDetails: []
 	};
+
+	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = { ...initRate };
 
 	let selectedGroup = 'all';
 
@@ -86,42 +92,51 @@
 			return;
 		}
 
-		try {
-			const res = await fetch('/api/rates.json', {
-				method: 'POST',
-				body: JSON.stringify(rates),
-				headers: { 'Content-Type': 'application/json' }
-			});
+		disabled = true;
 
-			if (res.ok) {
-				const resRates = await res.json();
-				toasts.add({ message: `Exchange Rate with id ${resRates.id} was added`, type: 'success' });
+		const reqRate = JSON.parse(JSON.stringify(rates));
 
-				rates = {
-					id: 0,
-					xChangeRateDate: TODAY,
-					isActive: true,
-					isDefault: true,
-					XchangeRateDetails: []
-				};
+		reqRate.xChangeRateDate = new Date().toJSON();
+
+		reqRate.XchangeRateDetails = reqRate.XchangeRateDetails.map(
+			(rate: Partial<XchangeRateDetails>) => {
+				const { id, ...restRate } = rate;
+				return restRate;
 			}
+		);
+		console.log('🚀 ~ file: +page.svelte:107 ~ handleSubmit ~ reqRate', reqRate);
+
+		const parsedRates = saveXchangeRateSchema.safeParse(reqRate);
+		console.log('🚀 ~ file: +page.svelte:109 ~ handleSubmit ~ parsedRates', parsedRates);
+
+		if (!parsedRates.success) {
+			const errorMap = zodErrorMessagesMap(parsedRates);
+
+			if (errorMap) {
+				errorMessages = errorMap;
+			}
+			disabled = false;
+			return;
+		}
+
+		try {
+			const resRates = await trpc();
 		} catch (err) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating',
-				type: 'error'
-			});
+			handleErrors(err);
+		} finally {
+			rates = { ...initRate };
+			toasts.add({ message: `Exchange Rate with was added successfully`, type: 'success' });
 		}
 	};
 
-	const handleEditable = (list: Options) => {
+	const handleEditable = (list: XchangeRateDetails) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (list: Options) => {
+	const handleDelete = (list: XchangeRateDetails) => {
 		isEditableID = null;
 		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
 		usedCurrencies = getUsedCurrencies();
@@ -141,15 +156,28 @@
 						>Exchange Rate Id
 						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
 					</label>
-					<Input
-						class="input w-full"
-						name="xChangeRateDate"
-						label="Date Created"
-						type="datetime-local"
-						bind:value={rates.xChangeRateDate}
+					<label class="text-sm" for="xChangeRateDate">
+						Date Created
+						<input
+							class="input w-full"
+							name="xChangeRateDate"
+							type="datetime-local"
+							bind:value={rates.xChangeRateDate}
+							disabled
+						/>
+					</label>
+					<Checkbox2
+						name="isActive"
+						label="isActive"
+						errorMessages={errorMessages.get('isActive')}
+						bind:checked={rates.isActive}
 					/>
-					<Checkbox name="isActive" label="isActive" bind:checked={rates.isActive} />
-					<Checkbox name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
+					<Checkbox2
+						name="isDefault"
+						label="isDefault"
+						errorMessages={errorMessages.get('isActive')}
+						bind:checked={rates.isDefault}
+					/>
 				</div>
 				<div>
 					<input class="btn btn-primary" type="submit" value="Submit" />
@@ -205,7 +233,7 @@
 									<td class="px-2 py-1">
 										<input
 											class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-											type="text"
+											type="number"
 											name="minimumQuantity"
 											disabled={!(isEditableID === list.id)}
 											bind:value={list.rate}

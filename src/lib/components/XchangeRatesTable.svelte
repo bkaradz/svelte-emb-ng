@@ -6,6 +6,8 @@
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
 	import type { XchangeRate } from '@prisma/client';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
@@ -20,24 +22,12 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/rates.json', {
-				method: 'DELETE',
-				body: JSON.stringify(list),
-				headers: { 'Content-Type': 'application/json' }
-			});
-			if (res.ok) {
-				toasts.add({
-					message: `Exchange Rate was deleted`,
-					type: 'success'
-				});
-				getRates(defaultQueryParams);
-			}
+			await trpc().xchangeRate.deleteById.mutate(list.id);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
-			});
+			handleErrors(err)
+		} finally {
+			getRates(defaultQueryParams);
+			toasts.add({ message: `Exchange Rate was deleted`, type: 'success' });
 		}
 	};
 
@@ -45,17 +35,18 @@
 
 	const getRates = async (paramsObj: any) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/rates.json?' + SearchParams.toString());
-			rates = await res.json();
+			const resRates = await trpc().xchangeRate.getXchangeRates.query(paramsObj)
+			if (resRates) {
+				rates = resRates
+			}
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err)
 		}
 	};
 
 	onMount(() => getRates(defaultQueryParams));
 
-	const viewPricelist = async (id: string) => {
+	const viewPricelist = async (id: number) => {
 		goto(`/settings/rates/view/${id}`);
 	};
 

@@ -6,6 +6,7 @@ import { options } from '$lib/trpc/routes/options';
 import { authentication } from '$lib/trpc/routes/authentication';
 import { orders } from '$lib/trpc/routes/orders';
 import { pricelists } from '$lib/trpc/routes/pricelists';
+import { xchangeRate } from '$lib/trpc/routes/xchangeRate';
 import { t } from '$lib/trpc/t';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
@@ -16,7 +17,8 @@ export const router = t.router({
   options,
   authentication,
   orders,
-  pricelists
+  pricelists,
+  xchangeRate
 });
 
 export type Router = typeof router;

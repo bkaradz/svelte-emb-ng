@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types'
 import { router } from '$lib/trpc/router';
 import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
 
   const contacts = await router.createCaller(await createContext(event)).contacts.getContacts({});
 
@@ -10,4 +10,4 @@ export const load: PageServerLoad = async (event) => {
     customers: contacts,
   };
 
-};
+}) satisfies PageServerLoad;

@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { dinero, toSnapshot } from 'dinero.js';
 import { getCurrencyOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load = (async ({ params }) => {
 	const order = await prisma.orders.findUnique({
 		where: {
 			id: parseInt(params.id)
@@ -42,4 +42,4 @@ export const load: PageServerLoad = async ({ params }) => {
 		zero: toSnapshot(zero),
 		selectedCurrency: selectedCurrency
 	};
-};
+}) satisfies PageServerLoad;

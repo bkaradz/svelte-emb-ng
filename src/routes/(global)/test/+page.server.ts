@@ -1,7 +1,7 @@
 import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load = (async () => {
   const embroideryTypesPromise = await prisma.options.findMany({
     where: {
       isActive: true,
@@ -14,4 +14,4 @@ export const load: PageServerLoad = async () => {
   return {
     embroideryTypes,
   };
-};
+}) satisfies PageServerLoad;

@@ -2,7 +2,7 @@ import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types'
 import { getPagination } from '$lib/utility/pagination.util';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load = (async ({ params }) => {
 
   const queryParams = {
     limit: 15,
@@ -53,4 +53,4 @@ export const load: PageServerLoad = async ({ params }) => {
     orders: newOrders,
   };
 
-};
+}) satisfies PageServerLoad;

@@ -4,6 +4,7 @@ import { protectedProcedure } from '../middleware/auth';
 import { z } from 'zod';
 import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
 import type { Prisma } from '@prisma/client';
+import { setMonetaryValue } from '$lib/services/monetary';
 
 export const pricelists = router({
   getPricelists: protectedProcedure.input(z.object({
@@ -67,14 +68,36 @@ export const pricelists = router({
       changeCurrentDefault();
     }
 
-    const pricelist = { ...input, createdBy, };
+    const { pricelistDetails, ...restPricelist } = input;
+
+    const subPrices = pricelistDetails.map((list: any) => {
+			return {
+				...list,
+				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
+				minimumPrice: setMonetaryValue(list.minimumPrice)
+			};
+		});
 
     if (input.id) {
-      return await prisma.pricelists.update({ where: { id: input.id }, data: pricelist });
+      return await prisma.pricelists.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          ...restPricelist,
+          createdBy,
+          PricelistDetails: { createMany: { data: subPrices } }
+        }
+      });
     } else {
-      return await prisma.pricelists.create({ data: pricelist });
+      return await prisma.pricelists.create({
+        data: {
+          ...restPricelist,
+          createdBy,
+          PricelistDetails: { createMany: { data: subPrices } }
+        }
+      });
     }
-
   }),
   deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
     const pricelist = await prisma.pricelists.update({
@@ -87,12 +110,12 @@ export const pricelists = router({
 });
 
 export const changeCurrentDefault = async () => {
-  await prisma.pricelists.updateMany({
-    where: {
-      isDefault: {
-        equals: true
-      }
-    },
-    data: { isDefault: false }
-  });
+	return await prisma.pricelists.updateMany({
+		where: {
+			isDefault: {
+				equals: true
+			}
+		},
+		data: { isDefault: false }
+	});
 };

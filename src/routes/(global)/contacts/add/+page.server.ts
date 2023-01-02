@@ -2,7 +2,7 @@ import { router } from '$lib/trpc/router';
 import type { PageServerLoad } from './$types';
 import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
   const queryParams = {
     limit: 3,
     page: 1,
@@ -13,4 +13,4 @@ export const load: PageServerLoad = async (event) => {
   return {
     contacts: newCorporateContacts,
   };
-};
+}) satisfies PageServerLoad;

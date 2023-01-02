@@ -4,7 +4,7 @@ import { getPagination } from '$lib/utility/pagination.util';
 import { router } from '$lib/trpc/router';
 import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
 
   const contact = await router.createCaller(await createContext(event)).contacts.getById(parseInt(event.params.id));
 
@@ -61,4 +61,4 @@ export const load: PageServerLoad = async (event) => {
     orders: newOrders
   };
 
-};
+}) satisfies PageServerLoad;

@@ -1,23 +1,24 @@
 <script lang="ts">
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import Input from '$lib/components/Input.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
-	import { format } from '$lib/services/monetary';
-	import { dinero } from 'dinero.js';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 
-	interface XchangeRate extends Record<string, any> {
+	let errorMessages = new Map();
+
+	type newXchangeRate = XchangeRate & {
 		XchangeRateDetails: XchangeRateDetails[];
-	}
+	};
 
-	export let data: { resultsCurrency: Options[]; resultsRates: XchangeRate };
+	export let data: { resultsCurrency: Options[]; resultsRates: newXchangeRate };
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
 	let rates = data.resultsRates;
+
+	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
 	data.resultsRates.xChangeRateDate = dayjs(data.resultsRates.xChangeRateDate).format(
 		'YYYY-MM-DDTHH:mm'
@@ -35,11 +36,6 @@
 
 	const getUsedCurrencies = () => {
 		return rates.XchangeRateDetails.map((rate) => rate.currency);
-
-		// const currenciesMap = new Map();
-		// data.resultsCurrency.map((item: Options) => currenciesMap.set(item.value, item));
-		// usedCurrencies.map((item) => currenciesMap.delete(item));
-		// data.resultsCurrency = Array.from(currenciesMap.values());
 	};
 
 	const getUnUsedCurrencies = () => {
@@ -140,8 +136,8 @@
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
-					<label class=" text-sm" for="id"
-						>Exchange Rate Id
+					<label class="text-sm" for="id">
+						Exchange Rate Id
 						<input
 							class="input w-full"
 							type="text"
@@ -151,16 +147,30 @@
 							disabled
 						/>
 					</label>
-					<Input
+					<label class="text-sm" for="xChangeRateDate">
+						Date Created
+						<input
+							class="input w-full"
+							name="xChangeRateDate"
+							type="datetime-local"
+							bind:value={rates.xChangeRateDate}
+							disabled
+						/>
+					</label>
+					<Checkbox2
 						disabled
-						class="input w-full"
-						name="xChangeRateDate"
-						label="Date Created"
-						type="datetime-local"
-						bind:value={rates.xChangeRateDate}
+						name="isActive"
+						label="isActive"
+						errorMessages={errorMessages.get('isActive')}
+						bind:checked={rates.isActive}
 					/>
-					<Checkbox disabled name="isActive" label="isActive" bind:checked={rates.isActive} />
-					<Checkbox disabled name="isDefault" label="isDefault" bind:checked={rates.isDefault} />
+					<Checkbox2
+						disabled
+						name="isDefault"
+						label="isDefault"
+						errorMessages={errorMessages.get('isActive')}
+						bind:checked={rates.isDefault}
+					/>
 				</div>
 				<div>
 					<input disabled class="btn btn-primary" type="submit" value="Submit" />
@@ -190,7 +200,7 @@
 											<select
 												bind:value={list.currency}
 												disabled={!(isEditableID === list.id)}
-												on:change|preventDefault={() => handleCurrencyType(list)}
+												on:change|preventDefault={() => handleCurrencyType()}
 												class="text-sm border cursor-pointer p-1 border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300 w-full"
 											>
 												{#each data.resultsCurrency as type}

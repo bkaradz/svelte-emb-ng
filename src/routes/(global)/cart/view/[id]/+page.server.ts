@@ -2,7 +2,7 @@ import prisma from '$lib/prisma/client';
 import dayjs from 'dayjs';
 import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load = (async ({ params }) => {
 
 
   const order = await prisma.orders.findUnique({
@@ -39,4 +39,4 @@ export const load: PageServerLoad = async ({ params }) => {
     order
   };
 
-};
+}) satisfies PageServerLoad;

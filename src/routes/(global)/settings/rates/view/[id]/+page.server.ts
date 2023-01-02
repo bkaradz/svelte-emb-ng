@@ -1,29 +1,15 @@
-import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types';
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async ({ params }) => {
-	const currencyOptionsPromise = prisma.options.findMany({
-		where: {
-			group: 'currency'
-		}
-	});
+export const load = (async (event) => {
 
-	const uniqueRatesPromise = prisma.xchangeRate.findUnique({
-		where: {
-			id: parseInt(params.id)
-		},
-		include: {
-			XchangeRateDetails: true
-		}
-	});
+	const resultsCurrency = await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
 
-	const [resultsCurrency, resultsRates] = await Promise.all([
-		currencyOptionsPromise,
-		uniqueRatesPromise
-	]);
+	const resultsRates = await router.createCaller(await createContext(event)).xchangeRate.getById(parseInt(event.params.id))
 
 	return {
 		resultsCurrency,
 		resultsRates
 	};
-};
+}) satisfies PageServerLoad;

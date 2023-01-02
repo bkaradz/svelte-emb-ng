@@ -2,12 +2,13 @@
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
-	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	export let data: { embroideryTypes: Options };
 
@@ -112,24 +113,14 @@
 				return;
 			}
 
-			const res = await fetch('/api/pricelists.json', {
-				method: 'POST',
-				body: JSON.stringify(parsedPricelist.data),
-				headers: { 'Content-Type': 'application/json' }
-			});
+			await trpc().pricelists.saveOrUpdatePricelist.mutate(parsedPricelist.data)
 
-			if (res.ok) {
-				pricelist = await res.json();
-				pricelist = { ...initPricelist };
-				disabled = false;
-				toasts.add({ message: `${pricelist.name} was added`, type: 'success' });
-			}
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating',
-				type: 'error'
-			});
+			handleErrors(err)
+		} finally {
+			pricelist = { ...initPricelist };
+			disabled = false;
+			toasts.add({ message: `Pricelist was added successfully` , type: 'success' });
 		}
 	};
 </script>

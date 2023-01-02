@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import type { PricelistDetails, Pricelists } from '@prisma/client';
