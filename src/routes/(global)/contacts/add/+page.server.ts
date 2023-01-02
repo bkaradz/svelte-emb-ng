@@ -1,6 +1,4 @@
-import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/router';
-import { getPagination } from '$lib/utility/pagination.util';
 import type { PageServerLoad } from './$types';
 import { createContext } from '$lib/trpc/context';
 

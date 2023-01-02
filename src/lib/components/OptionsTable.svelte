@@ -5,8 +5,8 @@
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
-	import { TRPCClientError } from '@trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { string } from 'zod';
 
 	export let tableHeadings = [
 		'Group',
@@ -18,7 +18,11 @@
 		'Delete & Add Row'
 	];
 
-	let optionsList: Options[] = [];
+	type newOptions = Omit<Options, 'createdAt' | 'updatedAt' | 'createdBy' | 'id'> & {
+		id?: number | string;
+	};
+
+	let optionsList: newOptions[] = [];
 
 	let selectedGroup = 'all';
 
@@ -26,7 +30,7 @@
 
 	$: groupList;
 
-	let isEditableID: null | number | string = null;
+	let isEditableID: undefined | number | string = undefined;
 
 	$: if (optionsList.length) {
 		optionsList.forEach((list) => {
@@ -35,21 +39,18 @@
 		groupList = groupList;
 	}
 
-	const handleEditable = async (list: Partial<Options>) => {
-		if (isEditableID === null) {
+	const handleEditable = async (list: newOptions) => {
+		if (isEditableID === undefined) {
 			isEditableID = list.id;
 		} else {
 			await updateOrSaveOptions(list);
-			isEditableID = null;
+			isEditableID = undefined;
 		}
 	};
-
-	let idToRemove: string[] = [];
 
 	$: handleAddRow = () => {
 		const id = crypto.randomUUID();
 		isEditableID = id;
-		idToRemove.push(id);
 		optionsList = [
 			...optionsList,
 			{
@@ -68,15 +69,6 @@
 			await trpc().options.deleteById.mutate(id);
 		} catch (err: any) {
 			handleErrors(err);
-			// if (err instanceof TRPCClientError) {
-			// 	logger.error(`Error: ${JSON.parse(err.message)}`);
-			// } else {
-			// 	logger.error(`Error: ${err}`);
-			// }
-			// toasts.add({
-			// 	message: 'An error occurred',
-			// 	type: 'error'
-			// });
 		} finally {
 			toasts.add({
 				message: `Option was deleted`,
@@ -86,7 +78,7 @@
 		}
 	};
 
-	const handleDelete = (finalData: Options) => {
+	const handleDelete = (finalData: newOptions) => {
 		if (finalData.isDefault) {
 			toasts.add({
 				message: 'You can not delete the default Pricelists',
@@ -94,47 +86,25 @@
 			});
 			return;
 		}
-		idToRemove = idToRemove.filter((list) => list !== finalData.id);
+		/**
+		 * May not work
+		 */
+		if (typeof finalData.id === 'string' || finalData.id === undefined) {
+			return;
+		}
 		deleteOption(finalData.id);
 	};
 
-	const updateOrSaveOptions = async (finalData: Partial<Options>) => {
+	const updateOrSaveOptions = async (finalData: newOptions) => {
 		try {
-			// let SearchParams = new URLSearchParams(paramsObj as string);
-			if (idToRemove.includes(finalData.id)) {
+			if (typeof finalData?.id === 'string') {
 				// Remove id
 				delete finalData.id;
-				idToRemove = idToRemove.filter((list) => list !== finalData.id);
-
-				// const res = await fetch('/api/options.json', {
-				// 	method: 'POST',
-				// 	body: JSON.stringify(finalData),
-				// 	headers: { 'Content-Type': 'application/json' }
-				// });
-				// if (res.ok) {
-				// 	const option = await res.json();
-				// 	toasts.add({ message: `${option.name} was added`, type: 'success' });
-				// }
 			}
-			// else {
-			// 	const res = await fetch('/api/options.json', {
-			// 		method: 'PUT',
-			// 		body: JSON.stringify(finalData),
-			// 		headers: { 'Content-Type': 'application/json' }
-			// 	});
-			// 	if (res.ok) {
-			// 		const option = await res.json();
-			// 		toasts.add({ message: `${option.name} was updated`, type: 'success' });
-			// 	}
-			// }
+
 			await trpc().options.saveOrUpdateOption.mutate(finalData);
 		} catch (err: any) {
 			handleErrors(err);
-			// logger.error(`Error: ${err}`);
-			// toasts.add({
-			// 	message: 'An error has occurred while updating user',
-			// 	type: 'error'
-			// });
 		} finally {
 			getOptions();
 			toasts.add({ message: `Option was saved or updated successfully`, type: 'success' });
@@ -144,11 +114,8 @@
 	const getOptions = async () => {
 		try {
 			optionsList = (await trpc().options.getOptions.query({})) as unknown as Options[];
-			// const res = await fetch('/api/options.json?');
-			// optionsList = await res.json();
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			// error = `Error: ${err}`;
 		}
 	};
 

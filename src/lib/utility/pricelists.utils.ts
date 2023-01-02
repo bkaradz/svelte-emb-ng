@@ -1,3 +1,4 @@
+import type { PricelistDetails, Pricelists } from '@prisma/client';
 import { dinero, toFormat, type DineroOptions } from 'dinero.js';
 
 export function formatDefault(dineroObject: DineroOptions<number>) {
@@ -7,7 +8,9 @@ export function formatDefault(dineroObject: DineroOptions<number>) {
 	);
 }
 
-export const convertPricelist = (subPricelist) => {
+type Pricelist = Pricelists & { PricelistDetails: PricelistDetails[] };
+
+export const convertPricelist = (subPricelist: Pricelist) => {
 	const pricelists = subPricelist.PricelistDetails.map((list: any) => {
 		return {
 			...list,

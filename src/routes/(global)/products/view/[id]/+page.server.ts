@@ -4,7 +4,7 @@ import { getPagination } from '$lib/utility/pagination.util';
 import { router } from '$lib/trpc/router';
 import { createContext } from '$lib/trpc/context';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
 
   const product = await router.createCaller(await createContext(event)).products.getById(parseInt(event.params.id));
 
@@ -24,11 +24,11 @@ export const load: PageServerLoad = async (event) => {
     take: pagination.limit,
     skip: (pagination.page - 1) * pagination.limit,
     include: {
-        Orders: {
-            include: {
-                customerContact: true
-            }
-        },
+      Orders: {
+        include: {
+          customerContact: true
+        }
+      },
     }
   };
 
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async (event) => {
   const ordersPromise = prisma.orderLine.findMany(ordersQuery);
   const totalRecordsPromise = prisma.orderLine.count(orderQueryTotal);
 
-  const [ orders, totalRecords] = await Promise.all([ ordersPromise, totalRecordsPromise]);
+  const [orders, totalRecords] = await Promise.all([ordersPromise, totalRecordsPromise]);
 
   pagination.totalRecords = totalRecords
   pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -63,4 +63,4 @@ export const load: PageServerLoad = async (event) => {
     orders: newOrders
   };
 
-};
+}) satisfies PageServerLoad;

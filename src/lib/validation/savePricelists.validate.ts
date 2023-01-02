@@ -8,6 +8,7 @@ const PricelistsItem = z.object({
 });
 
 export const savePricelistSchema = z.object({
+	id: z.number().optional(),
 	name: z.string({ required_error: 'Name is required' }).min(1),
 	isActive: z.boolean({ required_error: 'isActive is required' }),
 	isDefault: z.boolean({ required_error: 'isDefault is required' }),

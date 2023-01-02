@@ -100,18 +100,6 @@
 			const contacts = (await trpc().contacts.SaveContact.mutate(
 				parsedContact.data
 			)) as unknown as CustomersTypes;
-			console.log('🚀 ~ file: +page.svelte:99 ~ handleSubmit ~ contacts', contacts);
-			// const res = await fetch('/api/contacts.json', {
-			// 	method: 'POST',
-			// 	body: JSON.stringify(formData),
-			// 	headers: { 'Content-Type': 'application/json' }
-			// });
-
-			// if (res.ok) {
-			// 	// const data = await res.json();
-			// 	resetForm();
-			// 	toasts.add({ message: 'The Contact was added', type: 'success' });
-			// }
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -191,12 +179,11 @@
 			</div>
 			<!-- Right -->
 			<div class="flex items-center">
-				<form on:submit|preventDefault={handleUpload}>
+				<form on:submit|preventDefault={(e) => handleUpload}>
 					<div class="relative">
-						<button
-							class="absolute border border-royal-blue-500 bg-royal-blue-500 p-2 text-white"
-							for="uploadCSV">{@html svgUpload}</button
-						>
+						<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-2 text-white">
+							{@html svgUpload}
+						</button>
 						<input
 							class="w-72 border border-pickled-bluewood-300 bg-pickled-bluewood-100 text-pickled-bluewood-500 ring-royal-blue-500 file:w-10 file:p-1 file:opacity-0"
 							type="file"
@@ -206,8 +193,10 @@
 						/>
 						<button
 							class="absolute right-0 border border-royal-blue-500 bg-royal-blue-500 p-2 text-white"
-							type="submit">{@html svgPlus}</button
+							type="submit"
 						>
+							{@html svgPlus}
+						</button>
 					</div>
 				</form>
 			</div>

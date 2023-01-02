@@ -96,7 +96,7 @@
 
 	$: disabled = false;
 
-	const headleSubmit = async () => {
+	const handleSubmit = async () => {
 		disabled = true;
 
 		try {
@@ -138,7 +138,7 @@
 	<div class="mb-2 bg-white p-4">
 		<h1>Add Pricelist</h1>
 	</div>
-	<form on:submit|preventDefault={headleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">

@@ -74,7 +74,7 @@
 		showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
 	};
 
-	const headleSubmit = async () => {
+	const handleSubmit = async () => {
 		const usedCurrenciesLength = getUsedCurrencies().length;
 		const numberOfCurrencies = data.currencyOptions.length;
 		if (usedCurrenciesLength < numberOfCurrencies) {
@@ -133,7 +133,7 @@
 	<div class="mb-2 bg-white p-4">
 		<h1>Add Exchange Rates</h1>
 	</div>
-	<form on:submit|preventDefault={headleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">

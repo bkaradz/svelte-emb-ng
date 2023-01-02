@@ -2,11 +2,11 @@ import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
 import { protectedProcedure } from '../middleware/auth';
 import { z } from 'zod';
-import { saveOptionsSchema } from '$lib/validation/saveOption.validate';
+import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
 import type { Prisma } from '@prisma/client';
 
-export const options = router({
-  getOptions: protectedProcedure.input(z.object({
+export const pricelists = router({
+  getPricelists: protectedProcedure.input(z.object({
     group: z.string().optional()
   })).query(async ({ input }) => {
 
@@ -14,7 +14,7 @@ export const options = router({
 
     const objectKeys = Object.keys(input)[0] as ObjectKeys;
 
-    let query: Prisma.OptionsFindManyArgs;
+    let query: Prisma.PricelistsFindManyArgs;
 
     if (objectKeys) {
       query = {
@@ -26,7 +26,8 @@ export const options = router({
           }
         },
         orderBy: {
-          label: 'asc'
+
+          id: 'asc'
         }
       };
     } else {
@@ -35,23 +36,26 @@ export const options = router({
           isActive: true
         },
         orderBy: {
-          label: 'asc'
+          id: 'asc'
         }
       };
     }
 
-    return await prisma.options.findMany(query);
+    return await prisma.pricelists.findMany(query);
   }),
   getById: protectedProcedure.input(z.number()).query(async ({ input }) => {
-    const option = await prisma.options.findUnique({
+    const pricelist = await prisma.pricelists.findUnique({
       where: {
         id: input
+      },
+      include: {
+        PricelistDetails: true
       }
     });
 
-    return option;
+    return pricelist;
   }),
-  saveOrUpdateOption: protectedProcedure.input(saveOptionsSchema).mutation(async ({ input, ctx }) => {
+  saveOrUpdatePricelist: protectedProcedure.input(savePricelistSchema).mutation(async ({ input, ctx }) => {
 
     if (!ctx?.userId) {
       throw new Error("User not authorised");
@@ -60,32 +64,31 @@ export const options = router({
     const createdBy = ctx.userId as number;
 
     if (input.isDefault) {
-      changeCurrentDefault(input.group);
+      changeCurrentDefault();
     }
 
-    const option = { ...input, createdBy, };
+    const pricelist = { ...input, createdBy, };
 
     if (input.id) {
-      return await prisma.options.update({ where: { id: input.id }, data: option });
+      return await prisma.pricelists.update({ where: { id: input.id }, data: pricelist });
     } else {
-      return await prisma.options.create({ data: option });
+      return await prisma.pricelists.create({ data: pricelist });
     }
 
   }),
   deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
-    const option = await prisma.options.update({
+    const pricelist = await prisma.pricelists.update({
       where: { id: input },
       data: { isActive: false }
     });
 
-    return option;
+    return pricelist;
   })
 });
 
-export const changeCurrentDefault = async (group: string) => {
-  await prisma.options.updateMany({
+export const changeCurrentDefault = async () => {
+  await prisma.pricelists.updateMany({
     where: {
-      group,
       isDefault: {
         equals: true
       }

@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
-	import logger from '$lib/utility/logger';
-	import { svgPencil, svgTrash, svgView } from '$lib/utility/svgLogos';
+	import { svgTrash, svgView } from '$lib/utility/svgLogos';
 	import type { Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
-	export let tableHeadings = ['Name', 'Id #', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
+	export let tableHeadings = ['Id #', 'Name', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
 	let pricelists: Pricelists[] = [];
 
@@ -20,33 +21,20 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/pricelists.json', {
-				method: 'DELETE',
-				body: JSON.stringify(list),
-				headers: { 'Content-Type': 'application/json' }
-			});
-			if (res.ok) {
-				toasts.add({
-					message: `Pricelists was deleted`,
-					type: 'success'
-				});
-				getPricelists();
-			}
+			await trpc().pricelists.deleteById.mutate(list.id);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
-			});
+			handleErrors(err);
+		} finally {
+			getPricelists();
+			toasts.add({ message: `Pricelist was deleted successfully`, type: 'success' });
 		}
 	};
 
 	const getPricelists = async () => {
 		try {
-			const res = await fetch('/api/pricelists.json?');
-			pricelists = await res.json();
+			pricelists = (await trpc().pricelists.getPricelists.query({})) as unknown as Pricelists[];
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
 		}
 	};
 
@@ -54,11 +42,11 @@
 		getPricelists();
 	});
 
-	const viewPricelist = async (id: string) => {
+	const viewPricelist = async (id: number) => {
 		goto(`/settings/pricelists/view/${id}`);
 	};
 
-	const editPricelist = async (id: string) => {
+	const editPricelist = async (id: number) => {
 		goto(`/settings/pricelists/edit/${id}`);
 	};
 
@@ -85,43 +73,47 @@
 						class=" sticky border border-b-0 border-pickled-bluewood-700 bg-pickled-bluewood-700 text-white"
 					>
 						{#each tableHeadings as header (header)}
-							<th class="px-2 py-2 text-center">{header}</th>
+							<th class="px-2 py-2 text-left">{header}</th>
 						{/each}
 					</tr>
 				</thead>
 				<tbody class="overflow-y-scroll">
 					{#each pricelists as list (list.id)}
 						<tr
-							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
+							class="text-left whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
-							<td class="px-2 py-1">
+							<td class="px-2 py-1 text-left">
 								<input
-									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
-									type="text"
-									name="name"
-									disabled
-									bind:value={list.name}
-								/>
-							</td>
-							<td class="px-2 py-1 ">
-								<input
-									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
+									class="m-0 border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-left"
 									type="text"
 									name="id"
 									disabled
 									bind:value={list.id}
 								/>
 							</td>
-							<td class="px-2 py-1 text-center">
+
+							<td class="px-2 py-1">
+								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-left"
+									type="text"
+									name="name"
+									disabled
+									bind:value={list.name}
+								/>
+							</td>
+
+							<td class="px-2 py-1 text-left">
 								{dayjs(list.createdAt).format('DD-MM-YYYY')}
 							</td>
 
 							<td class="px-2 py-1 text-center">
 								<input disabled bind:checked={list.isActive} type="checkbox" name="isActive" />
 							</td>
+
 							<td class="px-2 py-1 text-center">
 								<input disabled bind:checked={list.isDefault} type="checkbox" name="isDefault" />
 							</td>
+
 							<td class="p-1 text-center ">
 								<button class=" m-0 p-0" on:click={() => viewPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">

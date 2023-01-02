@@ -79,7 +79,7 @@
 
 	const handleCurrencyType = () => {};
 
-	const headleSubmit = async () => {
+	const handleSubmit = async () => {
 		const usedCurrenciesLength = getUsedCurrencies().length;
 		const numberOfCurrencies = data.resultsCurrency.length;
 		if (usedCurrenciesLength < numberOfCurrencies) {
@@ -136,7 +136,7 @@
 	<div class="mb-2 bg-white p-4">
 		<h1>Add Exchange Rates</h1>
 	</div>
-	<form on:submit|preventDefault={headleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
@@ -240,10 +240,7 @@
 								<td class="px-2 py-1" />
 								<td class="p-1 text-center">
 									{#if usedCurrencies.length + 1 < data.resultsCurrency.length}
-										<button
-											disabled
-											class=" m-0 p-0"
-											on:click|preventDefault={() => handleAddRow()}
+										<button disabled class=" m-0 p-0" on:click|preventDefault={() => handleAddRow()}
 											><span class="flex fill-current text-white">{@html svgPlus} Add Row</span
 											></button
 										>

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import logger from '$lib/utility/logger';
-	import { convertPricelist } from '$lib/utility/pricelists.utils';
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import type { PricelistDetails, Pricelists } from '@prisma/client';
+
+	type Pricelist = Pricelists & { PricelistDetails: PricelistDetails[] };
+
+	export let data: { pricelist: Pricelist };
 
 	let errorMessages = new Map();
 
@@ -15,38 +17,13 @@
 		'Price per 1000 stitches'
 	];
 
-	const endpoint = `/api/pricelists/${$page.params.id}.json`;
-
-	let pricelist: any;
+	let pricelist = data.pricelist;
 
 	let selectedGroup = 'all';
 
 	let groupList = new Set(['all']);
 
 	$: groupList;
-
-	let isEditableID = null;
-
-	$: if (pricelist?.pricelists?.length) {
-		pricelist.pricelists.forEach((list: any) => {
-			groupList.add(list.embroideryTypes);
-		});
-	}
-
-	onMount(async () => {
-		try {
-			const res = await fetch(endpoint);
-			if (res.ok) {
-				const tempPricelist = await res.json();
-
-				pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	});
-
-
 </script>
 
 {#if pricelist}
@@ -68,18 +45,21 @@
 						type="text"
 						name="name"
 						class="input"
+						disabled
 						bind:value={pricelist.name}
 					/>
-					
+
 					<Checkbox2
 						name="isActive"
 						label="isActive"
+						disabled
 						errorMessages={errorMessages.get('isActive')}
 						bind:checked={pricelist.isActive}
 					/>
 					<Checkbox2
 						name="isDefault"
 						label="isDefault"
+						disabled
 						errorMessages={errorMessages.get('isDefault')}
 						bind:checked={pricelist.isDefault}
 					/>
@@ -123,7 +103,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="embroideryTypes"
-												disabled={!(isEditableID === list.id)}
+												disabled
 												bind:value={list.embroideryTypes}
 											/>
 										</td>
@@ -132,7 +112,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumQuantity"
-												disabled={!(isEditableID === list.id)}
+												disabled
 												bind:value={list.minimumQuantity}
 											/>
 										</td>
@@ -141,7 +121,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="minimumPrice"
-												disabled={!(isEditableID === list.id)}
+												disabled
 												bind:value={list.minimumPrice}
 											/>
 										</td>
@@ -150,7 +130,7 @@
 												class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
 												type="text"
 												name="pricePerThousandStitches"
-												disabled={!(isEditableID === list.id)}
+												disabled
 												bind:value={list.pricePerThousandStitches}
 											/>
 										</td>

@@ -4,7 +4,6 @@
 		svgArrow,
 		svgChevronLeft,
 		svgChevronRight,
-		svgDotsVertical,
 		svgPlus,
 		svgSearch,
 		svgSelector,
@@ -30,16 +29,15 @@
 	} from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { USD } from '@dinero.js/currencies';
-	import { redirect } from '@sveltejs/kit';
 
-	type OrdersResuitsType = (Orders & {
+	type OrdersResultsType = (Orders & {
 		Pricelists: Pricelists;
 		OrderLine: (OrderLine & { Products: Products })[];
 	})[];
 
 	type ContactsTypes = Contacts & Email & Phone & Address;
 
-	type OrdersType = Pagination & { results: OrdersResuitsType[] };
+	type OrdersType = Pagination & { results: OrdersResultsType[] };
 
 	export let data: { customer: ContactsTypes; orders: OrdersType };
 

@@ -1,17 +1,17 @@
 import { z } from 'zod';
 
+export const saveOrdersLineSchema = z.object({
+  productsID: z.number(),
+  quantity: z.number()
+}).passthrough();
+
 export const saveOrdersSchema = z.object({
-  name: z
-    .string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
-    .min(1)
-    .trim(),
-  email: z.string().email({ message: 'Not a valid email' }).optional(),
-  phone: z.string({ required_error: 'Phone is required' }).min(1),
-  address: z.string().optional(),
-  isCorporate: z.boolean({ required_error: 'Corporate or Individual is required' }),
-  organisationID: z.number().optional(),
-  vatOrBpNo: z.string().optional()
-});
+  customersID: z.number(),
+  pricelistsID: z.number(),
+  isActive: z.boolean(),
+  accountsStatus: z.string(),
+  orderLine: z.array(saveOrdersLineSchema)
+}).passthrough();
 
 
 export type SaveOrder = z.infer<typeof saveOrdersSchema>;
