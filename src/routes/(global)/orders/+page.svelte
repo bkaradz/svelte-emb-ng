@@ -12,10 +12,8 @@
 		svgPencil,
 		svgPrinter,
 		svgSearch,
-		svgSelector,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
 	import dayjs from 'dayjs';
 	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 	import type { Orders } from '@prisma/client';
@@ -82,15 +80,13 @@
 	let searchInputValue = '';
 	let searchOption = 'name';
 
-	const searchNamesOptions = {
-		name: 'Name',
-		organisation: 'Organisation',
-		phone: 'Phone',
-		email: 'Email',
-		vatNo: 'Vat Number',
-		balanceDue: 'Balance Due',
-		state: 'State'
-	};
+	const searchNamesOptions = [
+		{ value: 'name', label: 'Name' },
+		{ value: 'id', label: 'Order Number' },
+		{ value: 'accountsStatus', label: 'Status' },
+		{ value: 'pricelistsID', label: 'Pricelists' },
+		{ value: 'orderDate', label: 'Order Date' }
+	];
 
 	const handleSearchSelection = (event: MouseEvent) => {
 		searchOption = (event.target as HTMLInputElement).name;
@@ -299,135 +295,48 @@
 			<!-- Search and View Bar -->
 			<div class="z-10 mt-4 flex h-14 w-full flex-row items-center justify-between bg-white">
 				<div>
-					<div class="relative flex flex-row items-center text-left">
-						<Menu as="div" class="relative">
-							<MenuButton
-								class="btn inline-flex w-full items-center justify-center px-2 py-2 text-xs text-pickled-bluewood-500 hover:bg-pickled-bluewood-50 focus:outline-none focus:ring-royal-blue-50 focus:ring-offset-transparent"
-								id="menu-button"
-								aria-expanded="true"
-								aria-haspopup="true"
-							>
-								Search by {searchNamesOptions[searchOption]}
-								<span>
-									{@html svgSelector}
-								</span>
-							</MenuButton>
-
-							<MenuItems
-								class=" absolute left-2 top-9 z-10 mt-2 w-40 origin-top-right divide-y divide-pickled-bluewood-100 bg-white shadow-lg ring-1 ring-royal-blue-300 focus:outline-none"
-								role="menu"
-								aria-orientation="vertical"
-								aria-labelledby="menu-button"
-							>
-								<div class="py-1" role="none">
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click|preventDefault={handleSearchSelection}
-											name="name"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-0"
-										>
-											Name
-										</a>
-									</MenuItem>
-
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click|preventDefault={handleSearchSelection}
-											name="organisation"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-1">Organisation</a
-										>
-									</MenuItem>
-
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click={handleSearchSelection}
-											name="phone"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-2">Phone</a
-										>
-									</MenuItem>
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click={handleSearchSelection}
-											name="email"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-3">Email</a
-										>
-									</MenuItem>
-
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click={handleSearchSelection}
-											name="vatNo"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-4">Vat Number</a
-										>
-									</MenuItem>
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click={handleSearchSelection}
-											name="balanceDue"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-5">Balance Due</a
-										>
-									</MenuItem>
-
-									<MenuItem let:active>
-										<!-- svelte-ignore a11y-click-events-have-key-events -->
-										<a
-											on:click={handleSearchSelection}
-											name="state"
-											class={`${
-												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
-											} block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-											role="menuitem"
-											id="menu-item-6">State</a
-										>
-									</MenuItem>
-								</div>
-							</MenuItems>
-						</Menu>
-
+					<div
+						class="flex items-center bg-white shadow-lg hover:shadow-xl ml-3 transform hover:scale-105 transition duration-500"
+					>
 						<div class="relative text-pickled-bluewood-100">
 							<input
-								class="input focus:shadow-outline h-10 w-full pl-8 pr-3 text-base placeholder-pickled-bluewood-400"
+								class="input w-full pl-8 pr-3 text-base bg-pickled-bluewood-50 placeholder-pickled-bluewood-400 outline-none border-none focus:border-none"
 								type="text"
 								placeholder="Search..."
 								bind:value={searchInputValue}
 								on:input={handleSearch}
 							/>
-							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2">
+							<div
+								class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-pickled-bluewood-400"
+							>
 								{@html svgSearch}
 							</div>
 						</div>
+						<div
+							class="flex items-center text-sm pl-3 text-pickled-bluewood-500 font-semibold cursor-pointer"
+						>
+							<span>
+								{#if Array.isArray(searchNamesOptions)}
+									<select
+										bind:value={searchOption}
+										on:select={() => handleSearchSelection}
+										class="text-sm border-none cursor-pointer bg-white input"
+									>
+										{#each searchNamesOptions as type}
+											<option value={type.value}>
+												{type.label}
+											</option>
+										{/each}
+									</select>
+								{/if}
+							</span>
+						</div>
+						<button
+							class="hidden bg-pickled-bluewood-600 text-white text-sm px-3 mx-1 py-1 font-semibold hover:shadow-lg transition duration-3000"
+						>
+							Search
+						</button>
 					</div>
-					<div />
 				</div>
 				<!-- View list Buttons -->
 				<div class="flex flex-row items-center ">

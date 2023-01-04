@@ -69,26 +69,22 @@
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray: unknown[] = []) => {
+	const handleCalculations = async (lineArray: OrderLine[] = []) => {
 		try {
-			const res = await fetch('/api/cart.json', {
-				method: 'POST',
-				body: JSON.stringify({
-					pricelistsID: mainOrder.pricelistsID,
-					orderLine: lineArray
-				})
-			});
-			if (res.ok) {
-				const cartData = await res.json();
-				return cartData;
+			if (!mainOrder.pricelistsID) {
+				return;
 			}
+			return await trpc().cart.calculateCart.mutate({
+				pricelistsID: mainOrder.pricelistsID,
+				orderLine: lineArray
+			});
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred', type: 'error' });
+			toasts.add({ message: 'Error occurred during cart calculations', type: 'error' });
 		}
 	};
 
-	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
 		 * Calculate using the cart default usd currency
@@ -264,7 +260,6 @@
 		try {
 			await trpc().orders.SaveOrderOrUpdate.mutate(parsedOrder.data);
 		} catch (err: any) {
-			console.log('🚀 ~ file: +page.svelte:269 ~ handleSubmit ~ err', err);
 			handleErrors(err);
 		} finally {
 			customerSearch = { name: null };

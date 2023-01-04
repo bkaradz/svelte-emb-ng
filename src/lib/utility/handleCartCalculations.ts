@@ -1,10 +1,10 @@
 import type { OrderLine, Orders } from "@prisma/client";
-import { toasts } from '$lib/stores/toasts.store';
 import logger from '$lib/utility/logger';
 import { createConverter } from "$lib/services/monetary";
 import { add, dinero, multiply, toSnapshot, type Dinero, type DineroSnapshot } from "dinero.js";
 import { browser } from "$app/environment";
 import type { CurrencyOption } from "$lib/stores/setCurrency.store";
+import { trpc } from "$lib/trpc/client";
 
 type MainOrder = {
     id?: number | undefined;
@@ -16,22 +16,15 @@ type MainOrder = {
     deliveryDate?: string | undefined;
     comment?: string;
     OrderLine: OrderLine[];
-    isInvoiced: Boolean;
+    isInvoiced: boolean;
 };
 
 const handleCalculations = async (lineArray: OrderLine[] = [], pricelistsId: number) => {
     try {
-        const res = await fetch('/api/cart.json', {
-            method: 'POST',
-            body: JSON.stringify({
-                pricelistsID: pricelistsId,
-                orderLine: lineArray
-            })
-        });
-        if (res.ok) {
-            const cartData = await res.json();
-            return cartData;
-        }
+        return await trpc().cart.calculateCart.mutate({
+            pricelistsID: pricelistsId,
+            orderLine: lineArray
+        })
     } catch (err: any) {
         logger.error(`Error: ${err}`);
         throw new Error("Error occurred during calculations");

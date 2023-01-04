@@ -108,9 +108,9 @@
 		}
 	};
 
-	onMount(() => {
-		getOrders(currentGlobalParams);
-	});
+	// onMount(() => {
+	// 	getOrders(currentGlobalParams);
+	// });
 
 	const gotoContacts = async () => {
 		await goto(`/contacts`);

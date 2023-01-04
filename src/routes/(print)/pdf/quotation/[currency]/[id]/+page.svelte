@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import logger from '$lib/utility/logger';
-	import type { Orders, Prisma } from '@prisma/client';
+	import type { OrderLine, Orders, Prisma } from '@prisma/client';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import chunk from 'lodash-es/chunk';
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
@@ -12,6 +12,7 @@
 	import { createConverter } from '$lib/services/monetary';
 	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { USD } from '@dinero.js/currencies';
+	import { trpc } from '$lib/trpc/client';
 
 	export let data: any;
 
@@ -42,7 +43,7 @@
 		}
 	});
 
-	const handleCurrency = async (lineArray: unknown[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero(data.zero);
 		/**
 		 * Calculate using the cart default usd currency
@@ -69,19 +70,15 @@
 		getCountAndSubTotal(order.OrderLine);
 	};
 
-	const handleCalculations = async (lineArray: unknown[] = []) => {
+	const handleCalculations = async (lineArray: OrderLine[] = []) => {
 		try {
-			const res = await fetch('/api/cart.json', {
-				method: 'POST',
-				body: JSON.stringify({
-					pricelistsID: order.pricelistsID,
-					orderLine: lineArray
-				})
-			});
-			if (res.ok) {
-				const cartData = await res.json();
-				return cartData;
+			if (!order.pricelistsID) {
+				return;
 			}
+			return await trpc().cart.calculateCart.mutate({
+				pricelistsID: order.pricelistsID,
+				orderLine: lineArray
+			});
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 			toasts.add({ message: 'An error has occurred', type: 'error' });

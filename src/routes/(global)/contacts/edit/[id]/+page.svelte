@@ -91,20 +91,12 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/contacts.json', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' }
-			});
-
-			if (res.ok) {
-				// const data = await res.json();
-				resetForm();
-				toasts.add({ message: 'The Contact was added', type: 'success' });
-			}
+			await trpc().contacts.saveOrUpdateContact.mutate(parsedContact.data);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred while adding the contact', type: 'error' });
+			handleErrors(err);
+		} finally {
+			resetForm();
+			toasts.add({ message: 'The Contact was added', type: 'success' });
 		}
 	};
 
