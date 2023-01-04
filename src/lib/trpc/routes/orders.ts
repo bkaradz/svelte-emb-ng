@@ -5,7 +5,7 @@ import { getPagination } from '$lib/utility/pagination.util';
 import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
-import { z } from 'zod';
+import { number, z } from 'zod';
 import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
 import type { Prisma } from '@prisma/client';
 import { calculateOrder } from '$lib/services/orders';
@@ -175,6 +175,26 @@ export const orders = router({
           id: input
         },
         data: { isActive: false }
+      });
+      return order
+    }),
+  updateStatus: protectedProcedure
+    .input(z.object({ id: z.number(), accountsStatus: z.string(), isInvoiced: z.boolean().optional() }))
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.userId) {
+        throw new Error("Unauthorised");
+      }
+
+      const createdBy = ctx.userId;
+
+      const order = await prisma.orders.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          ...input,
+          createdBy
+        }
       });
       return order
     }),

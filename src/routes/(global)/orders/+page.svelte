@@ -246,27 +246,14 @@
 				data.id = selectedOrder.id;
 				data.accountsStatus = salesStatus;
 				if (salesStatus === 'Invoice' || salesStatus === 'Receipt') {
-					// selectedOrder.isInvoiced = true;
 					data.isInvoiced = true;
 				}
 			}
 
-			const res = await trpc().orders.SaveOrderOrUpdate.mutate(data);
+			const res = await trpc().orders.updateStatus.mutate(data);
 			handleSelected(res);
-			// const res = await fetch('/api/orders.json', {
-			// 	method: 'PUT',
-			// 	body: JSON.stringify(data),
-			// 	headers: {
-			// 		Accept: 'application/json'
-			// 	}
-			// });
-
-			// if (res.ok) {
-			// 	const json = await res.json();
-			// 	getOrders(currentGlobalParams);
-			// 	handleSelected(json);
-			// }
 		} catch (err: any) {
+			console.log('🚀 ~ file: +page.svelte:270 ~ onClick ~ err', err);
 			handleErrors(err);
 		} finally {
 			getOrders(currentGlobalParams);
