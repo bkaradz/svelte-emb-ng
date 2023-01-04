@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const userRegisterSchema = z
 	.object({
+		id: z.number().optional(),
 		name: z
 			.string({
 				required_error: "Name is required",

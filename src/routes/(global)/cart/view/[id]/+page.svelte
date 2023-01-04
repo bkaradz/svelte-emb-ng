@@ -3,17 +3,43 @@
 	import { createConverter, format } from '$lib/services/monetary';
 	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
-	import { onMount } from 'svelte';
 	import { toasts } from '$lib/stores/toasts.store';
-	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
+	import type {
+		Address,
+		Contacts,
+		Email,
+		Options,
+		OrderLine,
+		Orders,
+		Phone,
+		Pricelists,
+		Products
+	} from '@prisma/client';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
-	export let data: any;
+	type customersType = (Contacts & {
+		email: Email[];
+		phone: Phone[];
+		address: Address[];
+	})[];
+
+	export let data: {
+		customers: { results: customersType };
+		embroideryTypes: Options[];
+		embroideryPositions: Options[];
+		pricelists: Pricelists;
+		order: Orders & {
+			Pricelists: Pricelists;
+			OrderLine: (OrderLine & { Products: Products })[];
+			customerContact: Contacts;
+		};
+	};
 
 	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
 		if (!data?.order) {
@@ -31,7 +57,6 @@
 	};
 
 	$: updateCart(data);
-	// ##########################################
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
@@ -98,10 +123,10 @@
 	mainOrder = { ...$cartOrder, orderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
-	let embroideryPositions: any;
-	let embroideryTypes: any;
-	let customers: any;
-	let pricelists: any;
+	let embroideryPositions = data.embroideryPositions;
+	let embroideryTypes = data.embroideryTypes;
+	let customers = data.customers;
+	let pricelists = data.pricelists;
 
 	let pricelistValue: number | undefined;
 	let customerQueryParams = {
@@ -115,9 +140,9 @@
 
 	const vat = 0;
 
-	$: calclculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
+	$: calculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
 
-	$: calclculatedTotal = add(calclculatedVat, subTotal);
+	$: calculatedTotal = add(calculatedVat, subTotal);
 
 	const getCountAndSubTotal = (cart: any[]) => {
 		const totals = cart.reduce(
@@ -133,55 +158,15 @@
 		subTotal = totals.subTotal;
 	};
 
-	const getOptions = async (paramsObj: any) => {
-		try {
-			let SearchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/options.json?' + SearchParams.toString());
-			return await res.json();
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
 	const getCustomers = async (paramsObj: any) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
-			return await res.json();
+			return await trpc().contacts.getContacts.query(paramsObj);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
 		}
 	};
 
-	const getPricelists = async (paramsObj: any) => {
-		try {
-			let SearchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/pricelists.json?' + SearchParams.toString());
-			const jsonRes = await res.json();
-			const defaultPricelist = jsonRes.find(
-				(list: { isDefault: boolean }) => list.isDefault === true
-			);
-			pricelistValue = defaultPricelist.id;
-			mainOrder.pricelistsID = defaultPricelist.id;
-			return jsonRes;
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
-
-	onMount(async () => {
-		const embroideryTypesPromise = getOptions({ group: 'embroideryTypes' });
-		const embroideryPositionsPromise = getOptions({ group: 'embroideryPositions' });
-		const customersPromise = getCustomers(customerQueryParams);
-		const pricelistsPromise = getPricelists({});
-		[embroideryTypes, embroideryPositions, customers, pricelists] = await Promise.all([
-			embroideryTypesPromise,
-			embroideryPositionsPromise,
-			customersPromise,
-			pricelistsPromise
-		]);
-		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
-	});
+	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
 	const removeItem = (item: unknown) => {
 		cartItem.remove(item);
@@ -212,47 +197,6 @@
 			name: (event.target as HTMLInputElement).value
 		};
 		customers = await getCustomers(customerQueryParams);
-	};
-
-	const handleSubmit = async (status: string) => {
-		/**
-		 * Check if the fields are filled
-		 */
-		if (!mainOrder?.orderLine?.length) {
-			toasts.add({ message: 'A products must be selected', type: 'error' });
-			return;
-		}
-		if (!mainOrder.customersID) {
-			toasts.add({ message: 'A customer must be selected', type: 'error' });
-			return;
-		}
-		if (!mainOrder.pricelistsID) {
-			toasts.add({ message: 'A pricelist must be selected', type: 'error' });
-			return;
-		}
-		if (!mainOrder.id) {
-			delete mainOrder.id;
-		}
-
-		mainOrder.accountsStatus = status;
-
-		try {
-			const res = await fetch('/api/orders.json', {
-				method: 'POST',
-				body: JSON.stringify(mainOrder)
-			});
-
-			if (res.ok) {
-				mainOrder = { ...mainOrderInit, orderLine: [] };
-				customerSearch = { name: null };
-				cartItem.reset();
-				toasts.add({ message: `The ${status} was created`, type: 'success' });
-				goto('/cart');
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred', type: 'error' });
-		}
 	};
 </script>
 
@@ -287,7 +231,7 @@
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
-				{#each mainOrder?.orderLine as item (item.id)}
+				{#each mainOrder?.orderLine as item (item.name)}
 					{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 						<div class="flex w-2/6">
@@ -484,7 +428,7 @@
 		<div class="flex justify-between mt-4 mb-5">
 			<span class="text-sm font-medium uppercase"> VAT({vat}%) </span>
 			<span class="text-sm font-semibold">
-				{format(calclculatedVat)}
+				{format(calculatedVat)}
 			</span>
 		</div>
 
@@ -492,7 +436,7 @@
 			<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
 				<span>Total</span>
 				<span class="text-base font-semibold ">
-					{format(calclculatedTotal)}
+					{format(calculatedTotal)}
 				</span>
 			</div>
 		</div>

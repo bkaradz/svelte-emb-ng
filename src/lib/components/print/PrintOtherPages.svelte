@@ -7,9 +7,9 @@
 
 	export let order: Orders;
 	export let subTotal: Dinero<number>;
-	export let calclculatedVat: Dinero<number>;
-	export let calclculatedTotal: Dinero<number>;
+	export let calculatedVat: Dinero<number>;
+	export let calculatedTotal: Dinero<number>;
 	export let vat: number;
 </script>
 
-<PartialPage {order} {subTotal} {calclculatedVat} {calclculatedTotal} {vat} />
+<PartialPage {order} {subTotal} {calculatedVat} {calculatedTotal} {vat} />

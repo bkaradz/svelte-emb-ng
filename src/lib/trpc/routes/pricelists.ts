@@ -56,6 +56,24 @@ export const pricelists = router({
 
     return pricelist;
   }),
+  getDefaultPricelist: protectedProcedure.query(async () => {
+    const pricelist = await prisma.pricelists.findMany({
+      where: {
+        isDefault: {
+          equals: true
+        }
+      },
+      include: {
+        PricelistDetails: true
+      }
+    });
+
+    if (pricelist.length > 1) {
+      throw new Error("Default pricelist more than one");
+    }
+
+    return pricelist[0];
+  }),
   saveOrUpdatePricelist: protectedProcedure.input(savePricelistSchema).mutation(async ({ input, ctx }) => {
 
     if (!ctx?.userId) {
@@ -71,12 +89,12 @@ export const pricelists = router({
     const { pricelistDetails, ...restPricelist } = input;
 
     const subPrices = pricelistDetails.map((list: any) => {
-			return {
-				...list,
-				pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
-				minimumPrice: setMonetaryValue(list.minimumPrice)
-			};
-		});
+      return {
+        ...list,
+        pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
+        minimumPrice: setMonetaryValue(list.minimumPrice)
+      };
+    });
 
     if (input.id) {
       return await prisma.pricelists.update({
@@ -110,12 +128,12 @@ export const pricelists = router({
 });
 
 export const changeCurrentDefault = async () => {
-	return await prisma.pricelists.updateMany({
-		where: {
-			isDefault: {
-				equals: true
-			}
-		},
-		data: { isDefault: false }
-	});
+  return await prisma.pricelists.updateMany({
+    where: {
+      isDefault: {
+        equals: true
+      }
+    },
+    data: { isDefault: false }
+  });
 };

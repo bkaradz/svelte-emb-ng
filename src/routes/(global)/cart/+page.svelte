@@ -2,7 +2,6 @@
 	import Combobox from '$lib/components/Combobox.svelte';
 	import { format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
-	import logger from '$lib/utility/logger';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { toasts } from '$lib/stores/toasts.store';
 	import dayjs from 'dayjs';
@@ -24,6 +23,14 @@
 	} from '@prisma/client';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
 	import Loading from '$lib/components/Loading.svelte';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+
+	let errorMessages = new Map();
+
+	$: disabled = false;
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -90,11 +97,9 @@
 
 	const getCustomers = async (paramsObj: any) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
-			return await res.json();
+			return await trpc().contacts.getContacts.query(paramsObj);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
 		}
 	};
 
@@ -132,7 +137,11 @@
 			...customerQueryParams,
 			name: (event.target as HTMLInputElement).value
 		};
-		customers = await getCustomers(customerQueryParams);
+		const resCustomers = await getCustomers(customerQueryParams);
+		if (!resCustomers) {
+			return;
+		}
+		customers = { results: resCustomers.results } as { results: customersType };
 	};
 
 	const handleSubmit = async (status: string) => {
@@ -160,21 +169,37 @@
 			mainOrder.isInvoiced = true;
 		}
 
-		try {
-			const res = await fetch('/api/orders.json', {
-				method: 'POST',
-				body: JSON.stringify(mainOrder)
-			});
+		if (mainOrder.deliveryDate) {
+			mainOrder.deliveryDate = new Date(mainOrder.deliveryDate).toJSON();
+		}
 
-			if (res.ok) {
-				mainOrder = { ...mainOrderInit, orderLine: [] };
-				customerSearch = { name: null };
-				cartItem.reset();
-				toasts.add({ message: `The ${status} was created`, type: 'success' });
+		if (mainOrder.orderDate) {
+			mainOrder.orderDate = new Date(mainOrder.orderDate).toJSON();
+		}
+
+		disabled = true;
+
+		const parsedOrder = saveOrdersSchema.safeParse(mainOrder);
+
+		if (!parsedOrder.success) {
+			const errorMap = zodErrorMessagesMap(parsedOrder);
+
+			if (errorMap) {
+				errorMessages = errorMap;
 			}
+			disabled = false;
+			return;
+		}
+
+		try {
+			await trpc().orders.SaveOrderOrUpdate.mutate(parsedOrder.data);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred', type: 'error' });
+			handleErrors(err);
+		} finally {
+			mainOrder = { ...mainOrderInit, orderLine: [] };
+			customerSearch = { name: null };
+			cartItem.reset();
+			toasts.add({ message: `The order was created`, type: 'success' });
 		}
 	};
 </script>

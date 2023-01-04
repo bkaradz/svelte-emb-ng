@@ -6,6 +6,9 @@ export const saveOrdersLineSchema = z.object({
 }).passthrough();
 
 export const saveOrdersSchema = z.object({
+  id: z.number().optional(),
+  orderDate: z.string().datetime().optional(),
+  deliveryDate: z.string().datetime().optional(),
   customersID: z.number(),
   pricelistsID: z.number(),
   isActive: z.boolean(),

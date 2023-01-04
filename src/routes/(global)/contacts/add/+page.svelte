@@ -55,11 +55,7 @@
 		try {
 			contacts = (await trpc().contacts.getCorporate.query(paramsObj)) as unknown as CustomersTypes;
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while getting corporate contacts',
-				type: 'error'
-			});
+			handleErrors(err);
 		}
 	};
 
@@ -97,13 +93,12 @@
 			return;
 		}
 		try {
-			const contacts = (await trpc().contacts.SaveContact.mutate(
+			const contacts = (await trpc().contacts.saveOrUpdateContact.mutate(
 				parsedContact.data
 			)) as unknown as CustomersTypes;
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
-			console.log('contact saved');
 			resetForm();
 			toasts.add({
 				message: 'Contact was successfully added',
@@ -137,7 +132,6 @@
 	};
 
 	const handleComboInput = (e: any) => {
-		console.log('test entered');
 		currentCorporateQueryParams = {
 			...currentCorporateQueryParams,
 			name: e.target.value

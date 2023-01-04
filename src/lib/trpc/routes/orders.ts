@@ -7,8 +7,9 @@ import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { z } from 'zod';
 import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
-import normalizePhone from '$lib/utility/normalizePhone.util';
 import type { Prisma } from '@prisma/client';
+import { calculateOrder } from '$lib/services/orders';
+import pick from 'lodash-es/pick';
 
 export const orders = router({
   getOrders: protectedProcedure
@@ -21,32 +22,27 @@ export const orders = router({
 
       const objectKeys = Object.keys(finalQuery)[0];
 
-      let whereQuery;
-
-      if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
-        whereQuery = {
-          equals: finalQuery[objectKeys] === 'true'
-        };
-      } else {
-        whereQuery = {
-          contains: finalQuery[objectKeys],
-          mode: 'insensitive'
-        };
-      }
-
-      let query;
-      let queryTotal;
+      let query: Prisma.OrdersFindFirstArgs;
+      let queryTotal: Prisma.OrdersFindFirstArgs;
 
       const baseQuery = {
         take: pagination.limit,
         skip: (pagination.page - 1) * pagination.limit,
         include: {
-          email: true,
-          phone: true,
-          address: true
+          customerContact: {
+            include: {
+              address: true
+            }
+          },
+          Pricelists: true,
+          OrderLine: {
+            include: {
+              Products: true
+            }
+          }
         },
         orderBy: {
-          name: 'asc'
+          id: 'asc'
         }
       };
 
@@ -55,30 +51,31 @@ export const orders = router({
           ...baseQuery,
           where: {
             isActive: true,
-            [objectKeys]: whereQuery
-          },
+            [objectKeys]: getOrdersQueryOptions(objectKeys, finalQuery)
+          }
         };
         queryTotal = {
           where: {
             isActive: true,
-            [objectKeys]: whereQuery
+            [objectKeys]: getOrdersQueryOptions(objectKeys, finalQuery)
           }
         };
       } else {
         query = {
-          ...baseQuery,
           where: {
-            isActive: true,
+            isActive: true
           },
+          ...baseQuery
         };
         queryTotal = {
           where: {
-            isActive: true,
-          },
+            isActive: true
+          }
         };
       }
 
-      const ordersQuery = await prisma.orders.findMany(query);
+      const orderQuery = await prisma.orders.findMany(query);
+
       pagination.totalRecords = await prisma.orders.count(queryTotal);
       pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
@@ -86,49 +83,66 @@ export const orders = router({
         pagination.next = undefined;
       }
 
-      return { results: ordersQuery, ...pagination }
+      return { results: orderQuery, ...pagination };
 
     }),
-  getCorporate: protectedProcedure
+  getOrderLine: protectedProcedure
     .input(searchParamsSchema.passthrough())
     .query(async ({ input }) => {
 
       const pagination = getPagination(input);
 
+      const finalQuery = omit(input, ['page', 'limit', 'sort']);
+
+      const objectKeys = Object.keys(finalQuery)[0];
+
+      let query: Prisma.OrderLineFindManyArgs;
+      let queryTotal: Prisma.OrderLineFindManyArgs;
+
       const baseQuery = {
         take: pagination.limit,
         skip: (pagination.page - 1) * pagination.limit,
         include: {
-          email: true,
-          phone: true,
-          address: true
+          Orders: {
+            include: {
+              customerContact: true
+            }
+          }
+        },
+        orderBy: {
+          id: 'asc'
         }
       };
 
-      const query = {
-        ...baseQuery,
-        where: {
-          isActive: true,
-          isCorporate: true
-        },
-      };
+      if (objectKeys) {
+        query = {
+          ...baseQuery,
+          where: {
+            [objectKeys]: getOrderLineQueryOptions(objectKeys, finalQuery)
+          }
+        };
+        queryTotal = {
+          where: {
+            [objectKeys]: getOrderLineQueryOptions(objectKeys, finalQuery)
+          }
+        };
+      } else {
+        query = {
+          ...baseQuery
+        };
+        queryTotal = {};
+      }
 
-      const queryTotal = {
-        where: {
-          isActive: true,
-          isCorporate: true
-        },
-      };
+      const productsQuery = await prisma.orderLine.findMany(query);
 
-      const ordersQuery = await prisma.orders.findMany(query);
-      pagination.totalRecords = await prisma.orders.count(queryTotal);
+      pagination.totalRecords = await prisma.orderLine.count(queryTotal);
       pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
       if (pagination.endIndex >= pagination.totalRecords) {
         pagination.next = undefined;
       }
 
-      return { results: ordersQuery, ...pagination }
+      return { results: productsQuery, ...pagination };
 
     }),
   getById: protectedProcedure
@@ -140,10 +154,14 @@ export const orders = router({
           id: input
         },
         include: {
-          email: true,
-          phone: true,
-          address: true
-        }
+          customerContact: true,
+          Pricelists: true,
+          OrderLine: {
+            include: {
+              Products: true
+            }
+          }
+        },
       });
 
       return product
@@ -152,125 +170,132 @@ export const orders = router({
   deleteById: protectedProcedure
     .input(z.number())
     .mutation(async ({ input }) => {
-      const product = await prisma.orders.update({
+      const order = await prisma.orders.update({
         where: {
           id: input
         },
         data: { isActive: false }
       });
-      return product
-    }),
-
-  SaveOrder: protectedProcedure
-    .input(saveOrdersSchema)
-    .mutation(async ({ input, ctx }) => {
-
-      if (!ctx.userId) {
-        throw new Error("User not found");
-      }
-
-      const ordersQuery = querySelection(input, ctx.userId);
-
-      const order = await prisma.orders.create({ data: ordersQuery });
-
       return order
     }),
-  updateOrder: protectedProcedure
+
+  SaveOrderOrUpdate: protectedProcedure
     .input(saveOrdersSchema)
     .mutation(async ({ input, ctx }) => {
+
       if (!ctx.userId) {
-        throw new Error("User not found");
+        throw new Error("Unauthorised");
       }
 
-      const ordersQuery = querySelection(input, ctx.userId);
+      const createdBy = ctx.userId;
 
-      const order = await prisma.orders.update({
+      // check that the pricelist exist
+      const pricelist = await prisma.pricelists.findUnique({
         where: {
-          id: input.id
-        },
-        data: ordersQuery
+          id: input.pricelistsID
+        }
       });
 
-      return order
+      if (!pricelist) {
+        throw new Error('Pricelist does not exist')
+      }
+
+      // check that the customer exist
+      // const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
+      const customerExist = await prisma.contacts.findUnique({
+        where: {
+          id: input.customersID
+        }
+      });
+
+      if (!customerExist) {
+        throw new Error('Customer does not exist')
+      }
+
+      let calcOrder = await calculateOrder(input);
+
+      calcOrder = calcOrder.map((item) =>
+        pick(item, [
+          'productsID',
+          'unitPrice',
+          'quantity',
+          'total',
+          'productCategories',
+          'embroideryPositions',
+          'embroideryTypes'
+        ])
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { orderLine, ...restOrder } = input;
+
+      if (restOrder?.orderDate) {
+        restOrder.orderDate = new Date(restOrder.orderDate);
+      }
+
+      if (restOrder?.deliveryDate) {
+        restOrder.deliveryDate = new Date(restOrder.deliveryDate);
+      }
+
+      if (restOrder.id) {
+        delete restOrder.customerContact
+        delete restOrder.Pricelists
+        return await prisma.orders.update({
+          where: {
+            id: restOrder.id
+          },
+          data: {
+            ...restOrder,
+            createdBy,
+            OrderLine: {
+              updateMany: { data: calcOrder }
+            }
+          }
+        });
+      } else {
+        return await prisma.orders.create({
+          data: {
+            ...restOrder,
+            createdBy,
+            OrderLine: {
+              createMany: { data: calcOrder }
+            }
+          }
+        });
+      }
     }),
 });
 
-
-export const querySelection = (reqOrder: any, createDBy: number) => {
-  let { name, email, phone, address, ...restOrder } = reqOrder;
-
-  name = name.trim();
-  if (email) {
-    email = email.split(',').map((data: string) => {
-      return { email: data.trim() };
-    });
-  }
-  if (phone) {
-    phone = normalizePhone(phone);
-  }
-  if (address) {
-    address = address.split(',').map((data: string) => {
-      return { address: data.trim() };
-    });
+const getOrdersQueryOptions = (objectKeys: string, finalQuery) => {
+  if (
+    objectKeys === 'isCorporate' ||
+    objectKeys === 'isActive' ||
+    objectKeys === 'isUser' ||
+    objectKeys === 'isInvoiced'
+  ) {
+    return {
+      equals: finalQuery[objectKeys] === 'true'
+    };
   }
 
-  let order: Prisma.OrdersCreateInput;
+  if (objectKeys === 'id' || objectKeys === 'customersID' || objectKeys === 'pricelistsID') {
+    return parseInt(finalQuery[objectKeys]);
+  }
 
-  order = {
-    ...restOrder,
-    name,
-    createdBy: createDBy,
-    isActive: true,
-    isUser: false
+  return {
+    contains: finalQuery[objectKeys],
+    mode: 'insensitive'
   };
-
-  if (email) {
-    order = {
-      ...order,
-      email: { createMany: { data: email } }
-    };
-  }
-  if (phone) {
-    order = {
-      ...order,
-      phone: { createMany: { data: phone } }
-    };
-  }
-  if (address) {
-    order = {
-      ...order,
-      address: { createMany: { data: address } }
-    };
-  }
-  if (email && phone) {
-    order = {
-      ...order,
-      email: { createMany: { data: email } },
-      phone: { createMany: { data: phone } }
-    };
-  }
-  if (email && address) {
-    order = {
-      ...order,
-      email: { createMany: { data: email } },
-      address: { createMany: { data: address } }
-    };
-  }
-  if (phone && address) {
-    order = {
-      ...order,
-      phone: { createMany: { data: phone } },
-      address: { createMany: { data: address } }
-    };
-  }
-  if (email && phone && address) {
-    order = {
-      ...order,
-      email: { createMany: { data: email } },
-      phone: { createMany: { data: phone } },
-      address: { createMany: { data: address } }
-    };
-  }
-
-  return order;
 };
+
+const getOrderLineQueryOptions = (objectKeys: string, finalQuery) => {
+  if (objectKeys === 'id' || objectKeys === 'ordersID' || objectKeys === 'productsID') {
+    return parseInt(finalQuery[objectKeys]);
+  }
+
+  return {
+    contains: finalQuery[objectKeys],
+    mode: 'insensitive'
+  };
+};
+

@@ -4,6 +4,8 @@ import logger from '$lib/utility/logger';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
 import type { XchangeRate, XchangeRateDetails } from '@prisma/client';
 import { browser } from '$app/environment';
+import { trpc } from '$lib/trpc/client';
+import { handleErrors } from '$lib/utility/errorsHandling';
 
 export const ZWB: Currency<number> = {
 	code: 'ZWB',
@@ -98,13 +100,13 @@ export function getAmount(dineroObject: Dinero<unknown>): number {
 
 if (browser) {
 	(async () => {
-		const paramsObj: unknown = { isDefault: true };
+		// const paramsObj: unknown = { isDefault: true };
 		try {
-			const SearchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/rates.json?' + SearchParams.toString());
-			if (res.ok) {
+			const res = await trpc().xchangeRate.getDefaultXchangeRate.query()
+
+			if (res.length === 1) {
 				type Rates = Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] };
-				const rates: Rates[] = await res.json();
+				const rates: Rates[] = res;
 				const ratesMap = new Map();
 				rates[0]?.XchangeRateDetails.map((rate) => {
 					if (!(typeof rate.rate === 'string')) {
@@ -116,9 +118,12 @@ if (browser) {
 					throw new Error("Exchange Rates not found");
 				}
 				currenciesRates = ratesMap;
+			} else {
+				throw new Error("Default Exchange Rates more than one found");
 			}
+
 		} catch (err: unknown) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err)
 		}
 	})();
 }

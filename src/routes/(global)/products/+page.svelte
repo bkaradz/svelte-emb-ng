@@ -43,7 +43,7 @@
 		goto(`/products/view/${id}`);
 	};
 
-	const gotosaveProducts = async () => {
+	const gotoAddProducts = async () => {
 		goto(`/products/add`);
 	};
 
@@ -100,7 +100,7 @@
 				<h1 class="text-slate-700 text-2xl font-medium">Products</h1>
 
 				<button
-					on:click={gotosaveProducts}
+					on:click={gotoAddProducts}
 					class="btn btn-primary inline-flex items-center justify-center px-3"
 				>
 					<span>
@@ -243,7 +243,7 @@
 					</div>
 					<div />
 				</div>
-				<!-- Veiw list Buttons -->
+				<!-- View list Buttons -->
 				<div class="flex flex-row items-center ">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">

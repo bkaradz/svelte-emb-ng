@@ -6,6 +6,7 @@ import omit from 'lodash-es/omit';
 import { protectedProcedure } from '../middleware/auth';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { z } from 'zod';
+import { saveProductsSchema } from '$lib/validation/saveProduct.validate';
 
 export const products = router({
   getProducts: protectedProcedure
@@ -88,4 +89,42 @@ export const products = router({
       return product
 
     }),
+  deleteById: protectedProcedure
+    .input(z.number())
+    .mutation(async ({ input }) => {
+      const product = await prisma.products.update({
+        where: {
+          id: input
+        },
+        data: { isActive: false }
+      });
+      return product
+    }),
+  saveOrUpdateProducts: protectedProcedure.input(saveProductsSchema).mutation(async ({ input, ctx }) => {
+
+    if (!ctx?.userId) {
+      throw new Error("User not authorised");
+    }
+
+    const createdBy = ctx.userId as number;
+
+    if (input.id) {
+      return await prisma.products.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          ...input,
+          createdBy
+        }
+      });
+    } else {
+      return await prisma.products.create({
+        data: {
+          ...input,
+          createdBy
+        }
+      });
+    }
+  }),
 });

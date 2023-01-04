@@ -106,9 +106,9 @@
 
 	const vat = 0;
 
-	$: calclculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
+	$: calculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
 
-	$: calclculatedTotal = add(calclculatedVat, subTotal);
+	$: calculatedTotal = add(calculatedVat, subTotal);
 
 	let order: Orders;
 
@@ -139,5 +139,5 @@
 </svelte:head>
 
 {#if order}
-	<PartialReceiptPage {order} {subTotal} {calclculatedVat} {calclculatedTotal} {vat} />
+	<PartialReceiptPage {order} {subTotal} {calculatedVat} {calculatedTotal} {vat} />
 {/if}

@@ -2,7 +2,6 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
-	import logger from '$lib/utility/logger';
 	import dayjs from 'dayjs';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 
@@ -75,45 +74,7 @@
 
 	const handleCurrencyType = () => {};
 
-	const handleSubmit = async () => {
-		const usedCurrenciesLength = getUsedCurrencies().length;
-		const numberOfCurrencies = data.resultsCurrency.length;
-		if (usedCurrenciesLength < numberOfCurrencies) {
-			toasts.add({ message: 'Add all currencies', type: 'error' });
-			return;
-		}
-		if (usedCurrenciesLength < [...new Set(getUsedCurrencies())].length) {
-			toasts.add({ message: 'Duplicate currencies are not allowed', type: 'error' });
-			return;
-		}
-
-		try {
-			const res = await fetch('/api/rates.json', {
-				method: 'POST',
-				body: JSON.stringify(rates),
-				headers: { 'Content-Type': 'application/json' }
-			});
-
-			if (res.ok) {
-				const resRates = await res.json();
-				toasts.add({ message: `Exchange Rate with id ${resRates.id} was added`, type: 'success' });
-
-				rates = {
-					id: 0,
-					xChangeRateDate: TODAY,
-					isActive: true,
-					isDefault: true,
-					XchangeRateDetails: []
-				};
-			}
-		} catch (err) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating',
-				type: 'error'
-			});
-		}
-	};
+	const handleSubmit = async () => {};
 
 	const handleEditable = (list: Options) => {
 		if (isEditableID === null) {

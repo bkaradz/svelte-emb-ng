@@ -6,7 +6,6 @@
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import { string } from 'zod';
 
 	export let tableHeadings = [
 		'Group',

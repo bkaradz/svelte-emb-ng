@@ -10,8 +10,8 @@
 
 	export let order: Orders;
 	export let subTotal: Dinero<number>;
-	export let calclculatedVat: Dinero<number>;
-	export let calclculatedTotal: Dinero<number>;
+	export let calculatedVat: Dinero<number>;
+	export let calculatedTotal: Dinero<number>;
 	export let vat: number;
 </script>
 
@@ -90,7 +90,7 @@
 								<tr>
 									<th colspan="3" />
 									<td class="text-xs font-bold px-1"><b>VAT({vat}%)</b></td>
-									<td class="text-xs font-bold text-right px-1 py-1">{format(calclculatedVat)}</td>
+									<td class="text-xs font-bold text-right px-1 py-1">{format(calculatedVat)}</td>
 								</tr>
 								<tr class="text-pickled-bluewood-800">
 									<th colspan="3" />
@@ -99,7 +99,7 @@
 									>
 									<td
 										class="text-xs font-bold text-right px-1 py-1 border border-l-0 border-royal-blue-700"
-										>{format(calclculatedTotal)}</td
+										>{format(calculatedTotal)}</td
 									>
 								</tr>
 							{/if}

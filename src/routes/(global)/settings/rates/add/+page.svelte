@@ -96,7 +96,9 @@
 
 		const reqRate = JSON.parse(JSON.stringify(rates));
 
-		reqRate.xChangeRateDate = new Date().toJSON();
+		if (reqRate.xChangeRateDate) {
+			reqRate.xChangeRateDate = new Date(reqRate.xChangeRateDate).toJSON();
+		}
 
 		reqRate.XchangeRateDetails = reqRate.XchangeRateDetails.map(
 			(rate: Partial<XchangeRateDetails>) => {
@@ -104,10 +106,8 @@
 				return restRate;
 			}
 		);
-		console.log('🚀 ~ file: +page.svelte:107 ~ handleSubmit ~ reqRate', reqRate);
 
 		const parsedRates = saveXchangeRateSchema.safeParse(reqRate);
-		console.log('🚀 ~ file: +page.svelte:109 ~ handleSubmit ~ parsedRates', parsedRates);
 
 		if (!parsedRates.success) {
 			const errorMap = zodErrorMessagesMap(parsedRates);
@@ -120,7 +120,7 @@
 		}
 
 		try {
-			const resRates = await trpc();
+			await trpc().xchangeRate.saveOrUpdateXchangeRate.mutate(parsedRates.data);
 		} catch (err) {
 			handleErrors(err);
 		} finally {
@@ -180,7 +180,7 @@
 					/>
 				</div>
 				<div>
-					<input class="btn btn-primary" type="submit" value="Submit" />
+					<input disabled class="btn btn-primary" type="submit" value="Submit" />
 				</div>
 			</div>
 			<!-- Table start -->

@@ -1,70 +1,31 @@
-import prisma from '$lib/prisma/client';
 import type { PageServerLoad } from './$types'
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load = (async ({ params }) => {
 
-  const embroideryTypesPromise = await prisma.options.findMany({
-    where: {
-      isActive: true,
-      group: 'embroideryTypes'
-    },
-  })
-  const embroideryPositionsPromise = await prisma.options.findMany({
-    where: {
-      isActive: true,
-      group: 'embroideryPositions'
-    },
-  })
-  const pricelistsPromise = await prisma.pricelists.findMany({
-    where: {
-      isActive: true,
-    },
-    include: {
-      PricelistDetails: true
-    }
-  })
+export const load = (async (event) => {
 
-  const customersPromise = await prisma.contacts.findMany({
-    take: 7,
-    skip: 0,
-    where: {
-      isActive: true,
-    },
-    include: {
-      email: true,
-      phone: true,
-      address: true
-    },
-    orderBy: {
-      name: 'asc'
-    },
-  })
+  const embroideryTypes = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' })
 
-  const [embroideryTypes, embroideryPositions, customers, pricelists] = await Promise.all([
-    embroideryTypesPromise,
-    embroideryPositionsPromise,
-    customersPromise,
-    pricelistsPromise
-  ]);
+  const embroideryPositions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' })
 
-  const defaultPricelist = pricelists.find(
-    (list: { isDefault: boolean }) => list.isDefault === true
-  );
-
-  let defaultPricelistId
-
-  if (defaultPricelist) {
-    defaultPricelistId = defaultPricelist.id;
+  const queryParams = {
+    limit: 7,
+    page: 1,
   }
 
-  const newCustomers = { results: customers }
+  const customers = await router.createCaller(await createContext(event)).contacts.getContacts(queryParams);
+
+  const pricelists = await router.createCaller(await createContext(event)).pricelists.getPricelists({});
+
+  const defaultPricelist = await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
 
   return {
     embroideryTypes,
     embroideryPositions,
-    customers: newCustomers,
+    customers,
     pricelists,
-    defaultPricelistId
+    defaultPricelistId: defaultPricelist.id
   };
 
 }) satisfies PageServerLoad;

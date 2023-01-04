@@ -90,9 +90,9 @@
 
 	const vat = 0;
 
-	$: calclculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
+	$: calculatedVat = multiply(subTotal, { amount: vat, scale: 2 });
 
-	$: calclculatedTotal = add(calclculatedVat, subTotal);
+	$: calculatedTotal = add(calculatedVat, subTotal);
 
 	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
 
@@ -196,9 +196,9 @@
 {#if pagesCreated}
 	{#each pagesCreated as value, key (key)}
 		{#if key === 0}
-			<PrintFirstPage order={value} {subTotal} {calclculatedVat} {calclculatedTotal} {vat} />
+			<PrintFirstPage order={value} {subTotal} {calculatedVat} {calculatedTotal} {vat} />
 		{:else}
-			<PrintOtherPages order={value} {subTotal} {calclculatedVat} {calclculatedTotal} {vat} />
+			<PrintOtherPages order={value} {subTotal} {calculatedVat} {calculatedTotal} {vat} />
 		{/if}
 	{/each}
 {/if}

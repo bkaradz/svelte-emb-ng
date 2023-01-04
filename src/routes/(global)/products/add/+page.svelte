@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import logger from '$lib/utility/logger';
 	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
@@ -8,26 +7,20 @@
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveProductsSchema } from '$lib/validation/saveProduct.validate';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+
+	export let data: { productCategories: Options[] };
 
 	let errorMessages = new Map();
 
-	let productCategories: Array<Options>;
+	let productCategories = data.productCategories;
 
-	onMount(() => {
-		getProductCategories();
-	});
-
-	const getProductCategories = async () => {
+	const getProductCategories = async (searchParams = { group: 'productCategories' }) => {
 		try {
-			let SearchParams = new URLSearchParams({ group: 'productCategories' });
-			const res = await fetch('/api/options.json?' + SearchParams.toString());
-			productCategories = await res.json();
+			productCategories = await trpc().options.getOptions.query(searchParams);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while getting product categories',
-				type: 'error'
-			});
+			handleErrors(err);
 		}
 	};
 
@@ -52,10 +45,10 @@
 	const handleSubmit = async () => {
 		disabled = true;
 
-		const parsedContact = saveProductsSchema.safeParse(formData);
+		const parsedProducts = saveProductsSchema.safeParse(formData);
 
-		if (!parsedContact.success) {
-			const errorMap = zodErrorMessagesMap(parsedContact);
+		if (!parsedProducts.success) {
+			const errorMap = zodErrorMessagesMap(parsedProducts);
 
 			if (errorMap) {
 				errorMessages = errorMap;
@@ -64,19 +57,12 @@
 			return;
 		}
 		try {
-			const res = await fetch('/api/products.json', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' }
-			});
-
-			if (res.ok) {
-				// resetForm();
-				toasts.add({ message: 'The Product was added', type: 'success' });
-			}
+			const res = await trpc().products.saveOrUpdateProducts.mutate(parsedProducts.data);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred while adding the product', type: 'error' });
+			handleErrors(err);
+		} finally {
+			resetForm();
+			toasts.add({ message: 'The Product was added', type: 'success' });
 		}
 	};
 

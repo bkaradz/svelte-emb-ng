@@ -66,9 +66,26 @@ export const xchangeRate = router({
 
     return xchangeRate;
   }),
+  getDefaultXchangeRate: protectedProcedure.query(async () => {
+    const xchangeRate = await prisma.xchangeRate.findMany({
+      where: {
+        isDefault: {
+          equals: true
+        }
+      },
+      include: {
+        XchangeRateDetails: true
+      }
+    });
+
+    if (xchangeRate.length > 1) {
+      throw new Error("Default exchange rates are more than one");
+    }
+
+    return xchangeRate;
+  }),
   saveOrUpdateXchangeRate: protectedProcedure.input(saveXchangeRateSchema).mutation(async ({ input, ctx }) => {
 
-    console.log("🚀 ~ file: xchangeRate.ts:83 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
     if (!ctx?.userId) {
       throw new Error("User not authorised");
     }
@@ -80,12 +97,12 @@ export const xchangeRate = router({
     }
 
     if (input?.xChangeRateDate) {
-      input.xChangeRateDate = new Date(input.xChangeRateDate).toTimeString();
+      input.xChangeRateDate = new Date(input.xChangeRateDate);
     }
 
     const { XchangeRateDetails, ...restRates } = input;
 
-    const rateDetails = XchangeRateDetails.map((list: any) => {
+    const rateDetails = XchangeRateDetails.map((list) => {
       const { id, ...restObj } = list;
       return {
         ...restObj,
@@ -105,11 +122,7 @@ export const xchangeRate = router({
     }
 
   }),
-  console.log("🚀 ~ file: xchangeRate.ts:107 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
-  console.log("🚀 ~ file: xchangeRate.ts:107 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
-  console.log("🚀 ~ file: xchangeRate.ts:107 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
-  console.log("🚀 ~ file: xchangeRate.ts:107 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
-  console.log("🚀 ~ file: xchangeRate.ts:107 ~ saveOrUpdateXchangeRate:protectedProcedure.input ~ input", input)
+
   deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
     const xchangeRate = await prisma.xchangeRate.update({
       where: { id: input },

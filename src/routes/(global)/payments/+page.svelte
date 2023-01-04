@@ -293,7 +293,7 @@
 					</div>
 					<div />
 				</div>
-				<!-- Veiw list Buttons -->
+				<!-- View list Buttons -->
 				<div class="flex flex-row items-center ">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">

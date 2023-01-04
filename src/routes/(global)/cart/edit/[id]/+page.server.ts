@@ -1,23 +1,24 @@
-import prisma from '$lib/prisma/client';
 import dayjs from 'dayjs';
 import type { PageServerLoad } from './$types'
+import { router } from '$lib/trpc/router';
+import { createContext } from '$lib/trpc/context';
 
-export const load = (async ({ params }) => {
+export const load = (async (event) => {
 
-  const order = await prisma.orders.findUnique({
-    where: {
-      id: parseInt(params.id)
-    },
-    include: {
-      customerContact: true,
-      Pricelists: true,
-      OrderLine: {
-        include: {
-          Products: true
-        }
-      }
-    },
-  })
+  const order = await router.createCaller(await createContext(event)).orders.getById(parseInt(event.params.id));
+
+  const embroideryTypes = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' })
+
+  const embroideryPositions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' })
+
+  const queryParams = {
+    limit: 7,
+    page: 1,
+  }
+
+  const customers = await router.createCaller(await createContext(event)).contacts.getContacts(queryParams);
+
+  const pricelists = await router.createCaller(await createContext(event)).pricelists.getPricelists({});
 
   if (order?.orderDate) {
     order.orderDate = dayjs(order.orderDate).format('YYYY-MM-DDTHH:mm')
@@ -35,7 +36,11 @@ export const load = (async ({ params }) => {
   }
 
   return {
-    order
+    order,
+    embroideryTypes,
+    embroideryPositions,
+    customers,
+    pricelists
   };
 
 }) satisfies PageServerLoad;

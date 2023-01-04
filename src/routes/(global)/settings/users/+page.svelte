@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
+	import type { UserRegister } from '$lib/validation/userRegister.validate';
+	import type { Contacts } from '@prisma/client';
 	import { onMount } from 'svelte';
 
 	const tableHeadings = [
@@ -16,64 +20,42 @@
 		'delete'
 	];
 
-	let contacts: Array<Partial<any>> = [];
-	let isEditableID = null;
+	export let data: { users: Contacts[] };
+
+	let contacts = data.users;
+	let isEditableID: number | undefined = undefined;
 
 	const getUsers = async () => {
+		getUsers;
 		try {
-			const res = await fetch('/api/auth.json');
-			contacts = await res.json();
+			const resUsers = await trpc().authentication.getUsers.query({});
+			contacts = resUsers.results;
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
 		}
 	};
 
-	const updateUser = async (finalData: Partial<any>) => {
+	const updateUser = async (finalData: UserRegister) => {
 		try {
-			// let SearchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/auth.json', {
-				method: 'PUT',
-				body: JSON.stringify(finalData),
-				headers: { 'Content-Type': 'application/json' }
-			});
-			if (res.ok) {
-				const user = await res.json();
-				toasts.add({
-					message: `${user.name} was updated`,
-					type: 'success'
-				});
-				getUsers();
-			}
+			const updateUsers = await trpc().authentication.registerOrUpdateUser.mutate(finalData);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
-			});
+			handleErrors(err);
+		} finally {
+			getUsers();
+			toasts.add({ message: `User was updated`, type: 'success' });
 		}
 	};
-	const deleteUser = async (finalData: Partial<any>) => {
+	const deleteUser = async (finalData: UserRegister) => {
 		try {
-			// let SearchParams = new URLSearchParams(paramsObj as string);
-			const res = await fetch('/api/auth.json', {
-				method: 'DELETE',
-				body: JSON.stringify(finalData),
-				headers: { 'Content-Type': 'application/json' }
-			});
-			if (res.ok) {
-				const user = await res.json();
-				toasts.add({
-					message: `${user.name} was deleted`,
-					type: 'success'
-				});
-				getUsers();
+			if (!finalData.id) {
+				return;
 			}
+			await trpc().authentication.deleteById.mutate(finalData.id);
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while updating user',
-				type: 'error'
-			});
+			handleErrors(err);
+		} finally {
+			getUsers();
+			toasts.add({ message: `User was deleted`, type: 'success' });
 		}
 	};
 
@@ -81,16 +63,16 @@
 		getUsers();
 	});
 
-	const handleEditable = async (list: Partial<any>) => {
-		if (isEditableID === null) {
+	const handleEditable = async (list: UserRegister) => {
+		if (isEditableID === undefined) {
 			isEditableID = list.id;
 		} else {
 			await updateUser(list);
-			isEditableID = null;
+			isEditableID = undefined;
 		}
 	};
 
-	const handleDelete = async (list: Partial<any>) => {
+	const handleDelete = async (list: UserRegister) => {
 		await deleteUser(list);
 	};
 </script>

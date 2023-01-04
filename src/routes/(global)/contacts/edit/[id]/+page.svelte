@@ -11,6 +11,7 @@
 	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
 	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	let errorMessages = new Map();
 
@@ -51,31 +52,13 @@
 
 	const getCorporateContacts = async (paramsObj: Partial<corporateQueryParamsInterface>) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj as string);
-
-			const contactsAll = (await trpc().contacts.getContacts.query(
-				paramsObj
-			)) as unknown as CustomersTypes;
-			console.log('🚀 ~ file: +page.svelte:59 ~ getCorporateContacts ~ contactsAll', contactsAll);
-
-			const res = await fetch('/api/contacts.json?' + SearchParams.toString());
-			contacts = await res.json();
+			contacts = (await trpc().contacts.getCorporate.query(paramsObj)) as unknown as CustomersTypes;
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({
-				message: 'An error has occurred while getting corporate contacts',
-				type: 'error'
-			});
+			handleErrors(err);
 		}
 	};
 
 	let formData = data.contact;
-
-	// const handleInput = (event: any) => {
-	// 	const name = (event.target as HTMLInputElement).name;
-	// 	const value = (event.target as HTMLInputElement).value;
-	// 	formData[name] = value;
-	// };
 
 	$: disabled = false;
 

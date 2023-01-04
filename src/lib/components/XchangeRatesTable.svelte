@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
-	import logger from '$lib/utility/logger';
 	import { svgTrash, svgView } from '$lib/utility/svgLogos';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
@@ -24,7 +23,7 @@
 		try {
 			await trpc().xchangeRate.deleteById.mutate(list.id);
 		} catch (err: any) {
-			handleErrors(err)
+			handleErrors(err);
 		} finally {
 			getRates(defaultQueryParams);
 			toasts.add({ message: `Exchange Rate was deleted`, type: 'success' });
@@ -35,12 +34,12 @@
 
 	const getRates = async (paramsObj: any) => {
 		try {
-			const resRates = await trpc().xchangeRate.getXchangeRates.query(paramsObj)
+			const resRates = await trpc().xchangeRate.getXchangeRates.query(paramsObj);
 			if (resRates) {
-				rates = resRates
+				rates = resRates;
 			}
 		} catch (err: any) {
-			handleErrors(err)
+			handleErrors(err);
 		}
 	};
 

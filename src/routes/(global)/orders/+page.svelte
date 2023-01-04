@@ -22,6 +22,8 @@
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { Buffer } from 'buffer';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	type newOrder = Orders & { selected: boolean };
 
@@ -43,6 +45,7 @@
 	];
 
 	let orders = data.orders;
+
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -55,10 +58,6 @@
 			limit = 1;
 		}
 	};
-
-	// onMount(() => {
-	// 	getOrders(currentGlobalParams);
-	// });
 
 	const viewOrder = async (id: number) => {
 		goto(`/cart/view/${id}`);
@@ -108,18 +107,14 @@
 	// Input must be of the form {limit, page, sort, query}
 	const getOrders = async (paramsObj: any) => {
 		try {
-			let SearchParams = new URLSearchParams(paramsObj);
-			const res = await fetch('/api/orders.json?' + SearchParams.toString());
-			if (res.ok) {
-				const resOrders = await res.json();
-				resOrders.results = resOrders.results.map((item: newOrder) => {
-					item.selected = false;
-					return item;
-				});
-				orders = resOrders;
-			}
+			const resOrders = (await trpc().orders.getOrders.query(paramsObj)) as OrdersNew;
+			resOrders.results = resOrders.results.map((item: newOrder) => {
+				item.selected = false;
+				return item;
+			});
+			orders = resOrders;
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
 		}
 	};
 
@@ -260,21 +255,25 @@
 				}
 			}
 
-			const res = await fetch('/api/orders.json', {
-				method: 'PUT',
-				body: JSON.stringify(data),
-				headers: {
-					Accept: 'application/json'
-				}
-			});
+			const res = await trpc().orders.SaveOrderOrUpdate.mutate(data);
+			handleSelected(res);
+			// const res = await fetch('/api/orders.json', {
+			// 	method: 'PUT',
+			// 	body: JSON.stringify(data),
+			// 	headers: {
+			// 		Accept: 'application/json'
+			// 	}
+			// });
 
-			if (res.ok) {
-				const json = await res.json();
-				getOrders(currentGlobalParams);
-				handleSelected(json);
-			}
+			// if (res.ok) {
+			// 	const json = await res.json();
+			// 	getOrders(currentGlobalParams);
+			// 	handleSelected(json);
+			// }
 		} catch (err: any) {
-			logger.error(`Error: ${err}`);
+			handleErrors(err);
+		} finally {
+			getOrders(currentGlobalParams);
 		}
 	};
 </script>
@@ -324,7 +323,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={handleSearchSelection}
+											on:click|preventDefault={handleSearchSelection}
 											name="name"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -339,7 +338,7 @@
 									<MenuItem let:active>
 										<!-- svelte-ignore a11y-click-events-have-key-events -->
 										<a
-											on:click={handleSearchSelection}
+											on:click|preventDefault={handleSearchSelection}
 											name="organisation"
 											class={`${
 												active ? 'active bg-royal-blue-500 text-white' : 'inactive'
@@ -430,7 +429,7 @@
 					</div>
 					<div />
 				</div>
-				<!-- Veiw list Buttons -->
+				<!-- View list Buttons -->
 				<div class="flex flex-row items-center ">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">

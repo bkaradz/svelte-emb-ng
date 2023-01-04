@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 export const saveProductsSchema = z.object({
+	id: z.number().optional(),
+	isActive: z.boolean().default(true),
 	name: z
 		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
 		.min(1)
