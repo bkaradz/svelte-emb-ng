@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
-	import { format } from '$lib/services/monetary';
 	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import type { Pagination } from '$lib/utility/pagination.util';

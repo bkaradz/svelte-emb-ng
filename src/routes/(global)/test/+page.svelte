@@ -84,6 +84,31 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { trpc } from '$lib/trpc/client';
+	import { clickOutside } from '$lib/utility/clickOutside';
+	import type { userSessionInterface } from '$lib/utility/jwt.utils';
+
+	export let data: { user: userSessionInterface };
+	// $: console.log('🚀 ~ file: +page.svelte:89 ~ data', data);
+
+	// const userNameArray = data.user.name.split(' ');
+	// const usersInitials = userNameArray.map((item) => item[0]);
+	// const userJoin = usersInitials.join(' ');
+	// $: console.log('🚀 ~ file: +page.svelte:94 ~ userInitials', usersInitials);
+	// $: console.log('🚀 ~ file: +page.svelte:95 ~ userJoin', userJoin);
+	// $: console.log('🚀 ~ file: +page.svelte:93 ~ userNameArray', userNameArray);
+
+	const userInitials = (data: { user: userSessionInterface }) => {
+		const userName = data?.user?.name;
+		if (!userName) {
+			return;
+		}
+		return userName
+			.split(' ')
+			.map((item) => item[0])
+			.join(' ');
+	};
+
+	$: console.log('userInitials', userInitials(data));
 
 	let greeting: {
 		id: number;
@@ -96,9 +121,11 @@
 		greeting = await trpc().test.getContacts.query();
 		loading = false;
 	};
+
+	let showMenu = false;
 </script>
 
-<div class="flex flex-col space-y-5">
+<!-- <div class="flex flex-col space-y-5">
 	<h6>Loading data in<br /><code>+page.svelte</code></h6>
 	<div>
 		<a
@@ -114,4 +141,54 @@
 			{test.name}
 		{/each}
 	{/if}
+</div> -->
+<div>
+	<button
+		use:clickOutside
+		on:clickOutside|preventDefault={(e) => (showMenu = false)}
+		class=" w-14 h-14 btn bg-royal-blue-700 rounded-full outline-royal-blue-400 border border-royal-blue-400 focus:border-none active:border-none cursor-pointer"
+		on:click|preventDefault={(e) => (showMenu = !showMenu)}
+	>
+		{userInitials(data)}
+	</button>
+
+	<!-- Dropdown menu -->
+	<div
+		class={`${
+			showMenu ? '' : 'hidden'
+		} z-10 bg-white divide-y divide-pickled-bluewood-100 rounded shadow w-44 dark:bg-pickled-bluewood-700 dark:divide-pickled-bluewood-600`}
+	>
+		<div class="px-4 py-3 text-sm text-pickled-bluewood-900 dark:text-white">
+			<div>{data?.user?.name}</div>
+		</div>
+		<ul
+			class="py-1 text-sm text-pickled-bluewood-700 dark:text-pickled-bluewood-200"
+			aria-labelledby="avatarButton"
+		>
+			<li>
+				<a
+					href="#"
+					class="block px-4 py-2 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:hover:text-white"
+				>
+					Account
+				</a>
+			</li>
+			<li>
+				<a
+					href="#"
+					class="block px-4 py-2 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:hover:text-white"
+				>
+					Settings
+				</a>
+			</li>
+		</ul>
+		<div class="py-1">
+			<a
+				href="#"
+				class="block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:text-pickled-bluewood-200 dark:hover:text-white"
+			>
+				Logout
+			</a>
+		</div>
+	</div>
 </div>

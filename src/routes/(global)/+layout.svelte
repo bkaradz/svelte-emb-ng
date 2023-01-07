@@ -6,9 +6,9 @@
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import Loading from '$lib/components/Loading.svelte';
-	import type { User } from '$lib/types';
+	import type { userSessionInterface } from '$lib/utility/jwt.utils';
 
-	export let data: { user: User };
+	export let data: { user: userSessionInterface };
 
 	$: if (!data.user) {
 		if (browser) {
@@ -25,7 +25,7 @@
 {#if !isPageLoading}
 	<div class="app flex h-screen small-menu">
 		<SideMenu />
-		<Menu />
+		<Menu {data} />
 		<main class="main z-0 flex flex-1 overflow-hidden bg-royal-blue-50 p-6">
 			<Toasts />
 			<slot />

@@ -4,16 +4,24 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import logger from '$lib/utility/logger';
-	import {
-		svgBellSolid,
-		svgLogout,
-		svgSettings,
-		svgShoppingBag,
-		svgUser
-	} from '$lib/utility/svgLogos';
-	import { Menu, MenuButton, MenuItem, MenuItems } from '@rgossiaux/svelte-headlessui';
+	import { svgBellSolid, svgShoppingBag } from '$lib/utility/svgLogos';
+	import { clickOutside } from '$lib/utility/clickOutside';
+	import type { userSessionInterface } from '$lib/utility/jwt.utils';
+
+	export let data: { user: userSessionInterface };
 
 	let loginMenuOpen = false;
+
+	const userInitials = (data: { user: userSessionInterface }) => {
+		const userName = data?.user?.name;
+		if (!userName) {
+			return;
+		}
+		return userName
+			.split(' ')
+			.map((item) => item[0])
+			.join(' ');
+	};
 
 	function handleKeyDown(event: { key: string }) {
 		if (event.key === 'Escape') {
@@ -83,68 +91,55 @@
 		>
 	</span>
 
-	<Menu as="div" class="relative mr-6">
-		<MenuButton
-			class="mr-2 flex h-12 w-12 items-center justify-center rounded-full border border-solid border-pickled-bluewood-200 bg-royal-blue-600"
-			id="menu-button"
-			aria-expanded="true"
-			aria-haspopup="true"
+	<div class="relative">
+		<button
+			use:clickOutside
+			on:clickOutside|preventDefault={() => (loginMenuOpen = false)}
+			class="mr-2 w-14 h-14 btn bg-royal-blue-700 rounded-full outline-royal-blue-400 border border-royal-blue-400 focus:border-none active:border-none cursor-pointer"
+			on:click|preventDefault={(e) => (loginMenuOpen = !loginMenuOpen)}
 		>
-			<p class="text-white">B K</p>
-		</MenuButton>
+			{userInitials(data)}
+		</button>
 
-		<MenuItems
-			class=" absolute right-0 top-9 z-10 mt-2 w-40 origin-top-right divide-y divide-pickled-bluewood-100 bg-white shadow-lg ring-1 ring-royal-blue-300 focus:outline-none"
-			role="menu"
-			aria-orientation="vertical"
-			aria-labelledby="menu-button"
+		<!-- Dropdown menu -->
+		<div
+			class={`${
+				loginMenuOpen ? '' : 'hidden'
+			} absolute right-2 top-14 mt-2 z-10 bg-white divide-y divide-pickled-bluewood-100 rounded shadow w-44 dark:bg-pickled-bluewood-700 dark:divide-pickled-bluewood-600`}
 		>
-			<div class="py-1" role="none">
-				<MenuItem>
+			<div class="px-4 py-3 text-sm text-pickled-bluewood-900 dark:text-white">
+				<div>{data?.user?.name}</div>
+			</div>
+			<ul
+				class="py-1 text-sm text-pickled-bluewood-700 dark:text-pickled-bluewood-200"
+				aria-labelledby="avatarButton"
+			>
+				<li>
 					<a
 						href="/"
-						class="flex items-center px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white"
-						role="menuitem"
-						id="menu-item-0"
+						class="block px-4 py-2 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:hover:text-white"
 					>
-						<div class="mr-3">
-							{@html svgUser}
-						</div>
 						Account
 					</a>
-				</MenuItem>
-				<MenuItem>
+				</li>
+				<li>
 					<a
 						href="/"
-						class="flex items-center px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white"
-						role="menuitem"
-						id="menu-item-1"
+						class="block px-4 py-2 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:hover:text-white"
 					>
-						<div class="mr-3">
-							{@html svgSettings}
-						</div>
-						Setting
+						Settings
 					</a>
-				</MenuItem>
+				</li>
+			</ul>
+			<div class="py-1">
+				<a
+					href="/"
+					on:click|preventDefault={handleLogout}
+					class="block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:text-pickled-bluewood-200 dark:hover:text-white"
+				>
+					Logout
+				</a>
 			</div>
-			<div class="py-1" role="none">
-				<MenuItem let:active>
-					<a
-						href="/"
-						class={`${
-							active ? 'bg-royal-blue-500 text-white' : ''
-						} flex items-center px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-royal-blue-500 hover:text-white`}
-						role="menuitem"
-						id="menu-item-2"
-						on:click|preventDefault={handleLogout}
-					>
-						<div class="mr-3">
-							{@html svgLogout}
-						</div>
-						Logout
-					</a>
-				</MenuItem>
-			</div>
-		</MenuItems>
-	</Menu>
+		</div>
+	</div>
 </div>
