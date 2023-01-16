@@ -84,10 +84,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const reqOptions = await request.json();
 
-		/**
-		 * TODO: VALIDATION using zod
-		 */
-
 		let { label, group, value, isActive, isDefault } = reqOptions;
 
 		label = label.trim();
@@ -137,10 +133,6 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 		const createDBy = parseInt(locals.user.id);
 
 		const reqOptions = await request.json();
-
-		/**
-		 * TODO: VALIDATION usung zod
-		 */
 
 		let { label, group, value, isActive, isDefault } = reqOptions;
 

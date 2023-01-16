@@ -119,7 +119,7 @@
 		await goto(`/contacts/edit/${parseInt(id)}`);
 	};
 	const viewOrder = async (id: number) => {
-		await goto(`/cart/view/${id}`);
+		await goto(`/products/cart/view/${id}`);
 	};
 </script>
 

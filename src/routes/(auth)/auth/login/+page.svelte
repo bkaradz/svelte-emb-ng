@@ -105,7 +105,7 @@
 					>{errorMessages.get('email') ? errorMessages.get('email') : ''}</span
 				>
 			</label>
-			<input type="email" name="email" class="input" bind:value={formData.email} />
+			<input id="email" type="email" name="email" class="input" bind:value={formData.email} />
 
 			<label for="password" class="flex justify-between text-sm">
 				<span>Password</span>
@@ -127,7 +127,7 @@
 						{/if}
 					</button>
 				</div>
-				<input {type} name="password" class="input" on:input={handleInput} />
+				<input id="password" {type} name="password" class="input" on:input={handleInput} />
 			</div>
 		</div>
 

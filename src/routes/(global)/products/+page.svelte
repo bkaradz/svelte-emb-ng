@@ -1,13 +1,16 @@
 <script lang="ts">
 	import {
 		svgCart,
+		svgCartBig,
+		svgCartMinus,
+		svgCartPlus,
 		svgChevronLeft,
 		svgChevronRight,
 		svgGrid,
 		svgList,
 		svgPlus,
 		svgSearch,
-		svgSelector,
+		svgShoppingBag,
 		svgView
 	} from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
@@ -17,14 +20,19 @@
 	import { cartItem } from '$lib/stores/cart.store';
 	import { dinero } from 'dinero.js';
 	import { trpc } from '$lib/trpc/client';
-	import type { OrderLine, Products } from '@prisma/client';
+	import type { OrderLine, PricelistDetails, Pricelists, Products } from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
+	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
 
 	type productInterface = { results: Products[] } & Pagination;
+	type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };
 
-	export let data: { products: productInterface };
+	type NewOrderLine = OrderLine & Products;
+
+	export let data: { products: productInterface; pricelist: NewPricelists };
 
 	let products = data.products;
+	let pricelist = data.pricelist;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -81,8 +89,43 @@
 		}
 	};
 
-	const addToCart = (item: Partial<OrderLine>) => {
+	const addToCart = (item: Products) => {
 		cartItem.add(item);
+	};
+
+	const onDecrease = (item: NewOrderLine) => {
+		if (!$cartItem.has(item.id)) {
+			return;
+		} else {
+			const product = $cartItem.get(item.id);
+			if (product?.quantity === 1) {
+				cartItem.remove(item);
+			} else {
+				cartItem.update(product, { quantity: product?.quantity - 1 });
+			}
+		}
+	};
+
+	const onIncrease = (item: Products) => {
+		if (!$cartItem.has(item.id)) {
+			cartItem.add(item);
+		} else {
+			const product = $cartItem.get(item.id);
+			cartItem.update(product, { quantity: product?.quantity + 1 });
+		}
+	};
+
+	$: totalCartItems = () => {
+		return Array.from($cartItem.values()).reduce(
+			(acc, item) => {
+				let quantity = item?.quantity;
+				if (!quantity) {
+					quantity = 0;
+				}
+				return { totalCartItems: acc.totalCartItems + quantity };
+			},
+			{ totalCartItems: 0 }
+		).totalCartItems;
 	};
 </script>
 
@@ -96,17 +139,55 @@
 			<!-- Heading and Buttons Bar -->
 			<div class="main-header flex flex-row items-center justify-between">
 				<h1 class="text-slate-700 text-2xl font-medium">Products</h1>
+				<div class=" flex items-center space-x-2">
+					<div>
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<span class="relative hover:cursor-pointer mr-4 mt-4 inline-block text-danger">
+							{@html svgShoppingBag}
+							<span
+								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+								>{$cartItem.size}</span
+							>
+						</span>
+					</div>
+					<div>
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<span
+							on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/products/cart`) : '')}
+							class="relative hover:cursor-pointer mr-4 mt-4 inline-block text-danger"
+						>
+							{@html svgCartBig}
+							<span
+								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+								>{totalCartItems() ? totalCartItems() : 0}</span
+							>
+						</span>
+					</div>
+					<div>
+						<button
+							on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/products/cart`) : '')}
+							class="btn btn-primary inline-flex items-center px-3"
+						>
+							<span class=" text-danger">
+								{@html svgCart}
+							</span>
 
-				<button
-					on:click={gotoAddProducts}
-					class="btn btn-primary inline-flex items-center justify-center px-3"
-				>
-					<span>
-						{@html svgPlus}
-					</span>
+							<span class="ml-2">Cart</span>
+						</button>
+					</div>
+					<div>
+						<button
+							on:click={gotoAddProducts}
+							class="btn btn-primary inline-flex items-center justify-center px-3"
+						>
+							<span>
+								{@html svgPlus}
+							</span>
 
-					<span class="ml-2">Add Products</span>
-				</button>
+							<span class="ml-2">Add Products</span>
+						</button>
+					</div>
+				</div>
 			</div>
 
 			<!-- Search and View Bar -->
@@ -266,9 +347,9 @@
 		<div class="mt-6 flex flex-1 flex-wrap gap-4 overflow-y-auto">
 			{#if gridView}
 				{#each products.results as product (product.id)}
-					{@const barColor = $cartItem.has(product.id)}
+					{@const cartHasProduct = $cartItem.has(product.id)}
 					<div
-						class="{barColor
+						class="{cartHasProduct
 							? 'border-success'
 							: 'border-royal-blue-500'} flex h-44 w-full max-w-xs grow flex-col border-t-4 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
@@ -336,17 +417,16 @@
 										<th class="px-2 py-2">Stitches</th>
 										<th class="px-2 py-2">Description</th>
 										<th class="px-2 py-2">Units</th>
-										<th class="px-2 py-2">Unit Price</th>
-										<th class="px-2 py-2 text-center">Utilisation</th>
+										<th class="px-2 py-2 text-right">Unit Price(min units)</th>
 										<th class="px-2 py-2 text-center">Cart</th>
 										<th class="px-2 py-2 text-center">View</th>
 									</tr>
 								</thead>
 								<tbody class="overflow-y-auto">
 									{#each products.results as product (product.id)}
-										{@const barColor = $cartItem.has(product.id)}
+										{@const cartHasProduct = $cartItem.has(product.id)}
 										<tr
-											class="{barColor
+											class="{cartHasProduct
 												? 'bg-success odd:bg-success'
 												: ''} hover:bg-royal-blue-200 whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
@@ -360,20 +440,46 @@
 											<td class="px-2 py-1">
 												{!product.units ? '...' : product.units}
 											</td>
-											<td class="px-2 py-1 text-right">
+											<!-- <td class="px-2 py-1 text-right">
 												{!product.unitPrice ? '...' : format(dinero(product.unitPrice))}
+											</td> -->
+											<td class="px-2 py-1 text-right pr-4">
+												{Array.isArray(calculateProductPrices(product, pricelist))
+													? calculateProductPrices(product, pricelist)[0]['3']
+													: '...'}
 											</td>
-
-											<td class="px-2 py-1 text-center">
-												<span
-													class="whitespace-nowrap rounded-full bg-success px-3 py-1 text-xs font-bold text-white"
-													>{product.utilisation} times</span
-												>
-											</td>
-											<td class="py-1 text-center">
-												<button class=" m-0 p-0" on:click|preventDefault={() => addToCart(product)}
-													><span class="fill-current text-danger">{@html svgCart}</span></button
-												>
+											<td class="px-2 py-1">
+												<div class="flex items-center justify-center">
+													<span class="flex w-1/6 pr-4">
+														<button
+															class="border rounded px-1 bg-royal-blue-200 "
+															on:click|preventDefault={() => onDecrease(product)}
+															aria-label="Decrease quantity"
+														>
+															{@html svgCartMinus}
+														</button>
+														<div class="w-8 mx-2 text-center">
+															{cartHasProduct ? $cartItem.get(product.id)['quantity'] : 0}
+														</div>
+														<button
+															class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
+															on:click|preventDefault={() => onIncrease(product)}
+															aria-label="Increase quantity"
+														>
+															{@html svgCartPlus}
+														</button>
+													</span>
+													<!-- <span>
+														<button
+															class=" m-0 p-0"
+															on:click|preventDefault={() => addToCart(product)}
+														>
+															<span class="fill-current text-danger">
+																{@html svgCart}
+															</span>
+														</button>
+													</span> -->
+												</div>
 											</td>
 											<td class="py-1 text-center">
 												<button

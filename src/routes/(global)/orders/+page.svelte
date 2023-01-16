@@ -58,7 +58,7 @@
 	};
 
 	const viewOrder = async (id: number) => {
-		goto(`/cart/view/${id}`);
+		goto(`/products/cart/view/${id}`);
 	};
 
 	const editOrder = async (order: newOrder) => {
@@ -73,7 +73,7 @@
 			return;
 		}
 
-		goto(`/cart/edit/${order.id}`);
+		goto(`/products/cart/edit/${order.id}`);
 	};
 
 	let gridView = false;
@@ -253,7 +253,6 @@
 			const res = await trpc().orders.updateStatus.mutate(data);
 			handleSelected(res);
 		} catch (err: any) {
-			console.log('🚀 ~ file: +page.svelte:270 ~ onClick ~ err', err);
 			handleErrors(err);
 		} finally {
 			getOrders(currentGlobalParams);

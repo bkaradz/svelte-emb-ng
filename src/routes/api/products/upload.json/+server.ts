@@ -40,9 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let total = 0;
 
 		productsArray.forEach(async (element) => {
-			/**
-			 * TODO: calculate the maximum price of emb logos
-			 */
+
 			try {
 				const product: Partial<Products> = {
 					productCategories: 'embroidery',

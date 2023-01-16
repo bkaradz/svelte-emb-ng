@@ -32,12 +32,12 @@ const anchorTags = [
 		name: 'Products',
 		icon: svgShoppingBag
 	},
-	{
-		id: crypto.randomUUID(),
-		url: '/cart',
-		name: 'Cart',
-		icon: svgCart
-	},
+	// {
+	// 	id: crypto.randomUUID(),
+	// 	url: '/cart',
+	// 	name: 'Cart',
+	// 	icon: svgCart
+	// },
 	{
 		id: crypto.randomUUID(),
 		url: '/orders',

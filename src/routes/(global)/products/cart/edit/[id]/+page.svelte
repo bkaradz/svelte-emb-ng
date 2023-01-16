@@ -265,7 +265,7 @@
 			customerSearch = { name: null };
 			cartItem.reset();
 			toasts.add({ message: `The order was updated`, type: 'success' });
-			goto('/cart');
+			goto('/products/cart');
 		}
 	};
 </script>

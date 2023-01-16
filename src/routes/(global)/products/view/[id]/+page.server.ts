@@ -8,9 +8,13 @@ export const load = (async (event) => {
 
   const orders = await router.createCaller(await createContext(event)).orders.getOrderLine({ productsID: event.params.id });
 
+  const pricelist = await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
+
+
   return {
     product,
-    orders
+    orders,
+    pricelist
   };
 
 }) satisfies PageServerLoad;

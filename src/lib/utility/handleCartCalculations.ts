@@ -1,10 +1,12 @@
-import type { OrderLine, Orders } from "@prisma/client";
+import type { OrderLine, Orders, Products } from "@prisma/client";
 import logger from '$lib/utility/logger';
 import { createConverter } from "$lib/services/monetary";
 import { add, dinero, multiply, toSnapshot, type Dinero, type DineroSnapshot } from "dinero.js";
 import { browser } from "$app/environment";
 import type { CurrencyOption } from "$lib/stores/setCurrency.store";
 import { trpc } from "$lib/trpc/client";
+
+type NewOrderLine = OrderLine & Products;
 
 type MainOrder = {
     id?: number | undefined;
@@ -15,11 +17,11 @@ type MainOrder = {
     orderDate: string | undefined;
     deliveryDate?: string | undefined;
     comment?: string;
-    OrderLine: OrderLine[];
+    orderLine: Partial<NewOrderLine>[];
     isInvoiced: boolean;
 };
 
-const handleCalculations = async (lineArray: OrderLine[] = [], pricelistsId: number) => {
+const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: number) => {
     try {
         return await trpc().cart.calculateCart.mutate({
             pricelistsID: pricelistsId,
@@ -31,7 +33,7 @@ const handleCalculations = async (lineArray: OrderLine[] = [], pricelistsId: num
     }
 };
 
-const handleCurrency = async (order: Orders & { orderLine: OrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
+const handleCurrency = async (order: Orders & { orderLine: NewOrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
 
     /**
      * Calculate using the cart default usd currency
@@ -82,7 +84,7 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
 
     // delete oldOrder?.orderLine
 
-    const order: Orders & { orderLine: OrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
+    const order: Orders & { orderLine: NewOrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
 
     const newOrder = await handleCurrency(order, selectedCurrency, zero);
 

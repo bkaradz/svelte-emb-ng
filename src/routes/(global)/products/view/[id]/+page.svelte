@@ -14,11 +14,19 @@
 	import { dinero } from 'dinero.js';
 	import logger from '$lib/utility/logger';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type { Contacts, OrderLine, Orders, Products } from '@prisma/client';
+	import type {
+		Contacts,
+		OrderLine,
+		Orders,
+		PricelistDetails,
+		Pricelists,
+		Products
+	} from '@prisma/client';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { onMount } from 'svelte';
+	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
 
 	type newOrder = Pagination & {
 		results: (OrderLine & {
@@ -28,8 +36,19 @@
 		})[];
 	};
 
-	export let data: { product: Products; orders: newOrder };
+	type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };
 
+	export let data: { product: Products; orders: newOrder; pricelist: NewPricelists };
+
+	const updatePrices = () => {
+		const calcPrice = calculateProductPrices(product, data.pricelist);
+		if (!calcPrice) {
+			return [];
+		}
+		return calcPrice;
+	};
+
+	$: updatePrices();
 	const tableHeadings = ['Order #', 'Date', 'Customer', 'Due Date', 'State', 'View'];
 
 	let product = data.product;
@@ -91,7 +110,7 @@
 	};
 
 	const viewOrder = async (id: number) => {
-		goto(`/cart/view/${id}`);
+		goto(`/products/cart/view/${id}`);
 	};
 </script>
 
@@ -150,9 +169,16 @@
 					</div>
 					<div class="p-2">
 						<p class="p-1 text-sm font-semibold text-pickled-bluewood-500">Unit Price</p>
-						<p class="p-1 text-sm text-pickled-bluewood-500">
-							{!product?.unitPrice ? '...' : format(dinero(product.unitPrice))}
-						</p>
+						<div class="p-1 text-sm text-pickled-bluewood-500">
+							<ul>
+								{#each updatePrices() as item (item)}
+									<li class="flex justify-between hover:bg-warning px-6 py-2">
+										<span class="pr-4">{Object.keys(item)}</span>
+										<span>{item[Object.keys(item)[0]]}</span>
+									</li>
+								{/each}
+							</ul>
+						</div>
 					</div>
 					<div class="p-2">
 						<p class="p-1 text-sm font-semibold text-pickled-bluewood-500">Quantity</p>

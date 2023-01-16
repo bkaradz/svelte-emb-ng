@@ -25,7 +25,7 @@
 
 	function handleKeyDown(event: { key: string }) {
 		if (event.key === 'Escape') {
-			loginMenuOpen = !loginMenuOpen;
+			loginMenuOpen = false;
 		}
 	}
 
@@ -71,17 +71,6 @@
 			</select>
 		</label>
 	</div>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<span
-		on:click|preventDefault={() => ($cartItem.size > 0 ? goto(`/cart`) : '')}
-		class="relative hover:cursor-pointer mr-8 inline-block text-danger"
-	>
-		{@html svgShoppingBag}
-		<span
-			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
-			>{$cartItem.size}</span
-		>
-	</span>
 
 	<span class="relative mr-8 inline-block text-info">
 		{@html svgBellSolid}

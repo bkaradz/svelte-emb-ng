@@ -2,7 +2,7 @@
 	import Combobox from '$lib/components/Combobox.svelte';
 	import { format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
-	import { svgCart } from '$lib/utility/svgLogos';
+	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
 	import { toasts } from '$lib/stores/toasts.store';
 	import dayjs from 'dayjs';
 	import isBetween from 'dayjs/plugin/isBetween';
@@ -19,7 +19,8 @@
 		Options,
 		OrderLine,
 		Phone,
-		Pricelists
+		Pricelists,
+		Products
 	} from '@prisma/client';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
 	import Loading from '$lib/components/Loading.svelte';
@@ -27,10 +28,14 @@
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { goto } from '$app/navigation';
+	import Modal from '$lib/components/Modal.svelte';
 
 	let errorMessages = new Map();
 
 	$: disabled = false;
+
+	type NewOrderLine = OrderLine & Products;
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -42,7 +47,7 @@
 		customers: { results: customersType };
 		embroideryTypes: Options[];
 		embroideryPositions: Options[];
-		pricelists: Pricelists;
+		pricelists: Pricelists[];
 		defaultPricelistId: number;
 	};
 
@@ -65,8 +70,8 @@
 		orderDate: string | undefined;
 		deliveryDate?: string | undefined;
 		comment?: string;
-		orderLine: OrderLine[];
-		isInvoiced: Boolean;
+		orderLine: Partial<NewOrderLine>[];
+		isInvoiced: boolean;
 	};
 
 	let mainOrderInit: Partial<MainOrder> = {
@@ -109,18 +114,18 @@
 		cartItem.remove(item);
 	};
 
-	const onDecrease = (item: Partial<OrderLine>) => {
+	const onDecrease = (item: NewOrderLine) => {
 		if (!item.quantity) {
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
 
-	const onIncrease = (item: { quantity: number }) => {
+	const onIncrease = (item: NewOrderLine) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
-	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
+	const handleEmbroideryType = (item: NewOrderLine) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 	};
 
@@ -202,6 +207,8 @@
 			toasts.add({ message: `The order was created`, type: 'success' });
 		}
 	};
+
+	let showSaveModal = false;
 </script>
 
 <svelte:head>
@@ -213,9 +220,12 @@
 {:then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
 	<div class="w-full flex">
 		<div class="cart">
-			<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
+			<div class="flex items-center pb-5 border-b border-royal-blue-500">
+				<button class="mr-3" on:click={() => goto(`/products`)}>
+					{@html svgArrow}
+				</button>
 				<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
-				<div class="flex items-center" />
+				<!-- <div class="flex items-center" /> -->
 			</div>
 			{#if order?.orderLine?.length > 0}
 				<div class="flex px-6 mt-5 mb-5">
@@ -311,14 +321,7 @@
 									on:click|preventDefault={() => onDecrease(item)}
 									aria-label="Decrease quantity"
 								>
-									{@html `<svg
-									class="w-4 text-gray-600 fill-current"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-								</svg>`}
+									{@html svgCartMinus}
 								</button>
 								<div class="w-8 mx-2 text-center">{item?.quantity}</div>
 								<button
@@ -326,19 +329,7 @@
 									on:click|preventDefault={() => onIncrease(item)}
 									aria-label="Increase quantity"
 								>
-									{@html `<svg
-									class="w-4 text-gray-600 fill-current"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-									/>
-								</svg>`}
+									{@html svgCartPlus}
 								</button>
 							</div>
 							<span class="w-1/6 text-sm font-semibold text-right">
@@ -455,26 +446,69 @@
 					</span>
 				</div>
 				<button
+					on:click|preventDefault={() => (showSaveModal = true)}
+					class="btn btn-primary w-full"
+				>
+					Save Document
+				</button>
+				<h2 class="mt-10">Payment Methods</h2>
+				<div class="grid grid-cols-3 divide-x mt-2 divide-white">
+					<div>
+						<button class="btn btn-primary w-full">Cash</button>
+					</div>
+					<div>
+						<button class="btn btn-primary w-full">Stewart Bank</button>
+					</div>
+					<div>
+						<button class="btn btn-primary w-full">EcoCash</button>
+					</div>
+				</div>
+				<div class="grid grid-cols-3 divide-x mt-2 divide-white">
+					<div>
+						<button class="btn btn-primary w-full">Banc ABC</button>
+					</div>
+					<div>
+						<button class="btn btn-primary w-full">Get Bucks</button>
+					</div>
+					<div>
+						<button class="btn btn-primary w-full">Others</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{#if showSaveModal}
+		<Modal on:close={() => (showSaveModal = false)}>
+			<h2 slot="header">Save Document</h2>
+
+			<div class="my-5 space-y-2">
+				<button
 					on:click|preventDefault={() => handleSubmit('Quotation')}
-					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+					class="btn btn-primary w-full"
 				>
 					Create Quotation
 				</button>
 				<button
 					on:click|preventDefault={() => handleSubmit('Sales Order')}
-					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+					class="btn btn-primary w-full"
 				>
 					Create Sales Order
 				</button>
 				<button
 					on:click|preventDefault={() => handleSubmit('Invoice')}
-					class="w-full py-3 text-sm mb-2 font-semibold text-white uppercase transition-colors ease-in-out bg-royal-blue-600 rounded hover:bg-royal-blue-700"
+					class="btn btn-primary w-full"
 				>
 					Create Invoice
 				</button>
 			</div>
-		</div>
-	</div>
+
+			<div slot="footer" class="mt-2 flex justify-end space-x-2">
+				<button on:click|preventDefault={() => (showSaveModal = false)} class="btn btn-primary"
+					>Close</button
+				>
+			</div>
+		</Modal>
+	{/if}
 {/await}
 
 <style lang="postcss">

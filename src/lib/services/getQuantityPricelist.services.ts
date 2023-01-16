@@ -1,11 +1,12 @@
 import logger from '$lib/utility/logger';
+import type { PricelistDetails, Pricelists } from '@prisma/client';
 
 export const getQuantityPricelist = ({
 	pricelist,
 	embroideryTypes,
 	quantity
 }: {
-	pricelist: any;
+	pricelist: Pricelists & { PricelistDetails: PricelistDetails[] };
 	embroideryTypes: string;
 	quantity: number;
 }) => {
@@ -23,7 +24,7 @@ export const getQuantityPricelist = ({
 		}
 
 		return minimumQuantityArray;
-	} catch (err: any) {
+	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
 		throw new Error(`Error: ${err}`);
 	}
