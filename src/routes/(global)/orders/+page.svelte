@@ -33,11 +33,11 @@
 		{ id: 0, name: '', dbName: null },
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
 		{ id: 2, name: 'Customer', dbName: 'customerID' },
-		{ id: 3, name: 'Pricelist', dbName: 'pricelistID' },
-		{ id: 4, name: 'Order Date', dbName: 'orderDate' },
-		{ id: 5, name: 'Delivery Date', dbName: 'deliveryDate' },
-		{ id: 8, name: 'Status', dbName: 'accountsStatus' },
-		{ id: 9, name: 'View', dbName: null },
+		{ id: 3, name: 'Order Date', dbName: 'orderDate' },
+		{ id: 4, name: 'Delivery Date', dbName: 'deliveryDate' },
+		{ id: 5, name: 'Status', dbName: 'accountsStatus' },
+		{ id: 6, name: 'Payment', dbName: null },
+		{ id: 7, name: 'View', dbName: null },
 		{ id: 10, name: 'Edit', dbName: null },
 		{ id: 11, name: 'Print', dbName: null }
 	];
@@ -501,18 +501,17 @@
 													{order?.customerContact?.id}
 												</span>
 											</td>
-											<td class="px-2 py-1">
-												{`${order?.Pricelists?.name}`}
-												<span
-													class="inline-flex justify-center items-center ml-1 px-1 h-4 text-xs font-semibold text-royal-blue-800 bg-royal-blue-200 rounded-full"
-												>
-													{order?.Pricelists?.id}
-												</span>
-											</td>
+
 											<td class="px-2 py-1 w-28">{dayjs(order?.orderDate).format('DD/MM/YYYY')}</td>
 											<td class="px-2 py-1 w-28"
 												>{dayjs(order?.deliveryDate).format('DD/MM/YYYY')}</td
 											>
+											<td class=" text-left justify-end px-2 py-1">
+												<span
+													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"
+													>{order.accountsStatus}</span
+												>
+											</td>
 											<td class=" text-left justify-end px-2 py-1">
 												<span
 													class="rounded-full capitalize bg-success px-3 py-1 text-xs font-bold text-white"

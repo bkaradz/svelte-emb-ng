@@ -299,6 +299,7 @@
 					<!-- List and Grid Buttons -->
 					<button
 						on:click={() => (gridView = true)}
+						hidden
 						class="{gridView ? 'btn-primary' : 'bg-pickled-bluewood-600'} btn btn-md mr-4 p-0"
 					>
 						{@html svgGrid}

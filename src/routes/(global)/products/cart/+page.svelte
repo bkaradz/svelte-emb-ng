@@ -10,7 +10,7 @@
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import { dinero, multiply } from 'dinero.js';
+	import { dinero, multiply, subtract, type Dinero } from 'dinero.js';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import type {
 		Address,
@@ -30,6 +30,7 @@
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { goto } from '$app/navigation';
 	import Modal from '$lib/components/Modal.svelte';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 
 	let errorMessages = new Map();
 
@@ -209,6 +210,27 @@
 	};
 
 	let showSaveModal = false;
+	let showCashModal = false;
+	let paymentReceived = 0;
+	const calculateChange = (grandTotal: Dinero<number>, paymentReceived: number) => {
+		if (!paymentReceived) {
+			paymentReceived = 0;
+		}
+		let change = format(
+			subtract(
+				dinero({ amount: paymentReceived * 100, currency: $selectedCurrency.dineroObj }),
+				grandTotal
+			)
+		);
+		change = change;
+		return change;
+	};
+
+	const restPayment = (params) => {
+		return new Set();
+	};
+
+	const paymentTabs = new Set();
 </script>
 
 <svelte:head>
@@ -216,11 +238,11 @@
 </svelte:head>
 
 {#await promise}
-	<Loading />
+	<!-- <Loading /> -->
 {:then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
 	<div class="w-full flex">
 		<div class="cart">
-			<div class="flex items-center pb-5 border-b border-royal-blue-500">
+			<div class="flex items-center pb-3 border-b border-royal-blue-500">
 				<button class="mr-3" on:click={() => goto(`/products`)}>
 					{@html svgArrow}
 				</button>
@@ -266,11 +288,11 @@
 				<div class="scrollHeight overflow-y-auto">
 					{#each order.orderLine as item (item.id)}
 						{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
-						<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
+						<div class="flex items-center p-2 hover:bg-pickled-bluewood-200">
 							<div class="flex w-2/6">
 								<div class="flex flex-col items-start justify-between flex-grow ml-4">
 									<div>
-										<h3 class="mb-1 text-sm font-bold">{item.name}</h3>
+										<h3 class="mb-1 text-xs font-bold">{item.name}</h3>
 									</div>
 									<button
 										on:click|preventDefault={() => removeItem(item)}
@@ -340,11 +362,32 @@
 							</span>
 						</div>
 					{/each}
+					<div
+						class="flex items-center p-2 hover:bg-pickled-bluewood-200 border-t border-royal-blue-500"
+					>
+						<span class="w-4/6" />
+						<span class="w-1/6 text-sm font-semibold text-right">Sub Total</span>
+						<span class="w-1/6 text-sm font-semibold text-right">{format(subTotal)}</span>
+					</div>
+					<div class="flex items-center p-2 hover:bg-pickled-bluewood-200">
+						<span class="w-4/6" />
+						<span class="w-1/6 text-sm font-semibold text-right">VAT({vat}%)</span>
+						<span class="w-1/6 text-sm font-semibold text-right">{format(calculatedVat)}</span>
+					</div>
+					<div
+						class="flex items-center p-2 hover:bg-pickled-bluewood-200 border-b border-royal-blue-500 mb-9"
+					>
+						<span class="w-4/6" />
+						<span class="w-1/6 text-lg font-semibold text-danger text-right">Total</span>
+						<span class="w-1/6 text-lg font-semibold text-danger text-right"
+							>{format(grandTotal)}</span
+						>
+					</div>
 				</div>
 			{/if}
 		</div>
 		<div class="customer">
-			<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
+			<div class="flex items-center justify-between pb-3 border-b border-royal-blue-500">
 				<h1 class="text-2xl font-semibold capitalize">Order summary</h1>
 				<div class="relative mx-2 text-danger">
 					{@html svgCart}
@@ -356,128 +399,126 @@
 				</div>
 			</div>
 
-			<div class="mt-5 mb-7">
-				<div class="flex flex-col my-3 text-sm font-medium uppercase">
-					<label class="text-sm text-pickled-bluewood-600" for="orderNo">Order Number</label>
-					<input
-						bind:value={idValue}
-						class="grow input"
-						type="text"
-						name="orderNo"
-						id="orderNo"
-						disabled
-					/>
-				</div>
-				<div class="flex justify-between my-3 text-sm font-medium uppercase">
-					{#if customers}
-						<Combobox
-							label="Customer"
-							name="customer"
-							list={customers.results}
-							bind:value={customerSearch}
-							onInput={handleComboInput}
-						/>
-					{/if}
-				</div>
-				<div class="flex flex-col my-3 text-sm font-medium uppercase">
-					<label class="text-sm text-pickled-bluewood-600" for="pricelist">Pricelist</label>
-					{#if pricelists}
-						<select
-							name="pricelist"
-							id="pricelist"
-							bind:value={mainOrder.pricelistsID}
-							on:change|preventDefault={() => {
-								mainOrderInit.orderLine = Array.from($cartItem.values());
-							}}
-							class="text-sm input grow"
-						>
-							{#each pricelists as pricelist}
-								<option value={pricelist.id}>
-									{pricelist.name}
-								</option>
-							{/each}
-						</select>
-					{/if}
-				</div>
-				<div class="flex flex-col my-3 text-sm font-medium uppercase">
-					<label class="text-sm text-pickled-bluewood-600" for="pricelist">Order Date</label>
-					{#if pricelists}
+			<div class="mt-5 mb-7 space-y-2">
+				<div class="grid grid-cols-2 space-x-2">
+					<div class="flex flex-col text-sm font-medium uppercase">
+						<label class="text-sm text-pickled-bluewood-600" for="orderNo">Order Number</label>
 						<input
-							class="input w-full"
-							type="datetime-local"
-							name="orderDate"
-							id="orderDate"
-							bind:value={mainOrder.orderDate}
+							bind:value={idValue}
+							class="grow input"
+							type="text"
+							name="orderNo"
+							id="orderNo"
+							disabled
 						/>
-					{/if}
+					</div>
+					<div class="flex flex-col text-sm font-medium uppercase">
+						<label class="text-sm text-pickled-bluewood-600" for="pricelist">Pricelist</label>
+						{#if pricelists}
+							<select
+								name="pricelist"
+								id="pricelist"
+								bind:value={mainOrder.pricelistsID}
+								on:change|preventDefault={() => {
+									mainOrderInit.orderLine = Array.from($cartItem.values());
+								}}
+								class="text-sm input grow"
+							>
+								{#each pricelists as pricelist}
+									<option value={pricelist.id}>
+										{pricelist.name}
+									</option>
+								{/each}
+							</select>
+						{/if}
+					</div>
 				</div>
-				<div class="flex flex-col my-3 text-sm font-medium uppercase">
-					<label class="text-sm text-pickled-bluewood-600" for="pricelist">Due Date</label>
-					{#if pricelists}
-						<input
-							class="input w-full"
-							type="datetime-local"
-							name="deliveryDate"
-							id="deliveryDate"
-							bind:value={mainOrder.deliveryDate}
-						/>
-					{/if}
+				<div class="grid grid-cols-2 space-x-2">
+					<div class="flex flex-col text-sm font-medium uppercase">
+						<label class="text-sm text-pickled-bluewood-600" for="pricelist">Order Date</label>
+						{#if pricelists}
+							<input
+								class="input w-full"
+								type="datetime-local"
+								name="orderDate"
+								id="orderDate"
+								bind:value={mainOrder.orderDate}
+							/>
+						{/if}
+					</div>
+					<div class="flex flex-col text-sm font-medium uppercase">
+						<label class="text-sm text-pickled-bluewood-600" for="pricelist">Due Date</label>
+						{#if pricelists}
+							<input
+								class="input w-full"
+								type="datetime-local"
+								name="deliveryDate"
+								id="deliveryDate"
+								bind:value={mainOrder.deliveryDate}
+							/>
+						{/if}
+					</div>
+				</div>
+				<div class="grid grid-cols-1">
+					<div class="flex justify-between text-xs font-medium uppercase">
+						{#if customers}
+							<Combobox
+								label="Customer"
+								name="customer"
+								list={customers.results}
+								bind:value={customerSearch}
+								onInput={handleComboInput}
+							/>
+						{/if}
+					</div>
 				</div>
 			</div>
 
-			<div class="flex justify-between  border-t border-royal-blue-500">
-				<span class="text-sm font-medium uppercase pt-5">Subtotal</span>
-				<span class="text-sm font-semibold pt-5">
-					{format(subTotal)}
-				</span>
-			</div>
-			<div class="flex justify-between mt-4 mb-5">
-				<span class="text-sm font-medium uppercase"> VAT({vat}%) </span>
-				<span class="text-sm font-semibold">
-					{format(calculatedVat)}
-				</span>
-			</div>
-
-			<div class="mt-5 border-t border-royal-blue-500">
-				<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
+			<div class="border-t border-royal-blue-500">
+				<!-- <div class="flex justify-between my-3 font-medium uppercase text-danger text-base">
 					<span>Total</span>
 					<span class="text-base font-semibold ">
 						{format(grandTotal)}
 					</span>
-				</div>
-				<button
-					on:click|preventDefault={() => (showSaveModal = true)}
-					class="btn btn-primary w-full"
-				>
-					Save Document
-				</button>
-				<h2 class="mt-10">Payment Methods</h2>
-				<div class="grid grid-cols-3 divide-x mt-2 divide-white">
-					<div>
-						<button class="btn btn-primary w-full">Cash</button>
+				</div> -->
+
+				<h2 class="mt-4 text-xl font-semibold capitalize">Payment Methods</h2>
+				<div class="grid grid-cols-3 mt-2">
+					<div class="border-b border-white">
+						<button
+							on:click|preventDefault={() => (showSaveModal = true)}
+							class="btn btn-primary w-full"
+						>
+							Save Document
+						</button>
+					</div>
+					<div class="border-b border-r border-l border-white">
+						<button class="btn btn-primary w-full" on:click={() => (showCashModal = true)}>
+							Cash
+						</button>
+					</div>
+					<div class="border-b border-white">
+						<button class="btn btn-primary w-full">EcoCash</button>
 					</div>
 					<div>
 						<button class="btn btn-primary w-full">Stewart Bank</button>
 					</div>
-					<div>
-						<button class="btn btn-primary w-full">EcoCash</button>
-					</div>
-				</div>
-				<div class="grid grid-cols-3 divide-x mt-2 divide-white">
-					<div>
+					<div class="border-r border-l border-white">
 						<button class="btn btn-primary w-full">Banc ABC</button>
-					</div>
-					<div>
-						<button class="btn btn-primary w-full">Get Bucks</button>
 					</div>
 					<div>
 						<button class="btn btn-primary w-full">Others</button>
 					</div>
 				</div>
 			</div>
+			<div class="bg-semiactive my-4">
+				{#if showSaveModal}
+					test
+				{/if}
+			</div>
 		</div>
 	</div>
-	{#if showSaveModal}
+	{#if false}
 		<Modal on:close={() => (showSaveModal = false)}>
 			<h2 slot="header">Save Document</h2>
 
@@ -504,6 +545,40 @@
 
 			<div slot="footer" class="mt-2 flex justify-end space-x-2">
 				<button on:click|preventDefault={() => (showSaveModal = false)} class="btn btn-primary"
+					>Close</button
+				>
+			</div>
+		</Modal>
+	{/if}
+	{#if showCashModal}
+		<Modal on:close={() => (showCashModal = false)}>
+			<h2 slot="header">Cash Payment</h2>
+
+			<div>
+				{#await promise then { grandTotal }}
+					<p>
+						<span>Total</span>
+						<span>{format(grandTotal)}</span>
+					</p>
+
+					<label for="payment">Cash Received</label>
+					<input
+						use:selectTextOnFocus
+						use:blurOnEscape
+						bind:value={paymentReceived}
+						on:change|preventDefault={() => (!paymentReceived ? 0 : paymentReceived)}
+						id="payment"
+						class="input"
+						type="number"
+					/>
+					<p>
+						{calculateChange(grandTotal, paymentReceived)}
+					</p>
+				{/await}
+			</div>
+
+			<div slot="footer" class="mt-2 flex justify-end space-x-2">
+				<button on:click|preventDefault={() => (showCashModal = false)} class="btn btn-primary"
 					>Close</button
 				>
 			</div>

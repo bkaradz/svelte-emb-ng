@@ -330,6 +330,7 @@
 					<!-- List and Grid Buttons -->
 					<button
 						on:click={() => (gridView = true)}
+						hidden
 						class="{gridView ? 'btn-primary' : 'bg-pickled-bluewood-600'} btn btn-md mr-4 p-0"
 					>
 						{@html svgGrid}
@@ -415,7 +416,6 @@
 										<th class="px-2 py-2">ID</th>
 										<th class="px-2 py-2">Name</th>
 										<th class="px-2 py-2">Stitches</th>
-										<th class="px-2 py-2">Description</th>
 										<th class="px-2 py-2">Units</th>
 										<th class="px-2 py-2 text-right">Unit Price(min units)</th>
 										<th class="px-2 py-2 text-center">Cart</th>
@@ -433,10 +433,6 @@
 											<td class="px-2 py-1">{product.id}</td>
 											<td class="px-2 py-1">{product.name}</td>
 											<td class="px-2 py-1">{product.stitches}</td>
-
-											<td class="px-2 py-1">
-												{!product.description ? '...' : product.description}
-											</td>
 											<td class="px-2 py-1">
 												{!product.units ? '...' : product.units}
 											</td>

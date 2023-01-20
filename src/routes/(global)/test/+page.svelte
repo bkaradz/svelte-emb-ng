@@ -2,7 +2,6 @@
 	import Modal from '$lib/components/Modal.svelte';
 
 	let testText = '';
-	$: console.log('🚀 ~ file: +page.svelte:5 ~ testText', testText);
 
 	let showModal = false;
 </script>
