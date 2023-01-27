@@ -1,9 +1,58 @@
 <script lang="ts">
 	import Modal from '$lib/components/Modal.svelte';
+	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
+	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
+	import { convert, dinero, toSnapshot, type Currency, type Dinero, type Rates } from 'dinero.js';
 
 	let testText = '';
 
 	let showModal = false;
+
+	let selectCurrency: string;
+	let paidInputVale: number;
+
+	type currencyConversion = {
+		[key: string]: number;
+	};
+
+	const paidCurrencies = new Map<string, number>();
+
+	let paidCurrenciesArray = [...paidCurrencies.keys()];
+
+	const addPaidAmount = () => {
+		const convert = createConverter($selectedCurrency.dineroObj);
+
+		let convertedPaidAmount = convert(
+			dinero({ amount: paidInputVale * 100, currency: $selectedCurrency.dineroObj }),
+			$selectedCurrency.dineroObj
+		);
+		if (!convertedPaidAmount) {
+			return;
+		}
+
+		const filterSelectCurrency = $currenciesOptions.filter(
+			(item) => item.currency === selectCurrency
+		);
+
+		const convertHOF = createConverterHOF();
+
+		const convertAmount = convertHOF(
+			dinero({ amount: paidInputVale * 100, currency: filterSelectCurrency[0].dineroObj }),
+			$selectedCurrency.dineroObj,
+			filterSelectCurrency[0]
+		);
+		if (!convertAmount) {
+			return;
+		}
+		console.log(
+			'🚀 ~ file: +page.svelte:43 ~ addPaidAmount ~ convertAmount',
+			format(convertAmount)
+		);
+
+		paidCurrencies.set(selectCurrency, paidInputVale);
+		// console.log('🚀 ~ file: +page.svelte:20 ~ addPaidAmount ~ paidCurrencies', paidCurrencies);
+		paidCurrenciesArray = [...paidCurrencies.keys()];
+	};
 </script>
 
 <div>
@@ -26,4 +75,81 @@
 			</div>
 		</Modal>
 	{/if}
+
+	<div>
+		<div class="flex shadow-sm mt-10">
+			<span
+				class="px-4 inline-flex items-center min-w-fit border border-r-0 border-pickled-bluewood-200 bg-pickled-bluewood-50 text-sm text-pickled-bluewood-500"
+				>Small</span
+			>
+			<input
+				type="number"
+				bind:value={paidInputVale}
+				class="py-2 px-3 pr-2 text-right block w-full border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500"
+			/>
+			<span
+				class=" inline-flex items-center min-w-fit border border-l-0 border-pickled-bluewood-200 bg-pickled-bluewood-50  text-pickled-bluewood-500"
+			>
+				<select
+					bind:value={selectCurrency}
+					id="addCurrency"
+					name="addCurrency"
+					class="block w-full pr-7 border-transparent text-sm bg-pickled-bluewood-50 focus:ring-transparent focus:border-transparent"
+				>
+					{#each $currenciesOptions as currency}
+						<option value={currency.currency}>
+							{`${currency.currency} (${currency.symbol})`}
+						</option>
+					{/each}
+				</select>
+			</span>
+			<span
+				class="inline-flex items-center min-w-fit border border-l-0 border-pickled-bluewood-200 bg-pickled-bluewood-50  text-pickled-bluewood-500"
+			>
+				<button class="btn btn-primary" on:click|preventDefault={addPaidAmount}>Add</button>
+			</span>
+		</div>
+		<div class="mt-3">
+			<ul class="space-y-2">
+				{#each paidCurrenciesArray as currency (currency)}
+					<li
+						class="flex text-sm justify-between px-3 py-2 border border-pickled-bluewood-200 bg-pickled-bluewood-200 text-pickled-bluewood-800"
+					>
+						<span>
+							{`${currency} (${paidCurrencies.get(currency)})`}
+						</span>
+						<span>
+							{paidCurrencies.get(currency)}
+						</span>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</div>
+
+	<div>
+		<div class="relative mt-10">
+			<input
+				type="text"
+				id="hs-input-with-leading-and-trailing-icon"
+				name="hs-input-with-leading-and-trailing-icon"
+				class="py-2 px-3 pl-16 pr-16 block w-full border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500 dark:bg-pickled-bluewood-800 dark:border-pickled-bluewood-700 dark:text-pickled-bluewood-400"
+				placeholder="0.00"
+			/>
+			<div class="absolute inset-y-0 left-0 flex items-center pointer-events-none z-20 pl-4">
+				<span class="text-pickled-bluewood-500">Paid</span>
+			</div>
+			<div class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-4">
+				<span class="text-pickled-bluewood-500">USD</span>
+			</div>
+		</div>
+	</div>
 </div>
+
+<style lang="postcss">
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+</style>

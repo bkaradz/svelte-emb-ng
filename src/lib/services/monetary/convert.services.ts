@@ -1,8 +1,7 @@
-import { dinero, convert, toSnapshot, toUnit } from 'dinero.js';
+import { dinero, convert, toSnapshot, type Rates } from 'dinero.js';
 import { USD, ZAR, BWP } from '@dinero.js/currencies';
 import logger from '$lib/utility/logger';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
-import type { XchangeRate, XchangeRateDetails } from '@prisma/client';
 import { browser } from '$app/environment';
 import { trpc } from '$lib/trpc/client';
 import { handleErrors } from '$lib/utility/errorsHandling';
@@ -21,46 +20,79 @@ export const ZWR: Currency<number> = {
 
 let currenciesRates: Map<string, number>;
 
-function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
-	// getCurrentCurrencies();
-	if (!currenciesRates) {
-		return;
-	}
+const getRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
+	let rates = undefined
+
 	if (newCurrency === ZAR) {
 		const amount = currenciesRates.get(newCurrency.code);
 		if (!amount) {
 			return;
 		}
-		return convert(dineroObject, newCurrency, { ZAR: { amount, scale: 2 } });
+		rates = { ZAR: { amount, scale: 2 } };
 	}
 	if (newCurrency === BWP) {
 		const amount = currenciesRates.get(newCurrency.code);
 		if (!amount) {
 			return;
 		}
-		return convert(dineroObject, newCurrency, { BWP: { amount, scale: 2 } });
+		rates = { BWP: { amount, scale: 2 } };
 	}
 	if (newCurrency === ZWB) {
 		const amount = currenciesRates.get(newCurrency.code);
 		if (!amount) {
 			return;
 		}
-		return convert(dineroObject, newCurrency, { ZWB: { amount, scale: 2 } });
+		rates = { ZWB: { amount, scale: 2 } };
 	}
 	if (newCurrency === ZWR) {
 		const amount = currenciesRates.get(newCurrency.code);
 		if (!amount) {
 			return;
 		}
-		return convert(dineroObject, newCurrency, { ZWR: { amount, scale: 2 } });
+		rates = { ZWR: { amount, scale: 2 } };
 	}
 	if (newCurrency === USD) {
 		const amount = currenciesRates.get(newCurrency.code);
 		if (!amount) {
 			return;
 		}
-		return convert(dineroObject, newCurrency, { USD: { amount, scale: 2 } });
+		rates = { USD: { amount, scale: 2 } };
 	}
+
+	if (!rates) {
+		return
+	}
+
+	return rates
+}
+const getUSDRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
+
+	const amount = currenciesRates.get(newCurrency.code);
+	if (!amount) {
+		return;
+	}
+	const rates = { USD: { amount: parseInt(Math.ceil((100 * 100 * 1000)) / (amount)), scale: 5 } };
+
+	if (!rates) {
+		return
+	}
+
+	return rates
+}
+
+function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
+
+	if (!currenciesRates) {
+		return;
+	}
+
+	const rates = getRates(newCurrency)
+
+	if (!rates) {
+		return
+	}
+
+	return convert(dineroObject, newCurrency, rates)
 }
 
 export function createConverter({ code }: { code: Currency<number>['code'] }) {
@@ -94,25 +126,45 @@ export function toObject(dineroObject: Dinero<number>): {
 	return toSnapshot(dineroObject);
 }
 
-export function getAmount(dineroObject: Dinero<unknown>): number {
-	return toUnit(dineroObject);
+
+
+
+export function createConverterHOF() {
+	return function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>, selectedCurrency: {
+		currency: string;
+		symbol: string;
+		dineroObj: Currency<number>
+	}) {
+
+		if (!currenciesRates) {
+			return;
+		}
+
+		const rates = getUSDRates(selectedCurrency.dineroObj)
+
+		if (!rates) {
+			return
+		}
+
+		return convert(dineroObject, newCurrency, rates);
+	};
 }
+
 
 if (browser) {
 	(async () => {
 		// const paramsObj: unknown = { isDefault: true };
 		try {
-			const res = await trpc().xchangeRate.getDefaultXchangeRate.query()
+			const rates = await trpc().xchangeRate.getDefaultXchangeRate.query()
 
-			if (res.length === 1) {
-				type Rates = Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] };
-				const rates: Rates[] = res;
-				const ratesMap = new Map();
+			if (rates.length === 1) {
+
+				const ratesMap = new Map<string, number>();
 				rates[0]?.XchangeRateDetails.map((rate) => {
-					if (!(typeof rate.rate === 'string')) {
+					if (!(typeof parseInt(rate.rate) === 'number')) {
 						return;
 					}
-					ratesMap.set(rate.currency, parseInt(rate.rate) * 100);
+					ratesMap.set(rate.currency, parseInt(Math.ceil(parseFloat(rate.rate) * 100)));
 				});
 				if (ratesMap.size === 0) {
 					throw new Error("Exchange Rates not found");

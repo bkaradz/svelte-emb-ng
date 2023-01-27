@@ -62,7 +62,7 @@
 	$: disabled = false;
 
 	$: resetForm = () => {
-		formData = { ...initFromData };
+		formData = structuredClone(initFromData);
 		corporateSearch = Object.create({ name: undefined });
 		getCorporateContacts(defaultCorporateQueryParams);
 	};
@@ -76,7 +76,7 @@
 		address: undefined
 	};
 
-	let formData = { ...initFromData };
+	let formData = structuredClone(initFromData);
 
 	const handleSubmit = async () => {
 		disabled = true;

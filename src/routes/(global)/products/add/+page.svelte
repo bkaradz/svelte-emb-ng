@@ -25,7 +25,7 @@
 	};
 
 	const resetForm = () => {
-		formData = { ...initFromData };
+		formData = structuredClone(initFromData);
 	};
 
 	const initFromData: Partial<Products> = {
@@ -38,7 +38,7 @@
 		isActive: true
 	};
 
-	let formData = { ...initFromData };
+	let formData = structuredClone(initFromData);
 
 	$: disabled = false;
 

@@ -16,7 +16,7 @@
 	};
 
 	const resetForm = () => {
-		return { ...initFromData };
+		return structuredClone(initFromData);
 	};
 
 	const initFromData = {
@@ -24,7 +24,7 @@
 		password: undefined
 	};
 
-	let formData: FormData = { ...initFromData };
+	let formData: FormData = structuredClone(initFromData);
 
 	type formDataKeys = keyof LoginCredentials;
 

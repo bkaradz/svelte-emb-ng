@@ -9,6 +9,8 @@ export const load = (async (event) => {
 
   const embroideryPositions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' })
 
+  const currency = await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+
   const queryParams = {
     limit: 7,
     page: 1,
@@ -21,6 +23,7 @@ export const load = (async (event) => {
   const defaultPricelist = await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
 
   return {
+    currency,
     embroideryTypes,
     embroideryPositions,
     customers,

@@ -1,13 +1,6 @@
 import { toSnapshot, type Dinero } from 'dinero.js';
 import { toDineroObject, toObject } from './convert.services';
 
-// export function getMonetaryValue(value: string) {
-//   if (typeof value !== 'undefined') {
-//     return parseFloat(value.toString())
-//   }
-//   return value
-// }
-
 export function getMonetaryValue(value: string) {
 	if (typeof value !== 'undefined') {
 		return toDineroObject(JSON.parse(value));

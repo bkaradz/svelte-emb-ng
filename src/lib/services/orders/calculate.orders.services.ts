@@ -96,7 +96,7 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 					unitPrice: toSnapshot(largestUnitPrice)
 				};
 			} else {
-				return { ...item };
+				return structuredClone(item);
 			}
 		});
 

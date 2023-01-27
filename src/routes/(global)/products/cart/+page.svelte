@@ -31,6 +31,12 @@
 	import { goto } from '$app/navigation';
 	import Modal from '$lib/components/Modal.svelte';
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import ShowSave from '$lib/components/cart/ShowSave.svelte';
+	import ShowCash from '$lib/components/cart/ShowCash.svelte';
+	import ShowEcoCash from '$lib/components/cart/ShowEcoCash.svelte';
+	import ShowBancAbc from '$lib/components/cart/ShowBancABC.svelte';
+	import ShowStewartBank from '$lib/components/cart/ShowStewartBank.svelte';
+	import ShowOthers from '$lib/components/cart/ShowOthers.svelte';
 
 	let errorMessages = new Map();
 
@@ -50,6 +56,7 @@
 		embroideryPositions: Options[];
 		pricelists: Pricelists[];
 		defaultPricelistId: number;
+		currency: Options[];
 	};
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
@@ -226,11 +233,24 @@
 		return change;
 	};
 
-	const restPayment = (params) => {
-		return new Set();
+	const restPayment = () => {
+		return new Map([
+			['showSave', true],
+			['showCash', false],
+			['showEcoCash', false],
+			['showBancABC', false],
+			['showStewartBank', false],
+			['showOthers', false]
+		]);
 	};
 
-	const paymentTabs = new Set();
+	let paymentTabs = restPayment();
+
+	const setPaymentTab = (nameType: string) => {
+		paymentTabs = restPayment();
+		paymentTabs.set('showSave', false);
+		paymentTabs.set(nameType, true);
+	};
 </script>
 
 <svelte:head>
@@ -484,36 +504,71 @@
 
 				<h2 class="mt-4 text-xl font-semibold capitalize">Payment Methods</h2>
 				<div class="grid grid-cols-3 mt-2">
-					<div class="border-b border-white">
+					<div class="border-b border-white ">
 						<button
-							on:click|preventDefault={() => (showSaveModal = true)}
-							class="btn btn-primary w-full"
+							on:click|preventDefault={() => setPaymentTab('showSave')}
+							class="btn btn-primary w-full {paymentTabs.get('showSave') ? 'bg-success' : ''}"
 						>
 							Save Document
 						</button>
 					</div>
 					<div class="border-b border-r border-l border-white">
-						<button class="btn btn-primary w-full" on:click={() => (showCashModal = true)}>
+						<button
+							on:click|preventDefault={() => setPaymentTab('showCash')}
+							class="btn btn-primary w-full {paymentTabs.get('showCash') ? 'bg-success' : ''}"
+						>
 							Cash
 						</button>
 					</div>
 					<div class="border-b border-white">
-						<button class="btn btn-primary w-full">EcoCash</button>
+						<button
+							on:click|preventDefault={() => setPaymentTab('showEcoCash')}
+							class="btn btn-primary w-full {paymentTabs.get('showEcoCash') ? 'bg-success' : ''}"
+							>EcoCash</button
+						>
 					</div>
 					<div>
-						<button class="btn btn-primary w-full">Stewart Bank</button>
+						<button
+							on:click|preventDefault={() => setPaymentTab('showStewartBank')}
+							class="btn btn-primary w-full {paymentTabs.get('showStewartBank')
+								? 'bg-success'
+								: ''}">Stewart Bank</button
+						>
 					</div>
 					<div class="border-r border-l border-white">
-						<button class="btn btn-primary w-full">Banc ABC</button>
+						<button
+							on:click|preventDefault={() => setPaymentTab('showBancABC')}
+							class="btn btn-primary w-full {paymentTabs.get('showBancABC') ? 'bg-success' : ''}"
+							>Banc ABC</button
+						>
 					</div>
 					<div>
-						<button class="btn btn-primary w-full">Others</button>
+						<button
+							on:click|preventDefault={() => setPaymentTab('showOthers')}
+							class="btn btn-primary w-full {paymentTabs.get('showOthers') ? 'bg-success' : ''}"
+							>Others</button
+						>
 					</div>
 				</div>
 			</div>
-			<div class="bg-semiactive my-4">
-				{#if showSaveModal}
-					test
+			<div class="my-4">
+				{#if paymentTabs.get('showSave')}
+					<ShowSave {handleSubmit} />
+				{/if}
+				{#if paymentTabs.get('showCash')}
+					<ShowCash {grandTotal} />
+				{/if}
+				{#if paymentTabs.get('showEcoCash')}
+					<ShowEcoCash />
+				{/if}
+				{#if paymentTabs.get('showBancABC')}
+					<ShowBancAbc />
+				{/if}
+				{#if paymentTabs.get('showStewartBank')}
+					<ShowStewartBank />
+				{/if}
+				{#if paymentTabs.get('showOthers')}
+					<ShowOthers />
 				{/if}
 			</div>
 		</div>
@@ -550,7 +605,7 @@
 			</div>
 		</Modal>
 	{/if}
-	{#if showCashModal}
+	{#if false}
 		<Modal on:close={() => (showCashModal = false)}>
 			<h2 slot="header">Cash Payment</h2>
 

@@ -1,10 +1,10 @@
-import { BWP } from '@dinero.js/currencies';
+import { BWP, type Currency } from '@dinero.js/currencies';
 import { dinero, haveSameCurrency, toFormat, toSnapshot, type Dinero } from 'dinero.js';
 import { ZWB, ZWR } from './convert.services';
 
 function intlFormat(locale: string, options = {}) {
-	return function formatter(dineroObject: Dinero<unknown>) {
-		function transformer({ amount, currency }) {
+	return function formatter(dineroObject: Dinero<number>) {
+		function transformer({ amount, currency }: { amount: number, currency: Currency<number> }) {
 			return amount.toLocaleString(locale, {
 				...options,
 				style: 'currency',
@@ -15,23 +15,23 @@ function intlFormat(locale: string, options = {}) {
 	};
 }
 
-function formatDefault(dineroObject: Dinero<unknown>) {
+function formatDefault(dineroObject: Dinero<number>) {
 	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWB })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `ZB$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount }) => `ZB$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: ZWR })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `ZR$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount }) => `ZR$${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 	if (haveSameCurrency([dineroObject, dinero({ amount: 100, currency: BWP })])) {
 		return toFormat(
 			dineroObject,
-			({ amount, currency }) => `P${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
+			({ amount }) => `P${amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& ')}`
 		);
 	}
 }
