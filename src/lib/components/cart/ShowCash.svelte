@@ -2,7 +2,7 @@
 	import { format } from '$lib/services/monetary';
 	import type { Options } from '@prisma/client';
 	import { dinero, subtract, type Dinero } from 'dinero.js';
-	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
+	import { currenciesOptions } from '$lib/stores/setCurrency.store';
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 
 	export let grandTotal: Dinero<number>;
@@ -68,7 +68,7 @@
 		<div>
 			<button class="btn btn-secondary w-full">Mixed Currency</button>
 		</div>
-		{#each $currenciesOptions as currency (currency)}
+		{#each Array.from($currenciesOptions.values()) as currency (currency)}
 			<div>
 				<button class="btn btn-primary w-full"
 					>{` ${currency.currency} (${currency.symbol})`}</button

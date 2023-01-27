@@ -4,13 +4,13 @@ import { ZWB, ZWR } from '$lib/services/monetary';
 
 type CurrencyType = 'USD' | 'ZAR' | 'BWP' | 'ZWB' | 'ZWR'
 type SymbolType = '$' | 'R' | 'P'
-type CurrencyObject = {
+export type CurrencyOption = {
 	currency: CurrencyType;
 	symbol: SymbolType;
 	dineroObj: Currency<number>
 }
 
-const currencyOptions = new Map<CurrencyType, CurrencyObject>(
+const currencyOptions = new Map<CurrencyType, CurrencyOption>(
 	[
 		[
 			'USD',

@@ -1,14 +1,18 @@
 <script lang="ts">
 	import Modal from '$lib/components/Modal.svelte';
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
-	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
+	import {
+		currenciesOptions,
+		selectedCurrency,
+		type CurrencyType
+	} from '$lib/stores/setCurrency.store';
 	import { convert, dinero, toSnapshot, type Currency, type Dinero, type Rates } from 'dinero.js';
 
 	let testText = '';
 
 	let showModal = false;
 
-	let selectCurrency: string;
+	let selectCurrency: CurrencyType;
 	let paidInputVale: number;
 
 	type currencyConversion = {
@@ -30,27 +34,24 @@
 			return;
 		}
 
-		const filterSelectCurrency = $currenciesOptions.filter(
-			(item) => item.currency === selectCurrency
-		);
+		const filterSelectCurrency = $currenciesOptions.get(selectCurrency);
+
+		if (!filterSelectCurrency) {
+			return;
+		}
 
 		const convertHOF = createConverterHOF();
 
 		const convertAmount = convertHOF(
-			dinero({ amount: paidInputVale * 100, currency: filterSelectCurrency[0].dineroObj }),
+			dinero({ amount: paidInputVale * 100, currency: filterSelectCurrency.dineroObj }),
 			$selectedCurrency.dineroObj,
-			filterSelectCurrency[0]
+			filterSelectCurrency
 		);
 		if (!convertAmount) {
 			return;
 		}
-		console.log(
-			'🚀 ~ file: +page.svelte:43 ~ addPaidAmount ~ convertAmount',
-			format(convertAmount)
-		);
 
 		paidCurrencies.set(selectCurrency, paidInputVale);
-		// console.log('🚀 ~ file: +page.svelte:20 ~ addPaidAmount ~ paidCurrencies', paidCurrencies);
 		paidCurrenciesArray = [...paidCurrencies.keys()];
 	};
 </script>
@@ -96,7 +97,7 @@
 					name="addCurrency"
 					class="block w-full pr-7 border-transparent text-sm bg-pickled-bluewood-50 focus:ring-transparent focus:border-transparent"
 				>
-					{#each $currenciesOptions as currency}
+					{#each Array.from($currenciesOptions.values()) as currency (currency)}
 						<option value={currency.currency}>
 							{`${currency.currency} (${currency.symbol})`}
 						</option>

@@ -63,7 +63,7 @@
 				name="currency"
 				bind:value={$selectedCurrency}
 			>
-				{#each Array.from($currenciesOptions.values()) as currency}
+				{#each Array.from($currenciesOptions.values()) as currency (currency)}
 					<option value={currency}>
 						{` ${currency.currency} (${currency.symbol})`}
 					</option>

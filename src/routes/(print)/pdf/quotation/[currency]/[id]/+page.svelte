@@ -20,7 +20,7 @@
 		if (!data?.order) {
 			return;
 		}
-		$currenciesOptions.forEach((item) => {
+		Array.from($currenciesOptions.values()).forEach((item) => {
 			if (item.currency === data.selectedCurrency.currency) {
 				data.selectedCurrency = item;
 			}

@@ -7,12 +7,9 @@
 	const ratesE = { USD: { amount: (1 / 0.89) * 100, scale: 2 } };
 	const d = dinero({ amount: 500, currency: USD });
 	const e = dinero({ amount: 445, currency: EUR });
-	console.log('🚀 ~ file: +page.svelte:8 ~ d', toUnit(d));
 
 	const eur = convert(d, EUR, rates); // a Dinero object with amount 44500 and scale 4
-	console.log('🚀 ~ file: +page.svelte:10 ~ eur', toUnit(eur));
 	const usd = convert(eur, USD, ratesE); // a Dinero object with amount 44500 and scale 4
-	console.log('🚀 ~ file: +page.svelte:13 ~ usd', toUnit(usd));
 </script>
 
 <svelte:head>

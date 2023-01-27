@@ -15,19 +15,6 @@
 		OrderLine: OrderLine[];
 	}
 
-	// interface OrderLine extends Record<string, Products> {
-	// 	Products: Products;
-	// }
-
-	// type OrderKey = 'customerContact' | 'Pricelists' | 'OrderLine';
-	// type OrderType = Contacts | Pricelists | OrderLine;
-
-	// interface Orders extends Record<OrderKey, OrderType> {
-	// 	customerContact: Contacts;
-	// 	Pricelists: Pricelists;
-	// 	OrderLine: OrderLine;
-	// }
-
 	type DataType = {
 		selectedCurrency: CurrencyOption;
 		zero: DineroSnapshot<number>;
@@ -39,7 +26,7 @@
 		if (!data?.order) {
 			return;
 		}
-		$currenciesOptions.forEach((item) => {
+		Array.from($currenciesOptions.values()).forEach((item) => {
 			if (item.currency === data.selectedCurrency.currency) {
 				data.selectedCurrency = item;
 			}
