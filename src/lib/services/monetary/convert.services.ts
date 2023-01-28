@@ -21,43 +21,14 @@ export const ZWR: Currency<number> = {
 let currenciesRates: Map<string, number>;
 
 const getRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
-	let rates = undefined
 
-	if (newCurrency === ZAR) {
-		const amount = currenciesRates.get(newCurrency.code);
-		if (!amount) {
-			return;
-		}
-		rates = { ZAR: { amount, scale: 2 } };
+	const amount = currenciesRates.get(newCurrency.code);
+
+	if (!amount) {
+		return;
 	}
-	if (newCurrency === BWP) {
-		const amount = currenciesRates.get(newCurrency.code);
-		if (!amount) {
-			return;
-		}
-		rates = { BWP: { amount, scale: 2 } };
-	}
-	if (newCurrency === ZWB) {
-		const amount = currenciesRates.get(newCurrency.code);
-		if (!amount) {
-			return;
-		}
-		rates = { ZWB: { amount, scale: 2 } };
-	}
-	if (newCurrency === ZWR) {
-		const amount = currenciesRates.get(newCurrency.code);
-		if (!amount) {
-			return;
-		}
-		rates = { ZWR: { amount, scale: 2 } };
-	}
-	if (newCurrency === USD) {
-		const amount = currenciesRates.get(newCurrency.code);
-		if (!amount) {
-			return;
-		}
-		rates = { USD: { amount, scale: 2 } };
-	}
+
+	const rates = { [newCurrency.code]: { amount, scale: 2 } };
 
 	if (!rates) {
 		return
@@ -65,6 +36,7 @@ const getRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
 
 	return rates
 }
+
 const getUSDRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
 
 	const amount = currenciesRates.get(newCurrency.code);

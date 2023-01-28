@@ -2,8 +2,8 @@ import { readable, writable } from 'svelte/store';
 import { USD, BWP, ZAR, type Currency } from '@dinero.js/currencies';
 import { ZWB, ZWR } from '$lib/services/monetary';
 
-type CurrencyType = 'USD' | 'ZAR' | 'BWP' | 'ZWB' | 'ZWR'
-type SymbolType = '$' | 'R' | 'P'
+export type CurrencyType = 'USD' | 'ZAR' | 'BWP' | 'ZWB' | 'ZWR'
+export type SymbolType = '$' | 'R' | 'P'
 export type CurrencyOption = {
 	currency: CurrencyType;
 	symbol: SymbolType;
@@ -54,41 +54,6 @@ const currencyOptions = new Map<CurrencyType, CurrencyOption>(
 		]
 	]
 )
-
-// export const currencyOptions = [
-// 	{
-// 		currency: 'USD',
-// 		symbol: '$',
-// 		dineroObj: USD
-// 	},
-// 	{
-// 		currency: 'ZAR',
-// 		symbol: 'R',
-// 		dineroObj: ZAR
-// 	},
-// 	{
-// 		currency: 'BWP',
-// 		symbol: 'P',
-// 		dineroObj: BWP
-// 	},
-// 	{
-// 		currency: 'ZWB',
-// 		symbol: '$',
-// 		dineroObj: ZWB
-// 	},
-// 	{
-// 		currency: 'ZWR',
-// 		symbol: '$',
-// 		dineroObj: ZWR
-// 	}
-// ];
-
-// export const getCurrencyOptions = () => {
-// 	return currencyOptions
-// }
-
-// export type CurrenciesOptionsType = typeof currencyOptions;
-// export type CurrencyOption = CurrenciesOptionsType[0];
 
 export const selectedCurrency = writable(currencyOptions.get('USD'));
 

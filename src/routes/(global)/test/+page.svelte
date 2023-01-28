@@ -4,6 +4,7 @@
 	import {
 		currenciesOptions,
 		selectedCurrency,
+		type CurrencyOption,
 		type CurrencyType
 	} from '$lib/stores/setCurrency.store';
 	import { convert, dinero, toSnapshot, type Currency, type Dinero, type Rates } from 'dinero.js';
@@ -15,26 +16,18 @@
 	let selectCurrency: CurrencyType;
 	let paidInputVale: number;
 
-	type currencyConversion = {
-		[key: string]: number;
-	};
-
 	const paidCurrencies = new Map<string, number>();
+	const paidCurrenciesUSD = new Map<string, Dinero<number>>();
 
 	let paidCurrenciesArray = [...paidCurrencies.keys()];
 
 	const addPaidAmount = () => {
-		const convert = createConverter($selectedCurrency.dineroObj);
+		const filterSelectCurrency = $currenciesOptions.get(selectCurrency);
+		const defaultCurrency = $currenciesOptions.get('USD');
 
-		let convertedPaidAmount = convert(
-			dinero({ amount: paidInputVale * 100, currency: $selectedCurrency.dineroObj }),
-			$selectedCurrency.dineroObj
-		);
-		if (!convertedPaidAmount) {
+		if (!defaultCurrency) {
 			return;
 		}
-
-		const filterSelectCurrency = $currenciesOptions.get(selectCurrency);
 
 		if (!filterSelectCurrency) {
 			return;
@@ -44,14 +37,24 @@
 
 		const convertAmount = convertHOF(
 			dinero({ amount: paidInputVale * 100, currency: filterSelectCurrency.dineroObj }),
-			$selectedCurrency.dineroObj,
+			defaultCurrency.dineroObj,
 			filterSelectCurrency
 		);
+
 		if (!convertAmount) {
 			return;
 		}
 
+		const convertRate = createConverter($selectedCurrency.dineroObj);
+
+		const convertRateAmount = convertRate(convertAmount, $selectedCurrency.dineroObj);
+
+		if (!convertRateAmount) {
+			return;
+		}
+
 		paidCurrencies.set(selectCurrency, paidInputVale);
+		paidCurrenciesUSD.set(selectCurrency, convertRateAmount);
 		paidCurrenciesArray = [...paidCurrencies.keys()];
 	};
 </script>
@@ -120,7 +123,7 @@
 							{`${currency} (${paidCurrencies.get(currency)})`}
 						</span>
 						<span>
-							{paidCurrencies.get(currency)}
+							{!paidCurrenciesUSD.get(currency) ? '...' : format(paidCurrenciesUSD.get(currency))}
 						</span>
 					</li>
 				{/each}
