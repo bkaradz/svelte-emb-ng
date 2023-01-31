@@ -216,8 +216,6 @@
 		}
 	};
 
-	let showSaveModal = false;
-	let showCashModal = false;
 	let paymentReceived = 0;
 	const calculateChange = (grandTotal: Dinero<number>, paymentReceived: number) => {
 		if (!paymentReceived) {
@@ -257,11 +255,9 @@
 	<title>Cart</title>
 </svelte:head>
 
-{#await promise}
-	<!-- <Loading /> -->
-{:then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
-	<div class="w-full flex">
-		<div class="cart">
+{#await promise then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
+	<div class="w-full grid grid-cols-12">
+		<div class="col-span-8 bg-pickled-bluewood-50 p-4">
 			<div class="flex items-center pb-3 border-b border-royal-blue-500">
 				<button class="mr-3" on:click={() => goto(`/products`)}>
 					{@html svgArrow}
@@ -406,7 +402,7 @@
 				</div>
 			{/if}
 		</div>
-		<div class="customer">
+		<div class="col-span-4 bg-royal-blue-100 p-4">
 			<div class="flex items-center justify-between pb-3 border-b border-royal-blue-500">
 				<h1 class="text-2xl font-semibold capitalize">Order summary</h1>
 				<div class="relative mx-2 text-danger">
@@ -495,13 +491,6 @@
 			</div>
 
 			<div class="border-t border-royal-blue-500">
-				<!-- <div class="flex justify-between my-3 font-medium uppercase text-danger text-base">
-					<span>Total</span>
-					<span class="text-base font-semibold ">
-						{format(grandTotal)}
-					</span>
-				</div> -->
-
 				<h2 class="mt-4 text-xl font-semibold capitalize">Payment Methods</h2>
 				<div class="grid grid-cols-3 mt-2">
 					<div class="border-b border-white ">
@@ -573,85 +562,9 @@
 			</div>
 		</div>
 	</div>
-	{#if false}
-		<Modal on:close={() => (showSaveModal = false)}>
-			<h2 slot="header">Save Document</h2>
-
-			<div class="my-5 space-y-2">
-				<button
-					on:click|preventDefault={() => handleSubmit('Quotation')}
-					class="btn btn-primary w-full"
-				>
-					Create Quotation
-				</button>
-				<button
-					on:click|preventDefault={() => handleSubmit('Sales Order')}
-					class="btn btn-primary w-full"
-				>
-					Create Sales Order
-				</button>
-				<button
-					on:click|preventDefault={() => handleSubmit('Invoice')}
-					class="btn btn-primary w-full"
-				>
-					Create Invoice
-				</button>
-			</div>
-
-			<div slot="footer" class="mt-2 flex justify-end space-x-2">
-				<button on:click|preventDefault={() => (showSaveModal = false)} class="btn btn-primary"
-					>Close</button
-				>
-			</div>
-		</Modal>
-	{/if}
-	{#if false}
-		<Modal on:close={() => (showCashModal = false)}>
-			<h2 slot="header">Cash Payment</h2>
-
-			<div>
-				{#await promise then { grandTotal }}
-					<p>
-						<span>Total</span>
-						<span>{format(grandTotal)}</span>
-					</p>
-
-					<label for="payment">Cash Received</label>
-					<input
-						use:selectTextOnFocus
-						use:blurOnEscape
-						bind:value={paymentReceived}
-						on:change|preventDefault={() => (!paymentReceived ? 0 : paymentReceived)}
-						id="payment"
-						class="input"
-						type="number"
-					/>
-					<p>
-						{calculateChange(grandTotal, paymentReceived)}
-					</p>
-				{/await}
-			</div>
-
-			<div slot="footer" class="mt-2 flex justify-end space-x-2">
-				<button on:click|preventDefault={() => (showCashModal = false)} class="btn btn-primary"
-					>Close</button
-				>
-			</div>
-		</Modal>
-	{/if}
 {/await}
 
 <style lang="postcss">
-	.cart {
-		flex-grow: 8;
-		border-radius: 4px 0 0 4px;
-		@apply bg-pickled-bluewood-50 p-4;
-	}
-	.customer {
-		flex-grow: 4;
-		border-radius: 0 4px 4px 0;
-		@apply bg-royal-blue-100 p-4;
-	}
 	.scrollHeight {
 		height: calc(100% - 75px);
 	}

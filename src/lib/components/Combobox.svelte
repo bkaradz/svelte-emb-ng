@@ -37,7 +37,7 @@
 	};
 
 	async function handleKeyDown(event: { key: any }) {
-		const listLenght = list.length;
+		const listLength = list.length;
 		switch (event.key) {
 			case 'Escape':
 				showList = false;
@@ -57,8 +57,8 @@
 				break;
 			case 'ArrowDown':
 				showList = true;
-				highlightIndex === listLenght - 1
-					? (highlightIndex = listLenght - 1)
+				highlightIndex === listLength - 1
+					? (highlightIndex = listLength - 1)
 					: (highlightIndex += 1);
 				break;
 			default:

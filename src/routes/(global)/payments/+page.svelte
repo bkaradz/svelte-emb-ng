@@ -52,7 +52,8 @@
 	});
 
 	const viewPayment = async (order: newOrder) => {
-		goto(`payments/customer/${order.id}`);
+		console.log('🚀 ~ file: +page.svelte:55 ~ viewPayment ~ order', order);
+		goto(`payments/order/${order.id}`);
 	};
 
 	let gridView = false;

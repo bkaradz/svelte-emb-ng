@@ -11,7 +11,7 @@
 	export let value = { name: '' };
 	export let list: Array<any | null> = [];
 	export let pending = false;
-	export let errorMessages: Map<string, string> = new Map([]) ;
+	export let errorMessages: Map<string, string> = new Map([]);
 	export let disabled = false;
 	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
 
@@ -36,7 +36,7 @@
 	};
 
 	async function handleKeyDown(event: { key: any }) {
-		const listLenght = list.length;
+		const listLength = list.length;
 		switch (event.key) {
 			case 'Escape':
 				showList = false;
@@ -56,8 +56,8 @@
 				break;
 			case 'ArrowDown':
 				showList = true;
-				highlightIndex === listLenght - 1
-					? (highlightIndex = listLenght - 1)
+				highlightIndex === listLength - 1
+					? (highlightIndex = listLength - 1)
 					: (highlightIndex += 1);
 				break;
 			default:
@@ -76,7 +76,9 @@
 		<div class="mx-auto">
 			<label for={name} class="flex justify-between text-sm text-pickled-bluewood-600">
 				<span class="text-sm">{label}</span>
-				<span class="validation-message text-sm">{errorMessages.get(name) ? errorMessages.get(name) : ''}</span>
+				<span class="validation-message text-sm"
+					>{errorMessages.get(name) ? errorMessages.get(name) : ''}</span
+				>
 			</label>
 			<div class={`input relative p-0`}>
 				<div class="flex items-center  bg-white">
