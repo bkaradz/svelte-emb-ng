@@ -21,7 +21,7 @@ type MainOrder = {
 	orderDate: string | undefined;
 	deliveryDate?: string | undefined;
 	comment?: string;
-	orderLine: Partial<NewOrderLine>[];
+	OrderLine: Partial<NewOrderLine>[];
 	isInvoiced: boolean;
 };
 
@@ -43,11 +43,11 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 			throw new Error("Pricelist not found");
 		}
 
-		if (!Array.isArray(reqOrder.orderLine)) {
+		if (!Array.isArray(reqOrder.OrderLine)) {
 			throw new Error("OrderLine array not found");
 		}
 
-		const asyncOrderLine = reqOrder.orderLine.map(async (item) => {
+		const asyncOrderLine = reqOrder.OrderLine.map(async (item) => {
 			const { quantity = 1, embroideryTypes = 'flat' } = item;
 			/**
 			 * Get product

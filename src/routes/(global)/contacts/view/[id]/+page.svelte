@@ -55,8 +55,8 @@
 
 	let zero = dinero({ amount: 0, currency: USD });
 
-	const calculateTotal = (orderLine: any[]) => {
-		const totals = orderLine.reduce(
+	const calculateTotal = (OrderLine: any[]) => {
+		const totals = OrderLine.reduce(
 			(acc, item) => {
 				return {
 					totalCartItems: acc.totalCartItems + item.quantity,

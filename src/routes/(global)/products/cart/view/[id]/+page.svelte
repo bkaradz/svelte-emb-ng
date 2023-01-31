@@ -46,7 +46,7 @@
 			return;
 		}
 		const { OrderLine, ...restOrder } = data.order;
-		mainOrder = { ...restOrder, orderLine: OrderLine };
+		mainOrder = { ...restOrder, OrderLine: OrderLine };
 		customerSearch = restOrder.customerContact;
 		OrderLine.forEach((item: any) => {
 			cartItem.add(item);
@@ -69,7 +69,7 @@
 			}
 			return await trpc().cart.calculateCart.mutate({
 				pricelistsID: mainOrder.pricelistsID,
-				orderLine: lineArray
+				OrderLine: lineArray
 			});
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
@@ -91,7 +91,7 @@
 		}
 
 		const convert = createConverter(selectedCurrency.dineroObj);
-		mainOrder.orderLine = newArray.map((item) => {
+		mainOrder.OrderLine = newArray.map((item) => {
 			let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
 			if (!unitPrice) {
 				unitPrice = zero;
@@ -100,7 +100,7 @@
 			return { ...item, unitPrice: toSnapshot(unitPrice) };
 		});
 
-		getCountAndSubTotal(mainOrder.orderLine);
+		getCountAndSubTotal(mainOrder.OrderLine);
 	};
 
 	type MainOrder = {
@@ -112,11 +112,11 @@
 		orderDate: string | null;
 		deliveryDate?: string | null;
 		comment?: string;
-		orderLine: any[];
+		OrderLine: any[];
 	};
 
 	let mainOrder: Partial<MainOrder> = data.order;
-	mainOrder = { ...$cartOrder, orderLine: Array.from($cartItem.values()) };
+	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions = data.embroideryPositions;
@@ -202,7 +202,7 @@
 			<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
 			<div class="flex items-center" />
 		</div>
-		{#if mainOrder?.orderLine?.length > 0}
+		{#if mainOrder?.OrderLine?.length > 0}
 			<div class="flex px-6 mt-5 mb-5">
 				<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 					Product
@@ -227,7 +227,7 @@
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
-				{#each mainOrder?.orderLine as item (item.name)}
+				{#each mainOrder?.OrderLine as item (item.name)}
 					{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 						<div class="flex w-2/6">

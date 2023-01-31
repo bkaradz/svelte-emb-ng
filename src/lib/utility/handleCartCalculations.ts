@@ -17,7 +17,7 @@ type MainOrder = {
     orderDate: string | undefined;
     deliveryDate?: string | undefined;
     comment?: string;
-    orderLine: Partial<NewOrderLine>[];
+    OrderLine: Partial<NewOrderLine>[];
     isInvoiced: boolean;
 };
 
@@ -25,7 +25,7 @@ const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: 
     try {
         return await trpc().cart.calculateCart.mutate({
             pricelistsID: pricelistsId,
-            orderLine: lineArray
+            OrderLine: lineArray
         })
     } catch (err: any) {
         logger.error(`Error: ${err}`);
@@ -33,14 +33,14 @@ const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: 
     }
 };
 
-const handleCurrency = async (order: Orders & { orderLine: NewOrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
+const handleCurrency = async (order: Orders & { OrderLine: NewOrderLine[] }, selectedCurrency: CurrencyOption, zero: Dinero<number>) => {
 
     /**
      * Calculate using the cart default usd currency
      */
     let newArray;
     if (browser) {
-        newArray = await handleCalculations(order.orderLine, order.pricelistsID);
+        newArray = await handleCalculations(order.OrderLine, order.pricelistsID);
     }
     if (!Array.isArray(newArray)) {
         return;
@@ -48,7 +48,7 @@ const handleCurrency = async (order: Orders & { orderLine: NewOrderLine[] }, sel
 
     const convert = createConverter(selectedCurrency.dineroObj);
 
-    order.orderLine = newArray.map((item) => {
+    order.OrderLine = newArray.map((item) => {
         let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
         if (!unitPrice) {
             unitPrice = zero;
@@ -80,11 +80,11 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
 
     const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 
-    // oldOrder.OrderLine = oldOrder?.orderLine
+    // oldOrder.OrderLine = oldOrder?.OrderLine
 
-    // delete oldOrder?.orderLine
+    // delete oldOrder?.OrderLine
 
-    const order: Orders & { orderLine: NewOrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
+    const order: Orders & { OrderLine: NewOrderLine[] } = JSON.parse(JSON.stringify(oldOrder))
 
     const newOrder = await handleCurrency(order, selectedCurrency, zero);
 
@@ -92,7 +92,7 @@ export const handleCartCalculations = async (oldOrder: Partial<MainOrder>, selec
         throw new Error("Error in calculations");
     }
 
-    const subTotalsCalc = getCountAndSubTotal(newOrder.orderLine, zero);
+    const subTotalsCalc = getCountAndSubTotal(newOrder.OrderLine, zero);
 
     /**
      * TODO: User the vat rate in the database

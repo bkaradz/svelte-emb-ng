@@ -3,7 +3,7 @@ import { saveOrdersLineSchema } from './saveOrder.validate';
 
 export const calculateCartSchema = z.object({
   pricelistsID: z.number(),
-  orderLine: z.array(saveOrdersLineSchema)
+  OrderLine: z.array(saveOrdersLineSchema)
 }).passthrough();
 
 export type CalculateCartSchema = z.infer<typeof calculateCartSchema>;

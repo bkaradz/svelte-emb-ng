@@ -133,9 +133,9 @@ export const orders = router({
         queryTotal = {};
       }
 
-      const productsQuery = await prisma.orderLine.findMany(query);
+      const productsQuery = await prisma.OrderLine.findMany(query);
 
-      pagination.totalRecords = await prisma.orderLine.count(queryTotal);
+      pagination.totalRecords = await prisma.OrderLine.count(queryTotal);
       pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
       if (pagination.endIndex >= pagination.totalRecords) {
@@ -247,7 +247,7 @@ export const orders = router({
       );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { orderLine, ...restOrder } = input;
+      const { OrderLine, ...restOrder } = input;
 
       if (restOrder?.orderDate) {
         restOrder.orderDate = new Date(restOrder.orderDate);

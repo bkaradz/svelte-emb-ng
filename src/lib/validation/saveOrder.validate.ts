@@ -13,7 +13,7 @@ export const saveOrdersSchema = z.object({
   pricelistsID: z.number(),
   isActive: z.boolean(),
   accountsStatus: z.string(),
-  orderLine: z.array(saveOrdersLineSchema)
+  OrderLine: z.array(saveOrdersLineSchema)
 }).passthrough();
 
 

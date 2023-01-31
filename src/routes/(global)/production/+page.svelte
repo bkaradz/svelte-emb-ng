@@ -78,7 +78,7 @@
 		orderDate: string | undefined;
 		deliveryDate?: string | undefined;
 		comment?: string;
-		orderLine: Partial<NewOrderLine>[];
+		OrderLine: Partial<NewOrderLine>[];
 		isInvoiced: boolean;
 	};
 
@@ -90,7 +90,7 @@
 		accountsStatus: undefined,
 		orderDate: TODAY,
 		deliveryDate: FOUR_DAYS,
-		orderLine: Array.from($cartItem.values()) || []
+		OrderLine: Array.from($cartItem.values()) || []
 	};
 
 	let mainOrder = mainOrderInit;
@@ -116,7 +116,7 @@
 		}
 	};
 
-	$: mainOrderInit.orderLine = Array.from($cartItem.values());
+	$: mainOrderInit.OrderLine = Array.from($cartItem.values());
 
 	const removeItem = (item: any) => {
 		cartItem.remove(item);
@@ -161,7 +161,7 @@
 		/**
 		 * Check if the fields are filled
 		 */
-		if (!mainOrder?.orderLine?.length) {
+		if (!mainOrder?.OrderLine?.length) {
 			toasts.add({ message: 'A products must be selected', type: 'error' });
 			return;
 		}
@@ -209,7 +209,7 @@
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
-			mainOrder = { ...mainOrderInit, orderLine: [] };
+			mainOrder = { ...mainOrderInit, OrderLine: [] };
 			customerSearch = { name: null };
 			cartItem.reset();
 			toasts.add({ message: `The order was created`, type: 'success' });
@@ -267,7 +267,7 @@
 				<h1 class="text-2xl font-semibold capitalize">Shopping cart</h1>
 				<!-- <div class="flex items-center" /> -->
 			</div>
-			{#if order?.orderLine?.length > 0}
+			{#if order?.OrderLine?.length > 0}
 				<div class="flex px-6 mt-5 mb-5">
 					<span class="w-2/6 text-xs font-semibold tracking-wide text-gray-500 uppercase">
 						Product
@@ -304,7 +304,7 @@
 					</span>
 				</div>
 				<div class="scrollHeight overflow-y-auto">
-					{#each order.orderLine as item (item.id)}
+					{#each order.OrderLine as item (item.id)}
 						{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 						<div class="flex items-center p-2 hover:bg-pickled-bluewood-200">
 							<div class="flex w-2/6">
@@ -438,7 +438,7 @@
 								id="pricelist"
 								bind:value={mainOrder.pricelistsID}
 								on:change|preventDefault={() => {
-									mainOrderInit.orderLine = Array.from($cartItem.values());
+									mainOrderInit.OrderLine = Array.from($cartItem.values());
 								}}
 								class="text-sm input grow"
 							>

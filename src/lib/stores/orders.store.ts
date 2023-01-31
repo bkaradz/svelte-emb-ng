@@ -10,7 +10,7 @@ import { writable } from 'svelte/store';
 // 	isActive: true,
 // 	pricelistID: [],
 // 	customerID: [],
-// 	orderLine: []
+// 	OrderLine: []
 // };
 
 export const orderStore = writable(null);
