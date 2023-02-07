@@ -120,7 +120,7 @@
 							{#if order.showTotals}
 								<tr class="">
 									<td colspan="3" />
-									<td class="text-xs font-bold px-4">Sub Total</td>
+									<td class="text-xs font-bold px-4">Subtotal</td>
 									<td class="text-xs font-bold tracking-wider text-right px-4 py-2"
 										>{format(subTotal)}</td
 									>

@@ -6,6 +6,7 @@
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import type { CurrencyOption, CurrencyType } from '$lib/stores/setCurrency.store';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
+	import { paymentData } from '$lib/tempData';
 
 	export let grandTotal: Dinero<number>;
 
@@ -16,6 +17,11 @@
 	let paidGlobalCurrency = new Map<CurrencyType, Dinero<number>>();
 
 	let paidCurrenciesArray = [...paidCurrencies.keys()];
+	$: console.log(' paidCurrenciesArray:', paidCurrenciesArray, 'paidCurrencies:', paidCurrencies);
+
+	const filterPayments = (type: string) => {
+		return paymentData.filter((item) => item.group === type);
+	};
 
 	const addPaidAmount = (selectCurrency: CurrencyType) => {
 		if (paidInputVale <= 0) {
@@ -77,10 +83,15 @@
 		paidCurrenciesArray = [...paidCurrencies.keys()];
 		getOutstanding();
 	};
+
+	let selectedPayment = 'cashOptions';
+	$: console.log('🚀 ~ file: PaymentDetails.svelte:91 ~ selectedPayment', selectedPayment);
+	let cashOptions = 'USD';
+	let referenceValue: string | undefined = undefined;
 </script>
 
-<div class="grid grid-cols-3 mt-10 space-x-2">
-	<div class="col-span-2 space-y-2">
+<div class="grid grid-cols-5 mt-10 space-x-2">
+	<div class=" space-y-2 col-span-2">
 		<div class="flex shadow-sm">
 			<span
 				class="px-4 inline-flex items-center min-w-fit border border-r-0 border-pickled-bluewood-200 bg-pickled-bluewood-50 text-sm text-pickled-bluewood-500"
@@ -107,6 +118,21 @@
 				class="py-2 px-3 block w-full text-right border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500"
 			/>
 		</div>
+		{#if !(selectedPayment === 'cashOptions')}
+			<div class="flex shadow-sm">
+				<span
+					class="px-4 inline-flex items-center min-w-fit border border-r-0 border-pickled-bluewood-200 bg-pickled-bluewood-50 text-sm text-pickled-bluewood-500"
+					>Ref Number</span
+				>
+				<input
+					type="text"
+					use:selectTextOnFocus
+					use:blurOnEscape
+					bind:value={referenceValue}
+					class="py-2 px-3 block w-full text-right border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500"
+				/>
+			</div>
+		{/if}
 		<div class="mt-3">
 			<ul class="space-y-2">
 				{#each paidCurrenciesArray as currency (currency)}
@@ -145,6 +171,44 @@
 		</div>
 	</div>
 	<div class="space-y-2">
+		{#each filterPayments('paymentType') as payment (payment)}
+			<button
+				on:click={() => {
+					selectedPayment = payment.value;
+					cashOptions = 'USD';
+				}}
+				class="btn btn-primary w-full {payment.value === selectedPayment ? 'bg-success' : ''}"
+			>
+				{payment.label}
+			</button>
+		{/each}
+	</div>
+	<div class="space-y-2">
+		{#each filterPayments(selectedPayment) as payment (payment)}
+			<button
+				on:click={() => {
+					cashOptions = payment.value;
+					if (!payment.currency) {
+						return;
+					}
+					addPaidAmount(payment.currency);
+				}}
+				class="btn btn-primary w-full {paidCurrenciesArray.includes(payment.value)
+					? 'bg-success'
+					: ''}"
+			>
+				{payment.label}
+			</button>
+		{/each}
+	</div>
+	<div class="space-y-2">
+		{#each filterPayments(cashOptions) as payment (payment)}
+			<button on:click={() => {}} class="btn btn-primary w-full">
+				{payment.label}
+			</button>
+		{/each}
+	</div>
+	<!-- <div class="space-y-2">
 		{#each Array.from($currenciesOptions.values()) as currency (currency)}
 			<div>
 				<button
@@ -155,7 +219,7 @@
 				>
 			</div>
 		{/each}
-	</div>
+	</div> -->
 </div>
 
 <style lang="postcss">

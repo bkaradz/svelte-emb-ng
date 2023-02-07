@@ -82,7 +82,7 @@
 							{#if true}
 								<tr class="">
 									<td colspan="3" />
-									<td class="text-xs font-bold px-1">Sub Total</td>
+									<td class="text-xs font-bold px-1">Subtotal</td>
 									<td class="text-xs font-bold tracking-wider text-right px-1 py-1"
 										>{format(subTotal)}</td
 									>

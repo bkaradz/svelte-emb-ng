@@ -382,7 +382,7 @@
 						class="flex items-center p-2 hover:bg-pickled-bluewood-200 border-t border-royal-blue-500"
 					>
 						<span class="w-4/6" />
-						<span class="w-1/6 text-sm font-semibold text-right">Sub Total</span>
+						<span class="w-1/6 text-sm font-semibold text-right">Subtotal</span>
 						<span class="w-1/6 text-sm font-semibold text-right">{format(subTotal)}</span>
 					</div>
 					<div class="flex items-center p-2 hover:bg-pickled-bluewood-200">

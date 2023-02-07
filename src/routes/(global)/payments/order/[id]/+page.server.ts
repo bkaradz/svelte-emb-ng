@@ -6,7 +6,11 @@ export const load = (async (event) => {
 
 	const order = await router.createCaller(await createContext(event)).orders.getById(parseInt(event.params.id));
 
+	const currenciesOptions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+
+
 	return {
 		order,
+		currenciesOptions
 	};
 }) satisfies PageServerLoad;

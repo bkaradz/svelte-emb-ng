@@ -1,8 +1,10 @@
 <script lang="ts">
+	import ShowCash from '$lib/components/cart/ShowCash.svelte';
+	import PaymentDetails from '$lib/components/payments/PaymentDetails.svelte';
 	import { format } from '$lib/services/monetary';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
-	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import type { Contacts, Options, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
 	import { dinero, multiply } from 'dinero.js';
 
 	type OrderType = Orders & {
@@ -15,8 +17,7 @@
 
 	$: promise = handleCartCalculations(data.order, $selectedCurrency);
 
-	export let data: { order: OrderType };
-	console.log('🚀 ~ file: +page.svelte:4 ~ data', data);
+	export let data: { order: OrderType; currenciesOptions: Options };
 </script>
 
 <svelte:head>
@@ -24,13 +25,16 @@
 </svelte:head>
 
 <div class="w-full grid grid-cols-12">
-	{#await promise then { totalCartItems, subTotal, calculatedVat, grandTotal, order, vat }}
+	{#await promise then { subTotal, calculatedVat, grandTotal, order, vat }}
 		<div class="col-span-3 bg-pickled-bluewood-50 p-4">
+			<div class="flex items-center justify-between pb-3 border-b border-royal-blue-500">
+				<h1 class="text-xl capitalize">Order</h1>
+			</div>
 			{#if data.order}
-				<ul class="text-xs ">
-					{#each data.order.OrderLine as lineItem}
+				<ul class="text-xs mt-4">
+					{#each order.OrderLine as lineItem}
 						{@const totalPrice = multiply(dinero(lineItem.unitPrice), lineItem.quantity)}
-						<li class="gird grid-rows-2 border-b border-pickled-bluewood-400 py-1">
+						<li class="gird grid-rows-2 border-b border-pickled-bluewood-400 py-1 px-2">
 							<div>
 								{lineItem.Products.name}
 							</div>
@@ -45,19 +49,34 @@
 						</li>
 					{/each}
 				</ul>
-				<ul>
-					<li>
-						<span> Sub Total </span>
+				<ul class="text-sm bg-royal-blue-50">
+					<li class="flex justify-between px-2 pt-2 pb-1">
+						<span> Subtotal </span>
 						<span>
 							{format(subTotal)}
+						</span>
+					</li>
+					<li class="flex justify-between px-2 pt-1 pb-2 border-b border-pickled-bluewood-400">
+						<span> VAT({vat}%) </span>
+						<span>
+							{format(calculatedVat)}
+						</span>
+					</li>
+					<li class="flex justify-between px-2 py-2">
+						<span> Total </span>
+						<span>
+							{format(grandTotal)}
 						</span>
 					</li>
 				</ul>
 			{/if}
 		</div>
 		<div class="col-span-9 bg-royal-blue-100 p-4">
-			<div class="flex items-center justify-between pb-5 border-b border-royal-blue-500">
-				<h1 class="text-2xl font-semibold capitalize">Payments Details</h1>
+			<div class="flex items-center justify-between pb-3 border-b border-royal-blue-500">
+				<h1 class="text-xl capitalize">Payments Details</h1>
+			</div>
+			<div>
+				<PaymentDetails {grandTotal} />
 			</div>
 		</div>
 	{/await}
