@@ -7,6 +7,7 @@
 	import type { CurrencyOption, CurrencyType } from '$lib/stores/setCurrency.store';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
 	import { paymentData } from '$lib/tempData';
+	import type { PaymentData } from '$lib/tempData';
 
 	export let grandTotal: Dinero<number>;
 
@@ -23,10 +24,11 @@
 		return paymentData.filter((item) => item.group === type);
 	};
 
-	const addPaidAmount = (selectCurrency: CurrencyType) => {
+	const addPaidAmount = (selectCurrency: PaymentData) => {
 		if (paidInputVale <= 0) {
 			return;
 		}
+
 		const filterSelectCurrency = $currenciesOptions.get(selectCurrency);
 		const defaultCurrency = $currenciesOptions.get('USD');
 
@@ -84,8 +86,7 @@
 		getOutstanding();
 	};
 
-	let selectedPayment = 'cashOptions';
-	$: console.log('🚀 ~ file: PaymentDetails.svelte:91 ~ selectedPayment', selectedPayment);
+	let selectedPayment = 'cash';
 	let cashOptions = 'USD';
 	let referenceValue: string | undefined = undefined;
 </script>
@@ -118,7 +119,7 @@
 				class="py-2 px-3 block w-full text-right border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500"
 			/>
 		</div>
-		{#if !(selectedPayment === 'cashOptions')}
+		{#if !(selectedPayment === 'cash')}
 			<div class="flex shadow-sm">
 				<span
 					class="px-4 inline-flex items-center min-w-fit border border-r-0 border-pickled-bluewood-200 bg-pickled-bluewood-50 text-sm text-pickled-bluewood-500"
@@ -191,7 +192,7 @@
 					if (!payment.currency) {
 						return;
 					}
-					addPaidAmount(payment.currency);
+					addPaidAmount(payment);
 				}}
 				class="btn btn-primary w-full {paidCurrenciesArray.includes(payment.value)
 					? 'bg-success'
@@ -208,18 +209,6 @@
 			</button>
 		{/each}
 	</div>
-	<!-- <div class="space-y-2">
-		{#each Array.from($currenciesOptions.values()) as currency (currency)}
-			<div>
-				<button
-					on:click|preventDefault={() => addPaidAmount(currency.currency)}
-					class="btn btn-primary w-full {paidCurrenciesArray.includes(currency.currency)
-						? 'bg-success'
-						: ''}">{` ${currency.currency} (${currency.symbol})`}</button
-				>
-			</div>
-		{/each}
-	</div> -->
 </div>
 
 <style lang="postcss">

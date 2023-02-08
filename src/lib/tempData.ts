@@ -1,13 +1,12 @@
 import type { CurrencyType } from "./stores/setCurrency.store";
 
 
-type PaymentData = {
+export type PaymentData = {
   group: string;
   isActive: boolean;
   isDefault: boolean;
   label: string;
   value: string;
-  paymentMethod: string
   currency: CurrencyType | undefined;
 }
 
@@ -18,8 +17,15 @@ export const paymentData: PaymentData[] = [
     "isActive": true,
     "isDefault": true,
     "label": "Cash",
-    "value": "cashOptions",
-    "paymentMethod": "",
+    "value": "cash",
+    "currency": undefined
+  },
+  {
+    "group": "paymentType",
+    "isActive": true,
+    "isDefault": true,
+    "label": "Swipe",
+    "value": "swipe",
     "currency": undefined
   },
   {
@@ -27,8 +33,7 @@ export const paymentData: PaymentData[] = [
     "isActive": true,
     "isDefault": false,
     "label": "Mobile Money(RTGS)",
-    "value": "mobileMoneyRtgsOptions",
-    "paymentMethod": "",
+    "value": "mobileMoneyRtgs",
     "currency": undefined
   },
   {
@@ -36,8 +41,7 @@ export const paymentData: PaymentData[] = [
     "isActive": true,
     "isDefault": false,
     "label": "Mobile Money(USD)",
-    "value": "mobileMoneyUsdOptions",
-    "paymentMethod": "",
+    "value": "mobileMoneyUsd",
     "currency": undefined
   },
   {
@@ -45,8 +49,7 @@ export const paymentData: PaymentData[] = [
     "isActive": true,
     "isDefault": false,
     "label": "Transfer(RTGS)",
-    "value": "transferRtgsOptions",
-    "paymentMethod": "",
+    "value": "transferRtgs",
     "currency": undefined
   },
   {
@@ -54,116 +57,95 @@ export const paymentData: PaymentData[] = [
     "isActive": true,
     "isDefault": false,
     "label": "Transfer(FCA)",
-    "value": "transferFcaOptions",
-    "paymentMethod": "",
+    "value": "transferFca",
     "currency": undefined
   },
   {
-    "group": "cashOptions",
+    "group": "cash",
     "isActive": true,
     "isDefault": false,
     "label": "Botswana Pula",
-    "value": "BotswanaPula",
-    "paymentMethod": "",
+    "value": "BotswanaPulaCash",
     "currency": "BWP"
   },
   {
-    "group": "cashOptions",
+    "group": "cash",
     "isActive": true,
     "isDefault": false,
     "label": "SA Rand",
-    "value": "SouthAfricanRand",
-    "paymentMethod": "",
+    "value": "SouthAfricanRandCash",
     "currency": "ZAR"
   },
   {
-    "group": "cashOptions",
+    "group": "cash",
     "isActive": true,
     "isDefault": true,
     "label": "US Dollar",
-    "value": "unitedStatesDollar",
-    "paymentMethod": "",
+    "value": "unitedStatesDollarCash",
     "currency": "USD"
   },
   {
-    "group": "cashOptions",
+    "group": "cash",
     "isActive": true,
     "isDefault": false,
     "label": "Bond",
-    "value": "bondNote",
-    "paymentMethod": "",
+    "value": "bondNoteCash",
     "currency": "ZWB"
   },
   {
-    "group": "mobileMoneyRtgsOptions",
+    "group": "mobileMoneyRtgs",
     "isActive": true,
     "isDefault": false,
     "label": "EcoCash",
-    "value": "ecoCash",
-    "paymentMethod": "",
+    "value": "ecoCashRtgsMobileMoney",
     "currency": "ZWR"
   },
   {
-    "group": "mobileMoneyRtgsOptions",
+    "group": "mobileMoneyRtgs",
     "isActive": true,
     "isDefault": false,
     "label": "One Money",
-    "value": "oneMoney",
-    "paymentMethod": "",
+    "value": "oneMoneyRtgsMobileMoney",
     "currency": "ZWR"
   },
   {
-    "group": "mobileMoneyUsdOptions",
+    "group": "mobileMoneyUsd",
     "isActive": true,
     "isDefault": false,
     "label": "Get Bucks",
-    "value": "getBucks",
-    "paymentMethod": "",
+    "value": "getBucksUsdMobileMoney",
     "currency": "USD"
   },
   {
-    "group": "transferRtgsOptions",
+    "group": "transferRtgs",
     "isActive": true,
     "isDefault": true,
     "label": "Stewart Bank",
-    "value": "stewartBank",
-    "paymentMethod": "",
+    "value": "stewartBankRtgsTransfer",
     "currency": "ZWR"
   },
   {
-    "group": "transferRtgsOptions",
+    "group": "transferRtgs",
     "isActive": true,
     "isDefault": false,
     "label": "Banc ABC",
-    "value": "bancAbc",
-    "paymentMethod": "",
+    "value": "bancAbcRtgsTransfer",
     "currency": "ZWR"
   },
   {
-    "group": "transferFcaOptions",
+    "group": "transferFca",
     "isActive": true,
     "isDefault": false,
     "label": "Banc ABC",
-    "value": "bancAbc",
-    "paymentMethod": "",
+    "value": "bancAbcFcaTransfer",
     "currency": "USD"
   },
   {
-    "group": "cashSwipeOptions",
+    "group": "swipe",
     "isActive": true,
     "isDefault": true,
     "label": "Stewart Bank",
-    "value": "stewartBank",
-    "paymentMethod": "",
+    "value": "stewartBankSwipe",
     "currency": "ZWR"
-  },
-  {
-    "group": "cashSwipeOptions",
-    "isActive": true,
-    "isDefault": true,
-    "label": "Banc ABC",
-    "value": "bancAbc",
-    "paymentMethod": "",
-    "currency": "ZWR",
-  },
+  }
 ]
