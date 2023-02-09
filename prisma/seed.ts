@@ -1,15 +1,20 @@
 import { PrismaClient } from '@prisma/client'
-import { products } from "./seedData/products";
+import { products, users } from "./seedData";
 import logger from '../src/lib/utility/logger';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  products.forEach((product) => {
-    prisma.products.create({
+  products.forEach(async (product) => {
+    await prisma.products.create({
       data: product
     })
   })
+  // products.forEach(async (product) => {
+  //   await prisma.contacts.create({
+  //     data: users
+  //   })
+  // })
 }
 
 main().catch(e => {
