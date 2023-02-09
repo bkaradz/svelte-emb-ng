@@ -52,7 +52,6 @@
 	});
 
 	const viewPayment = async (order: newOrder) => {
-		console.log('🚀 ~ file: +page.svelte:55 ~ viewPayment ~ order', order);
 		goto(`payments/order/${order.id}`);
 	};
 

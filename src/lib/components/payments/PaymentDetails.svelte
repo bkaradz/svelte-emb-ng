@@ -8,47 +8,79 @@
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
 	import { paymentData } from '$lib/tempData';
 	import type { PaymentData } from '$lib/tempData';
+	import { toasts } from '$lib/stores/toasts.store';
 
 	export let grandTotal: Dinero<number>;
 
-	let paidInputVale: number = 0;
+	let paidInputValue: number = 0;
 
-	let paidCurrencies = new Map<CurrencyType, number>();
-	let paidCurrenciesUSD = new Map<CurrencyType, Dinero<number>>();
-	let paidGlobalCurrency = new Map<CurrencyType, Dinero<number>>();
+	let paidCurrencies = new Map<string, { paymentType: string; value: number }>();
+	let paidCurrenciesUSD = new Map<string, Dinero<number>>();
+	let paidGlobalCurrency = new Map<string, Dinero<number>>();
 
 	let paidCurrenciesArray = [...paidCurrencies.keys()];
-	$: console.log(' paidCurrenciesArray:', paidCurrenciesArray, 'paidCurrencies:', paidCurrencies);
 
 	const filterPayments = (type: string) => {
 		return paymentData.filter((item) => item.group === type);
 	};
 
-	const addPaidAmount = (selectCurrency: PaymentData) => {
-		if (paidInputVale <= 0) {
+	const addPaidAmount = (paymentData: PaymentData) => {
+		if (paidInputValue <= 0) {
+			toasts.add({
+				message: 'Please add paid amount',
+				type: 'error'
+			});
 			return;
 		}
 
-		const filterSelectCurrency = $currenciesOptions.get(selectCurrency);
+		if (selectedPayment !== 'cash' && !referenceValue) {
+			toasts.add({
+				message: 'Reference number is required',
+				type: 'error'
+			});
+			return;
+		}
+
+		if (!paymentData.currency) {
+			toasts.add({
+				message: 'Selected currency not found',
+				type: 'error'
+			});
+			return;
+		}
+
+		const filterSelectCurrency = $currenciesOptions.get(paymentData.currency);
 		const defaultCurrency = $currenciesOptions.get('USD');
 
 		if (!defaultCurrency) {
+			toasts.add({
+				message: 'Default currency not found',
+				type: 'error'
+			});
 			return;
 		}
 
 		if (!filterSelectCurrency) {
+			toasts.add({
+				message: 'Selected currency not found',
+				type: 'error'
+			});
 			return;
 		}
 
 		const convertHOF = createConverterHOF();
 
 		const convertAmount = convertHOF(
-			dinero({ amount: paidInputVale * 100, currency: filterSelectCurrency.dineroObj }),
+			dinero({ amount: paidInputValue * 100, currency: filterSelectCurrency.dineroObj }),
 			defaultCurrency.dineroObj,
 			filterSelectCurrency
 		);
 
 		if (!convertAmount) {
+			toasts.add({
+				message: 'Failed to convert amount',
+				type: 'error'
+			});
 			return;
 		}
 
@@ -60,12 +92,16 @@
 			return;
 		}
 
-		paidCurrencies.set(selectCurrency, paidInputVale);
-		paidCurrenciesUSD.set(selectCurrency, convertAmount);
-		paidGlobalCurrency.set(selectCurrency, convertRateAmount);
+		paidCurrencies.set(paymentData.value, {
+			paymentType: paymentData.label,
+			value: paidInputValue
+		});
+		paidCurrenciesUSD.set(paymentData.value, convertAmount);
+		paidGlobalCurrency.set(paymentData.value, convertRateAmount);
 
 		paidCurrenciesArray = [...paidCurrencies.keys()];
-		paidInputVale = 0;
+
+		paidInputValue = 0;
 		getOutstanding();
 	};
 
@@ -91,7 +127,7 @@
 	let referenceValue: string | undefined = undefined;
 </script>
 
-<div class="grid grid-cols-5 mt-10 space-x-2">
+<div class="grid grid-cols-4 mt-10 space-x-2">
 	<div class=" space-y-2 col-span-2">
 		<div class="flex shadow-sm">
 			<span
@@ -114,8 +150,8 @@
 				type="number"
 				use:selectTextOnFocus
 				use:blurOnEscape
-				bind:value={paidInputVale}
-				on:change|preventDefault={() => (!paidInputVale ? 0 : paidInputVale)}
+				bind:value={paidInputValue}
+				on:change|preventDefault={() => (!paidInputValue ? 0 : paidInputValue)}
 				class="py-2 px-3 block w-full text-right border-pickled-bluewood-200 shadow-sm text-sm focus:z-10 focus:border-royal-blue-500 focus:ring-royal-blue-500"
 			/>
 		</div>
@@ -148,7 +184,9 @@
 								{@html svgTrashSmall}
 							</button>
 							<span class="px-2">
-								{`${currency} (${paidCurrencies.get(currency)})`}
+								{`${paidCurrencies.get(currency)?.paymentType} (${
+									paidCurrencies.get(currency)?.value
+								})`}
 							</span>
 						</span>
 						<span class="px-3">

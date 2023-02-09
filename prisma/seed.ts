@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { products } from "./seedData/products";
+import logger from '../src/lib/utility/logger';
 
 const prisma = new PrismaClient()
 
@@ -12,7 +13,7 @@ async function main() {
 }
 
 main().catch(e => {
-  console.log('Error', e);
+  logger.error(`Error: ${e}`);
   process.exit(1)
 }).finally(() => {
   prisma.$disconnect()
