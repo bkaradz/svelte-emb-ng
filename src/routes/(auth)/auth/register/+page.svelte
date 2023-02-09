@@ -64,6 +64,7 @@
 		 * TODO: improve error catching using zod only
 		 */
 		const parsedUser = userRegisterSchema.safeParse(formData);
+		console.log('🚀 ~ file: +page.svelte:67 ~ handleRegister ~ parsedUser', parsedUser);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 
@@ -75,6 +76,7 @@
 		}
 		try {
 			const contact = await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
+			console.log('🚀 ~ file: +page.svelte:78 ~ handleRegister ~ contact', contact);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

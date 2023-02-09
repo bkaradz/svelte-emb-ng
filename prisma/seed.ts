@@ -11,4 +11,9 @@ async function main() {
   })
 }
 
-main().catch().then().finally()
+main().catch(e => {
+  console.log('Error', e);
+  process.exit(1)
+}).finally(() => {
+  prisma.$disconnect()
+})
