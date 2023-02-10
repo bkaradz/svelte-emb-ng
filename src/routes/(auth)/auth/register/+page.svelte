@@ -64,6 +64,8 @@
 		 * TODO: improve error catching using zod only
 		 */
 		const parsedUser = userRegisterSchema.safeParse(formData);
+		console.log('🚀 ~ file: +page.svelte:67 ~ handleRegister ~ formData', formData);
+		console.log('🚀 ~ file: +page.svelte:67 ~ handleRegister ~ parsedUser', parsedUser);
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 

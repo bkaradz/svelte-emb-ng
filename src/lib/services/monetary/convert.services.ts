@@ -5,6 +5,7 @@ import type { Currency, Dinero, DineroOptions } from 'dinero.js';
 import { browser } from '$app/environment';
 import { trpc } from '$lib/trpc/client';
 import { handleErrors } from '$lib/utility/errorsHandling';
+import { toasts } from '$lib/stores/toasts.store';
 
 export const ZWB: Currency<number> = {
 	code: 'ZWB',
@@ -98,9 +99,6 @@ export function toObject(dineroObject: Dinero<number>): {
 	return toSnapshot(dineroObject);
 }
 
-
-
-
 export function createConverterHOF() {
 	return function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>, selectedCurrency: {
 		currency: string;
@@ -143,7 +141,11 @@ if (browser) {
 				}
 				currenciesRates = ratesMap;
 			} else {
-				throw new Error("Default Exchange Rates more than one found");
+				toasts.add({
+					message: 'Please enter one default exchange rate',
+					type: 'error'
+				});
+				// throw new Error("Default Exchange Rates more than one found");
 			}
 
 		} catch (err: unknown) {

@@ -134,6 +134,10 @@ export const authentication = router({
                 }
             });
 
+            /**
+             * TODO: Correct userExist to update User
+             */
+
             if (userExist) {
                 return new Response(JSON.stringify({ message: 'User with that email already exist' }), {
                     headers: {
