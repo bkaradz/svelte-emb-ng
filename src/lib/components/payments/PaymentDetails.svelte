@@ -1,10 +1,9 @@
 <script lang="ts">
-	import type { Dinero, Currency, Rates } from 'dinero.js';
-	import { convert, dinero, toSnapshot, subtract } from 'dinero.js';
+	import type { Dinero } from 'dinero.js';
+	import { dinero, subtract } from 'dinero.js';
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
-	import type { CurrencyOption, CurrencyType } from '$lib/stores/setCurrency.store';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
 	import { paymentData } from '$lib/tempData';
 	import type { PaymentData } from '$lib/tempData';
@@ -14,9 +13,15 @@
 
 	let paidInputValue: number = 0;
 
-	let paidCurrencies = new Map<string, { paymentType: string; value: number }>();
-	let paidCurrenciesUSD = new Map<string, Dinero<number>>();
-	let paidGlobalCurrency = new Map<string, Dinero<number>>();
+	let paidCurrencies = new Map<
+		string,
+		{
+			paymentType: string;
+			value: number;
+			paidDefaultCurrency: Dinero<number>;
+			paidGlobalCurrency: Dinero<number>;
+		}
+	>();
 
 	let paidCurrenciesArray = [...paidCurrencies.keys()];
 
@@ -94,10 +99,10 @@
 
 		paidCurrencies.set(paymentData.value, {
 			paymentType: paymentData.label,
-			value: paidInputValue
+			value: paidInputValue,
+			paidDefaultCurrency: convertAmount,
+			paidGlobalCurrency: convertRateAmount
 		});
-		paidCurrenciesUSD.set(paymentData.value, convertAmount);
-		paidGlobalCurrency.set(paymentData.value, convertRateAmount);
 
 		paidCurrenciesArray = [...paidCurrencies.keys()];
 
@@ -110,13 +115,15 @@
 	const getOutstanding = () => {
 		const subtractMany = (subtrahends: Dinero<number>[]) => subtrahends.reduce(subtract);
 
-		outstanding = subtractMany([grandTotal, ...[...paidGlobalCurrency.values()]]);
+		const paidGlobalCurrencyArray = [...paidCurrencies.values()].map(
+			(item) => item.paidGlobalCurrency
+		);
+
+		outstanding = subtractMany([grandTotal, ...paidGlobalCurrencyArray]);
 	};
 
-	const deletePaidAmount = (currency: CurrencyType) => {
+	const deletePaidAmount = (currency: string) => {
 		paidCurrencies.delete(currency);
-		paidCurrenciesUSD.delete(currency);
-		paidGlobalCurrency.delete(currency);
 
 		paidCurrenciesArray = [...paidCurrencies.keys()];
 		getOutstanding();
@@ -190,7 +197,9 @@
 							</span>
 						</span>
 						<span class="px-3">
-							{!paidGlobalCurrency.get(currency) ? '...' : format(paidGlobalCurrency.get(currency))}
+							{!paidCurrencies.get(currency)?.paidGlobalCurrency
+								? '...'
+								: format(paidCurrencies.get(currency)?.paidGlobalCurrency)}
 						</span>
 					</li>
 				{/each}

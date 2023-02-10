@@ -49,7 +49,7 @@
 						</li>
 					{/each}
 				</ul>
-				<ul class="text-sm bg-pickled-bluewood-600 text-pickled-bluewood-100">
+				<ul class="text-sm bg-royal-blue-100">
 					<li class="flex justify-between px-2 pt-2 pb-1">
 						<span> Subtotal </span>
 						<span>
