@@ -64,8 +64,7 @@
 		 * TODO: improve error catching using zod only
 		 */
 		const parsedUser = userRegisterSchema.safeParse(formData);
-		console.log('🚀 ~ file: +page.svelte:67 ~ handleRegister ~ formData', formData);
-		console.log('🚀 ~ file: +page.svelte:67 ~ handleRegister ~ parsedUser', parsedUser);
+
 		if (!parsedUser.success) {
 			const errorMap = zodErrorMessagesMap(parsedUser);
 
@@ -123,7 +122,7 @@
 		<img class="mx-auto h-12 w-auto" src={small_logo} alt="Lilian Logo" />
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Register</h2>
 	</div>
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleRegister}>
+	<form class="mt-8 space-y-6" on:submit|preventDefault={handleRegister} method="POST">
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="name" class="flex justify-between text-sm">

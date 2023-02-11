@@ -93,7 +93,7 @@
 	<div class="mb-2 bg-white p-4">
 		<h1>Add Exchange Rates</h1>
 	</div>
-	<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">

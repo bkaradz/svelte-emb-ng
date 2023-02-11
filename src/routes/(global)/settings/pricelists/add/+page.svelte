@@ -113,14 +113,13 @@
 				return;
 			}
 
-			await trpc().pricelists.saveOrUpdatePricelist.mutate(parsedPricelist.data)
-
+			await trpc().pricelists.saveOrUpdatePricelist.mutate(parsedPricelist.data);
 		} catch (err: any) {
-			handleErrors(err)
+			handleErrors(err);
 		} finally {
 			pricelist = { ...initPricelist };
 			disabled = false;
-			toasts.add({ message: `Pricelist was added successfully` , type: 'success' });
+			toasts.add({ message: `Pricelist was added successfully`, type: 'success' });
 		}
 	};
 </script>
@@ -129,7 +128,7 @@
 	<div class="mb-2 bg-white p-4">
 		<h1>Add Pricelist</h1>
 	</div>
-	<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">

@@ -96,7 +96,7 @@
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Login</h2>
 	</div>
 
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin}>
+	<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin} method="POST">
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="email" class="flex justify-between text-sm">

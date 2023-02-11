@@ -173,7 +173,7 @@
 			</div>
 			<!-- Right -->
 			<div class="flex items-center">
-				<form on:submit|preventDefault={(e) => handleUpload}>
+				<form on:submit|preventDefault={handleUpload} method="POST">
 					<div class="relative">
 						<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-2 text-white">
 							{@html svgUpload}
@@ -206,7 +206,7 @@
 	<!-- End This -->
 
 	<div class="mx-auto mt-2 h-full w-full max-w-md space-y-8">
-		<form class="mt-2 space-y-6" on:submit|preventDefault={handleSubmit}>
+		<form class="mt-2 space-y-6" on:submit|preventDefault={handleSubmit} method="POST">
 			<div class="space-y-2 shadow-sm">
 				<label for="name" class="flex justify-between text-sm">
 					<span>Name</span>
