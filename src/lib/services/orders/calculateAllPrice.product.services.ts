@@ -14,10 +14,16 @@ import { format } from '../monetary';
 type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] }
 
 export const calculateProductPrices = (product: Products, pricelist: NewPricelists, embroideryTypes = 'flat') => {
+
 	try {
 
 		if (!product) {
-			throw new Error(`Product does not exist`);
+			return
+			// throw new Error(`Product does not exist`);
+		}
+		if (!pricelist) {
+			return
+			// throw new Error(`Pricelist does not exist`);
 		}
 		if (product.productCategories !== 'embroidery') {
 			return

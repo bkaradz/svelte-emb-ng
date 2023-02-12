@@ -3,6 +3,7 @@
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
+	import type { Current, Next, Previous } from '$lib/utility/pagination.util';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
 	import type { UserRegister } from '$lib/validation/userRegister.validate';
 	import type { Contacts } from '@prisma/client';
@@ -20,9 +21,21 @@
 		'delete'
 	];
 
-	export let data: { users: Contacts[] };
+	type UserData = {
+		next: Next;
+		previous: Previous;
+		current: Current;
+		limit: number;
+		endIndex: number;
+		page: number;
+		totalPages: number;
+		totalRecords: number;
+		results: Contacts[];
+	};
 
-	let contacts = data.users;
+	export let data: { users: UserData };
+
+	let contacts = data.users.results;
 	let isEditableID: number | undefined = undefined;
 
 	const getUsers = async () => {

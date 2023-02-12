@@ -4,9 +4,11 @@ import { createContext } from '$lib/trpc/context';
 
 
 export const load = (async (event) => {
-  const users = await router.createCaller(await createContext(event)).authentication.getUsers({});
+  const users = async () => {
+    return await router.createCaller(await createContext(event)).authentication.getUsers({});
+  }
 
   return {
-    users: users.results
+    users: users()
   };
 }) satisfies PageServerLoad;

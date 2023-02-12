@@ -1,9 +1,9 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
-import { querySelection } from '../../contacts.json/+server';
 import parseCsv from '$lib/utility/parseCsv';
-import type { Contacts } from '@prisma/client';
+import type { Contacts, Prisma } from '@prisma/client';
+import normalizePhone from '$lib/utility/normalizePhone.util';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -21,7 +21,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const data = await request.formData();
 
 		const file = data.get('contacts');
-		console.log("🚀 ~ file: +server.ts:24 ~ constPOST:RequestHandler= ~ file", file)
 
 		if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
 			logger.error('File is empty');
@@ -34,7 +33,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const csvString = await file.text() as string;
-		console.log("🚀 ~ file: +server.ts:36 ~ constPOST:RequestHandler= ~ csvString", csvString)
 
 		type pContact = Partial<Contacts>
 
@@ -70,4 +68,84 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			status: 500
 		});
 	}
+};
+
+const querySelection = (reqContact: any, createDBy: number) => {
+	// eslint-disable-next-line prefer-const
+	let { name, email, phone, address, ...restContact } = reqContact;
+
+	name = name.trim();
+	if (email) {
+		email = email.split(',').map((data: string) => {
+			return { email: data.trim() };
+		});
+	}
+	if (phone) {
+		phone = normalizePhone(phone);
+	}
+	if (address) {
+		address = address.split(',').map((data: string) => {
+			return { address: data.trim() };
+		});
+	}
+
+	let contact: Prisma.ContactsCreateInput;
+
+	contact = {
+		// ...restContact,
+		name,
+		createdBy: createDBy,
+		isActive: true,
+		isUser: false
+	};
+
+	if (email) {
+		contact = {
+			...contact,
+			email: { createMany: { data: email } }
+		};
+	}
+	if (phone) {
+		contact = {
+			...contact,
+			phone: { createMany: { data: phone } }
+		};
+	}
+	if (address) {
+		contact = {
+			...contact,
+			address: { createMany: { data: address } }
+		};
+	}
+	if (email && phone) {
+		contact = {
+			...contact,
+			email: { createMany: { data: email } },
+			phone: { createMany: { data: phone } }
+		};
+	}
+	if (email && address) {
+		contact = {
+			...contact,
+			email: { createMany: { data: email } },
+			address: { createMany: { data: address } }
+		};
+	}
+	if (phone && address) {
+		contact = {
+			...contact,
+			phone: { createMany: { data: phone } },
+			address: { createMany: { data: address } }
+		};
+	}
+	if (email && phone && address) {
+		contact = {
+			...contact,
+			email: { createMany: { data: email } },
+			phone: { createMany: { data: phone } },
+			address: { createMany: { data: address } }
+		};
+	}
+
+	return contact;
 };

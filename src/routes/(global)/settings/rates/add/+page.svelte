@@ -180,7 +180,7 @@
 					/>
 				</div>
 				<div>
-					<input disabled class="btn btn-primary" type="submit" value="Submit" />
+					<input class="btn btn-primary" type="submit" value="Submit" />
 				</div>
 			</div>
 			<!-- Table start -->

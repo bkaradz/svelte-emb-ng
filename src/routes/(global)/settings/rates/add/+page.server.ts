@@ -4,9 +4,11 @@ import { createContext } from '$lib/trpc/context';
 
 export const load = (async (event) => {
 
-	const currencyOptions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+	const currencyOptions = async () => {
+		return await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+	}
 
 	return {
-		currencyOptions
+		currencyOptions: currencyOptions()
 	};
 }) satisfies PageServerLoad;

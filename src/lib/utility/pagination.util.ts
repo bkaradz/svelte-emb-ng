@@ -1,9 +1,9 @@
 
 type Limit = number | string;
 type Page = number | string;
-type Previous = { page: number; limit: number } | undefined;
-type Current = { page: number; limit: number };
-type Next = { page: number; limit: number } | undefined;
+export type Previous = { page: number; limit: number } | undefined;
+export type Current = { page: number; limit: number };
+export type Next = { page: number; limit: number } | undefined;
 
 export interface Pagination {
   next: Next;

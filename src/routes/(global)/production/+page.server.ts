@@ -5,30 +5,40 @@ import { createContext } from '$lib/trpc/context';
 
 export const load = (async (event) => {
 
-  const embroideryTypes = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' })
+  const embroideryTypes = async () => {
+    return await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' })
+  }
 
-  const embroideryPositions = await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' })
+  const embroideryPositions = async () => {
+    return await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' })
+  }
 
-  const currency = await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+  const currency = async () => {
+    return await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
+  }
 
   const queryParams = {
     limit: 7,
     page: 1,
   }
 
-  const customers = await router.createCaller(await createContext(event)).contacts.getContacts(queryParams);
-
-  const pricelists = await router.createCaller(await createContext(event)).pricelists.getPricelists({});
-
-  const defaultPricelist = await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
+  const customers = async () => {
+    return await router.createCaller(await createContext(event)).contacts.getContacts(queryParams);
+  }
+  const pricelists = async () => {
+    return await router.createCaller(await createContext(event)).pricelists.getPricelists({});
+  }
+  const defaultPricelist = async () => {
+    return await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
+  }
 
   return {
-    currency,
-    embroideryTypes,
-    embroideryPositions,
-    customers,
-    pricelists,
-    defaultPricelistId: defaultPricelist.id
+    currency: currency(),
+    embroideryTypes: embroideryTypes(),
+    embroideryPositions: embroideryPositions(),
+    customers: customers(),
+    pricelists: pricelists(),
+    defaultPricelist: defaultPricelist()
   };
 
 }) satisfies PageServerLoad;

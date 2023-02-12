@@ -4,12 +4,17 @@ import { createContext } from '$lib/trpc/context';
 
 export const load = (async (event) => {
 
-  const products = await router.createCaller(await createContext(event)).products.getProducts({});
-  const pricelist = await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
+  const products = async () => {
+    return await router.createCaller(await createContext(event)).products.getProducts({});
+  }
+
+  const pricelist = async () => {
+    return await router.createCaller(await createContext(event)).pricelists.getDefaultPricelist();
+  }
 
   return {
-    products,
-    pricelist
+    products: products(),
+    pricelist: pricelist()
   };
 
 }) satisfies PageServerLoad;

@@ -1,7 +1,7 @@
 import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
-import type { Products } from '@prisma/client';
+import type { Prisma, Products } from '@prisma/client';
 import parseCsv from '$lib/utility/parseCsv';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -40,9 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let total = 0;
 
 		productsArray.forEach(async (element) => {
-			/**
-			 * TODO: calculate the maximum price of emb logos
-			 */
+
 			try {
 				const product: Partial<Products> = {
 					productCategories: 'embroidery',

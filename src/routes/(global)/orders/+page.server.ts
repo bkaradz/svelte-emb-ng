@@ -4,10 +4,12 @@ import { createContext } from '$lib/trpc/context';
 
 export const load = (async (event) => {
 
-  const orders = await router.createCaller(await createContext(event)).orders.getOrders({});
+  const orders = async () => {
+    return await router.createCaller(await createContext(event)).orders.getOrders({});
+  }
 
   return {
-    orders,
+    orders: orders(),
   };
 
 }) satisfies PageServerLoad;

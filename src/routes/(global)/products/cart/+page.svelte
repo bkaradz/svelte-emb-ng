@@ -55,7 +55,7 @@
 		embroideryTypes: Options[];
 		embroideryPositions: Options[];
 		pricelists: Pricelists[];
-		defaultPricelistId: number;
+		defaultPricelist: Pricelists;
 		currency: Options[];
 	};
 
@@ -85,7 +85,7 @@
 	let mainOrderInit: Partial<MainOrder> = {
 		id: undefined,
 		customersID: undefined,
-		pricelistsID: data.defaultPricelistId,
+		pricelistsID: data.defaultPricelist.id,
 		isActive: true,
 		accountsStatus: undefined,
 		orderDate: TODAY,

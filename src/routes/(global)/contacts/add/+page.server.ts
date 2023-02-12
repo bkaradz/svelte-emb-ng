@@ -8,9 +8,11 @@ export const load = (async (event) => {
     page: 1,
   }
 
-  const newCorporateContacts = await router.createCaller(await createContext(event)).contacts.getCorporate(queryParams);
+  const newCorporateContacts = async () => {
+    return await router.createCaller(await createContext(event)).contacts.getCorporate(queryParams);
+  }
 
   return {
-    contacts: newCorporateContacts,
+    contacts: newCorporateContacts(),
   };
 }) satisfies PageServerLoad;
