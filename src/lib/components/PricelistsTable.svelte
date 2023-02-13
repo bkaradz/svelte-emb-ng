@@ -33,6 +33,7 @@
 	const getPricelists = async () => {
 		try {
 			pricelists = (await trpc().pricelists.getPricelists.query({})) as unknown as Pricelists[];
+			console.log('🚀 ~ file: PricelistsTable.svelte:36 ~ getPricelists ~ pricelists', pricelists);
 		} catch (err: any) {
 			handleErrors(err);
 		}

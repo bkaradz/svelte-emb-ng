@@ -191,9 +191,8 @@
 								{@html svgTrashSmall}
 							</button>
 							<span class="px-2">
-								{`${paidCurrencies.get(currency)?.paymentType} (${
-									paidCurrencies.get(currency)?.value
-								})`}
+								{`${paidCurrencies.get(currency)?.paymentType} 
+								(${paidCurrencies.get(currency)?.value})`}
 							</span>
 						</span>
 						<span class="px-3">
