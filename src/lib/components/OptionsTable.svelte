@@ -113,7 +113,6 @@
 	const getOptions = async () => {
 		try {
 			optionsList = (await trpc().options.getOptions.query({})) as unknown as Options[];
-			console.log("🚀 ~ file: OptionsTable.svelte:116 ~ getOptions ~ optionsList", optionsList)
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}

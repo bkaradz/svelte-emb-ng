@@ -375,10 +375,12 @@
 											<td class="px-2 py-1">
 												{contact?.organisationID ? contact?.organisationID : '...'}
 											</td>
-											<td class="px-2 py-1"
-												>{contact?.phone.map((item) => item.phone).join(', ')}</td
-											>
-											<td class="px-2 py-1">{!contact?.email ? '...' : contact?.email}</td>
+											<td class="px-2 py-1">
+												{contact?.phone.map((item) => item.phone).join(', ')}
+											</td>
+											<td class="px-2 py-1">
+												{contact?.email.map((item) => item.email).join(', ')}
+											</td>
 
 											<td class="px-2 py-1">
 												<input
