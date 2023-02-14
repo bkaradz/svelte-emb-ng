@@ -1,5 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
+// import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
+import { contacts } from "./seedData/contacts";
+import { products } from "./seedData/products";
+import { users } from "./seedData/users";
+import { options } from "./seedData/options";
+import { pricelists, } from "./seedData/pricelists";
+import { exchangeRates } from "./seedData/exchangeRates";
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
@@ -8,6 +14,17 @@ import config from 'config';
 const prisma = new PrismaClient()
 
 async function main() {
+
+  await prisma.contacts.deleteMany();
+  await prisma.email.deleteMany();
+  await prisma.phone.deleteMany();
+  await prisma.address.deleteMany();
+  await prisma.products.deleteMany();
+  await prisma.options.deleteMany();
+  await prisma.pricelists.deleteMany();
+  await prisma.pricelistDetails.deleteMany();
+  await prisma.xchangeRate.deleteMany();
+  await prisma.xchangeRateDetails.deleteMany();
 
   users.forEach(async (user) => {
 

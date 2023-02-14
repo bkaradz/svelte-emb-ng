@@ -61,7 +61,7 @@ export const pricelists = [
         "name": "pricelist2",
         "isDefault": true,
         "isActive": true,
-        "pricelists": [
+        "PricelistDetails": [
             {
                 "embroideryTypes": "flat",
                 "minimumQuantity": 3,
