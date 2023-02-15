@@ -71,6 +71,7 @@ export const calculateProductPrices = (product: Products, pricelist: NewPricelis
 
 
 	} catch (err: any) {
+		console.log("🚀 ~ file: calculateAllPrice.product.services.ts:74 ~ calculateProductPrices ~ err", err)
 		logger.error(`Error: ${err}`);
 		throw new Error(`Error:  ${err?.message}`);
 	}
