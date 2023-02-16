@@ -1,11 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-// import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
-import { contacts } from "./seedData/contacts";
-import { products } from "./seedData/products";
-import { users } from "./seedData/users";
-import { options } from "./seedData/options";
-import { pricelists, } from "./seedData/pricelists";
-import { exchangeRates } from "./seedData/exchangeRates";
+import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
+// import { contacts } from "./seedData/contacts";
+// import { products } from "./seedData/products";
+// import { users } from "./seedData/users";
+// import { options } from "./seedData/options";
+// import { pricelists, } from "./seedData/pricelists";
+// import { exchangeRates } from "./seedData/exchangeRates";
+import { setMonetaryValue } from '../src/lib/services/monetary';
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
@@ -95,12 +96,18 @@ async function main() {
 
   pricelists.forEach(async (pricelist) => {
 
+    const subPrices = pricelist.PricelistDetails.map((list) => {
+      return {
+        ...list,
+        pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
+        minimumPrice: setMonetaryValue(list.minimumPrice)
+      };
+    });
+
     await prisma.pricelists.create({
       data: {
         ...pricelist,
-        PricelistDetails: {
-          create: pricelist.PricelistDetails
-        },
+        PricelistDetails: { createMany: { data: subPrices } }
       }
     })
   })
