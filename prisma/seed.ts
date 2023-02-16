@@ -1,15 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
-// import { contacts } from "./seedData/contacts";
-// import { products } from "./seedData/products";
-// import { users } from "./seedData/users";
-// import { options } from "./seedData/options";
-// import { pricelists, } from "./seedData/pricelists";
-// import { exchangeRates } from "./seedData/exchangeRates";
-import { setMonetaryValue } from '../src/lib/services/monetary';
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
+import { dinero } from 'dinero.js';
+import { USD } from '@dinero.js/currencies';
 
 
 const prisma = new PrismaClient()
@@ -42,7 +37,7 @@ async function main() {
       isUserActive: true
     };
 
-    await prisma.contacts.create({
+    const adminPromise = prisma.contacts.create({
       data: {
         ...user,
         ...role,
@@ -57,72 +52,86 @@ async function main() {
         }
       }
     })
-  })
 
-  contacts.forEach(async (contact) => {
+    const admin = await Promise.all([adminPromise])
+    const adminId = admin[0].id
 
-    await prisma.contacts.create({
-      data: {
-        ...contact,
-        isActive: true,
-        isCorporate: false,
-        isUser: false,
-        email: {
-          create: contact.email
-        },
-        phone: {
-          create: contact.phone
-        },
-        address: {
-          create: contact.address
+    contacts.forEach(async (contact) => {
+
+      await prisma.contacts.create({
+        data: {
+          "createdBy": adminId,
+          ...contact,
+          isActive: true,
+          isCorporate: false,
+          isUser: false,
+          email: {
+            create: contact.email
+          },
+          phone: {
+            create: contact.phone
+          },
+          address: {
+            create: contact.address
+          }
         }
-      }
+      })
     })
+
+    products.forEach(async (product) => {
+      await prisma.products.create({
+        data: {
+          "createdBy": adminId,
+          ...product
+        }
+      })
+    })
+
+    options.forEach(async (option) => {
+
+      await prisma.options.create({
+        data: {
+          "createdBy": adminId,
+          ...option
+        }
+      })
+    })
+
+    pricelists.forEach(async (pricelist) => {
+      const subPrices = pricelist.PricelistDetails.map((list) => {
+        const pricePerThousandStitches = (Math.ceil(list.pricePerThousandStitches * 100))
+        const minimumPrice = (Math.ceil(list.minimumPrice * 100))
+        return {
+          ...list,
+          pricePerThousandStitches: JSON.stringify(dinero({ amount: pricePerThousandStitches, currency: USD })),
+          minimumPrice: JSON.stringify(dinero({ amount: minimumPrice, currency: USD }))
+        };
+      });
+
+      await prisma.pricelists.create({
+        data: {
+          "createdBy": adminId,
+          ...pricelist,
+          PricelistDetails: { createMany: { data: subPrices } }
+        }
+      })
+    })
+
+    exchangeRates.forEach(async (rate) => {
+
+      await prisma.xchangeRate.create({
+        data: {
+          "createdBy": adminId,
+          ...rate,
+          XchangeRateDetails: {
+            create: rate.XchangeRateDetails
+          },
+        }
+      })
+    })
+
   })
 
-  products.forEach(async (product) => {
-    await prisma.products.create({
-      data: product
-    })
-  })
-
-
-  options.forEach(async (option) => {
-
-    await prisma.options.create({
-      data: option
-    })
-  })
-
-  pricelists.forEach(async (pricelist) => {
-
-    const subPrices = pricelist.PricelistDetails.map((list) => {
-      return {
-        ...list,
-        pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
-        minimumPrice: setMonetaryValue(list.minimumPrice)
-      };
-    });
-
-    await prisma.pricelists.create({
-      data: {
-        ...pricelist,
-        PricelistDetails: { createMany: { data: subPrices } }
-      }
-    })
-  })
-
-  exchangeRates.forEach(async (rate) => {
-
-    await prisma.xchangeRate.create({
-      data: {
-        ...rate,
-        XchangeRateDetails: {
-          create: rate.XchangeRateDetails
-        },
-      }
-    })
-  })
 }
 
 main().catch(e => {

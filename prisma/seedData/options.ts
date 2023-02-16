@@ -1,6 +1,6 @@
 export const options = [
     {
-        "createdBy": 1,
+
         "group": "userRoles",
         "isActive": true,
         "isDefault": false,
@@ -8,7 +8,7 @@ export const options = [
         "value": "admin",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryTypes",
         "isActive": true,
         "isDefault": false,
@@ -16,7 +16,7 @@ export const options = [
         "value": "applique",
     },
     {
-        "createdBy": 1,
+
         "group": "currency",
         "isActive": true,
         "isDefault": false,
@@ -24,7 +24,7 @@ export const options = [
         "value": "BWP",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryTypes",
         "isActive": true,
         "isDefault": false,
@@ -32,7 +32,7 @@ export const options = [
         "value": "cap",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -40,7 +40,7 @@ export const options = [
         "value": "capBack",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -48,7 +48,7 @@ export const options = [
         "value": "capFront",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -56,7 +56,7 @@ export const options = [
         "value": "capLeftSide",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -64,7 +64,7 @@ export const options = [
         "value": "capRightSide",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": true,
@@ -72,7 +72,7 @@ export const options = [
         "value": "embroidery",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryTypes",
         "isActive": true,
         "isDefault": true,
@@ -80,7 +80,7 @@ export const options = [
         "value": "flat",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": true,
@@ -88,7 +88,7 @@ export const options = [
         "value": "frontLeft",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -96,7 +96,7 @@ export const options = [
         "value": "frontRight",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -104,7 +104,7 @@ export const options = [
         "value": "golfShirts",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -112,7 +112,7 @@ export const options = [
         "value": "leftSleeve",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -120,7 +120,7 @@ export const options = [
         "value": "LowerBack",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -128,7 +128,7 @@ export const options = [
         "value": "masks",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryTypes",
         "isActive": true,
         "isDefault": false,
@@ -136,7 +136,7 @@ export const options = [
         "value": "nameTag",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -144,7 +144,7 @@ export const options = [
         "value": "needles",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -152,7 +152,7 @@ export const options = [
         "value": "prewoundBobbins",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -160,7 +160,7 @@ export const options = [
         "value": "rightSleeve",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -168,7 +168,7 @@ export const options = [
         "value": "roundNeck",
     },
     {
-        "createdBy": 1,
+
         "group": "userRoles",
         "isActive": true,
         "isDefault": false,
@@ -176,7 +176,7 @@ export const options = [
         "value": "sales",
     },
     {
-        "createdBy": 1,
+
         "group": "currency",
         "isActive": true,
         "isDefault": false,
@@ -184,7 +184,7 @@ export const options = [
         "value": "ZAR",
     },
     {
-        "createdBy": 1,
+
         "group": "productCategories",
         "isActive": true,
         "isDefault": false,
@@ -192,7 +192,7 @@ export const options = [
         "value": "threads",
     },
     {
-        "createdBy": 1,
+
         "group": "currency",
         "isActive": true,
         "isDefault": true,
@@ -200,7 +200,7 @@ export const options = [
         "value": "USD",
     },
     {
-        "createdBy": 1,
+
         "group": "embroideryPositions",
         "isActive": true,
         "isDefault": false,
@@ -208,7 +208,7 @@ export const options = [
         "value": "UpperBack",
     },
     {
-        "createdBy": 1,
+
         "group": "userRoles",
         "isActive": true,
         "isDefault": true,
@@ -216,7 +216,7 @@ export const options = [
         "value": "user",
     },
     {
-        "createdBy": 1,
+
         "group": "currency",
         "isActive": true,
         "isDefault": false,
@@ -224,7 +224,7 @@ export const options = [
         "value": "ZWB",
     },
     {
-        "createdBy": 1,
+
         "group": "currency",
         "isActive": true,
         "isDefault": false,

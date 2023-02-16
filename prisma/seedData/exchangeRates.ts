@@ -1,6 +1,5 @@
 export const exchangeRates = [
     {
-        "createdBy": 1,
         "isActive": true,
         "isDefault": true,
         "XchangeRateDetails": [
