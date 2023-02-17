@@ -6,6 +6,7 @@
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
 	import type { Contacts, Options, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
 	import { dinero, multiply } from 'dinero.js';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
 	type OrderType = Orders & {
 		Pricelists: Pricelists;
@@ -31,7 +32,10 @@
 				<h1 class="text-xl capitalize">Order</h1>
 			</div>
 			{#if data.order}
-				<ul class="text-xs mt-4">
+				<div>
+					<h1 class=" pl-2 mt-2 font-semibold">{generateSONumber(data.order.id)}</h1>
+				</div>
+				<ul class="text-xs mt-2">
 					{#each order.OrderLine as lineItem}
 						{@const totalPrice = multiply(dinero(lineItem.unitPrice), lineItem.quantity)}
 						<li class="gird grid-rows-2 border-b border-pickled-bluewood-400 py-1 px-2">

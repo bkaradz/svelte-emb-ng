@@ -12,40 +12,41 @@ datasource db {
 }
 
 model Contacts {
-  id                   Int              @id @default(autoincrement())
+  id                   Int                  @id @default(autoincrement())
   createdBy            Int?
-  user                 Contacts?        @relation("userCreatedBy", fields: [createdBy], references: [id])
-  UserContacts         Contacts[]       @relation("userCreatedBy")
+  user                 Contacts?            @relation("userCreatedBy", fields: [createdBy], references: [id])
+  UserContacts         Contacts[]           @relation("userCreatedBy")
   organisationID       Int?
-  organisation         Contacts?        @relation("organisation", fields: [organisationID], references: [id])
-  organisationContacts Contacts[]       @relation("organisation")
-  name                 String           @unique
-  isCorporate          Boolean          @default(false)
+  organisation         Contacts?            @relation("organisation", fields: [organisationID], references: [id])
+  organisationContacts Contacts[]           @relation("organisation")
+  name                 String               @unique
+  isCorporate          Boolean              @default(false)
   notes                String?
   vatOrBpNo            String?
   email                Email[]
   phone                Phone[]
   address              Address[]
-  balanceDue           Json?            @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
-  totalReceipts        Json?            @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
-  isActive             Boolean          @default(true)
-  isUserActive         Boolean          @default(false)
-  isUser               Boolean          @default(false)
-  userRole             String           @default("USER")
+  balanceDue           Json?                @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
+  totalReceipts        Json?                @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
+  isActive             Boolean              @default(true)
+  isUserActive         Boolean              @default(false)
+  isUser               Boolean              @default(false)
+  userRole             String               @default("USER")
   password             String?
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt()
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt()
   Products             Products[]
   Sessions             Sessions[]
   Options              Options[]
   Pricelists           Pricelists[]
-  customerContact      Orders[]         @relation("customerID")
-  createdOrder         Orders[]         @relation("createdBy")
-  customerPayment      Payments[]       @relation("customerID")
-  createdPayment       Payments[]       @relation("createdBy")
-  PaymentDetails       PaymentDetails[] @relation("createdBy")
-  PaymentType          PaymentType[]    @relation("createdBy")
-  XchangeRate          XchangeRate[]    @relation("createdBy")
+  customerContact      Orders[]             @relation("customerID")
+  createdOrder         Orders[]             @relation("createdBy")
+  customerPayment      Payments[]           @relation("customerID")
+  createdPayment       Payments[]           @relation("createdBy")
+  PaymentDetails       PaymentDetails[]     @relation("createdBy")
+  PaymentType          PaymentType[]        @relation("createdBy")
+  XchangeRate          XchangeRate[]        @relation("createdBy")
+  PaymentTypeOptions   PaymentTypeOptions[] @relation("createdBy")
 }
 
 model Phone {
@@ -202,10 +203,22 @@ model PaymentType {
   createdBy        Int
   PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
   paymentDetailsId Int?
-
+  name             String
   // TODO: Added fields
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt()
+}
+
+model PaymentTypeOptions {
+  id                        Int      @id @default(autoincrement())
+  createdPaymentTypeOptions Contacts @relation("createdBy", fields: [createdBy], references: [id])
+  createdBy                 Int
+  group                     String
+  isActive                  Boolean
+  isDefault                 Boolean
+  label                     String
+  value                     String
+  currency                  String?
 }
 
 model XchangeRate {
