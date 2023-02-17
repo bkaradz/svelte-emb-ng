@@ -58,6 +58,7 @@
 		defaultPricelist: Pricelists;
 		currency: Options[];
 	};
+	$: console.log('🚀 ~ file: +page.svelte:54 ~ data', data);
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
 
@@ -85,7 +86,7 @@
 	let mainOrderInit: Partial<MainOrder> = {
 		id: undefined,
 		customersID: undefined,
-		pricelistsID: data.defaultPricelist.id,
+		pricelistsID: data.defaultPricelist.id, // To Look into this
 		isActive: true,
 		accountsStatus: undefined,
 		orderDate: TODAY,

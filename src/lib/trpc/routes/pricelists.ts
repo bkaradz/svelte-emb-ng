@@ -72,6 +72,11 @@ export const pricelists = router({
       throw new Error("Default pricelist more than one");
     }
 
+    if (pricelist.length === 0) {
+      console.log(' Entered zero pricelist');
+      throw new Error("Default pricelist not found");
+    }
+
     return pricelist[0];
   }),
   saveOrUpdatePricelist: protectedProcedure.input(savePricelistSchema).mutation(async ({ input, ctx }) => {
