@@ -3,7 +3,7 @@
 	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import type { Options } from '@prisma/client';
+	import type { PaymentTypeOptions } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 
@@ -11,17 +11,22 @@
 		'Group',
 		'Label',
 		'Value',
+		'Currency',
 		'Active',
 		'Default',
 		'Edit/Save',
 		'Delete & Add Row'
 	];
 
-	type newOptions = Omit<Options, 'createdAt' | 'updatedAt' | 'createdBy' | 'id'> & {
+	type newOptions = Omit<
+		PaymentTypeOptions,
+		'createdAt' | 'updatedAt' | 'createdBy' | 'id' | 'currency'
+	> & {
 		id?: number | string;
+		currency?: string;
 	};
 
-	let optionsList: newOptions[] = [];
+	let paymentTypeOptionsList: newOptions[] = [];
 
 	let selectedGroup = 'all';
 
@@ -31,8 +36,8 @@
 
 	let isEditableID: undefined | number | string = undefined;
 
-	$: if (optionsList.length) {
-		optionsList.forEach((list) => {
+	$: if (paymentTypeOptionsList.length) {
+		paymentTypeOptionsList.forEach((list) => {
 			groupList.add(list.group);
 		});
 		groupList = groupList;
@@ -50,22 +55,23 @@
 	$: handleAddRow = () => {
 		const id = crypto.randomUUID();
 		isEditableID = id;
-		optionsList = [
-			...optionsList,
+		paymentTypeOptionsList = [
+			...paymentTypeOptionsList,
 			{
 				id: id,
 				group: selectedGroup,
 				label: 'Edit...',
 				value: 'Edit...',
 				isActive: true,
-				isDefault: false
+				isDefault: false,
+				currency: undefined
 			}
 		];
 	};
 
 	const deleteOption = async (id: number) => {
 		try {
-			await trpc().options.deleteById.mutate(id);
+			await trpc().paymentTypeOptions.deleteById.mutate(id);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -96,12 +102,16 @@
 
 	const updateOrSaveOptions = async (finalData: newOptions) => {
 		try {
-			if (typeof finalData?.id === 'string') {
+			if (typeof finalData?.id === 'string' || finalData?.id === undefined) {
 				// Remove id
 				delete finalData.id;
 			}
+			if (finalData?.currency === undefined) {
+				// Remove id
+				delete finalData.currency;
+			}
 
-			await trpc().options.saveOrUpdateOption.mutate(finalData);
+			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(finalData);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -112,7 +122,7 @@
 
 	const getOptions = async () => {
 		try {
-			optionsList = (await trpc().options.getOptions.query({})) as unknown as Options[];
+			paymentTypeOptionsList = await trpc().paymentTypeOptions.getPayments.query({});
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -126,7 +136,7 @@
 <!-- Table start -->
 <div class="bg-white p-2 shadow-lg">
 	<div>
-		{#if optionsList.length}
+		{#if paymentTypeOptionsList.length}
 			{#each [...groupList] as list, index (index)}
 				<button
 					on:click|preventDefault={() => (selectedGroup = list)}
@@ -149,8 +159,8 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#if optionsList.length}
-				{#each optionsList as list (list.id)}
+			{#if paymentTypeOptionsList.length}
+				{#each paymentTypeOptionsList as list (list.id)}
 					{#if selectedGroup === list.group || selectedGroup === 'all'}
 						<tr
 							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
@@ -184,6 +194,15 @@
 							</td>
 							<td class="px-2 py-1">
 								<input
+									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
+									bind:value={list.currency}
+									disabled={!(isEditableID === list.id)}
+									type="text"
+									name="currency"
+								/>
+							</td>
+							<td class="px-2 py-1">
+								<input
 									bind:checked={list.isActive}
 									disabled={!(isEditableID === list.id)}
 									type="checkbox"
@@ -198,6 +217,7 @@
 									name="isDefault"
 								/>
 							</td>
+
 							<td class="p-1">
 								<button class=" m-0 p-0" on:click|preventDefault={() => handleEditable(list)}>
 									<span class="fill-current text-pickled-bluewood-500">

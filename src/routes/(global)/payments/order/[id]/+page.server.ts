@@ -12,10 +12,15 @@ export const load = (async (event) => {
 		return await router.createCaller(await createContext(event)).options.getOptions({ group: 'currency' })
 	}
 
+	const paymentTypeOptions = async () => {
+		return await router.createCaller(await createContext(event)).paymentTypeOptions.getPayments({})
+	}
+
 
 
 	return {
 		order: order(),
-		currenciesOptions: currenciesOptions()
+		currenciesOptions: currenciesOptions(),
+		paymentTypeOptions: paymentTypeOptions()
 	};
 }) satisfies PageServerLoad;

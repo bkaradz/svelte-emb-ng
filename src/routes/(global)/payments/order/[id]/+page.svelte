@@ -4,7 +4,15 @@
 	import { format } from '$lib/services/monetary';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
-	import type { Contacts, Options, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import type {
+		Contacts,
+		Options,
+		OrderLine,
+		Orders,
+		PaymentTypeOptions,
+		Pricelists,
+		Products
+	} from '@prisma/client';
 	import { dinero, multiply } from 'dinero.js';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
@@ -18,7 +26,11 @@
 
 	$: promise = handleCartCalculations(data.order, $selectedCurrency);
 
-	export let data: { order: OrderType; currenciesOptions: Options };
+	export let data: {
+		order: OrderType;
+		currenciesOptions: Options;
+		paymentTypeOptions: PaymentTypeOptions[];
+	};
 </script>
 
 <svelte:head>
@@ -80,7 +92,7 @@
 				<h1 class="text-xl capitalize">Payments Details</h1>
 			</div>
 			<div>
-				<PaymentDetails {grandTotal} />
+				<PaymentDetails {grandTotal} paymentTypeOptions={data?.paymentTypeOptions} />
 			</div>
 		</div>
 	{/await}

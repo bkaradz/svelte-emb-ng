@@ -5,11 +5,11 @@
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
-	import { paymentData } from '$lib/tempData';
-	import type { PaymentData } from '$lib/tempData';
 	import { toasts } from '$lib/stores/toasts.store';
+	import type { PaymentTypeOptions } from '@prisma/client';
 
 	export let grandTotal: Dinero<number>;
+	export let paymentTypeOptions: PaymentTypeOptions[];
 
 	let paidInputValue: number = 0;
 
@@ -26,10 +26,10 @@
 	let paidCurrenciesArray = [...paidCurrencies.keys()];
 
 	const filterPayments = (type: string) => {
-		return paymentData.filter((item) => item.group === type);
+		return paymentTypeOptions.filter((item) => item.group === type);
 	};
 
-	const addPaidAmount = (paymentData: PaymentData) => {
+	const addPaidAmount = (paymentTypeOptions: PaymentTypeOptions) => {
 		if (paidInputValue <= 0) {
 			toasts.add({
 				message: 'Please add paid amount',
@@ -46,7 +46,7 @@
 			return;
 		}
 
-		if (!paymentData.currency) {
+		if (!paymentTypeOptions.currency) {
 			toasts.add({
 				message: 'Selected currency not found',
 				type: 'error'
@@ -54,7 +54,7 @@
 			return;
 		}
 
-		const filterSelectCurrency = $currenciesOptions.get(paymentData.currency);
+		const filterSelectCurrency = $currenciesOptions.get(paymentTypeOptions.currency);
 		const defaultCurrency = $currenciesOptions.get('USD');
 
 		if (!defaultCurrency) {
@@ -97,8 +97,8 @@
 			return;
 		}
 
-		paidCurrencies.set(paymentData.value, {
-			paymentType: paymentData.label,
+		paidCurrencies.set(paymentTypeOptions.value, {
+			paymentType: paymentTypeOptions.label,
 			value: paidInputValue,
 			paidDefaultCurrency: convertAmount,
 			paidGlobalCurrency: convertRateAmount

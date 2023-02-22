@@ -2,7 +2,9 @@ import logger from '$lib/utility/logger';
 import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
 import parseCsv from '$lib/utility/parseCsv';
-import type { Options } from '@prisma/client';
+import type { PaymentTypeOptions } from '@prisma/client';
+import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
+import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -15,7 +17,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = parseInt(locals.user.id);
+		const createdBy = parseInt(locals.user.id);
 
 		const data = await request.formData();
 
@@ -32,33 +34,51 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const csvString: string = await file.text();
+		console.log("🚀 ~ file: +server.ts:37 ~ constPOST:RequestHandler= ~ csvString", csvString)
 
-		const optionsArray = (await parseCsv(csvString)) as Options[];
+		const paymentTypeOptionsArray = (await parseCsv(csvString)) as PaymentTypeOptions[];
 
-		const allDocsPromises: Options[] = [];
+		const allDocsPromises: PaymentTypeOptions[] = [];
 
-		optionsArray.forEach(async (element) => {
-			let { label, group, value, isActive, isDefault } = element;
+		paymentTypeOptionsArray.forEach(async (element) => {
 
-			label = label.trim();
-			group = group.trim();
-			value = value.trim();
-			isActive = isActive.toLowerCase() === 'true' ? true : false;
-			isDefault = isDefault.toLowerCase() === 'true' ? true : false;
+			element.isActive = element.isActive.toLowerCase() === 'true'
+			element.isDefault = element.isDefault.toLowerCase() === 'true'
 
-			const option = {
-				createdBy: createDBy,
-				label,
-				group,
-				value,
-				isActive,
-				isDefault
-			};
+			const parsedPaymentTypesOptions = savePaymentTypesOptionsSchema.safeParse(element);
 
-			allDocsPromises.push(option);
+			if (!parsedPaymentTypesOptions.success) {
+				const errorMap = zodErrorMessagesMap(parsedPaymentTypesOptions);
+
+				if (errorMap) {
+					// TODO: Log error
+					console.log('Error Map', errorMap);
+				}
+				return;
+			}
+
+			// const { group, isActive, isDefault, label, value, currency } = element;
+
+			// label = label.trim();
+			// group = group.trim();
+			// value = value.trim();
+			// isActive = isActive.toLowerCase() === 'true' ? true : false;
+			// isDefault = isDefault.toLowerCase() === 'true' ? true : false;
+
+			// const option = {
+			// 	createdBy,
+			// 	label,
+			// 	group,
+			// 	value,
+			// 	isActive,
+			// 	isDefault,
+			// 	currency
+			// };
+
+			allDocsPromises.push({ createdBy, ...(parsedPaymentTypesOptions.data) });
 		});
 
-		const optionsQuery = await prisma.options.createMany({ data: allDocsPromises });
+		const optionsQuery = await prisma.paymentTypeOptions.createMany({ data: allDocsPromises });
 
 		return new Response(JSON.stringify(optionsQuery));
 	} catch (err: any) {
