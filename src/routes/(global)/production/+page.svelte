@@ -58,7 +58,6 @@
 		defaultPricelist: Pricelists;
 		currency: Options[];
 	};
-	$: console.log('🚀 ~ file: +page.svelte:54 ~ data', data);
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
 

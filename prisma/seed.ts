@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { contacts, products, users, options, pricelists, exchangeRates } from "./seedData";
+import { contacts, products, users, options, pricelists, exchangeRates, paymentTypeOptions } from "./seedData";
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
@@ -21,7 +21,8 @@ async function main() {
   await prisma.pricelistDetails.deleteMany();
   await prisma.xchangeRate.deleteMany();
   await prisma.xchangeRateDetails.deleteMany();
-
+  await prisma.paymentTypeOptions.deleteMany();
+  
   users.forEach(async (user) => {
 
     const salt = await bcrypt.genSalt(config.get('saltWorkFactor'));
@@ -90,6 +91,16 @@ async function main() {
     options.forEach(async (option) => {
 
       await prisma.options.create({
+        data: {
+          "createdBy": adminId,
+          ...option
+        }
+      })
+    })
+
+    paymentTypeOptions.forEach(async (option) => {
+
+      await prisma.paymentTypeOptions.create({
         data: {
           "createdBy": adminId,
           ...option

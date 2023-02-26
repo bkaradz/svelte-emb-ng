@@ -34,7 +34,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const csvString: string = await file.text();
-		console.log("🚀 ~ file: +server.ts:37 ~ constPOST:RequestHandler= ~ csvString", csvString)
 
 		const paymentTypeOptionsArray = (await parseCsv(csvString)) as PaymentTypeOptions[];
 
