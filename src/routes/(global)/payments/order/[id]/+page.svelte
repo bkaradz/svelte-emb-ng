@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ShowCash from '$lib/components/cart/ShowCash.svelte';
 	import PaymentDetails from '$lib/components/payments/PaymentDetails.svelte';
 	import { format } from '$lib/services/monetary';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';

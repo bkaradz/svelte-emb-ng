@@ -37,6 +37,7 @@
 	import ShowBancAbc from '$lib/components/cart/ShowBancABC.svelte';
 	import ShowStewartBank from '$lib/components/cart/ShowStewartBank.svelte';
 	import ShowOthers from '$lib/components/cart/ShowOthers.svelte';
+	import type { Snapshot } from './$types';
 
 	let errorMessages = new Map();
 
@@ -137,7 +138,7 @@
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 	};
 
-	let customerSearch: any = { name: null };
+	let customerSearch: Partial<Contacts> = { name: undefined };
 
 	$: if (customerSearch.name) {
 		mainOrder.customersID = customerSearch.id;
@@ -210,7 +211,7 @@
 			handleErrors(err);
 		} finally {
 			mainOrder = { ...mainOrderInit, OrderLine: [] };
-			customerSearch = { name: null };
+			customerSearch = { name: undefined };
 			cartItem.reset();
 			toasts.add({ message: `The order was created`, type: 'success' });
 		}
@@ -249,6 +250,11 @@
 		paymentTabs.set('showSave', false);
 		paymentTabs.set(nameType, true);
 	};
+
+	export const snapshot: Snapshot = {
+    capture: () => customerSearch,
+    restore: (value) => customerSearch = value
+  };
 </script>
 
 <svelte:head>

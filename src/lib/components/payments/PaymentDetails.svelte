@@ -7,6 +7,7 @@
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
 	import { toasts } from '$lib/stores/toasts.store';
 	import type { PaymentTypeOptions } from '@prisma/client';
+	import type { Snapshot } from '../../../routes/$types';
 
 	export let grandTotal: Dinero<number>;
 	export let paymentTypeOptions: PaymentTypeOptions[];
@@ -132,6 +133,11 @@
 	let selectedPayment = 'cash';
 	let cashOptions = 'USD';
 	let referenceValue: string | undefined = undefined;
+
+	export const snapshot: Snapshot = {
+		capture: () => paidCurrencies,
+		restore: (value) => (paidCurrencies = value)
+	};
 </script>
 
 <div class="grid grid-cols-4 mt-10 space-x-2">
