@@ -37,6 +37,7 @@
 		"@types/testing-library__jest-dom": "^5.14.5",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
+		"@vitejs/plugin-basic-ssl": "^1.0.1",
 		"@vitest/ui": "^0.20.2",
 		"autoprefixer": "^10.4.7",
 		"bcrypt": "^5.0.1",

@@ -73,7 +73,6 @@ export const pricelists = router({
     }
 
     if (pricelist.length === 0) {
-      console.log(' Entered zero pricelist');
       throw new Error("Default pricelist not found");
     }
 

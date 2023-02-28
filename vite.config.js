@@ -1,9 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite'
 import { configDefaults } from 'vitest/config'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [sveltekit()],
+  plugins: [basicSsl(), sveltekit()],
   define: {
     // Eliminate in-source test code
     'import.meta.vitest': 'undefined'
