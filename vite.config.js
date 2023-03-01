@@ -4,7 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 /** @type {import('vite').UserConfig} */
 const config = {
-  plugins: [basicSsl(), sveltekit()],
+  plugins: [sveltekit()],
   define: {
     // Eliminate in-source test code
     'import.meta.vitest': 'undefined'
