@@ -4,6 +4,7 @@
 	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
 
@@ -55,13 +56,13 @@
 
 		if (unUsedCurrencies.length > 0) {
 			rateDetailsInit = {
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				currency: unUsedCurrencies[0],
 				rate: 1
 			};
 		} else {
 			rateDetailsInit = {
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				currency: '',
 				rate: 0
 			};

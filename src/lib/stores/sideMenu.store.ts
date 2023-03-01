@@ -1,4 +1,5 @@
 import { readable } from 'svelte/store';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
 	svgContacts,
@@ -15,61 +16,61 @@ import {
 
 const anchorTags = [
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/',
 		name: 'Dashboard',
 		icon: svgChart
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/contacts',
 		name: 'Customer',
 		icon: svgContacts
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/products',
 		name: 'Products',
 		icon: svgShoppingBag
 	},
 	// {
-	// 	id: crypto.randomUUID(),
+	// 	id: uuidv4(),
 	// 	url: '/cart',
 	// 	name: 'Cart',
 	// 	icon: svgCart
 	// },
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/orders',
 		name: 'Sales',
 		icon: svgDollar
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/payments',
 		name: 'Payments',
 		icon: svgCreditCard
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/reports',
 		name: 'Reports',
 		icon: svgDocumentSearch
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/production',
 		name: 'Production',
 		icon: svgClipboardList
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/test',
 		name: 'Test',
 		icon: svgQrCode
 	},
 	{
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		url: '/settings',
 		name: 'Settings',
 		icon: svgAdjustments

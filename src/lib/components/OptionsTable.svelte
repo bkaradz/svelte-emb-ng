@@ -6,6 +6,7 @@
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { v4 as uuidv4 } from 'uuid';
 
 	export let tableHeadings = [
 		'Group',
@@ -48,7 +49,7 @@
 	};
 
 	$: handleAddRow = () => {
-		const id = crypto.randomUUID();
+		const id = uuidv4();
 		isEditableID = id;
 		optionsList = [
 			...optionsList,

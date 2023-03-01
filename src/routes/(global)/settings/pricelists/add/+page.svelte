@@ -9,6 +9,7 @@
 	import dayjs from 'dayjs';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { v4 as uuidv4 } from 'uuid';
 
 	export let data: { embroideryTypes: Options };
 
@@ -75,7 +76,7 @@
 	let idToRemove: string[] = [];
 
 	$: handleAddRow = () => {
-		const id = crypto.randomUUID();
+		const id = uuidv4();
 
 		if (!Array.isArray(pricelist?.pricelistDetails)) {
 			return;

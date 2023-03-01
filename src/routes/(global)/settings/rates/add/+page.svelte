@@ -8,6 +8,7 @@
 	import { saveXchangeRateSchema } from '$lib/validation/saveXchangeRate.validate';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
 
@@ -62,13 +63,13 @@
 
 		if (unUsedCurrencies.length > 0) {
 			rateDetailsInit = {
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				currency: unUsedCurrencies[0],
 				rate: 1
 			};
 		} else {
 			rateDetailsInit = {
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				currency: '',
 				rate: 0
 			};
