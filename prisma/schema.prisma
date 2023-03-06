@@ -45,7 +45,7 @@ model Contacts {
   createdPayment       Payments[]           @relation("createdBy")
   PaymentDetails       PaymentDetails[]     @relation("createdBy")
   PaymentType          PaymentType[]        @relation("createdBy")
-  XchangeRate          XchangeRate[]        @relation("createdBy")
+  ExchangeRate          ExchangeRate[]        @relation("createdBy")
   PaymentTypeOptions   PaymentTypeOptions[] @relation("createdBy")
 }
 
@@ -178,8 +178,8 @@ model Payments {
   customersID     Int
   PaymentDetails  PaymentDetails[]
   Orders          Orders[]
-  XchangeRate     XchangeRate      @relation(fields: [xchangeRateId], references: [id])
-  xchangeRateId   Int
+  ExchangeRate     ExchangeRate      @relation(fields: [exchangeRateId], references: [id])
+  exchangeRateId   Int
   paymentDate     DateTime         @default(now())
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt()
@@ -223,23 +223,23 @@ model PaymentTypeOptions {
   updatedAt                 DateTime @updatedAt()
 }
 
-model XchangeRate {
+model ExchangeRate {
   id                 Int                  @id @default(autoincrement())
-  createdXchange     Contacts             @relation("createdBy", fields: [createdBy], references: [id])
+  createdExchange     Contacts             @relation("createdBy", fields: [createdBy], references: [id])
   createdBy          Int
   isActive           Boolean              @default(true)
   isDefault          Boolean              @default(false)
   xChangeRateDate    DateTime             @default(now())
   Payments           Payments[]
-  XchangeRateDetails XchangeRateDetails[]
+  ExchangeRateDetails ExchangeRateDetails[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt()
 }
 
-model XchangeRateDetails {
+model ExchangeRateDetails {
   id            Int         @id @default(autoincrement())
-  XchangeRate   XchangeRate @relation(fields: [xchangeRateId], references: [id])
-  xchangeRateId Int
+  ExchangeRate   ExchangeRate @relation(fields: [exchangeRateId], references: [id])
+  exchangeRateId Int
   currency      String
   rate          Json        @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
   createdAt     DateTime    @default(now())

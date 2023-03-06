@@ -1,18 +1,18 @@
 import { z } from 'zod';
 
-export const saveXchangeRateDetailsSchema = z.object({
+export const saveExchangeRateDetailsSchema = z.object({
     id: z.number().optional(),
     currency: z.string(),
     rate: z.number()
 }).passthrough();
 
-export const saveXchangeRateSchema = z.object({
+export const saveExchangeRateSchema = z.object({
     id: z.number().optional(),
     isActive: z.boolean().default(true),
     isDefault: z.boolean().default(false),
     xChangeRateDate: z.string().datetime(),
-    XchangeRateDetails: z.array(saveXchangeRateDetailsSchema)
+    ExchangeRateDetails: z.array(saveExchangeRateDetailsSchema)
 }).passthrough();
 
-export type SaveXchangeRate = z.infer<typeof saveXchangeRateSchema>;
-export type SaveXchangeRateKeys = keyof SaveXchangeRate;
+export type SaveExchangeRate = z.infer<typeof saveExchangeRateSchema>;
+export type SaveExchangeRateKeys = keyof SaveExchangeRate;

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import type { Options, XchangeRate, XchangeRateDetails } from '@prisma/client';
+	import type { Options, ExchangeRate, ExchangeRateDetails } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveXchangeRateSchema } from '$lib/validation/saveXchangeRate.validate';
+	import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { v4 as uuidv4 } from 'uuid';
@@ -20,14 +20,14 @@
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	const initRate: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = {
+	const initRate: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = {
 		xChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: false,
-		XchangeRateDetails: []
+		ExchangeRateDetails: []
 	};
 
-	let rates: Partial<XchangeRate> & { XchangeRateDetails: XchangeRateDetails[] } = { ...initRate };
+	let rates: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = { ...initRate };
 
 	let selectedGroup = 'all';
 
@@ -40,7 +40,7 @@
 	let newId = 'New Id';
 
 	const getUsedCurrencies = () => {
-		return rates.XchangeRateDetails.map((rate) => rate.currency);
+		return rates.ExchangeRateDetails.map((rate) => rate.currency);
 	};
 
 	const getUnUsedCurrencies = () => {
@@ -77,7 +77,7 @@
 
 		handleEditable(rateDetailsInit);
 
-		rates.XchangeRateDetails = [...rates.XchangeRateDetails, rateDetailsInit];
+		rates.ExchangeRateDetails = [...rates.ExchangeRateDetails, rateDetailsInit];
 		showButton = usedCurrencies.length + 1 < data.currencyOptions.length;
 	};
 
@@ -101,14 +101,14 @@
 			reqRate.xChangeRateDate = new Date(reqRate.xChangeRateDate).toJSON();
 		}
 
-		reqRate.XchangeRateDetails = reqRate.XchangeRateDetails.map(
-			(rate: Partial<XchangeRateDetails>) => {
+		reqRate.ExchangeRateDetails = reqRate.ExchangeRateDetails.map(
+			(rate: Partial<ExchangeRateDetails>) => {
 				const { id, ...restRate } = rate;
 				return restRate;
 			}
 		);
 
-		const parsedRates = saveXchangeRateSchema.safeParse(reqRate);
+		const parsedRates = saveExchangeRateSchema.safeParse(reqRate);
 
 		if (!parsedRates.success) {
 			const errorMap = zodErrorMessagesMap(parsedRates);
@@ -121,25 +121,25 @@
 		}
 
 		try {
-			await trpc().xchangeRate.saveOrUpdateXchangeRate.mutate(parsedRates.data);
+			await trpc().exchangeRate.saveOrUpdateExchangeRate.mutate(parsedRates.data);
 		} catch (err) {
 			handleErrors(err);
 		} finally {
 			rates = { ...initRate };
-			toasts.add({ message: `Exchange Rate with was added successfully`, type: 'success' });
+			toasts.add({ message: `Eexchange Rate with was added successfully`, type: 'success' });
 		}
 	};
 
-	const handleEditable = (list: XchangeRateDetails) => {
+	const handleEditable = (list: ExchangeRateDetails) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (list: XchangeRateDetails) => {
+	const handleDelete = (list: ExchangeRateDetails) => {
 		isEditableID = null;
-		rates.XchangeRateDetails = rates.XchangeRateDetails.filter((rate) => rate.id !== list.id);
+		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== list.id);
 		usedCurrencies = getUsedCurrencies();
 		showButton = usedCurrencies.length < data.currencyOptions.length;
 	};
@@ -147,14 +147,14 @@
 
 {#if rates}
 	<div class="mb-2 bg-white p-4">
-		<h1>Add Exchange Rates</h1>
+		<h1>Add Eexchange Rates</h1>
 	</div>
 	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
 					<label class=" text-sm" for="id"
-						>Exchange Rate Id
+						>Eexchange Rate Id
 						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
 					</label>
 					<label class="text-sm" for="xChangeRateDate">
@@ -209,7 +209,7 @@
 							</tr>
 						</thead>
 						<tbody class="overflow-y-auto">
-							{#each rates.XchangeRateDetails as list (list.id)}
+							{#each rates.ExchangeRateDetails as list (list.id)}
 								<tr
 									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>

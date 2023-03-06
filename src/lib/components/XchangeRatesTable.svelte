@@ -4,29 +4,29 @@
 	import { svgTrash, svgView } from '$lib/utility/svgLogos';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-	import type { XchangeRate } from '@prisma/client';
+	import type { ExchangeRate } from '@prisma/client';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
-	let rates: XchangeRate[] = [];
+	let rates: ExchangeRate[] = [];
 
-	const handleDelete = async (list: XchangeRate) => {
+	const handleDelete = async (list: ExchangeRate) => {
 		if (list.isDefault) {
 			toasts.add({
-				message: 'You can now delete the default Exchange Rates',
+				message: 'You can now delete the default Eexchange Rates',
 				type: 'error'
 			});
 			return;
 		}
 		try {
-			await trpc().xchangeRate.deleteById.mutate(list.id);
+			await trpc().exchangeRate.deleteById.mutate(list.id);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
 			getRates(defaultQueryParams);
-			toasts.add({ message: `Exchange Rate was deleted`, type: 'success' });
+			toasts.add({ message: `Eexchange Rate was deleted`, type: 'success' });
 		}
 	};
 
@@ -34,7 +34,7 @@
 
 	const getRates = async (paramsObj: any) => {
 		try {
-			const resRates = await trpc().xchangeRate.getXchangeRates.query(paramsObj);
+			const resRates = await trpc().exchangeRate.getExchangeRates.query(paramsObj);
 			if (resRates) {
 				rates = resRates;
 			}
@@ -55,7 +55,7 @@
 </script>
 
 <div class="mb-2 flex items-center justify-between bg-white p-4">
-	<h1>Exchange Rates</h1>
+	<h1>Eexchange Rates</h1>
 	<div>
 		<button on:click={handleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
 			>Add Rates</button

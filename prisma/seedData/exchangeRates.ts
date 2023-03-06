@@ -1,8 +1,8 @@
-export const exchangeRates = [
+export const eexchangeRates = [
     {
         "isActive": true,
         "isDefault": true,
-        "XchangeRateDetails": [
+        "ExchangeRateDetails": [
             {
                 "currency": "USD",
                 "rate": 1,

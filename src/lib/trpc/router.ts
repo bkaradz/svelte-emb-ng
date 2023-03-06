@@ -6,7 +6,7 @@ import { options } from '$lib/trpc/routes/options';
 import { authentication } from '$lib/trpc/routes/authentication';
 import { orders } from '$lib/trpc/routes/orders';
 import { pricelists } from '$lib/trpc/routes/pricelists';
-import { xchangeRate } from '$lib/trpc/routes/xchangeRate';
+import { exchangeRate } from '$lib/trpc/routes/exchangeRate';
 import { cart } from '$lib/trpc/routes/cart';
 import { paymentTypeOptions } from '$lib/trpc/routes/paymentTypeOptions';
 import { t } from '$lib/trpc/t';
@@ -20,7 +20,7 @@ export const router = t.router({
   authentication,
   orders,
   pricelists,
-  xchangeRate,
+  exchangeRate,
   cart,
   paymentTypeOptions
 });

@@ -1,5 +1,5 @@
 export * from './contacts'
-export * from './exchangeRates'
+export * from './eexchangeRates'
 export * from './options'
 export * from './pricelists'
 export * from './products'

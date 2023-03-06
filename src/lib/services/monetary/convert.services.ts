@@ -125,27 +125,27 @@ if (browser) {
 	(async () => {
 		// const paramsObj: unknown = { isDefault: true };
 		try {
-			const rates = await trpc().xchangeRate.getDefaultXchangeRate.query()
+			const rates = await trpc().exchangeRate.getDefaultExchangeRate.query()
 
 			if (rates.length === 1) {
 
 				const ratesMap = new Map<string, number>();
-				rates[0]?.XchangeRateDetails.map((rate) => {
+				rates[0]?.ExchangeRateDetails.map((rate) => {
 					if (!(typeof parseInt(rate.rate) === 'number')) {
 						return;
 					}
 					ratesMap.set(rate.currency, parseInt(Math.ceil(parseFloat(rate.rate) * 100)));
 				});
 				if (ratesMap.size === 0) {
-					throw new Error("Exchange Rates not found");
+					throw new Error("Eexchange Rates not found");
 				}
 				currenciesRates = ratesMap;
 			} else {
 				toasts.add({
-					message: 'Please enter one default exchange rate',
+					message: 'Please enter one default eexchange rate',
 					type: 'error'
 				});
-				// throw new Error("Default Exchange Rates more than one found");
+				// throw new Error("Default Eexchange Rates more than one found");
 			}
 
 		} catch (err: unknown) {

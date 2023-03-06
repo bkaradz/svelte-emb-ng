@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { contacts, products, users, options, pricelists, exchangeRates, paymentTypeOptions } from "./seedData";
+import { contacts, products, users, options, pricelists, eexchangeRates, paymentTypeOptions } from "./seedData";
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
@@ -19,8 +19,8 @@ async function main() {
   await prisma.options.deleteMany();
   await prisma.pricelists.deleteMany();
   await prisma.pricelistDetails.deleteMany();
-  await prisma.xchangeRate.deleteMany();
-  await prisma.xchangeRateDetails.deleteMany();
+  await prisma.exchangeRate.deleteMany();
+  await prisma.exchangeRateDetails.deleteMany();
   await prisma.paymentTypeOptions.deleteMany();
   
   users.forEach(async (user) => {
@@ -128,14 +128,14 @@ async function main() {
       })
     })
 
-    exchangeRates.forEach(async (rate) => {
+    eexchangeRates.forEach(async (rate) => {
 
-      await prisma.xchangeRate.create({
+      await prisma.exchangeRate.create({
         data: {
           "createdBy": adminId,
           ...rate,
-          XchangeRateDetails: {
-            create: rate.XchangeRateDetails
+          ExchangeRateDetails: {
+            create: rate.ExchangeRateDetails
           },
         }
       })

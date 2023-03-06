@@ -9,7 +9,7 @@ export const load = (async (event) => {
 	}
 
 	const resultsRates = async () => {
-		return await router.createCaller(await createContext(event)).xchangeRate.getById(parseInt(event.params.id))
+		return await router.createCaller(await createContext(event)).exchangeRate.getById(parseInt(event.params.id))
 	}
 
 	return {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import XchangeRatesTable from '$lib/components/XchangeRatesTable.svelte';
+	import ExchangeRatesTable from '$lib/components/ExchangeRatesTable.svelte';
 </script>
 
 <svelte:head>
 	<title>Settings: Pricelists</title>
 </svelte:head>
 
-<XchangeRatesTable />
+<ExchangeRatesTable />
