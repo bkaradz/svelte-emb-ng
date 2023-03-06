@@ -2,9 +2,17 @@
     import type { PageData } from './$types';
     
     export let data: PageData;
+
+    let banks
 </script>
 
-<h1>Banks</h1>
+<div class="mb-2 bg-white p-4">
+	<h1>Bank Details List</h1>
+</div>
+
+{#if banks}
+	
+{/if}
 
 <style lang="postcss">
    

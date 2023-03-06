@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { contacts, products, users, options, pricelists, eexchangeRates, paymentTypeOptions } from "./seedData";
+import { contacts, products, users, options, pricelists, exchangeRates, paymentTypeOptions } from "./seedData";
 import logger from '../src/lib/utility/logger';
 import bcrypt from 'bcrypt';
 import config from 'config';
@@ -128,7 +128,7 @@ async function main() {
       })
     })
 
-    eexchangeRates.forEach(async (rate) => {
+    exchangeRates.forEach(async (rate) => {
 
       await prisma.exchangeRate.create({
         data: {

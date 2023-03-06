@@ -111,7 +111,7 @@
 		goto(`/contacts`);
 	};
 
-	const handleUpload = async (e: SubmitEvent) => {
+	const handleUpload = async (e: Event) => {
 		try {
 			const formElm = e.target as HTMLFormElement;
 			const formData = new FormData(formElm);

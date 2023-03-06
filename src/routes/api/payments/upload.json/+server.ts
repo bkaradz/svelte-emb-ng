@@ -23,7 +23,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const file = data.get('options');
 
-		if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
+		// if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
+		if (!(file instanceof File)) {
 			logger.error('File is empty');
 			return new Response(JSON.stringify({ message: 'File is empty' }), {
 				headers: {

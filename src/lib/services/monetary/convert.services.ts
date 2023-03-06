@@ -142,7 +142,7 @@ if (browser) {
 				currenciesRates = ratesMap;
 			} else {
 				toasts.add({
-					message: 'Please enter one default eexchange rate',
+					message: 'Please enter one default exchange rate',
 					type: 'error'
 				});
 				// throw new Error("Default Eexchange Rates more than one found");

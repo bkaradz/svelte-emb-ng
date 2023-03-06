@@ -45,8 +45,9 @@ model Contacts {
   createdPayment       Payments[]           @relation("createdBy")
   PaymentDetails       PaymentDetails[]     @relation("createdBy")
   PaymentType          PaymentType[]        @relation("createdBy")
-  ExchangeRate          ExchangeRate[]        @relation("createdBy")
+  ExchangeRate         ExchangeRate[]       @relation("createdBy")
   PaymentTypeOptions   PaymentTypeOptions[] @relation("createdBy")
+  BankAccounts         BankAccounts[]       @relation("createdBy")
 }
 
 model Phone {
@@ -178,8 +179,8 @@ model Payments {
   customersID     Int
   PaymentDetails  PaymentDetails[]
   Orders          Orders[]
-  ExchangeRate     ExchangeRate      @relation(fields: [exchangeRateId], references: [id])
-  exchangeRateId   Int
+  ExchangeRate    ExchangeRate     @relation(fields: [exchangeRateId], references: [id])
+  exchangeRateId  Int
   paymentDate     DateTime         @default(now())
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt()
@@ -223,25 +224,38 @@ model PaymentTypeOptions {
   updatedAt                 DateTime @updatedAt()
 }
 
+model BankAccounts {
+  id                  Int      @id @default(autoincrement())
+  createdBankAccounts Contacts @relation("createdBy", fields: [createdBy], references: [id])
+  createdBy           Int
+  name                String
+  isActive            Boolean
+  isDefault           Boolean
+  accountNo           String
+  address             String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
 model ExchangeRate {
-  id                 Int                  @id @default(autoincrement())
-  createdExchange     Contacts             @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy          Int
-  isActive           Boolean              @default(true)
-  isDefault          Boolean              @default(false)
-  xChangeRateDate    DateTime             @default(now())
-  Payments           Payments[]
+  id                  Int                   @id @default(autoincrement())
+  createdExchange     Contacts              @relation("createdBy", fields: [createdBy], references: [id])
+  createdBy           Int
+  isActive            Boolean               @default(true)
+  isDefault           Boolean               @default(false)
+  xChangeRateDate     DateTime              @default(now())
+  Payments            Payments[]
   ExchangeRateDetails ExchangeRateDetails[]
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt()
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt()
 }
 
 model ExchangeRateDetails {
-  id            Int         @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   ExchangeRate   ExchangeRate @relation(fields: [exchangeRateId], references: [id])
   exchangeRateId Int
-  currency      String
-  rate          Json        @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt()
+  currency       String
+  rate           Json         @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt()
 }

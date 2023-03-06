@@ -79,7 +79,7 @@ export const exchangeRate = router({
     });
 
     if (exchangeRate.length > 1) {
-      throw new Error("Default eexchange rates are more than one");
+      throw new Error("Default exchange rates are more than one");
     }
 
     return exchangeRate;

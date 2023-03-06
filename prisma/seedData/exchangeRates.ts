@@ -1,4 +1,4 @@
-export const eexchangeRates = [
+export const exchangeRates = [
     {
         "isActive": true,
         "isDefault": true,
