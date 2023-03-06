@@ -15,7 +15,7 @@
 	const handleDelete = async (list: ExchangeRate) => {
 		if (list.isDefault) {
 			toasts.add({
-				message: 'You can now delete the default Eexchange Rates',
+				message: 'You can now delete the default exchange Rates',
 				type: 'error'
 			});
 			return;
