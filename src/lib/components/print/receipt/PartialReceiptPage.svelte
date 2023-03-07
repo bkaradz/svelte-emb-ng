@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { format } from '$lib/services/monetary';
 	import small_logo from '$lib/assets/small_logo.png';
-	import { dinero, multiply, type Dinero } from 'dinero.js';
+	import { format } from '$lib/services/monetary';
 	import type { OrderLine } from '@prisma/client';
+	import { dinero, multiply, type Dinero } from 'dinero.js';
 
 	interface Orders extends Record<string, any> {
 		OrderLine: OrderLine[];

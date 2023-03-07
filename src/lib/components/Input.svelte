@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectTextOnFocus, blurOnEscape } from '$lib/utility/inputSelectDirective';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall } from '$lib/utility/svgLogos';
 	export let value = '';
 	export let disabled = false;
@@ -9,7 +9,7 @@
 	export let pending = false;
 	export let messages: string|any[] = [];
 	export let validityClass = '';
-	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
+	export let onInput: Function;
 
 	function typeAction(node: HTMLInputElement) {
 		node.type = type;

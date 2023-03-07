@@ -1,17 +1,16 @@
 <script lang="ts">
-	import logger from '$lib/utility/logger';
-	import { svgAddUser, svgArrow, svgMinusCircle, svgPlusCircle } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
-	import { toasts } from '$lib/stores/toasts.store';
-	import type { Address, Contacts, Email, Phone } from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
-	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import type { Pagination } from '$lib/utility/pagination.util';
+	import { svgAddUser, svgArrow, svgMinusCircle, svgPlusCircle } from '$lib/utility/svgLogos';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { saveContactsSchema } from '$lib/validation/saveContact.validate';
+	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 
 	let errorMessages = new Map();
 
@@ -117,7 +116,7 @@
 			formData.email = [...formData.email, { email: '' }];
 			return;
 		}
-		formData.email = formData.email.filter((email, i) => i !== index);
+		formData.email = formData.email.filter((_email, i) => i !== index);
 	};
 
 	const addPhoneField = (index: number) => {
@@ -125,7 +124,7 @@
 			formData.phone = [...formData.phone, { phone: '' }];
 			return;
 		}
-		formData.phone = formData.phone.filter((phone, i) => i !== index);
+		formData.phone = formData.phone.filter((_phone, i) => i !== index);
 	};
 
 	const addAddressField = (index: number) => {
@@ -133,7 +132,7 @@
 			formData.address = [...formData.address, { address: '' }];
 			return;
 		}
-		formData.address = formData.address.filter((address, i) => i !== index);
+		formData.address = formData.address.filter((_address, i) => i !== index);
 	};
 </script>
 

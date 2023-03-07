@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
-	import { svgTrash, svgView } from '$lib/utility/svgLogos';
-	import dayjs from 'dayjs';
-	import { onMount } from 'svelte';
-	import type { ExchangeRate } from '@prisma/client';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { svgTrash, svgView } from '$lib/utility/svgLogos';
+	import type { ExchangeRate } from '@prisma/client';
+	import dayjs from 'dayjs';
+	import { onMount } from 'svelte';
 
 	export let tableHeadings = ['#', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 

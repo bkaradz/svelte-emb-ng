@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectTextOnFocus, blurOnEscape } from '$lib/utility/inputSelectDirective';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall } from '$lib/utility/svgLogos';
 	export let value = '';
 	export let label = '';
@@ -7,7 +7,7 @@
 	export let pending = false;
 	export let messages = [];
 	export let validityClass = '';
-	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLTextAreaElement }) => {};
+	export let onInput: Function;
 </script>
 
 <div class:pending class={`${validityClass} form-input`}>

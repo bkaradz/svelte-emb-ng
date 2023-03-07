@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Dinero, Currency, Rates } from 'dinero.js';
-	import { convert, dinero, toSnapshot, subtract } from 'dinero.js';
-	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
+	import type { CurrencyType } from '$lib/stores/setCurrency.store';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
-	import type { CurrencyOption, CurrencyType } from '$lib/stores/setCurrency.store';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
+	import type { Dinero } from 'dinero.js';
+	import { dinero, subtract } from 'dinero.js';
 
 	export let grandTotal: Dinero<number>;
 

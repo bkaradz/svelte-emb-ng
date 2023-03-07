@@ -1,6 +1,6 @@
-import type { RequestHandler } from './$types';
 import { deleteSessionCookies, deleteSessions } from '$lib/services/session.services';
 import logger from '$lib/utility/logger';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ cookies, locals }) => {
 	try {

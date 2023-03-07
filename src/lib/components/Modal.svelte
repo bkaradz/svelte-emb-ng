@@ -39,6 +39,7 @@
 
 <svelte:window on:keydown={handle_keydown} />
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="modal-background" on:click={close} />
 
 <div class="modal" role="dialog" aria-modal="true" bind:this={modal}>

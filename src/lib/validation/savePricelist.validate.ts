@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 export const savePricelistDetailsSchema = z.object({
   embroideryTypes: z.string(),
   minimumQuantity: z.number(),

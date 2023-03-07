@@ -2,13 +2,11 @@
 import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
 import { getPagination } from '$lib/utility/pagination.util';
-import omit from 'lodash-es/omit';
-import { protectedProcedure } from '../middleware/auth';
+import { saveContactsSchema } from '$lib/validation/saveContact.validate';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
+import omit from 'lodash-es/omit';
 import { z } from 'zod';
-import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
-import normalizePhone from '$lib/utility/normalizePhone.util';
-import type { Prisma } from '@prisma/client';
+import { protectedProcedure } from '../middleware/auth';
 
 export const contacts = router({
     getContacts: protectedProcedure

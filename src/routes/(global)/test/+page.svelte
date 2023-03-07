@@ -3,11 +3,9 @@
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
 	import {
 		currenciesOptions,
-		selectedCurrency,
-		type CurrencyOption,
-		type CurrencyType
+		selectedCurrency, type CurrencyType
 	} from '$lib/stores/setCurrency.store';
-	import { convert, dinero, toSnapshot, type Currency, type Dinero, type Rates } from 'dinero.js';
+	import { dinero, type Dinero } from 'dinero.js';
 
 	let testText = '';
 

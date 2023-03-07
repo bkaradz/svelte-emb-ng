@@ -1,6 +1,6 @@
-import { readable, writable } from 'svelte/store';
-import { USD, BWP, ZAR, type Currency } from '@dinero.js/currencies';
 import { ZWB, ZWR } from '$lib/services/monetary';
+import { BWP, USD, ZAR, type Currency } from '@dinero.js/currencies';
+import { readable, writable } from 'svelte/store';
 
 export type CurrencyType = 'USD' | 'ZAR' | 'BWP' | 'ZWB' | 'ZWR'
 export type SymbolType = '$' | 'R' | 'P'

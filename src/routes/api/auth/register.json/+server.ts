@@ -1,9 +1,9 @@
-import type { RequestHandler } from './$types';
-import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
+import logger from '$lib/utility/logger';
+import { userRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import { userRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
+import type { RequestHandler } from './$types';
 
 
 export const POST: RequestHandler = async ({ request }) => {

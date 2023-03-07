@@ -1,11 +1,11 @@
-import { dinero, convert, toSnapshot, type Rates } from 'dinero.js';
-import { USD, ZAR, BWP } from '@dinero.js/currencies';
-import logger from '$lib/utility/logger';
-import type { Currency, Dinero, DineroOptions } from 'dinero.js';
 import { browser } from '$app/environment';
+import { toasts } from '$lib/stores/toasts.store';
 import { trpc } from '$lib/trpc/client';
 import { handleErrors } from '$lib/utility/errorsHandling';
-import { toasts } from '$lib/stores/toasts.store';
+import logger from '$lib/utility/logger';
+import { USD } from '@dinero.js/currencies';
+import type { Currency, Dinero, DineroOptions } from 'dinero.js';
+import { convert, dinero, toSnapshot, type Rates } from 'dinero.js';
 
 export const ZWB: Currency<number> = {
 	code: 'ZWB',

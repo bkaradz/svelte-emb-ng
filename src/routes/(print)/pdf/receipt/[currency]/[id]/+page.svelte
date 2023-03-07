@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import logger from '$lib/utility/logger';
-	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot, type DineroSnapshot } from 'dinero.js';
-	import { toasts } from '$lib/stores/toasts.store';
 	import { browser } from '$app/environment';
+	import PartialReceiptPage from '$lib/components/print/receipt/PartialReceiptPage.svelte';
 	import { createConverter } from '$lib/services/monetary';
 	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
-	import { USD } from '@dinero.js/currencies';
-	import PartialReceiptPage from '$lib/components/print/receipt/PartialReceiptPage.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import logger from '$lib/utility/logger';
+	import { USD } from '@dinero.js/currencies';
+	import type { OrderLine } from '@prisma/client';
+	import { add, dinero, multiply, toSnapshot, type DineroSnapshot } from 'dinero.js';
+	import { onMount } from 'svelte';
 
 	interface Orders extends Record<string, any> {
 		OrderLine: OrderLine[];
@@ -96,11 +96,8 @@
 
 	let order: Orders;
 
-	let pagesCreated: any;
-
 	let zero = dinero({ amount: 0, currency: USD });
 
-	let totalCartItems = 0;
 	let subTotal = zero;
 
 	const getCountAndSubTotal = (cart: any[]) => {
@@ -113,7 +110,6 @@
 			},
 			{ totalCartItems: 0, subTotal: zero }
 		);
-		totalCartItems = totals.totalCartItems;
 		subTotal = totals.subTotal;
 	};
 </script>

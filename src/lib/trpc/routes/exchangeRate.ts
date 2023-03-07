@@ -1,9 +1,9 @@
 import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
-import { protectedProcedure } from '../middleware/auth';
-import { z } from 'zod';
 import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
 import type { Prisma } from '@prisma/client';
+import { z } from 'zod';
+import { protectedProcedure } from '../middleware/auth';
 
 export const exchangeRate = router({
   getExchangeRates: protectedProcedure.input(z.object({

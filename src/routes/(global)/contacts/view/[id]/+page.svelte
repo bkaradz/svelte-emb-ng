@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Loading from '$lib/components/Loading.svelte';
+	import { format } from '$lib/services/monetary';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import type { Pagination } from '$lib/utility/pagination.util';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgArrow,
 		svgChevronLeft,
@@ -7,13 +14,7 @@
 		svgPlus,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { goto } from '$app/navigation';
-	import Loading from '$lib/components/Loading.svelte';
-	import dayjs from 'dayjs';
-	import logger from '$lib/utility/logger';
-	import { format } from '$lib/services/monetary';
-	import { add, dinero, multiply } from 'dinero.js';
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import { USD } from '@dinero.js/currencies';
 	import type {
 		Address,
 		Contacts,
@@ -24,11 +25,8 @@
 		Pricelists,
 		Products
 	} from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { USD } from '@dinero.js/currencies';
-	import { trpc } from '$lib/trpc/client';
-	import { onMount } from 'svelte';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import dayjs from 'dayjs';
+	import { add, dinero, multiply } from 'dinero.js';
 
 	type OrdersResultsType = (Orders & {
 		Pricelists: Pricelists;
@@ -75,30 +73,30 @@
 		}
 	};
 
-	let searchInputValue = '';
-	let searchOption = 'id';
+	// let searchInputValue = '';
+	// let searchOption = 'id';
 
-	const searchNamesOptions = {
-		id: 'Order Number',
-		organisation: 'Organisation',
-		phone: 'Phone',
-		email: 'Email',
-		vatNo: 'Vat Number',
-		balanceDue: 'Balance Due',
-		state: 'State'
-	};
+	// const searchNamesOptions = {
+	// 	id: 'Order Number',
+	// 	organisation: 'Organisation',
+	// 	phone: 'Phone',
+	// 	email: 'Email',
+	// 	vatNo: 'Vat Number',
+	// 	balanceDue: 'Balance Due',
+	// 	state: 'State'
+	// };
 
-	const handleSearchSelection = (event: MouseEvent) => {
-		searchOption = (event.target as HTMLInputElement).name;
-		searchInputValue = '';
-	};
+	// const handleSearchSelection = (event: MouseEvent) => {
+	// 	searchOption = (event.target as HTMLInputElement).name;
+	// 	searchInputValue = '';
+	// };
 
-	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
-		currentGlobalParams.page = 1;
-		let searchWord = (event.target as HTMLInputElement).value;
-		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
-		getOrders(currentGlobalParams);
-	};
+	// const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
+	// 	currentGlobalParams.page = 1;
+	// 	let searchWord = (event.target as HTMLInputElement).value;
+	// 	currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
+	// 	getOrders(currentGlobalParams);
+	// };
 
 	const getOrders = async (paramsObj: any) => {
 		try {
@@ -115,9 +113,9 @@
 	const gotoContacts = async () => {
 		await goto(`/contacts`);
 	};
-	const handleEdit = async (id: string) => {
-		await goto(`/contacts/edit/${parseInt(id)}`);
-	};
+	// const handleEdit = async (id: string) => {
+	// 	await goto(`/contacts/edit/${parseInt(id)}`);
+	// };
 	const viewOrder = async (id: number) => {
 		await goto(`/products/cart/view/${id}`);
 	};

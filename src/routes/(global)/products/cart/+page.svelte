@@ -1,17 +1,23 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import ShowBancAbc from '$lib/components/cart/ShowBancABC.svelte';
+	import ShowCash from '$lib/components/cart/ShowCash.svelte';
+	import ShowEcoCash from '$lib/components/cart/ShowEcoCash.svelte';
+	import ShowOthers from '$lib/components/cart/ShowOthers.svelte';
+	import ShowSave from '$lib/components/cart/ShowSave.svelte';
+	import ShowStewartBank from '$lib/components/cart/ShowStewartBank.svelte';
 	import Combobox from '$lib/components/Combobox.svelte';
 	import { format } from '$lib/services/monetary';
 	import { cartItem } from '$lib/stores/cart.store';
-	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
-	import { toasts } from '$lib/stores/toasts.store';
-	import dayjs from 'dayjs';
-	import isBetween from 'dayjs/plugin/isBetween';
-	import weekday from 'dayjs/plugin/weekday';
-	dayjs.extend(isBetween);
-	dayjs.extend(weekday);
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import { dinero, multiply, subtract, type Dinero } from 'dinero.js';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
 	import type {
 		Address,
 		Contacts,
@@ -22,26 +28,11 @@
 		Pricelists,
 		Products
 	} from '@prisma/client';
-	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
-	import Loading from '$lib/components/Loading.svelte';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
-	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { goto } from '$app/navigation';
-	import Modal from '$lib/components/Modal.svelte';
-	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
-	import ShowSave from '$lib/components/cart/ShowSave.svelte';
-	import ShowCash from '$lib/components/cart/ShowCash.svelte';
-	import ShowEcoCash from '$lib/components/cart/ShowEcoCash.svelte';
-	import ShowBancAbc from '$lib/components/cart/ShowBancABC.svelte';
-	import ShowStewartBank from '$lib/components/cart/ShowStewartBank.svelte';
-	import ShowOthers from '$lib/components/cart/ShowOthers.svelte';
+	import dayjs from 'dayjs';
+	import { dinero, multiply } from 'dinero.js';
 	import type { Snapshot } from './$types';
 
 	let errorMessages = new Map();
-
-	$: disabled = false;
 
 	type NewOrderLine = OrderLine & Products;
 
@@ -191,8 +182,6 @@
 			mainOrder.orderDate = new Date(mainOrder.orderDate).toJSON();
 		}
 
-		disabled = true;
-
 		const parsedOrder = saveOrdersSchema.safeParse(mainOrder);
 
 		if (!parsedOrder.success) {
@@ -201,7 +190,6 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
-			disabled = false;
 			return;
 		}
 
@@ -215,21 +203,6 @@
 			cartItem.reset();
 			toasts.add({ message: `The order was created`, type: 'success' });
 		}
-	};
-
-	let paymentReceived = 0;
-	const calculateChange = (grandTotal: Dinero<number>, paymentReceived: number) => {
-		if (!paymentReceived) {
-			paymentReceived = 0;
-		}
-		let change = format(
-			subtract(
-				dinero({ amount: paymentReceived * 100, currency: $selectedCurrency.dineroObj }),
-				grandTotal
-			)
-		);
-		change = change;
-		return change;
 	};
 
 	const restPayment = () => {

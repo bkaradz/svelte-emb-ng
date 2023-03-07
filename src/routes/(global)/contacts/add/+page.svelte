@@ -1,5 +1,13 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import Combobox2 from '$lib/components/Combobox2.svelte';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import logger from '$lib/utility/logger';
+	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
 		svgAddUser,
 		svgArrow,
@@ -9,17 +17,9 @@
 		svgUpload,
 		svgX
 	} from '$lib/utility/svgLogos';
-	import { goto } from '$app/navigation';
-	import { toasts } from '$lib/stores/toasts.store';
-	import type { Address, Contacts, Email, Phone } from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { saveContactsSchema, type SaveContact } from '$lib/validation/saveContact.validate';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import Checkbox2 from '$lib/components/Checkbox2.svelte';
-	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
-	import Combobox2 from '$lib/components/Combobox2.svelte';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { saveContactsSchema } from '$lib/validation/saveContact.validate';
+	import type { Address, Contacts, Email, Phone } from '@prisma/client';
 
 	let errorMessages = new Map();
 
@@ -93,7 +93,7 @@
 			return;
 		}
 		try {
-			const contacts = (await trpc().contacts.saveOrUpdateContact.mutate(
+			(await trpc().contacts.saveOrUpdateContact.mutate(
 				parsedContact.data
 			)) as unknown as CustomersTypes;
 		} catch (err: any) {
@@ -144,7 +144,7 @@
 			formData.email = [...formData.email, ''];
 			return;
 		}
-		formData.email = formData.email.filter((email, i) => i !== index);
+		formData.email = formData.email.filter((_email, i) => i !== index);
 	};
 
 	const addPhoneField = (index: number) => {
@@ -152,7 +152,7 @@
 			formData.phone = [...formData.phone, ''];
 			return;
 		}
-		formData.phone = formData.phone.filter((phone, i) => i !== index);
+		formData.phone = formData.phone.filter((_phone, i) => i !== index);
 	};
 </script>
 

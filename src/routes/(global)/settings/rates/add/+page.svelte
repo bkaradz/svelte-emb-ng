@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { toasts } from '$lib/stores/toasts.store';
-	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import type { Options, ExchangeRate, ExchangeRateDetails } from '@prisma/client';
-	import dayjs from 'dayjs';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
+	import type { ExchangeRate, ExchangeRateDetails, Options } from '@prisma/client';
+	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
 
 	export let data: { currencyOptions: Options[] };
 
-	$: disabled = false;
+	// $: disabled = false;
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 

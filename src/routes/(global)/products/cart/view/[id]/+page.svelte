@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import Combobox from '$lib/components/Combobox.svelte';
 	import { createConverter, format } from '$lib/services/monetary';
-	import logger from '$lib/utility/logger';
-	import { svgCart } from '$lib/utility/svgLogos';
-	import { toasts } from '$lib/stores/toasts.store';
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
-	import { browser } from '$app/environment';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import logger from '$lib/utility/logger';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import { svgCart } from '$lib/utility/svgLogos';
 	import type {
 		Address,
 		Contacts,
@@ -20,8 +21,7 @@
 		Pricelists,
 		Products
 	} from '@prisma/client';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -124,7 +124,6 @@
 	let customers = data.customers;
 	let pricelists = data.pricelists;
 
-	let pricelistValue: number | undefined;
 	let customerQueryParams = {
 		limit: 7,
 		page: 1

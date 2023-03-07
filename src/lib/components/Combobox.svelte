@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { selectTextOnFocus, blurOnEscape } from '$lib/utility/inputSelectDirective';
 	import { clickOutside } from '$lib/utility/clickOutside';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall, svgSelector, svgXSmall } from '$lib/utility/svgLogos';
 
 	// interface disabledInterface {
@@ -14,7 +14,8 @@
 	export let messages = [];
 	export let validityClass = '';
 	export let disabled = false;
-	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
+	export let onInput: Function
+	// export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
 
 	let userEnter = false;
 

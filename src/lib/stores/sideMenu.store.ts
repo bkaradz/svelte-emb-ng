@@ -2,16 +2,7 @@ import { readable } from 'svelte/store';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-	svgContacts,
-	svgShoppingBag,
-	svgChart,
-	svgQrCode,
-	svgAdjustments,
-	svgDollar,
-	svgClipboardList,
-	svgCart,
-	svgDocumentSearch,
-	svgCreditCard
+	svgAdjustments, svgChart, svgClipboardList, svgContacts, svgCreditCard, svgDocumentSearch, svgDollar, svgQrCode, svgShoppingBag
 } from '$lib/utility/svgLogos';
 
 const anchorTags = [

@@ -1,8 +1,8 @@
-import logger from '$lib/utility/logger';
-import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
 import type { Options } from '@prisma/client';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {

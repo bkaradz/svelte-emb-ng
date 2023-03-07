@@ -1,6 +1,6 @@
-import { TRPCClientError } from "@trpc/client";
-import logger from '$lib/utility/logger';
 import { toasts } from '$lib/stores/toasts.store';
+import logger from '$lib/utility/logger';
+import { TRPCClientError } from "@trpc/client";
 
 
 export const handleErrors = (err: any) => {

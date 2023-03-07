@@ -100,7 +100,7 @@
 		{ value: 'balanceDue', label: 'Balance Due' }
 	];
 
-	const handleSearchSelection = (event: MouseEvent) => {
+	const handleSearchSelection = () => {
 		searchInputValue = '';
 	};
 

@@ -1,12 +1,12 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import Loading from '$lib/components/Loading.svelte';
 	import Menu from '$lib/components/Menu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
-	import '../../styles/app.css';
 	import Toasts from '$lib/components/Toasts.svelte';
-	import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
-	import Loading from '$lib/components/Loading.svelte';
 	import type { userSessionInterface } from '$lib/utility/jwt.utils';
+	import '../../styles/app.css';
 
 	export let data: { user: userSessionInterface };
 

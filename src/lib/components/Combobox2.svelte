@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { selectTextOnFocus, blurOnEscape } from '$lib/utility/inputSelectDirective';
 	import { clickOutside } from '$lib/utility/clickOutside';
+	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall, svgSelector, svgXSmall } from '$lib/utility/svgLogos';
 
 	// interface disabledInterface {
@@ -13,7 +13,7 @@
 	export let pending = false;
 	export let errorMessages: Map<string, string> = new Map([]);
 	export let disabled = false;
-	export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
+	export let onInput: Function;
 
 	let userEnter = false;
 

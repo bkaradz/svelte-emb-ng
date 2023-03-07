@@ -1,10 +1,10 @@
-import logger from '$lib/utility/logger';
-import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
-import type { PaymentTypeOptions } from '@prisma/client';
-import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
 import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
+import type { PaymentTypeOptions } from '@prisma/client';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {

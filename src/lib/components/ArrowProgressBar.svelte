@@ -2,7 +2,9 @@
 	export let list = ['Add list Array'];
 	export let currentSelection = 0;
 
-	export let onClick = (x: number) => {};
+	export let onClick = (x: number) => {
+		console.log(x)
+	};
 
 	// const onClick = (item: number) => {
 	// 	if (item <= currentSelection) {

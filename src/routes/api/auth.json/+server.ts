@@ -1,7 +1,7 @@
-import logger from '$lib/utility/logger';
-import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import logger from '$lib/utility/logger';
 import { z } from 'zod';
+import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {

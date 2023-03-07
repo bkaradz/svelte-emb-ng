@@ -1,7 +1,7 @@
-import { router } from '$lib/trpc/t';
-import { protectedProcedure } from '../middleware/auth';
-import { calculateCartSchema } from '$lib/validation/cartCalculations.validate';
 import { calculateOrder } from '$lib/services/orders';
+import { router } from '$lib/trpc/t';
+import { calculateCartSchema } from '$lib/validation/cartCalculations.validate';
+import { protectedProcedure } from '../middleware/auth';
 
 export const cart = router({
   calculateCart: protectedProcedure.input(

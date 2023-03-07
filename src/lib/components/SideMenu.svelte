@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	// import { svgArrow, svgMenu } from '$lib/utility/svgLogos';
-	import { anchorList } from '$lib/stores/sideMenu.store';
 	import small_logo from '$lib/assets/small_logo.png';
+	import { anchorList } from '$lib/stores/sideMenu.store';
 </script>
 
 <nav

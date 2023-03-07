@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import type { PricelistDetails, Pricelists } from '@prisma/client';
 
 	type Pricelist = Pricelists & { PricelistDetails: PricelistDetails[] };

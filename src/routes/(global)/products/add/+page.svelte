@@ -1,14 +1,14 @@
 <script lang="ts">
-	import logger from '$lib/utility/logger';
-	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
 	import { goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
-	import type { Options, Products } from '@prisma/client';
-	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveProductsSchema } from '$lib/validation/saveProduct.validate';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import logger from '$lib/utility/logger';
+	import { svgAddUser, svgArrow, svgPlus, svgUpload, svgX } from '$lib/utility/svgLogos';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { saveProductsSchema } from '$lib/validation/saveProduct.validate';
+	import type { Options, Products } from '@prisma/client';
 
 	export let data: { productCategories: Options[] };
 
@@ -16,13 +16,13 @@
 
 	let productCategories = data.productCategories;
 
-	const getProductCategories = async (searchParams = { group: 'productCategories' }) => {
-		try {
-			productCategories = await trpc().options.getOptions.query(searchParams);
-		} catch (err: any) {
-			handleErrors(err);
-		}
-	};
+	// const getProductCategories = async (searchParams = { group: 'productCategories' }) => {
+	// 	try {
+	// 		productCategories = await trpc().options.getOptions.query(searchParams);
+	// 	} catch (err: any) {
+	// 		handleErrors(err);
+	// 	}
+	// };
 
 	const resetForm = () => {
 		formData = structuredClone(initFromData);
@@ -57,7 +57,7 @@
 			return;
 		}
 		try {
-			const res = await trpc().products.saveOrUpdateProducts.mutate(parsedProducts.data);
+			await trpc().products.saveOrUpdateProducts.mutate(parsedProducts.data);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

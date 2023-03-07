@@ -1,9 +1,9 @@
 // import * as cookie from 'cookie';
-import config from 'config';
-import type { LoginCredentials } from '$lib/validation/login.validate';
 import prisma from '$lib/prisma/client';
-import bcrypt from 'bcrypt';
+import type { LoginCredentials } from '$lib/validation/login.validate';
 import type { Cookies } from '@sveltejs/kit';
+import bcrypt from 'bcrypt';
+import config from 'config';
 
 export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
 	const accessTokenSerial = cookies.serialize('accessToken', accessToken, {

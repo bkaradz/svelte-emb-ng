@@ -1,18 +1,18 @@
 
 import prisma from '$lib/prisma/client';
+import { createSession, setSessionCookies, validateUserPassword } from '$lib/services/session.services';
 import { publicProcedure, router } from '$lib/trpc/t';
+import { signJwt } from '$lib/utility/jwt.utils';
 import { getPagination } from '$lib/utility/pagination.util';
-import omit from 'lodash-es/omit';
-import { protectedProcedure } from '../middleware/auth';
+import { loginCredentialsSchema } from '$lib/validation/login.validate';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
-import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
 import { userRegisterSchema } from '$lib/validation/userRegister.validate';
+import type { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import { createSession, setSessionCookies, validateUserPassword } from '$lib/services/session.services';
-import { signJwt } from '$lib/utility/jwt.utils';
-import { loginCredentialsSchema } from '$lib/validation/login.validate';
+import omit from 'lodash-es/omit';
+import { z } from 'zod';
+import { protectedProcedure } from '../middleware/auth';
 
 export const authentication = router({
     getUsers: protectedProcedure

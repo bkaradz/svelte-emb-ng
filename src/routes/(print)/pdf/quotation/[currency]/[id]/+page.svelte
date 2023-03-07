@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import logger from '$lib/utility/logger';
-	import type { OrderLine, Orders, Prisma } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
-	import chunk from 'lodash-es/chunk';
+	import { browser } from '$app/environment';
 	import PrintFirstPage from '$lib/components/print/PrintFirstPage.svelte';
 	import PrintOtherPages from '$lib/components/print/PrintOtherPages.svelte';
-	import { toasts } from '$lib/stores/toasts.store';
-	import { browser } from '$app/environment';
 	import { createConverter } from '$lib/services/monetary';
 	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
-	import { USD } from '@dinero.js/currencies';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import logger from '$lib/utility/logger';
+	import { USD } from '@dinero.js/currencies';
+	import type { OrderLine, Prisma } from '@prisma/client';
+	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import chunk from 'lodash-es/chunk';
+	import { onMount } from 'svelte';
 
 	export let data: any;
 
@@ -168,7 +167,7 @@
 
 	let zero = dinero({ amount: 0, currency: USD });
 
-	let totalCartItems = 0;
+	// let totalCartItems = 0;
 	let subTotal = zero;
 
 	const getCountAndSubTotal = (cart: any[]) => {
@@ -181,7 +180,7 @@
 			},
 			{ totalCartItems: 0, subTotal: zero }
 		);
-		totalCartItems = totals.totalCartItems;
+		// totalCartItems = totals.totalCartItems;
 		subTotal = totals.subTotal;
 	};
 </script>

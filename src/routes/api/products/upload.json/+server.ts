@@ -1,8 +1,8 @@
-import logger from '$lib/utility/logger';
-import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
-import type { Prisma, Products } from '@prisma/client';
+import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
+import type { Products } from '@prisma/client';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -38,7 +38,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const allDocsPromises: Products[] = [];
 
-		let total = 0;
 
 		productsArray.forEach(async (element) => {
 

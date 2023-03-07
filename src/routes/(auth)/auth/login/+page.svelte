@@ -1,12 +1,11 @@
 <script lang="ts">
-	import logger from '$lib/utility/logger';
-	import { toasts } from '$lib/stores/toasts.store';
-	import { svgEyeClose, svgEyeOpen, svgLogin } from '$lib/utility/svgLogos';
-	import small_logo from '$lib/assets/small_logo.png';
 	import { goto } from '$app/navigation';
-	import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
+	import small_logo from '$lib/assets/small_logo.png';
+	import { toasts } from '$lib/stores/toasts.store';
+	import logger from '$lib/utility/logger';
+	import { svgEyeClose, svgEyeOpen, svgLogin } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { trpc } from '$lib/trpc/client';
+	import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
 
 	let errorMessages = new Map();
 

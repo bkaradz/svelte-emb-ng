@@ -1,7 +1,7 @@
-import puppeteer from 'puppeteer';
-import type { RequestHandler } from './$types';
 import logger from '$lib/utility/logger';
 import config from 'config';
+import puppeteer from 'puppeteer';
+import type { RequestHandler } from './$types';
 
 const input = {
 	username: config.get<string>('printerEmail'),

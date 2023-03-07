@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { format } from '$lib/services/monetary';
 	import small_logo from '$lib/assets/small_logo.png';
-	import { dinero, multiply, type Dinero } from 'dinero.js';
+	import { format } from '$lib/services/monetary';
 	import type { Prisma } from '@prisma/client';
+	import { dinero, multiply, type Dinero } from 'dinero.js';
 
 	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
 

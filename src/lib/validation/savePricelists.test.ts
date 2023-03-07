@@ -1,7 +1,6 @@
 import { expect, it } from "vitest";
 import { savePricelistSchema, type SavePricelists } from "./savePricelists.validate";
 
-
 export const validateFormInput = (values: Partial<SavePricelists>) => {
   const parsedData = savePricelistSchema.parse(values);
 

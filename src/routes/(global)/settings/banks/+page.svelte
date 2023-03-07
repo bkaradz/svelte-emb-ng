@@ -1,9 +1,6 @@
 <script lang="ts">
-    import type { PageData } from './$types';
-    
-    export let data: PageData;
 
-    let banks
+	let banks = 0;
 </script>
 
 <div class="mb-2 bg-white p-4">
@@ -11,9 +8,8 @@
 </div>
 
 {#if banks}
-	
+	<h1>Test</h1>
 {/if}
 
 <style lang="postcss">
-   
 </style>

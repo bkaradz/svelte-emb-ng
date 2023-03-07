@@ -1,4 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import Loading from '$lib/components/Loading.svelte';
+	import { format } from '$lib/services/monetary';
+	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
+	import { cartItem } from '$lib/stores/cart.store';
+	import { trpc } from '$lib/trpc/client';
+	import logger from '$lib/utility/logger';
+	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
 		svgCart,
 		svgCartBig,
@@ -13,16 +21,8 @@
 		svgShoppingBag,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { goto } from '$app/navigation';
-	import logger from '$lib/utility/logger';
-	import Loading from '$lib/components/Loading.svelte';
-	import { format } from '$lib/services/monetary';
-	import { cartItem } from '$lib/stores/cart.store';
-	import { dinero } from 'dinero.js';
-	import { trpc } from '$lib/trpc/client';
 	import type { OrderLine, PricelistDetails, Pricelists, Products } from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
+	import { dinero } from 'dinero.js';
 
 	type productInterface = { results: Products[] } & Pagination;
 	type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };

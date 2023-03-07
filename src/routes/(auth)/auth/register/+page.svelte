@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { userRegisterSchema } from '$lib/validation/userRegister.validate';
 	import { goto } from '$app/navigation';
-	import logger from '$lib/utility/logger';
+	import small_logo from '$lib/assets/small_logo.png';
 	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 	import {
 		svgEyeClose,
 		svgEyeOpen,
@@ -10,10 +11,8 @@
 		svgPlusCircle,
 		svgRegister
 	} from '$lib/utility/svgLogos';
-	import small_logo from '$lib/assets/small_logo.png';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { userRegisterSchema } from '$lib/validation/userRegister.validate';
 
 	let errorMessages = new Map();
 
@@ -75,7 +74,7 @@
 			return;
 		}
 		try {
-			const contact = await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
+			await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -93,7 +92,7 @@
 			formData.email = [...formData.email, { email: '' }];
 			return;
 		}
-		formData.email = formData.email.filter((email, i) => i !== index);
+		formData.email = formData.email.filter((_email, i) => i !== index);
 	};
 
 	const addPhoneField = (index: number) => {
@@ -101,7 +100,7 @@
 			formData.phone = [...formData.phone, { phone: '' }];
 			return;
 		}
-		formData.phone = formData.phone.filter((phone, i) => i !== index);
+		formData.phone = formData.phone.filter((_phone, i) => i !== index);
 	};
 
 	const addAddressField = (index: number) => {
@@ -109,7 +108,7 @@
 			formData.address = [...formData.address, { address: '' }];
 			return;
 		}
-		formData.address = formData.address.filter((address, i) => i !== index);
+		formData.address = formData.address.filter((_address, i) => i !== index);
 	};
 </script>
 

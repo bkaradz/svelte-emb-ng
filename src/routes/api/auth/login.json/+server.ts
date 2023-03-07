@@ -1,16 +1,14 @@
-import type { RequestHandler } from './$types';
-import { signJwt } from '$lib/utility/jwt.utils';
-import config from 'config';
-import logger from '$lib/utility/logger';
 import {
-	setSessionCookies,
-	createSession,
-	validateUserPassword
+	createSession, setSessionCookies, validateUserPassword
 } from '$lib/services/session.services';
+import { signJwt } from '$lib/utility/jwt.utils';
+import logger from '$lib/utility/logger';
 import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
+import config from 'config';
+import type { RequestHandler } from './$types';
 
 
-export const POST: RequestHandler = async ({ cookies, request, locals }) => {
+export const POST: RequestHandler = async ({ cookies, request }) => {
 	try {
 		const reqUser: LoginCredentials = await request.json();
 

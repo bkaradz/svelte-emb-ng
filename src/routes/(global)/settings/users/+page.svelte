@@ -2,7 +2,6 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import logger from '$lib/utility/logger';
 	import type { Current, Next, Previous } from '$lib/utility/pagination.util';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
 	import type { UserRegister } from '$lib/validation/userRegister.validate';
@@ -50,7 +49,7 @@
 
 	const updateUser = async (finalData: UserRegister) => {
 		try {
-			const updateUsers = await trpc().authentication.registerOrUpdateUser.mutate(finalData);
+			await trpc().authentication.registerOrUpdateUser.mutate(finalData);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

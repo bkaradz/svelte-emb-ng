@@ -1,8 +1,8 @@
 <script lang="ts">
-	import dayjs from 'dayjs';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type { Dinero } from 'dinero.js';
 	import type { Prisma } from '@prisma/client';
+	import dayjs from 'dayjs';
+	import type { Dinero } from 'dinero.js';
 	import PartialPage from './PartialPage.svelte';
 
 	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;

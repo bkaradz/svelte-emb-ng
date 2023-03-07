@@ -1,9 +1,9 @@
 import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
-import { protectedProcedure } from '../middleware/auth';
-import { z } from 'zod';
 import { saveOptionsSchema } from '$lib/validation/saveOption.validate';
 import type { Prisma } from '@prisma/client';
+import { z } from 'zod';
+import { protectedProcedure } from '../middleware/auth';
 
 export const options = router({
   getOptions: protectedProcedure.input(z.object({

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
-	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
-	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
-	import dayjs from 'dayjs';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
+	import { selectTextOnFocus } from '$lib/utility/inputSelectDirective';
+	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
+	import type { Options, PricelistDetails, Pricelists } from '@prisma/client';
+	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 
 	export let data: { embroideryTypes: Options };

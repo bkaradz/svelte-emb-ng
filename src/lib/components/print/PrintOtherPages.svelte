@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Dinero } from 'dinero.js';
 	import type { Prisma } from '@prisma/client';
+	import type { Dinero } from 'dinero.js';
 	import PartialPage from './PartialPage.svelte';
 
 	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;

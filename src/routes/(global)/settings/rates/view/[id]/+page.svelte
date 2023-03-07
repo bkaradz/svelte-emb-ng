@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { toasts } from '$lib/stores/toasts.store';
-	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import type { Options, ExchangeRate, ExchangeRateDetails } from '@prisma/client';
-	import dayjs from 'dayjs';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
+	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import type { ExchangeRate, ExchangeRateDetails, Options } from '@prisma/client';
+	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
@@ -18,21 +17,15 @@
 
 	let rates = data.resultsRates;
 
-	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
-
 	data.resultsRates.xChangeRateDate = dayjs(data.resultsRates.xChangeRateDate).format(
 		'YYYY-MM-DDTHH:mm'
 	);
-
-	let selectedGroup = 'all';
 
 	let groupList = new Set(['all']);
 
 	$: groupList;
 
 	let isEditableID: number | null = null;
-
-	let newId = 'New Id';
 
 	const getUsedCurrencies = () => {
 		return rates.ExchangeRateDetails.map((rate) => rate.currency);

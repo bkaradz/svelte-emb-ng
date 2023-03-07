@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { PaymentTypeOptions } from '@prisma/client';
 	import { onMount } from 'svelte';
-	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { v4 as uuidv4 } from 'uuid';
 
 	export let tableHeadings = [

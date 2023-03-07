@@ -1,9 +1,9 @@
-import logger from '$lib/utility/logger';
-import type { RequestHandler } from './$types';
 import prisma from '$lib/prisma/client';
+import logger from '$lib/utility/logger';
+import normalizePhone from '$lib/utility/normalizePhone.util';
 import parseCsv from '$lib/utility/parseCsv';
 import type { Contacts, Prisma } from '@prisma/client';
-import normalizePhone from '$lib/utility/normalizePhone.util';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {

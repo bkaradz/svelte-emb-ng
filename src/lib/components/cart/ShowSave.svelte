@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let handleSubmit = async (status: string) => {};
+	export let handleSubmit = async (status: string) => {
+		console.log(status);
+	};
 </script>
 
 <div class="my-5 mt-10 space-y-2">

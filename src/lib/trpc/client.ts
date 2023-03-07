@@ -1,6 +1,6 @@
 import type { Router } from '$lib/trpc/router';
-import { createTRPCClient, type TRPCClientInit } from 'trpc-sveltekit';
 import superjson from 'superjson';
+import { createTRPCClient, type TRPCClientInit } from 'trpc-sveltekit';
 
 let browserClient: ReturnType<typeof createTRPCClient<Router>>;
 

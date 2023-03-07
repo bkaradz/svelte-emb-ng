@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Loading from '$lib/components/Loading.svelte';
+	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
+	import type { Pagination } from '$lib/utility/pagination.util';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgArrow,
 		svgChevronLeft,
@@ -7,13 +14,6 @@
 		svgPlus,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { goto } from '$app/navigation';
-	import Loading from '$lib/components/Loading.svelte';
-	import dayjs from 'dayjs';
-	import { format } from '$lib/services/monetary';
-	import { dinero } from 'dinero.js';
-	import logger from '$lib/utility/logger';
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import type {
 		Contacts,
 		OrderLine,
@@ -22,11 +22,8 @@
 		Pricelists,
 		Products
 	} from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
 
 	type newOrder = Pagination & {
 		results: (OrderLine & {
@@ -67,32 +64,6 @@
 		}
 	};
 
-	let searchInputValue = '';
-	let searchOption = 'id';
-
-	const searchNamesOptions = {
-		id: 'Order Number',
-		organisation: 'Organisation',
-		phone: 'Phone',
-		email: 'Email',
-		vatNo: 'Vat Number',
-		balanceDue: 'Balance Due',
-		state: 'State'
-	};
-
-	const handleSearchSelection = (event: MouseEvent) => {
-		searchOption = (event.target as HTMLInputElement).name;
-		searchInputValue = '';
-	};
-
-	const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
-		currentGlobalParams.page = 1;
-		let searchWord = (event.target as HTMLInputElement).value;
-		currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
-		getOrdersList(currentGlobalParams);
-	};
-
-	// Input must be of the form {limit, page, query}
 	const getOrdersList = async (paramsObj: any) => {
 		try {
 			ordersList = await trpc().orders.getOrderLine.query(paramsObj);

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import Loading from '$lib/components/Loading.svelte';
-	import { page } from '$app/stores';
-	import '../../../styles/app.css';
-	import Toasts from '$lib/components/Toasts.svelte';
-	import { svgLogin, svgRegister } from '$lib/utility/svgLogos';
-	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import Loading from '$lib/components/Loading.svelte';
+	import Toasts from '$lib/components/Toasts.svelte';
 	import type { User } from '$lib/types';
+	import { svgLogin, svgRegister } from '$lib/utility/svgLogos';
+	import '../../../styles/app.css';
 
 	export let data: { user: User };
 

@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { cartItem } from '$lib/stores/cart.store';
-	import { toasts } from '$lib/stores/toasts.store';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
-	import logger from '$lib/utility/logger';
-	import { svgBellSolid, svgShoppingBag } from '$lib/utility/svgLogos';
+	import { toasts } from '$lib/stores/toasts.store';
 	import { clickOutside } from '$lib/utility/clickOutside';
 	import type { userSessionInterface } from '$lib/utility/jwt.utils';
+	import logger from '$lib/utility/logger';
+	import { svgBellSolid } from '$lib/utility/svgLogos';
 
 	export let data: { user: userSessionInterface };
 
@@ -85,7 +84,7 @@
 			use:clickOutside
 			on:clickOutside|preventDefault={() => (loginMenuOpen = false)}
 			class="mr-2 w-14 h-14 btn bg-royal-blue-700 rounded-full outline-royal-blue-400 border border-royal-blue-400 focus:border-none active:border-none cursor-pointer"
-			on:click|preventDefault={(e) => (loginMenuOpen = !loginMenuOpen)}
+			on:click|preventDefault={() => (loginMenuOpen = !loginMenuOpen)}
 		>
 			{userInitials(data)}
 		</button>

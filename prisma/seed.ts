@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client'
-import { contacts, products, users, options, pricelists, exchangeRates, paymentTypeOptions } from "./seedData";
-import logger from '../src/lib/utility/logger';
+import { USD } from '@dinero.js/currencies';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
 import { dinero } from 'dinero.js';
-import { USD } from '@dinero.js/currencies';
+import logger from '../src/lib/utility/logger';
+import { contacts, exchangeRates, options, paymentTypeOptions, pricelists, products, users } from "./seedData";
 
 
 const prisma = new PrismaClient()

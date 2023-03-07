@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { toasts } from '$lib/stores/toasts.store';
 	import { goto } from '$app/navigation';
+	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { svgTrash, svgView } from '$lib/utility/svgLogos';
 	import type { Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { onMount } from 'svelte';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
 
 	export let tableHeadings = ['Id #', 'Name', 'Date', 'isActive', 'isDefault', 'View', 'Delete'];
 
@@ -46,9 +46,9 @@
 		goto(`/settings/pricelists/view/${id}`);
 	};
 
-	const editPricelist = async (id: number) => {
-		goto(`/settings/pricelists/edit/${id}`);
-	};
+	// const editPricelist = async (id: number) => {
+	// 	goto(`/settings/pricelists/edit/${id}`);
+	// };
 
 	const handleAddPricelist = async () => {
 		goto(`/settings/pricelists/add`);

@@ -1,4 +1,3 @@
-// lib/trpc/context.ts
 import { findSessions } from '$lib/services/session.services';
 import { verifyJwt, type userSessionInterface } from '$lib/utility/jwt.utils';
 import type { RequestEvent } from '@sveltejs/kit';

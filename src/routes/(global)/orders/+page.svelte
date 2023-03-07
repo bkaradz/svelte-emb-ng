@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 	import Loading from '$lib/components/Loading.svelte';
+	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
+	import { trpc } from '$lib/trpc/client';
+	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
+	import type { Pagination } from '$lib/utility/pagination.util';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgChevronLeft,
@@ -14,14 +19,9 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import dayjs from 'dayjs';
-	import ArrowProgressBar from '$lib/components/ArrowProgressBar.svelte';
 	import type { Orders } from '@prisma/client';
-	import type { Pagination } from '$lib/utility/pagination.util';
-	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { Buffer } from 'buffer';
-	import { trpc } from '$lib/trpc/client';
-	import { handleErrors } from '$lib/utility/errorsHandling';
+	import dayjs from 'dayjs';
 
 	type newOrder = Orders & { selected: boolean };
 
@@ -486,7 +486,7 @@
 											<td class="px-2 py-1 w-8">
 												<input
 													bind:checked={order.selected}
-													on:change={(e) => handleSelected(order)}
+													on:change={() => handleSelected(order)}
 													type="checkbox"
 													name="select"
 													id="select"

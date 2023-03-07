@@ -3,6 +3,7 @@
 	import { format } from '$lib/services/monetary';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import type {
 		Contacts,
 		Options,
@@ -13,7 +14,6 @@
 		Products
 	} from '@prisma/client';
 	import { dinero, multiply } from 'dinero.js';
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
 	type OrderType = Orders & {
 		Pricelists: Pricelists;

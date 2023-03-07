@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import config from 'config';
+import jwt from 'jsonwebtoken';
 
 const privateKey = Buffer.from(config.get<string>('privateKeyBase64'), 'base64');
 const publicKey = Buffer.from(config.get<string>('publicKeyBase64'), 'base64');
