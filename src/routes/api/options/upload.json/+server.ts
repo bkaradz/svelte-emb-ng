@@ -1,6 +1,7 @@
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
+import { getBoolean } from '$lib/utility/toBoolean';
 import type { Options } from '@prisma/client';
 import type { RequestHandler } from './$types';
 
@@ -36,16 +37,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const optionsArray = (await parseCsv(csvString)) as Options[];
 
-		const allDocsPromises: Options[] = [];
+		type OptionDoc = Omit<Options, 'id' | 'createdAt' | 'updatedAt'>
+
+		const allDocsPromises: OptionDoc[] = [];
 
 		optionsArray.forEach(async (element) => {
-			let { label, group, value, isActive, isDefault } = element;
+			let { label, group, value, isActive, isDefault } = element as { label: string, group: string, value: string, isActive: boolean | string, isDefault: boolean | string };
 
 			label = label.trim();
 			group = group.trim();
 			value = value.trim();
-			isActive = isActive.toLowerCase() === 'true' ? true : false;
-			isDefault = isDefault.toLowerCase() === 'true' ? true : false;
+			if (typeof isActive === 'string') {
+				isActive = getBoolean(isActive.toLowerCase())
+			}
+
+			if (typeof isDefault === 'string') {
+				isDefault = getBoolean(isDefault.toLowerCase())
+			}
 
 			const option = {
 				createdBy: createDBy,

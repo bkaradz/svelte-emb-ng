@@ -31,6 +31,10 @@
 	import dayjs from 'dayjs';
 	import { dinero, multiply } from 'dinero.js';
 	import type { Snapshot } from './$types';
+	import isBetween from 'dayjs/plugin/isBetween';
+	import weekday from 'dayjs/plugin/weekday';
+	dayjs.extend(isBetween);
+	dayjs.extend(weekday);
 
 	let errorMessages = new Map();
 

@@ -14,7 +14,7 @@
 
 	export let data: { currencyOptions: Options[] };
 
-	// $: disabled = false;
+	$: disabled = false;
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 

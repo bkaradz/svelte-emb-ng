@@ -59,7 +59,6 @@
 
 	let formData = data.contact;
 
-	$: disabled = false;
 
 	$: resetForm = () => {
 		formData = { ...initFromData };
@@ -76,7 +75,6 @@
 	};
 
 	const handleSubmit = async () => {
-		disabled = true;
 
 		const parsedContact = saveContactsSchema.safeParse(formData);
 
@@ -86,7 +84,6 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
-			disabled = false;
 			return;
 		}
 		try {

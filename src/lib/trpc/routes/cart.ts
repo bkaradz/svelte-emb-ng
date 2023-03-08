@@ -7,7 +7,10 @@ export const cart = router({
   calculateCart: protectedProcedure.input(
     calculateCartSchema
   ).mutation(async ({ input }) => {
-    return await calculateOrder(input);
+    
+    const test = await calculateOrder(input);
+    
+    return test
   }),
 });
 

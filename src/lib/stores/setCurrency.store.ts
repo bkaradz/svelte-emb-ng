@@ -10,7 +10,7 @@ export type CurrencyOption = {
 	dineroObj: Currency<number>
 }
 
-const currencyOptions = new Map<CurrencyType, CurrencyOption>(
+export const currencyOptions = new Map<CurrencyType, CurrencyOption>(
 	[
 		[
 			'USD',

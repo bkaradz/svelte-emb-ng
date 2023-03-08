@@ -2,6 +2,7 @@
 import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
 import { getPagination } from '$lib/utility/pagination.util';
+import { getBoolean } from '$lib/utility/toBoolean';
 import { saveContactsSchema } from '$lib/validation/saveContact.validate';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import omit from 'lodash-es/omit';
@@ -23,7 +24,7 @@ export const contacts = router({
 
             if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
                 whereQuery = {
-                    equals: finalQuery[objectKeys] === 'true'
+                    equals: getBoolean(finalQuery[objectKeys])
                 };
             } else {
                 whereQuery = {
@@ -43,9 +44,6 @@ export const contacts = router({
                     phone: true,
                     address: true
                 },
-                orderBy: {
-                    name: 'asc'
-                }
             };
 
             if (objectKeys) {
@@ -76,7 +74,14 @@ export const contacts = router({
                 };
             }
 
-            const contactsQuery = await prisma.contacts.findMany(query);
+            const contactsQuery = await prisma.contacts.findMany({
+                ...query,
+                orderBy: [
+                    {
+                        name: 'asc'
+                    }
+                ]
+            });
             pagination.totalRecords = await prisma.contacts.count(queryTotal);
             pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
@@ -101,7 +106,7 @@ export const contacts = router({
 
             if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
                 whereQuery = {
-                    equals: finalQuery[objectKeys] === 'true'
+                    equals: getBoolean(finalQuery[objectKeys])
                 };
             } else {
                 whereQuery = {
@@ -122,9 +127,7 @@ export const contacts = router({
                     phone: true,
                     address: true
                 },
-                orderBy: {
-                    name: 'asc'
-                }
+
             };
 
             if (objectKeys) {
@@ -155,7 +158,14 @@ export const contacts = router({
                 };
             }
 
-            const contactsQuery = await prisma.contacts.findMany(query);
+            const contactsQuery = await prisma.contacts.findMany({
+                ...query,
+                orderBy: [
+                    {
+                        name: 'asc'
+                    }
+                ]
+            });
             pagination.totalRecords = await prisma.contacts.count(queryTotal);
             pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 

@@ -1,5 +1,6 @@
 import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
+import { getBoolean } from '$lib/utility/toBoolean';
 import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
 import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
@@ -22,7 +23,7 @@ export const exchangeRate = router({
         return
       }
       whereQuery = {
-        equals: input[objectKeys] === 'true'
+        equals: getBoolean(input[objectKeys])
       };
     }
 
@@ -97,7 +98,7 @@ export const exchangeRate = router({
     }
 
     if (input?.xChangeRateDate) {
-      input.xChangeRateDate = new Date(input.xChangeRateDate);
+      input.xChangeRateDate = new Date(input.xChangeRateDate) as unknown as string;
     }
 
     const { ExchangeRateDetails, ...restRates } = input;

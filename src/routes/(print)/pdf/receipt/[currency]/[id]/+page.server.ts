@@ -1,4 +1,5 @@
 import prisma from '$lib/prisma/client';
+import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.store';
 import { dinero, toSnapshot } from 'dinero.js';
 import type { PageServerLoad } from './$types';
 
@@ -23,13 +24,10 @@ export const load = (async ({ params }) => {
 		return;
 	}
 
-	// const currencyOptionsMap = new Map<string, CurrencyOption>();
+	const currencyType = params.currency.toUpperCase() as CurrencyType
 
-	// getCurrencyOptions().forEach((item) => {
-	// 	currencyOptionsMap.set(item.currency, item);
-	// });
-
-	const selectedCurrency = $currenciesOptions.get(params.currency.toUpperCase());
+	// const selectedCurrency = currenciesOptions.get(params.currency.toUpperCase());
+	const selectedCurrency = currencyOptions.get(currencyType)
 
 	if (!selectedCurrency) {
 		return;

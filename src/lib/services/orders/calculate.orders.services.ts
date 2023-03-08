@@ -6,8 +6,7 @@ import {
 	dinero,
 	greaterThanOrEqual,
 	multiply,
-	toSnapshot,
-	type DineroSnapshot
+	toSnapshot
 } from 'dinero.js';
 
 type NewOrderLine = OrderLine & Products;
@@ -72,11 +71,12 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 					pricelist,
 					embroideryTypes,
 					quantity
-				}) as unknown as { pricePerThousandStitches: DineroSnapshot<number>, minimumPrice: DineroSnapshot<number> };
+				}) as { pricePerThousandStitches: string, minimumPrice: string }
 
 				/**
 				 *  convert to dinero units
 				 */
+
 				const dineroPrice = dinero(JSON.parse(pricePerThousandStitches));
 
 				/**
@@ -105,6 +105,6 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 		return newOrderLine;
 	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
-		throw new Error(`Error:  ${err?.message}`);
+		throw new Error(`Error:  ${err}`);
 	}
 };

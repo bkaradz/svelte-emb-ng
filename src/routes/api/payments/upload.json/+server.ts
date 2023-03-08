@@ -1,6 +1,7 @@
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
+import { getBoolean } from '$lib/utility/toBoolean';
 import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
 import type { PaymentTypeOptions } from '@prisma/client';
@@ -36,14 +37,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString: string = await file.text();
 
-		const paymentTypeOptionsArray = (await parseCsv(csvString)) as PaymentTypeOptions[];
+		type PaymentTypeOptionsInter = Omit<PaymentTypeOptions, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDefault'>
+		type PaymentTypeOptionsNew = PaymentTypeOptionsInter & {
+			isActive: boolean | string
+			isDefault: boolean | string
+		}
 
-		const allDocsPromises: PaymentTypeOptions[] = [];
+		const paymentTypeOptionsArray = (await parseCsv(csvString)) as PaymentTypeOptionsNew[];
+
+		const allDocsPromises: (PaymentTypeOptionsInter & {isActive: boolean, isDefault: boolean})[] = [];
 
 		paymentTypeOptionsArray.forEach(async (element) => {
 
-			element.isActive = element.isActive.toLowerCase() === 'true'
-			element.isDefault = element.isDefault.toLowerCase() === 'true'
+			if (typeof element.isActive === 'string') {
+				element.isActive = getBoolean(element.isActive.toLowerCase())
+			}
+
+			if (typeof element.isDefault === 'string') {
+				element.isDefault = getBoolean(element.isDefault.toLowerCase()) 
+			}
 
 			const parsedPaymentTypesOptions = savePaymentTypesOptionsSchema.safeParse(element);
 

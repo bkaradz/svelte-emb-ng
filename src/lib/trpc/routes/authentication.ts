@@ -4,10 +4,10 @@ import { createSession, setSessionCookies, validateUserPassword } from '$lib/ser
 import { publicProcedure, router } from '$lib/trpc/t';
 import { signJwt } from '$lib/utility/jwt.utils';
 import { getPagination } from '$lib/utility/pagination.util';
+import { getBoolean } from '$lib/utility/toBoolean';
 import { loginCredentialsSchema } from '$lib/validation/login.validate';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import { userRegisterSchema } from '$lib/validation/userRegister.validate';
-import type { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import config from 'config';
 import omit from 'lodash-es/omit';
@@ -29,7 +29,7 @@ export const authentication = router({
 
             if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
                 whereQuery = {
-                    equals: finalQuery[objectKeys] === 'true'
+                    equals: getBoolean(finalQuery[objectKeys])
                 };
             } else {
                 whereQuery = {
@@ -38,8 +38,8 @@ export const authentication = router({
                 };
             }
 
-            let query: Prisma.ContactsFindManyArgs;
-            let queryTotal: Prisma.ContactsFindManyArgs;
+            let query
+            let queryTotal
 
             const baseQuery = {
                 take: pagination.limit,
@@ -49,11 +49,7 @@ export const authentication = router({
                     phone: true,
                     address: true
                 },
-                orderBy: [
-                    {
-                        name: 'asc'
-                    }
-                ]
+
             };
 
             if (objectKeys) {
@@ -84,7 +80,14 @@ export const authentication = router({
                 };
             }
 
-            const contactsQuery = await prisma.contacts.findMany(query);
+            const contactsQuery = await prisma.contacts.findMany({
+                ...query,
+                orderBy: [
+                    {
+                        name: 'asc',
+                    },
+                ]
+            });
             pagination.totalRecords = await prisma.contacts.count(queryTotal);
             pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 

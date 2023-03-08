@@ -3,6 +3,7 @@ import prisma from '$lib/prisma/client';
 import { calculateOrder } from '$lib/services/orders';
 import { router } from '$lib/trpc/t';
 import { getPagination } from '$lib/utility/pagination.util';
+import { getBoolean } from '$lib/utility/toBoolean';
 import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
 import { searchParamsSchema } from "$lib/validation/searchParams.validate";
 import type { Prisma } from '@prisma/client';
@@ -294,7 +295,7 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery) => {
     objectKeys === 'isInvoiced'
   ) {
     return {
-      equals: finalQuery[objectKeys] === 'true'
+      equals: getBoolean(finalQuery[objectKeys])
     };
   }
 

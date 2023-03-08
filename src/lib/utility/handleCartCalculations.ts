@@ -28,6 +28,7 @@ const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: 
             OrderLine: lineArray
         })
     } catch (err: any) {
+        
         logger.error(`Error: ${err}`);
         throw new Error("Error occurred during calculations");
     }
@@ -40,7 +41,7 @@ const handleCurrency = async (order: Orders & { OrderLine: NewOrderLine[] }, sel
      */
     let newArray;
     if (browser) {
-        newArray = await handleCalculations(order.OrderLine, order.pricelistsID);
+        newArray  = await handleCalculations(order.OrderLine, order.pricelistsID);
     }
     if (!Array.isArray(newArray)) {
         return;
