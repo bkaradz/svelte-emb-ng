@@ -23,8 +23,8 @@ export const orders = router({
 
       const objectKeys = Object.keys(finalQuery)[0];
 
-      let query: Prisma.OrdersFindFirstArgs;
-      let queryTotal: Prisma.OrdersFindFirstArgs;
+      let query: Prisma.OrdersFindManyArgs;
+      let queryTotal
 
       const baseQuery = {
         take: pagination.limit,
@@ -42,9 +42,7 @@ export const orders = router({
             }
           }
         },
-        orderBy: {
-          id: 'asc'
-        }
+       
       };
 
       if (objectKeys) {
@@ -53,6 +51,9 @@ export const orders = router({
           where: {
             isActive: true,
             [objectKeys]: getOrdersQueryOptions(objectKeys, finalQuery)
+          },
+          orderBy: {
+            id: 'asc'
           }
         };
         queryTotal = {
@@ -63,10 +64,13 @@ export const orders = router({
         };
       } else {
         query = {
+          ...baseQuery,
           where: {
             isActive: true
           },
-          ...baseQuery
+          orderBy: {
+            id: 'asc'
+          }
         };
         queryTotal = {
           where: {
@@ -98,7 +102,7 @@ export const orders = router({
       const objectKeys = Object.keys(finalQuery)[0];
 
       let query: Prisma.OrderLineFindManyArgs;
-      let queryTotal: Prisma.OrderLineFindManyArgs;
+      let queryTotal
 
       const baseQuery = {
         take: pagination.limit,
@@ -110,9 +114,6 @@ export const orders = router({
             }
           }
         },
-        orderBy: {
-          id: 'asc'
-        }
       };
 
       if (objectKeys) {
@@ -120,6 +121,9 @@ export const orders = router({
           ...baseQuery,
           where: {
             [objectKeys]: getOrderLineQueryOptions(objectKeys, finalQuery)
+          },
+          orderBy: {
+            id: 'asc'
           }
         };
         queryTotal = {
@@ -129,14 +133,19 @@ export const orders = router({
         };
       } else {
         query = {
-          ...baseQuery
+          ...baseQuery,
+          orderBy: {
+            id: 'asc'
+          }
         };
-        queryTotal = {};
+        queryTotal = {
+          where: {}
+        };
       }
 
-      const productsQuery = await prisma.OrderLine.findMany(query);
+      const productsQuery = await prisma.orderLine.findMany(query);
 
-      pagination.totalRecords = await prisma.OrderLine.count(queryTotal);
+      pagination.totalRecords = await prisma.orderLine.count(queryTotal);
       pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 
       if (pagination.endIndex >= pagination.totalRecords) {
@@ -222,7 +231,6 @@ export const orders = router({
       }
 
       // check that the customer exist
-      // const customerExist = await ContactsModel.exists({ id: reqOrder.customerID });
       const customerExist = await prisma.contacts.findUnique({
         where: {
           id: input.customersID
@@ -247,16 +255,17 @@ export const orders = router({
         ])
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { OrderLine, ...restOrder } = input;
 
       if (restOrder?.orderDate) {
-        restOrder.orderDate = new Date(restOrder.orderDate);
+        restOrder.orderDate = new Date(restOrder.orderDate) as unknown as string;
       }
 
       if (restOrder?.deliveryDate) {
-        restOrder.deliveryDate = new Date(restOrder.deliveryDate);
+        restOrder.deliveryDate = new Date(restOrder.deliveryDate) as unknown as string;
       }
+
+      // const test: Prisma.OrderLineCreateManyOrdersInput
 
       if (restOrder.id) {
         delete restOrder.customerContact
@@ -287,7 +296,7 @@ export const orders = router({
     }),
 });
 
-const getOrdersQueryOptions = (objectKeys: string, finalQuery) => {
+const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
   if (
     objectKeys === 'isCorporate' ||
     objectKeys === 'isActive' ||
@@ -309,7 +318,7 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery) => {
   };
 };
 
-const getOrderLineQueryOptions = (objectKeys: string, finalQuery) => {
+const getOrderLineQueryOptions = (objectKeys: string, finalQuery: any) => {
   if (objectKeys === 'id' || objectKeys === 'ordersID' || objectKeys === 'productsID') {
     return parseInt(finalQuery[objectKeys]);
   }

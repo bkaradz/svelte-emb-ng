@@ -1,5 +1,5 @@
-export function toggleContentEditable(node) {
-	const handleClick = (event) => {
+export function toggleContentEditable(node: { contains: (arg0: EventTarget | null) => any; dispatchEvent: (arg0: CustomEvent<unknown>) => void; }) {
+	const handleClick = (event: Event) => {
 		if (!node.contains(event.target)) {
 			node.dispatchEvent(new CustomEvent('toggleContentEditable'));
 		}

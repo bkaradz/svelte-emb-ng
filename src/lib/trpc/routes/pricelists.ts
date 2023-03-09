@@ -3,7 +3,7 @@ import { router } from '$lib/trpc/t';
 import { protectedProcedure } from '../middleware/auth';
 import { z } from 'zod';
 import { savePricelistSchema } from '$lib/validation/savePricelists.validate';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, Pricelists } from '@prisma/client';
 import { setMonetaryValue } from '$lib/services/monetary';
 
 export const pricelists = router({
@@ -11,23 +11,24 @@ export const pricelists = router({
     group: z.string().optional()
   })).query(async ({ input }) => {
 
-    type ObjectKeys = keyof typeof input
+    type ObjectKeys = keyof Pricelists
 
     const objectKeys = Object.keys(input)[0] as ObjectKeys;
 
     let query: Prisma.PricelistsFindManyArgs;
+
+    const containsArg = input[objectKeys]
 
     if (objectKeys) {
       query = {
         where: {
           isActive: true,
           [objectKeys]: {
-            contains: input[objectKeys],
+            contains: containsArg,
             mode: 'insensitive'
           }
         },
         orderBy: {
-
           id: 'asc'
         }
       };

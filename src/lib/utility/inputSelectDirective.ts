@@ -1,4 +1,4 @@
-export function selectTextOnFocus(node) {
+export function selectTextOnFocus(node: HTMLInputElement | HTMLTextAreaElement) {
 	const handleFocus = () => {
 		node && typeof node.select === 'function' && node.select();
 	};
@@ -13,8 +13,8 @@ export function selectTextOnFocus(node) {
 }
 
 /** Blurs the node when Escape is pressed */
-export function blurOnEscape(node) {
-	const handleKey = (event) => {
+export function blurOnEscape(node: HTMLInputElement | HTMLTextAreaElement) {
+	const handleKey = (event: { key: string; } | undefined) => {
 		if (event.key === 'Escape' && node && typeof node.blur === 'function') node.blur();
 	};
 

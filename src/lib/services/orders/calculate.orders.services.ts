@@ -1,15 +1,33 @@
 import prisma from '$lib/prisma/client';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import logger from '$lib/utility/logger';
-import type { OrderLine, Products } from '@prisma/client';
 import {
 	dinero,
 	greaterThanOrEqual,
 	multiply,
-	toSnapshot
+	toSnapshot,
+	type Dinero
 } from 'dinero.js';
 
-type NewOrderLine = OrderLine & Products;
+type NewOrderLine =
+	{
+		productsID: number,
+		quantity: number,
+		id: number,
+		createdBy: number,
+		name: string,
+		description: string | null,
+		unitPrice: Dinero<number>,
+		productCategories: string,
+		stitches: number,
+		units: number | null,
+		isActive: boolean,
+		utilisation: number,
+		createdAt: Date,
+		updatedAt: Date,
+		embroideryPositions: string,
+		embroideryTypes: string
+	};
 
 type MainOrder = {
 	id?: number | undefined;
@@ -20,7 +38,7 @@ type MainOrder = {
 	orderDate: string | undefined;
 	deliveryDate?: string | undefined;
 	comment?: string;
-	OrderLine: Partial<NewOrderLine>[];
+	OrderLine: NewOrderLine[];
 	isInvoiced: boolean;
 };
 

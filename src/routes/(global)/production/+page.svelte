@@ -30,6 +30,10 @@
 	} from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { dinero, multiply } from 'dinero.js';
+	import isBetween from 'dayjs/plugin/isBetween';
+	import weekday from 'dayjs/plugin/weekday';
+	dayjs.extend(isBetween);
+	dayjs.extend(weekday);
 
 	let errorMessages = new Map();
 
