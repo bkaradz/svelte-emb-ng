@@ -1,4 +1,4 @@
-import { calculateOrder } from '$lib/services/orders';
+import { calculateOrder, type MainOrder } from '$lib/services/orders';
 import { router } from '$lib/trpc/t';
 import { calculateCartSchema } from '$lib/validation/cartCalculations.validate';
 import { protectedProcedure } from '../middleware/auth';
@@ -8,7 +8,7 @@ export const cart = router({
     calculateCartSchema
   ).mutation(async ({ input }) => {
     
-    const test = await calculateOrder(input);
+    const test = await calculateOrder(input as Partial<MainOrder>);
     
     return test
   }),

@@ -1,22 +1,20 @@
 import type { SafeParseError } from "zod";
 
-export const zodErrorMessagesMap = <T>(error: SafeParseError<T>) => {
+export const zodErrorMessagesMap = <T>(results: SafeParseError<T>) => {
 
-  if (!error.success) {
-    const formatErrors = error.error.format()
+  if (!results.success) {
+    const formatErrors = results.error.format()
 
-    const errorsMap = new Map(Object.entries(formatErrors))
+    const errorsMap = new Map<string, any>(Object.entries(formatErrors))
 
     const newErrorMap = new Map()
 
     for (const [key, value] of errorsMap.entries()) {
       if (key !== '_errors') {
-        newErrorMap.set(key, value._errors.join(", ") || "")
+        newErrorMap.set(key, value?._errors.join(", ") || "")
       }
     }
 
     return newErrorMap
-
   }
-
 };

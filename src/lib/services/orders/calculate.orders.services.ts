@@ -29,7 +29,7 @@ type NewOrderLine =
 		embroideryTypes: string
 	};
 
-type MainOrder = {
+export type MainOrder = {
 	id?: number | undefined;
 	customersID: number | undefined;
 	pricelistsID: number | undefined;

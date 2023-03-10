@@ -57,22 +57,31 @@
 		}
 	};
 
-	let formData = data.contact;
-
-
 	$: resetForm = () => {
-		formData = { ...initFromData };
+		formData = structuredClone(initFromData);
 		corporateSearch = Object.create({ name: undefined });
 	};
 
-	const initFromData = {
+	type initFromDataType = {
+		isCorporate: boolean;
+		organisationID: { name: undefined } | number | undefined;
+		name: undefined | string;
+		email: { email: '' }[];
+		phone: { phone: '' }[];
+		address: { address: '' }[];
+		vatOrBpNo?: string
+	};
+
+	const initFromData: initFromDataType = {
 		isCorporate: false,
 		organisationID: { name: undefined },
 		name: undefined,
-		email: [''],
-		phone: [''],
-		address: ['']
+		phone: [{ phone: '' }],
+		email: [{ email: '' }],
+		address: [{ address: '' }],
 	};
+
+	let formData = structuredClone(initFromData);
 
 	const handleSubmit = async () => {
 

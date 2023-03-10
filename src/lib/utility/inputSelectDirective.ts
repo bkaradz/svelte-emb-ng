@@ -14,15 +14,15 @@ export function selectTextOnFocus(node: HTMLInputElement | HTMLTextAreaElement) 
 
 /** Blurs the node when Escape is pressed */
 export function blurOnEscape(node: HTMLInputElement | HTMLTextAreaElement) {
-	const handleKey = (event: { key: string; } | undefined) => {
+	const handleKey = (event: KeyboardEvent) => {
 		if (event.key === 'Escape' && node && typeof node.blur === 'function') node.blur();
 	};
 
-	node.addEventListener('keydown', handleKey);
+	node.addEventListener('keydown', (handleKey as EventListener));
 
 	return {
 		destroy() {
-			node.removeEventListener('keydown', handleKey);
+			node.removeEventListener('keydown', (handleKey as EventListener));
 		}
 	};
 }

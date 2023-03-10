@@ -20,6 +20,7 @@
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveContactsSchema } from '$lib/validation/saveContact.validate';
 	import type { Address, Contacts, Email, Phone } from '@prisma/client';
+	import { number } from 'zod';
 
 	let errorMessages = new Map();
 
@@ -39,7 +40,7 @@
 		name?: string;
 	}
 
-	let corporateSearch: Partial<Contacts> = { name: '' };
+	let corporateSearch: Partial<Contacts> = { name: undefined };
 
 	$: formData.organisationID = corporateSearch?.id;
 
@@ -59,26 +60,33 @@
 		}
 	};
 
-
 	$: resetForm = () => {
 		formData = structuredClone(initFromData);
 		corporateSearch = Object.create({ name: undefined });
 		getCorporateContacts(defaultCorporateQueryParams);
 	};
 
-	const initFromData = {
+	type initFromDataType = {
+		isCorporate: boolean;
+		organisationID: { name: undefined } | number | undefined;
+		name: undefined | string;
+		email: string[];
+		phone: string[];
+		address?: string;
+		vatOrBpNo?: string
+	};
+
+	const initFromData: initFromDataType = {
 		isCorporate: false,
 		organisationID: { name: undefined },
 		name: undefined,
-		email: [''],
 		phone: [''],
-		address: undefined
+		email: [''],
 	};
 
 	let formData = structuredClone(initFromData);
 
 	const handleSubmit = async () => {
-
 		const parsedContact = saveContactsSchema.safeParse(formData);
 
 		if (!parsedContact.success) {

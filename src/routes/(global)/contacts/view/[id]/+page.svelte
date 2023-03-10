@@ -35,7 +35,7 @@
 
 	type ContactsTypes = Contacts & Email & Phone & Address;
 
-	type OrdersType = Pagination & { results: OrdersResultsType[] };
+	type OrdersType = Pagination & { results: Orders[] };
 
 	export let data: { customer: ContactsTypes; orders: OrdersType };
 
