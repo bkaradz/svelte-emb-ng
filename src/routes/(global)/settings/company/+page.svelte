@@ -1,5 +1,4 @@
-<script lang='ts'>
-
+<script lang="ts">
 </script>
 
 <svelte:head>
@@ -7,7 +6,6 @@
 </svelte:head>
 
 <h1>Company</h1>
+
 <style>
-
 </style>
-

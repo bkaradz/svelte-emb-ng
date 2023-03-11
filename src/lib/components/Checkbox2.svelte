@@ -31,9 +31,7 @@
 		<div
 			class={`toggle peer peer-checked:bg-royal-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-1 peer-focus:ring-royal-blue-500 dark:border-pickled-bluewood-600 dark:bg-pickled-bluewood-700 dark:peer-focus:ring-royal-blue-800 ${style}`}
 		/>
-		<span class={`ml-3 text-sm font-medium text-pickled-bluewood-600`}
-			>{label}</span
-		>
+		<span class={`ml-3 text-sm font-medium text-pickled-bluewood-600`}>{label}</span>
 	</label>
 </div>
 

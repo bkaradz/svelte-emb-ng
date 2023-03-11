@@ -1,6 +1,6 @@
 {
-  "privateKeyBase64": "privateKeyBase64",
-  "publicKeyBase64": "publicKeyBase64",
-  "printerEmail": "printerEmail",
-  "printerPassword": "printerPassword"
+	"privateKeyBase64": "privateKeyBase64",
+	"publicKeyBase64": "publicKeyBase64",
+	"printerEmail": "printerEmail",
+	"printerPassword": "printerPassword"
 }

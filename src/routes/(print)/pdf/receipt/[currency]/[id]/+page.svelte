@@ -7,22 +7,35 @@
 	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import { USD } from '@dinero.js/currencies';
-	import type { OrderLine } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot, type DineroSnapshot } from 'dinero.js';
+	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import {
+		add,
+		dinero,
+		multiply,
+		toSnapshot,
+		type Dinero,
+		type DineroOptions,
+		type DineroSnapshot
+	} from 'dinero.js';
 	import { onMount } from 'svelte';
 
-	interface Orders extends Record<string, any> {
-		OrderLine: OrderLine[];
-	}
+	type FullOrderLine = OrderLine & { Products: Products };
 
-	type DataType = {
-		selectedCurrency: CurrencyOption;
-		zero: DineroSnapshot<number>;
-		order: Orders;
+	type OrderType = Orders & {
+		customerContact: Contacts;
+		Pricelists: Pricelists;
+		OrderLine: FullOrderLine[];
 	};
-	export let data: DataType;
 
-	const updatePrint = async (data: DataType) => {
+	type DataInterface = {
+		order: OrderType;
+		zero: Dinero<number>;
+		selectedCurrency: CurrencyOption;
+	};
+
+	export let data: DataInterface;
+
+	const updatePrint = async (data: DataInterface) => {
 		if (!data?.order) {
 			return;
 		}
@@ -39,7 +52,7 @@
 
 	onMount(() => {
 		if (data?.zero) {
-			zero = dinero(data.zero);
+			zero = dinero(data.zero as unknown as DineroOptions<number>);
 		}
 		if (data?.order) {
 			updatePrint(data);
@@ -47,7 +60,7 @@
 	});
 
 	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
-		zero = dinero(data.zero);
+		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency
 		 */
@@ -61,7 +74,10 @@
 		const convert = createConverter(selectedCurrency.dineroObj);
 		order.OrderLine = [
 			...newArray.map((item) => {
-				let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+				let unitPrice = convert(
+					dinero(item.unitPrice as unknown as DineroOptions<number>),
+					selectedCurrency.dineroObj
+				);
 				if (!unitPrice) {
 					unitPrice = zero;
 				}
@@ -94,7 +110,7 @@
 
 	$: calculatedTotal = add(calculatedVat, subTotal);
 
-	let order: Orders;
+	let order: OrderType;
 
 	let zero = dinero({ amount: 0, currency: USD });
 
@@ -105,7 +121,10 @@
 			(acc, item) => {
 				return {
 					totalCartItems: acc.totalCartItems + item.quantity,
-					subTotal: add(acc.subTotal, multiply(dinero(item.unitPrice), item.quantity))
+					subTotal: add(
+						acc.subTotal,
+						multiply(dinero(item.unitPrice as unknown as DineroOptions<number>), item.quantity)
+					)
 				};
 			},
 			{ totalCartItems: 0, subTotal: zero }

@@ -54,24 +54,23 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// To reflect CSS used for screens instead of print
 		await page.emulateMediaType('screen');
 
-		const PAGE_WIDTH = 8
-
+		const PAGE_WIDTH = 8;
 
 		const dimensions = await page.evaluate(() => {
 			return {
 				// width: document.getElementById('receipt').offsetWidth,
-				height: document.getElementById('receipt').offsetHeight,
+				height: document.getElementById('receipt').offsetHeight
 			};
 		});
 
 		if (!dimensions.height) {
-			throw new Error("The page does not have a height");
+			throw new Error('The page does not have a height');
 		}
 
 		const pdfBuffer = await page.pdf({
 			// width: '8cm',
 			width: `${PAGE_WIDTH}cm`,
-			height: `${dimensions.height * 2.7 / 100}cm`,
+			height: `${(dimensions.height * 2.7) / 100}cm`,
 			pageRanges: '1',
 			printBackground: true,
 			preferCSSPageSize: false,

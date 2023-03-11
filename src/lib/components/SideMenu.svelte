@@ -12,7 +12,7 @@
 		<ul class="flex flex-col pl-1">
 			{#each $anchorList as tag, index (tag.id)}
 				<li class="mt-2 flex w-full">
-					<a 
+					<a
 						data-sveltekit-preload-data="hover"
 						href={tag.url}
 						class="flex w-full flex-row rounded-l-lg p-4 {($page.url.pathname.includes(tag.url) &&

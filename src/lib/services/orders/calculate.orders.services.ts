@@ -1,33 +1,26 @@
 import prisma from '$lib/prisma/client';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import logger from '$lib/utility/logger';
-import {
-	dinero,
-	greaterThanOrEqual,
-	multiply,
-	toSnapshot,
-	type Dinero
-} from 'dinero.js';
+import { dinero, greaterThanOrEqual, multiply, toSnapshot, type Dinero } from 'dinero.js';
 
-type NewOrderLine =
-	{
-		productsID: number,
-		quantity: number,
-		id: number,
-		createdBy: number,
-		name: string,
-		description: string | null,
-		unitPrice: Dinero<number>,
-		productCategories: string,
-		stitches: number,
-		units: number | null,
-		isActive: boolean,
-		utilisation: number,
-		createdAt: Date,
-		updatedAt: Date,
-		embroideryPositions: string,
-		embroideryTypes: string
-	};
+type NewOrderLine = {
+	productsID: number;
+	quantity: number;
+	id: number;
+	createdBy: number;
+	name: string;
+	description: string | null;
+	unitPrice: Dinero<number>;
+	productCategories: string;
+	stitches: number;
+	units: number | null;
+	isActive: boolean;
+	utilisation: number;
+	createdAt: Date;
+	updatedAt: Date;
+	embroideryPositions: string;
+	embroideryTypes: string;
+};
 
 export type MainOrder = {
 	id?: number | undefined;
@@ -57,11 +50,11 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 		});
 
 		if (!pricelist) {
-			throw new Error("Pricelist not found");
+			throw new Error('Pricelist not found');
 		}
 
 		if (!Array.isArray(reqOrder.OrderLine)) {
-			throw new Error("OrderLine array not found");
+			throw new Error('OrderLine array not found');
 		}
 
 		const asyncOrderLine = reqOrder.OrderLine.map(async (item) => {
@@ -89,7 +82,7 @@ export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
 					pricelist,
 					embroideryTypes,
 					quantity
-				}) as { pricePerThousandStitches: string, minimumPrice: string }
+				}) as { pricePerThousandStitches: string; minimumPrice: string };
 
 				/**
 				 *  convert to dinero units

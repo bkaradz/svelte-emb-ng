@@ -18,17 +18,12 @@ function createOrderItems() {
 		add: (item: any) => {
 			if (!orderItemsIDs.has(item.id)) {
 				orderItemsIDs.add(item.id);
-				update((allOrderItems: any[]) => [
-					...allOrderItems,
-					{ ...item, ...lineItems }
-				]);
+				update((allOrderItems: any[]) => [...allOrderItems, { ...item, ...lineItems }]);
 			}
 		},
 		remove: (id: Schema.Types.ObjectId) => {
 			orderItemsIDs.delete(id);
-			update((allOrderItems: any[]) =>
-				allOrderItems.filter((item: any) => item.id !== id)
-			);
+			update((allOrderItems: any[]) => allOrderItems.filter((item: any) => item.id !== id));
 		},
 		update: (item: any) => {
 			this.remove(item.id);

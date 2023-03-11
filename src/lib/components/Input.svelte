@@ -7,7 +7,7 @@
 	export let label = '';
 	export let name = '';
 	export let pending = false;
-	export let messages: string|any[] = [];
+	export let messages: string | any[] = [];
 	export let validityClass = '';
 	export let onInput: Function;
 

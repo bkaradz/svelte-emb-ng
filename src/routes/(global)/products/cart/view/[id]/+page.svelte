@@ -21,7 +21,7 @@
 		Pricelists,
 		Products
 	} from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import { add, dinero, multiply, toSnapshot, type DineroOptions } from 'dinero.js';
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -92,7 +92,10 @@
 
 		const convert = createConverter(selectedCurrency.dineroObj);
 		mainOrder.OrderLine = newArray.map((item) => {
-			let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+			let unitPrice = convert(
+				dinero(item.unitPrice as unknown as DineroOptions<number>),
+				selectedCurrency.dineroObj
+			);
 			if (!unitPrice) {
 				unitPrice = zero;
 			}

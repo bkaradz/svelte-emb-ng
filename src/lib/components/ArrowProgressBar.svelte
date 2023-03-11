@@ -3,7 +3,7 @@
 	export let currentSelection = 0;
 
 	export let onClick = (x: number) => {
-		console.log(x)
+		console.log(x);
 	};
 
 	// const onClick = (item: number) => {

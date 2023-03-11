@@ -36,24 +36,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const csvString: string = await file.text();
 
-		type PaymentTypeOptionsInter = Omit<PaymentTypeOptions, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDefault'>
+		type PaymentTypeOptionsInter = Omit<
+			PaymentTypeOptions,
+			'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDefault'
+		>;
 		type PaymentTypeOptionsNew = PaymentTypeOptionsInter & {
-			isActive: boolean | string
-			isDefault: boolean | string
-		}
+			isActive: boolean | string;
+			isDefault: boolean | string;
+		};
 
 		const paymentTypeOptionsArray = (await parseCsv(csvString)) as PaymentTypeOptionsNew[];
 
-		const allDocsPromises: (PaymentTypeOptionsInter & {isActive: boolean, isDefault: boolean})[] = [];
+		const allDocsPromises: (PaymentTypeOptionsInter & { isActive: boolean; isDefault: boolean })[] =
+			[];
 
 		paymentTypeOptionsArray.forEach(async (element) => {
-
 			if (typeof element.isActive === 'string') {
-				element.isActive = getBoolean(element.isActive.toLowerCase())
+				element.isActive = getBoolean(element.isActive.toLowerCase());
 			}
 
 			if (typeof element.isDefault === 'string') {
-				element.isDefault = getBoolean(element.isDefault.toLowerCase()) 
+				element.isDefault = getBoolean(element.isDefault.toLowerCase());
 			}
 
 			const parsedPaymentTypesOptions = savePaymentTypesOptionsSchema.safeParse(element);
@@ -86,7 +89,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// 	currency
 			// };
 
-			allDocsPromises.push({ createdBy, ...(parsedPaymentTypesOptions.data) });
+			allDocsPromises.push({ createdBy, ...parsedPaymentTypesOptions.data });
 		});
 
 		const optionsQuery = await prisma.paymentTypeOptions.createMany({ data: allDocsPromises });

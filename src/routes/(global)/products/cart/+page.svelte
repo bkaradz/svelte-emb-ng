@@ -229,9 +229,9 @@
 	};
 
 	export const snapshot: Snapshot = {
-    capture: () => customerSearch,
-    restore: (value) => customerSearch = value
-  };
+		capture: () => customerSearch,
+		restore: (value) => (customerSearch = value)
+	};
 </script>
 
 <svelte:head>

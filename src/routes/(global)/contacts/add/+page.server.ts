@@ -3,16 +3,16 @@ import type { PageServerLoad } from './$types';
 import { createContext } from '$lib/trpc/context';
 
 export const load = (async (event) => {
-  const queryParams = {
-    limit: 3,
-    page: 1,
-  }
+	const queryParams = {
+		limit: 3,
+		page: 1
+	};
 
-  const newCorporateContacts = async () => {
-    return await router.createCaller(await createContext(event)).contacts.getCorporate(queryParams);
-  }
+	const newCorporateContacts = async () => {
+		return await router.createCaller(await createContext(event)).contacts.getCorporate(queryParams);
+	};
 
-  return {
-    contacts: newCorporateContacts(),
-  };
+	return {
+		contacts: newCorporateContacts()
+	};
 }) satisfies PageServerLoad;

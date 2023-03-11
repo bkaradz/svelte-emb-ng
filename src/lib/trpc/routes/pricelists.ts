@@ -7,138 +7,142 @@ import type { Prisma, Pricelists } from '@prisma/client';
 import { setMonetaryValue } from '$lib/services/monetary';
 
 export const pricelists = router({
-  getPricelists: protectedProcedure.input(z.object({
-    group: z.string().optional()
-  })).query(async ({ input }) => {
+	getPricelists: protectedProcedure
+		.input(
+			z.object({
+				group: z.string().optional()
+			})
+		)
+		.query(async ({ input }) => {
+			type ObjectKeys = keyof Pricelists;
 
-    type ObjectKeys = keyof Pricelists
+			const objectKeys = Object.keys(input)[0] as ObjectKeys;
 
-    const objectKeys = Object.keys(input)[0] as ObjectKeys;
+			let query: Prisma.PricelistsFindManyArgs;
 
-    let query: Prisma.PricelistsFindManyArgs;
+			const containsArg = input[objectKeys];
 
-    const containsArg = input[objectKeys]
+			if (objectKeys) {
+				query = {
+					where: {
+						isActive: true,
+						[objectKeys]: {
+							contains: containsArg,
+							mode: 'insensitive'
+						}
+					},
+					orderBy: {
+						id: 'asc'
+					}
+				};
+			} else {
+				query = {
+					where: {
+						isActive: true
+					},
+					orderBy: {
+						id: 'asc'
+					}
+				};
+			}
 
-    if (objectKeys) {
-      query = {
-        where: {
-          isActive: true,
-          [objectKeys]: {
-            contains: containsArg,
-            mode: 'insensitive'
-          }
-        },
-        orderBy: {
-          id: 'asc'
-        }
-      };
-    } else {
-      query = {
-        where: {
-          isActive: true
-        },
-        orderBy: {
-          id: 'asc'
-        }
-      };
-    }
+			return await prisma.pricelists.findMany(query);
+		}),
+	getById: protectedProcedure.input(z.number()).query(async ({ input }) => {
+		const pricelist = await prisma.pricelists.findUnique({
+			where: {
+				id: input
+			},
+			include: {
+				PricelistDetails: true
+			}
+		});
 
-    return await prisma.pricelists.findMany(query);
-  }),
-  getById: protectedProcedure.input(z.number()).query(async ({ input }) => {
-    const pricelist = await prisma.pricelists.findUnique({
-      where: {
-        id: input
-      },
-      include: {
-        PricelistDetails: true
-      }
-    });
+		return pricelist;
+	}),
+	getDefaultPricelist: protectedProcedure.query(async () => {
+		const pricelist = await prisma.pricelists.findMany({
+			where: {
+				isDefault: {
+					equals: true
+				}
+			},
+			include: {
+				PricelistDetails: true
+			}
+		});
 
-    return pricelist;
-  }),
-  getDefaultPricelist: protectedProcedure.query(async () => {
-    const pricelist = await prisma.pricelists.findMany({
-      where: {
-        isDefault: {
-          equals: true
-        }
-      },
-      include: {
-        PricelistDetails: true
-      }
-    });
+		if (pricelist.length > 1) {
+			throw new Error('Default pricelist more than one');
+		}
 
-    if (pricelist.length > 1) {
-      throw new Error("Default pricelist more than one");
-    }
+		if (pricelist.length === 0) {
+			throw new Error('Default pricelist not found');
+		}
 
-    if (pricelist.length === 0) {
-      throw new Error("Default pricelist not found");
-    }
+		return pricelist[0];
+	}),
+	saveOrUpdatePricelist: protectedProcedure
+		.input(savePricelistSchema)
+		.mutation(async ({ input, ctx }) => {
+			if (!ctx?.userId) {
+				throw new Error('User not authorised');
+			}
 
-    return pricelist[0];
-  }),
-  saveOrUpdatePricelist: protectedProcedure.input(savePricelistSchema).mutation(async ({ input, ctx }) => {
+			const createdBy = ctx.userId as number;
 
-    if (!ctx?.userId) {
-      throw new Error("User not authorised");
-    }
+			if (input.isDefault) {
+				changeCurrentDefault();
+			}
 
-    const createdBy = ctx.userId as number;
+			const { pricelistDetails, ...restPricelist } = input;
 
-    if (input.isDefault) {
-      changeCurrentDefault();
-    }
+			const subPrices = pricelistDetails.map((list: any) => {
+				return {
+					...list,
+					pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
+					minimumPrice: setMonetaryValue(list.minimumPrice)
+				};
+			});
 
-    const { pricelistDetails, ...restPricelist } = input;
+			if (input.id) {
+				return await prisma.pricelists.update({
+					where: {
+						id: input.id
+					},
+					data: {
+						...restPricelist,
+						createdBy,
+						PricelistDetails: { createMany: { data: subPrices } }
+					}
+				});
+			} else {
+				return await prisma.pricelists.create({
+					data: {
+						...restPricelist,
+						createdBy,
+						PricelistDetails: { createMany: { data: subPrices } }
+					}
+				});
+			}
+		}),
+	deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
+		const pricelist = await prisma.pricelists.update({
+			where: { id: input },
+			data: { isActive: false }
+		});
 
-    const subPrices = pricelistDetails.map((list: any) => {
-      return {
-        ...list,
-        pricePerThousandStitches: setMonetaryValue(list.pricePerThousandStitches),
-        minimumPrice: setMonetaryValue(list.minimumPrice)
-      };
-    });
-
-    if (input.id) {
-      return await prisma.pricelists.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          ...restPricelist,
-          createdBy,
-          PricelistDetails: { createMany: { data: subPrices } }
-        }
-      });
-    } else {
-      return await prisma.pricelists.create({
-        data: {
-          ...restPricelist,
-          createdBy,
-          PricelistDetails: { createMany: { data: subPrices } }
-        }
-      });
-    }
-  }),
-  deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
-    const pricelist = await prisma.pricelists.update({
-      where: { id: input },
-      data: { isActive: false }
-    });
-
-    return pricelist;
-  })
+		return pricelist;
+	})
 });
 
 export const changeCurrentDefault = async () => {
-  return await prisma.pricelists.updateMany({
-    where: {
-      isDefault: {
-        equals: true
-      }
-    },
-    data: { isDefault: false }
-  });
+	return await prisma.pricelists.updateMany({
+		where: {
+			isDefault: {
+				equals: true
+			}
+		},
+		data: { isDefault: false }
+	});
 };

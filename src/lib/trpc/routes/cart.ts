@@ -4,13 +4,9 @@ import { calculateCartSchema } from '$lib/validation/cartCalculations.validate';
 import { protectedProcedure } from '../middleware/auth';
 
 export const cart = router({
-  calculateCart: protectedProcedure.input(
-    calculateCartSchema
-  ).mutation(async ({ input }) => {
-    
-    const test = await calculateOrder(input as Partial<MainOrder>);
-    
-    return test
-  }),
-});
+	calculateCart: protectedProcedure.input(calculateCartSchema).mutation(async ({ input }) => {
+		const test = await calculateOrder(input as Partial<MainOrder>);
 
+		return test;
+	})
+});

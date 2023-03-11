@@ -4,7 +4,7 @@ import { ZWB, ZWR } from './convert.services';
 
 function intlFormat(locale: string, options = {}) {
 	return function formatter(dineroObject: Dinero<number>) {
-		function transformer({ amount, currency }: { amount: number, currency: Currency<number> }) {
+		function transformer({ amount, currency }: { amount: number; currency: Currency<number> }) {
 			return amount.toLocaleString(locale, {
 				...options,
 				style: 'currency',

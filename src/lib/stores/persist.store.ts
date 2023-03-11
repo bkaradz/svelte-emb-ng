@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 
-
 export const persistStore = <T>(key: string, initial: T): T => {
 	const persist = localStorage.getItem(key);
 

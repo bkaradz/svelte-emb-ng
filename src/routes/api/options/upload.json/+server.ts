@@ -37,22 +37,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const optionsArray = (await parseCsv(csvString)) as Options[];
 
-		type OptionDoc = Omit<Options, 'id' | 'createdAt' | 'updatedAt'>
+		type OptionDoc = Omit<Options, 'id' | 'createdAt' | 'updatedAt'>;
 
 		const allDocsPromises: OptionDoc[] = [];
 
 		optionsArray.forEach(async (element) => {
-			let { label, group, value, isActive, isDefault } = element as { label: string, group: string, value: string, isActive: boolean | string, isDefault: boolean | string };
+			let { label, group, value, isActive, isDefault } = element as {
+				label: string;
+				group: string;
+				value: string;
+				isActive: boolean | string;
+				isDefault: boolean | string;
+			};
 
 			label = label.trim();
 			group = group.trim();
 			value = value.trim();
 			if (typeof isActive === 'string') {
-				isActive = getBoolean(isActive.toLowerCase())
+				isActive = getBoolean(isActive.toLowerCase());
 			}
 
 			if (typeof isDefault === 'string') {
-				isDefault = getBoolean(isDefault.toLowerCase())
+				isDefault = getBoolean(isDefault.toLowerCase());
 			}
 
 			const option = {

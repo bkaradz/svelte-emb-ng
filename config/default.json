@@ -1,11 +1,11 @@
 {
-  "DATABASE_URL": "postgresql://postgres:karadz@localhost:5432/embPrisma",
-  "saltWorkFactor": 10,
-  "accessTokenTtl": "24h",
-  "refreshTokenTtl": "1y",
-  "cookieAccessTokenTtl": 86400,
-  "cookieRefreshTokenTtl": 31557600,
-  "sameSite": "lax",
-  "secure": false,
-  "httpOnly": false
+	"DATABASE_URL": "postgresql://postgres:karadz@localhost:5432/embPrisma",
+	"saltWorkFactor": 10,
+	"accessTokenTtl": "24h",
+	"refreshTokenTtl": "1y",
+	"cookieAccessTokenTtl": 86400,
+	"cookieRefreshTokenTtl": 31557600,
+	"sameSite": "lax",
+	"secure": false,
+	"httpOnly": false
 }

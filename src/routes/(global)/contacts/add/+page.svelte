@@ -73,7 +73,7 @@
 		email: string[];
 		phone: string[];
 		address?: string;
-		vatOrBpNo?: string
+		vatOrBpNo?: string;
 	};
 
 	const initFromData: initFromDataType = {
@@ -81,7 +81,7 @@
 		organisationID: { name: undefined },
 		name: undefined,
 		phone: [''],
-		email: [''],
+		email: ['']
 	};
 
 	let formData = structuredClone(initFromData);

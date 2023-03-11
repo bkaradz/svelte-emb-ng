@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	let banks = 0;
 </script>
 

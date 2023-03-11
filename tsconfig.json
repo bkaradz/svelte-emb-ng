@@ -11,10 +11,6 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
-		"types": [
-			"vitest/globals",
-			"vitest/importMeta",
-			"@testing-library/jest-dom"
-		]
+		"types": ["vitest/globals", "vitest/importMeta", "@testing-library/jest-dom"]
 	}
 }

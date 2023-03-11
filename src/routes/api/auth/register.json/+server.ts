@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt';
 import config from 'config';
 import type { RequestHandler } from './$types';
 
-
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const reqUser: UserRegister = await request.json();

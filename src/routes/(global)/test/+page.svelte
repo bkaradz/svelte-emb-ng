@@ -3,7 +3,8 @@
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
 	import {
 		currenciesOptions,
-		selectedCurrency, type CurrencyType
+		selectedCurrency,
+		type CurrencyType
 	} from '$lib/stores/setCurrency.store';
 	import { dinero, type Dinero } from 'dinero.js';
 

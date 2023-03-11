@@ -18,11 +18,11 @@ export function blurOnEscape(node: HTMLInputElement | HTMLTextAreaElement) {
 		if (event.key === 'Escape' && node && typeof node.blur === 'function') node.blur();
 	};
 
-	node.addEventListener('keydown', (handleKey as EventListener));
+	node.addEventListener('keydown', handleKey as EventListener);
 
 	return {
 		destroy() {
-			node.removeEventListener('keydown', (handleKey as EventListener));
+			node.removeEventListener('keydown', handleKey as EventListener);
 		}
 	};
 }

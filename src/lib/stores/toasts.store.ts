@@ -12,7 +12,13 @@ function createToast() {
 
 	return {
 		subscribe,
-		add: ({ message = 'Default message', type = 'info' }: { message: string, type: toastInterface['type'] }) => {
+		add: ({
+			message = 'Default message',
+			type = 'info'
+		}: {
+			message: string;
+			type: toastInterface['type'];
+		}) => {
 			const id = uuidv4();
 			update((allToasts) => [{ id, message, type }, ...allToasts]);
 		},

@@ -22,7 +22,6 @@ export const ZWR: Currency<number> = {
 let currenciesRates: Map<string, number>;
 
 const getRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
-
 	const amount = currenciesRates.get(newCurrency.code);
 
 	if (!amount) {
@@ -32,40 +31,38 @@ const getRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
 	const rates = { [newCurrency.code]: { amount, scale: 2 } };
 
 	if (!rates) {
-		return
+		return;
 	}
 
-	return rates
-}
+	return rates;
+};
 
 const getUSDRates = (newCurrency: Currency<number>): Rates<number> | undefined => {
-
 	const amount = currenciesRates.get(newCurrency.code);
 	if (!amount) {
 		return;
 	}
-	const rates = { USD: { amount: parseInt(Math.ceil((100 * 100 * 1000)) / (amount)), scale: 5 } };
+	const rates = { USD: { amount: parseInt(Math.ceil(100 * 100 * 1000) / amount), scale: 5 } };
 
 	if (!rates) {
-		return
+		return;
 	}
 
-	return rates
-}
+	return rates;
+};
 
 function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>) {
-
 	if (!currenciesRates) {
 		return;
 	}
 
-	const rates = getRates(newCurrency)
+	const rates = getRates(newCurrency);
 
 	if (!rates) {
-		return
+		return;
 	}
 
-	return convert(dineroObject, newCurrency, rates)
+	return convert(dineroObject, newCurrency, rates);
 }
 
 export function createConverter({ code }: { code: Currency<number>['code'] }) {
@@ -80,7 +77,7 @@ export function toDineroObject(amount: number | string | DineroOptions<number>) 
 	if (typeof amount === 'string') {
 		// if string is a stringified dinero object
 		try {
-			const results = JSON.parse(amount);
+			const results = JSON.parse(amount) as DineroOptions<number>;
 			return dinero(results);
 		} catch (err: unknown) {
 			logger.error(`Error: ${err}`);
@@ -100,35 +97,36 @@ export function toObject(dineroObject: Dinero<number>): {
 }
 
 export function createConverterHOF() {
-	return function converter(dineroObject: Dinero<number>, newCurrency: Currency<number>, selectedCurrency: {
-		currency: string;
-		symbol: string;
-		dineroObj: Currency<number>
-	}) {
-
+	return function converter(
+		dineroObject: Dinero<number>,
+		newCurrency: Currency<number>,
+		selectedCurrency: {
+			currency: string;
+			symbol: string;
+			dineroObj: Currency<number>;
+		}
+	) {
 		if (!currenciesRates) {
 			return;
 		}
 
-		const rates = getUSDRates(selectedCurrency.dineroObj)
+		const rates = getUSDRates(selectedCurrency.dineroObj);
 
 		if (!rates) {
-			return
+			return;
 		}
 
 		return convert(dineroObject, newCurrency, rates);
 	};
 }
 
-
 if (browser) {
 	(async () => {
 		// const paramsObj: unknown = { isDefault: true };
 		try {
-			const rates = await trpc().exchangeRate.getDefaultExchangeRate.query()
+			const rates = await trpc().exchangeRate.getDefaultExchangeRate.query();
 
 			if (rates.length === 1) {
-
 				const ratesMap = new Map<string, number>();
 				rates[0]?.ExchangeRateDetails.map((rate) => {
 					if (!(typeof parseInt(rate.rate) === 'number')) {
@@ -137,7 +135,7 @@ if (browser) {
 					ratesMap.set(rate.currency, parseInt(Math.ceil(parseFloat(rate.rate) * 100)));
 				});
 				if (ratesMap.size === 0) {
-					throw new Error("Eexchange Rates not found");
+					throw new Error('Eexchange Rates not found');
 				}
 				currenciesRates = ratesMap;
 			} else {
@@ -147,9 +145,8 @@ if (browser) {
 				});
 				// throw new Error("Default Eexchange Rates more than one found");
 			}
-
 		} catch (err: unknown) {
-			handleErrors(err)
+			handleErrors(err);
 		}
 	})();
 }

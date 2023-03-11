@@ -69,7 +69,7 @@
 		email: { email: '' }[];
 		phone: { phone: '' }[];
 		address: { address: '' }[];
-		vatOrBpNo?: string
+		vatOrBpNo?: string;
 	};
 
 	const initFromData: initFromDataType = {
@@ -78,13 +78,12 @@
 		name: undefined,
 		phone: [{ phone: '' }],
 		email: [{ email: '' }],
-		address: [{ address: '' }],
+		address: [{ address: '' }]
 	};
 
 	let formData = structuredClone(initFromData);
 
 	const handleSubmit = async () => {
-
 		const parsedContact = saveContactsSchema.safeParse(formData);
 
 		if (!parsedContact.success) {

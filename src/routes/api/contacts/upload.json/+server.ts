@@ -33,11 +33,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const csvString = await file.text() as string;
+		const csvString = (await file.text()) as string;
 
-		type pContact = Partial<Contacts>
+		type pContact = Partial<Contacts>;
 
-		const contactsArray = await parseCsv(csvString) as pContact[];
+		const contactsArray = (await parseCsv(csvString)) as pContact[];
 
 		const allDocsPromises: pContact[] = [];
 

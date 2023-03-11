@@ -9,11 +9,9 @@ import { findSessions } from '$lib/services/session.services';
 export const first = createTRPCHandle({ router, createContext });
 
 export const second = async ({ event, resolve }) => {
-
 	const cookies = event.cookies.get('accessToken');
 
-	let decoded: userSessionInterface | undefined = undefined
-
+	let decoded: userSessionInterface | undefined = undefined;
 
 	if (cookies) {
 		decoded = verifyJwt(cookies).decoded as unknown as userSessionInterface;

@@ -38,9 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const allDocsPromises: Products[] = [];
 
-
 		productsArray.forEach(async (element) => {
-
 			try {
 				const product: Partial<Products> = {
 					productCategories: 'embroidery',

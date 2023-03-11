@@ -124,7 +124,8 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 				id: parseInt(userDelete.id)
 			},
 			data: {
-				createdBy, isActive: false
+				createdBy,
+				isActive: false
 			}
 		});
 

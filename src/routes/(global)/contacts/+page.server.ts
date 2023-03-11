@@ -3,13 +3,11 @@ import { router } from '$lib/trpc/router';
 import type { PageServerLoad } from './$types';
 
 export const load = (async (event) => {
+	const contacts = async () => {
+		return await router.createCaller(await createContext(event)).contacts.getContacts({});
+	};
 
-  const contacts = async () => {
-    return await router.createCaller(await createContext(event)).contacts.getContacts({});
-  }
-
-  return {
-    customers: contacts(),
-  };
-
+	return {
+		customers: contacts()
+	};
 }) satisfies PageServerLoad;

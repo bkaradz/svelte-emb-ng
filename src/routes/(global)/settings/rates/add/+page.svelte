@@ -27,7 +27,9 @@
 		ExchangeRateDetails: []
 	};
 
-	let rates: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = { ...initRate };
+	let rates: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = {
+		...initRate
+	};
 
 	let selectedGroup = 'all';
 

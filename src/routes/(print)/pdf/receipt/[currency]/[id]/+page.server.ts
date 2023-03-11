@@ -3,7 +3,6 @@ import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.stor
 import { dinero, toSnapshot } from 'dinero.js';
 import type { PageServerLoad } from './$types';
 
-
 export const load = (async ({ params }) => {
 	const order = await prisma.orders.findUnique({
 		where: {
@@ -24,10 +23,9 @@ export const load = (async ({ params }) => {
 		return;
 	}
 
-	const currencyType = params.currency.toUpperCase() as CurrencyType
+	const currencyType = params.currency.toUpperCase() as CurrencyType;
 
-	// const selectedCurrency = currenciesOptions.get(params.currency.toUpperCase());
-	const selectedCurrency = currencyOptions.get(currencyType)
+	const selectedCurrency = currencyOptions.get(currencyType);
 
 	if (!selectedCurrency) {
 		return;

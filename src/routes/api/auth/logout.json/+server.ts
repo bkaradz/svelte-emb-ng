@@ -9,8 +9,8 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
 		const headers = deleteSessionCookies(cookies);
 		cookies.set('session', '', {
 			path: '/',
-			expires: new Date(0),
-		})
+			expires: new Date(0)
+		});
 
 		locals.user = null;
 

@@ -8,14 +8,28 @@
 	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
 	import { USD } from '@dinero.js/currencies';
-	import type { OrderLine, Prisma } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
+	import { add, dinero, multiply, toSnapshot, type Dinero, type DineroOptions } from 'dinero.js';
 	import chunk from 'lodash-es/chunk';
 	import { onMount } from 'svelte';
 
-	export let data: any;
+	type FullOrderLine = OrderLine & { Products: Products };
 
-	const updatePrint = async (data: { order: Orders & {} }) => {
+	type OrderType = Orders & {
+		customerContact: Contacts;
+		Pricelists: Pricelists;
+		OrderLine: FullOrderLine[];
+	};
+
+	type DataInterface = {
+		order: OrderType;
+		zero: Dinero<number>;
+		selectedCurrency: CurrencyOption;
+	};
+
+	export let data: DataInterface;
+
+	const updatePrint = async (data: DataInterface) => {
 		if (!data?.order) {
 			return;
 		}
@@ -25,17 +39,17 @@
 			}
 		});
 		zero = dinero({ amount: 0, currency: data.selectedCurrency.dineroObj });
-		order = data.order;
-		await handleCurrency(order.OrderLine, data.selectedCurrency);
-		getCountAndSubTotal(order.OrderLine);
-		const splitLine = splitOrderLine({ ...order });
+
+		await handleCurrency(data.order.OrderLine, data.selectedCurrency);
+		getCountAndSubTotal(data.order.OrderLine);
+		const splitLine = splitOrderLine({ ...data.order });
 		const pages = createPage(splitLine);
 		pagesCreated = Array.from(pages.values());
 	};
 
 	onMount(() => {
 		if (data?.zero) {
-			zero = dinero(data.zero);
+			zero = dinero(data.zero as unknown as DineroOptions<number>);
 		}
 		if (data?.order) {
 			updatePrint(data);
@@ -43,7 +57,7 @@
 	});
 
 	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
-		zero = dinero(data.zero);
+		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency
 		 */
@@ -55,9 +69,13 @@
 			return;
 		}
 		const convert = createConverter(selectedCurrency.dineroObj);
+
 		order.OrderLine = [
 			...newArray.map((item) => {
-				let unitPrice = convert(dinero(item.unitPrice), selectedCurrency.dineroObj);
+				let unitPrice = convert(
+					dinero(item.unitPrice as unknown as DineroOptions<number>),
+					selectedCurrency.dineroObj
+				);
 				if (!unitPrice) {
 					unitPrice = zero;
 				}
@@ -90,9 +108,7 @@
 
 	$: calculatedTotal = add(calculatedVat, subTotal);
 
-	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
-
-	let order: Orders;
+	let order: OrderType;
 
 	const partitionTwo = (array: any[], size: number) => {
 		const results: any[] = [[], []];
@@ -170,12 +186,15 @@
 	// let totalCartItems = 0;
 	let subTotal = zero;
 
-	const getCountAndSubTotal = (cart: any[]) => {
+	const getCountAndSubTotal = (cart: FullOrderLine[]) => {
 		const totals = cart.reduce(
 			(acc, item) => {
 				return {
 					totalCartItems: acc.totalCartItems + item.quantity,
-					subTotal: add(acc.subTotal, multiply(dinero(item.unitPrice), item.quantity))
+					subTotal: add(
+						acc.subTotal,
+						multiply(dinero(item.unitPrice as unknown as DineroOptions<number>), item.quantity)
+					)
 				};
 			},
 			{ totalCartItems: 0, subTotal: zero }

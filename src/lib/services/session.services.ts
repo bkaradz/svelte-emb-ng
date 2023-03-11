@@ -13,7 +13,7 @@ export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
 		path: '/',
 		sameSite: config.get('sameSite'),
 		secure: config.get('secure')
-	})
+	});
 
 	// return cookies.set('accessToken', accessToken, {
 	// 	maxAge: config.get('cookieAccessTokenTtl'), // 15min
@@ -37,7 +37,7 @@ export const deleteSessionCookies = (cookies: Cookies) => {
 		path: '/',
 		sameSite: 'lax',
 		secure: false
-	})
+	});
 
 	return {
 		'Set-Cookie': `${[accessTokenSerial]}`
@@ -51,32 +51,31 @@ export async function createSession(createDBy: number, userAgent: string) {
 			userAgent,
 			valid: true
 		}
-	})
+	});
 	return session;
 }
 
 export async function findSessions(query: number) {
 	const session = await prisma.sessions.findUnique({
 		where: {
-			id: query,
+			id: query
 		}
-	})
+	});
 	return session;
 }
 
 /**
- * @param userCredentials 
- * @returns 
+ * @param userCredentials
+ * @returns
  */
 export async function validateUserPassword(userCredentials: LoginCredentials) {
-
-	const { email, password } = userCredentials
+	const { email, password } = userCredentials;
 
 	const emailRes = await prisma.email.findUnique({
 		where: {
-			email: email,
+			email: email
 		}
-	})
+	});
 
 	if (!emailRes?.contactsId) {
 		throw new Error(`email not found`);
@@ -84,7 +83,7 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 
 	const userRes = await prisma.contacts.findUnique({
 		where: {
-			id: emailRes.contactsId,
+			id: emailRes.contactsId
 		},
 		select: {
 			id: true,
@@ -94,8 +93,8 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 			isUser: true,
 			userRole: true,
 			password: true
-		},
-	})
+		}
+	});
 
 	if (!userRes) {
 		throw new Error(`User not found`);
@@ -111,25 +110,24 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 		throw new Error(`Email or Password not valid`);
 	}
 
-	{	// scope to remove password
-		const { password, ...userRest } = userRes
+	{
+		// scope to remove password
+		const { password, ...userRest } = userRes;
 
-		return userRest
+		return userRest;
 	}
 }
 
 /**
  * Delete logout Session
  * @param createDBy -- User id from postgresql
- * @returns 
+ * @returns
  */
 export async function deleteSessions(createDBy: string) {
 	const session = await prisma.sessions.delete({
 		where: {
-			id: parseInt(createDBy),
+			id: parseInt(createDBy)
 		}
-	})
+	});
 	return session;
 }
-
-

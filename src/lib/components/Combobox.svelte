@@ -14,7 +14,7 @@
 	export let messages = [];
 	export let validityClass = '';
 	export let disabled = false;
-	export let onInput: Function
+	export let onInput: Function;
 	// export let onInput = (e: Event & { currentTarget: EventTarget & HTMLInputElement }) => {};
 
 	let userEnter = false;
