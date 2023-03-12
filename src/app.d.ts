@@ -4,18 +4,6 @@
 // for information about these interfaces
 
 declare namespace App {
-	// interface DOMAttributes<T> {
-	// 	onclickOutside?: CompositionEventHandler<T>;
-	// }
-
-	// interface HTMLAttributes<T> {
-	// 	onclickOutside: () => void;
-	// }
-
-	// interface DOMAttributes<T extends EventHandler> {
-	// 	onclickOutside?: MouseEventHandler<T> | undefined | null;
-	// }
-
 	interface HTMLProps<T> {
 		onclickOutside?: (e: CustomEvent) => void;
 	}
@@ -31,13 +19,3 @@ declare namespace App {
 
 	interface Stuff {}
 }
-
-// declare namespace svelte.JSX {
-// 	interface DOMAttributes<T extends EventHandler> {
-// 		onclickOutside?: MouseEventHandler<T> | undefined | null;
-// 	}
-
-// 	interface HTMLProps<T> {
-// 		onclick_outside?: (e: CustomEvent) => void;
-// 	}
-// }

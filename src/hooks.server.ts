@@ -3,12 +3,13 @@ import { createContext } from '$lib/trpc/context';
 import { router } from '$lib/trpc/router';
 import type { Handle } from '@sveltejs/kit';
 import { createTRPCHandle } from 'trpc-sveltekit';
-import { verifyJwt, type userSessionInterface } from '$lib/utility/jwt.utils';
+import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
+import type { userSessionInterface } from '$lib/types';
 
 export const first = createTRPCHandle({ router, createContext });
 
-export const second = async ({ event, resolve }) => {
+export const second: Handle = async ({ event, resolve }) => {
 	const cookies = event.cookies.get('accessToken');
 
 	let decoded: userSessionInterface | undefined = undefined;

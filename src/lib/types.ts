@@ -1,11 +1,14 @@
-export interface userInterface {
-	sessionID: string;
-	authenticated: boolean;
-	id: string;
+export interface userSessionInterface {
+	id: number;
 	name: string;
 	isActive: boolean;
+	isUserActive: boolean;
 	isUser: boolean;
-	userRole: string;
+	userRole: 'ADMIN' | 'USER';
+	sessionID: number;
+	authenticated: boolean;
+	iat: number;
+	exp: number;
 }
 
-export type User = userInterface | null;
+export type User = userSessionInterface | null;

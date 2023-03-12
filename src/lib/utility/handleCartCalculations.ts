@@ -14,7 +14,7 @@ import {
 	type DineroSnapshot
 } from 'dinero.js';
 
-type NewOrderLine = OrderLine & Products;
+type NewOrderLine = OrderLine & { Products: Products };
 
 type MainOrder = {
 	id?: number | undefined;
@@ -22,11 +22,11 @@ type MainOrder = {
 	pricelistsID: number | undefined;
 	isActive: boolean;
 	accountsStatus: string | undefined;
-	orderDate: string | undefined;
-	deliveryDate?: string | undefined;
-	comment?: string;
+	orderDate: string | undefined | Date | null;
+	deliveryDate?: string | undefined | Date | null;
+	comment?: string | null;
 	OrderLine: Partial<NewOrderLine>[];
-	isInvoiced: boolean;
+	isInvoiced: boolean | null | undefined;
 };
 
 const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: number) => {

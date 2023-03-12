@@ -1,10 +1,14 @@
-import prisma from '$lib/prisma/client';
 import { router } from '$lib/trpc/t';
-import { getBoolean } from '$lib/utility/toBoolean';
 import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
-import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { protectedProcedure } from '../middleware/auth';
+import {
+	deleteByIdPrisma,
+	getByIdPrisma,
+	getDefaultExchangeRatePrisma,
+	getExchangeRatesPrisma,
+	saveOrUpdateExchangeRatePrisma
+} from './exchangeRate.prisma';
 
 export const exchangeRate = router({
 	getExchangeRates: protectedProcedure
@@ -15,134 +19,20 @@ export const exchangeRate = router({
 			})
 		)
 		.query(async ({ input }) => {
-			type ObjectKeys = keyof typeof input;
-
-			const objectKeys = Object.keys(input)[0] as ObjectKeys;
-
-			let whereQuery;
-
-			if (objectKeys === 'isDefault' || objectKeys === 'isActive') {
-				if (!input[objectKeys]) {
-					return;
-				}
-				whereQuery = {
-					equals: getBoolean(input[objectKeys])
-				};
-			}
-
-			let query: Prisma.ExchangeRateFindManyArgs;
-
-			const baseQuery = {
-				include: {
-					ExchangeRateDetails: true
-				}
-			};
-
-			if (objectKeys) {
-				query = {
-					...baseQuery,
-					where: {
-						isActive: true,
-						[objectKeys]: whereQuery
-					}
-				};
-			} else {
-				query = {
-					...baseQuery,
-					where: {
-						isActive: true
-					}
-				};
-			}
-
-			return await prisma.exchangeRate.findMany(query);
+			return await getExchangeRatesPrisma(input);
 		}),
 	getById: protectedProcedure.input(z.number()).query(async ({ input }) => {
-		const exchangeRate = await prisma.exchangeRate.findUnique({
-			where: {
-				id: input
-			},
-			include: {
-				ExchangeRateDetails: true
-			}
-		});
-
-		return exchangeRate;
+		return await getByIdPrisma(input);
 	}),
 	getDefaultExchangeRate: protectedProcedure.query(async () => {
-		const exchangeRate = await prisma.exchangeRate.findMany({
-			where: {
-				isDefault: {
-					equals: true
-				}
-			},
-			include: {
-				ExchangeRateDetails: true
-			}
-		});
-
-		if (exchangeRate.length > 1) {
-			throw new Error('Default exchange rates are more than one');
-		}
-
-		return exchangeRate;
+		return await getDefaultExchangeRatePrisma();
 	}),
 	saveOrUpdateExchangeRate: protectedProcedure
 		.input(saveExchangeRateSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx?.userId) {
-				throw new Error('User not authorised');
-			}
-
-			const createdBy = ctx.userId as number;
-
-			if (input.isDefault) {
-				changeCurrentDefault();
-			}
-
-			if (input?.xChangeRateDate) {
-				input.xChangeRateDate = new Date(input.xChangeRateDate) as unknown as string;
-			}
-
-			const { ExchangeRateDetails, ...restRates } = input;
-
-			const rateDetails = ExchangeRateDetails.map((list) => {
-				const { id, ...restObj } = list;
-				return {
-					...restObj
-				};
-			});
-
-			const data = {
-				...restRates,
-				createdBy,
-				ExchangeRateDetails: { createMany: { data: rateDetails } }
-			};
-
-			if (input.id) {
-				return await prisma.exchangeRate.update({ where: { id: input.id }, data });
-			} else {
-				return await prisma.exchangeRate.create({ data });
-			}
+			return await saveOrUpdateExchangeRatePrisma(input, ctx);
 		}),
-
 	deleteById: protectedProcedure.input(z.number()).mutation(async ({ input }) => {
-		const exchangeRate = await prisma.exchangeRate.update({
-			where: { id: input },
-			data: { isActive: false }
-		});
-
-		return exchangeRate;
+		return await deleteByIdPrisma(input);
 	})
 });
-
-export const changeCurrentDefault = async () => {
-	return await prisma.exchangeRate.updateMany({
-		where: {
-			isDefault: {
-				equals: true
-			}
-		},
-		data: { isDefault: false }
-	});
-};

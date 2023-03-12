@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
+	import type { userSessionInterface } from '$lib/types';
 	import { clickOutside } from '$lib/utility/clickOutside';
-	import type { userSessionInterface } from '$lib/utility/jwt.utils';
 	import logger from '$lib/utility/logger';
 	import { svgBellSolid } from '$lib/utility/svgLogos';
 
