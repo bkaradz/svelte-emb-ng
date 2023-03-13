@@ -2,10 +2,14 @@ import { z } from 'zod';
 
 export const saveOrdersLineSchema = z
 	.object({
+		id: z.number().optional(),
 		productsID: z.number(),
+		embroideryTypes: z.string().optional(),
 		quantity: z.number()
 	})
 	.passthrough();
+
+export type SaveOrdersLine = z.infer<typeof saveOrdersLineSchema>;
 
 export const saveOrdersSchema = z
 	.object({

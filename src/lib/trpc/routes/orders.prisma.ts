@@ -84,6 +84,8 @@ export const getOrdersPrisma = async (input: SearchParams) => {
 };
 
 export type GetOrders = typeof getOrdersPrisma;
+export type GetOrdersReturn = Prisma.PromiseReturnType<typeof getOrdersPrisma>
+
 
 export const getOrderLinePrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -147,6 +149,8 @@ export const getOrderLinePrisma = async (input: SearchParams) => {
 };
 
 export type GetOrderLine = typeof getOrderLinePrisma;
+export type GetOrderLineReturn = Prisma.PromiseReturnType<typeof getOrderLinePrisma>
+
 
 export const getByIdPrisma = async (input: number) => {
 	const product = await prisma.orders.findUnique({
@@ -168,6 +172,8 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
+
 
 export const deleteByIdPrisma = async (input: number) => {
 	const order = await prisma.orders.update({
@@ -180,6 +186,8 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
+
 
 export const updateStatusPrisma = async (
 	input: { id: number; accountsStatus: string; isInvoiced?: boolean },
@@ -204,6 +212,8 @@ export const updateStatusPrisma = async (
 };
 
 export type UpdateStatus = typeof updateStatusPrisma;
+export type UpdateStatusReturn = Prisma.PromiseReturnType<typeof updateStatusPrisma>
+
 
 export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) => {
 	if (!ctx.userId) {
@@ -289,6 +299,8 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 };
 
 export type SaveOrderOrUpdate = typeof saveOrderOrUpdatePrisma;
+export type SaveOrderOrUpdateReturn = Prisma.PromiseReturnType<typeof saveOrderOrUpdatePrisma>
+
 
 const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 	if (

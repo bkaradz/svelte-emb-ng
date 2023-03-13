@@ -1,41 +1,10 @@
 import prisma from '$lib/prisma/client';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import logger from '$lib/utility/logger';
-import { dinero, greaterThanOrEqual, multiply, toSnapshot, type Dinero } from 'dinero.js';
+import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+import { dinero, greaterThanOrEqual, multiply, toSnapshot } from 'dinero.js';
 
-type NewOrderLine = {
-	productsID: number;
-	quantity: number;
-	id: number;
-	createdBy: number;
-	name: string;
-	description: string | null;
-	unitPrice: Dinero<number>;
-	productCategories: string;
-	stitches: number;
-	units: number | null;
-	isActive: boolean;
-	utilisation: number;
-	createdAt: Date;
-	updatedAt: Date;
-	embroideryPositions: string;
-	embroideryTypes: string;
-};
-
-export type MainOrder = {
-	id?: number | undefined;
-	customersID: number | undefined;
-	pricelistsID: number | undefined;
-	isActive: boolean;
-	accountsStatus: string | undefined;
-	orderDate: string | undefined;
-	deliveryDate?: string | undefined;
-	comment?: string;
-	OrderLine: NewOrderLine[];
-	isInvoiced: boolean;
-};
-
-export const calculateOrder = async (reqOrder: Partial<MainOrder>) => {
+export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 	try {
 		/**
 		 * Get Pricelist

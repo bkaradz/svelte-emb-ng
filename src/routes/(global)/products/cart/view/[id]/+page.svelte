@@ -10,6 +10,7 @@
 	import logger from '$lib/utility/logger';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgCart } from '$lib/utility/svgLogos';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import type {
 		Address,
 		Contacts,
@@ -106,19 +107,7 @@
 		getCountAndSubTotal(mainOrder.OrderLine);
 	};
 
-	type MainOrder = {
-		id?: number | null;
-		customersID: number | null;
-		pricelistsID: number | null;
-		isActive: boolean;
-		accountsStatus: string | null;
-		orderDate: string | null;
-		deliveryDate?: string | null;
-		comment?: string;
-		OrderLine: any[];
-	};
-
-	let mainOrder: Partial<MainOrder> = data.order;
+	let mainOrder: Partial<SaveOrder> = data.order;
 	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);

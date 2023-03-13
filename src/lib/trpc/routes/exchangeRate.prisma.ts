@@ -49,6 +49,8 @@ export const getExchangeRatesPrisma = async (input: { isDefault: boolean; isActi
 };
 
 export type GetExchangeRates = typeof getExchangeRatesPrisma;
+export type GetExchangeRatesReturn = Prisma.PromiseReturnType<typeof getExchangeRatesPrisma>
+
 
 export const getByIdPrisma = async (input: number) => {
 	const exchangeRate = await prisma.exchangeRate.findUnique({
@@ -64,6 +66,8 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
+
 
 export const getDefaultExchangeRatePrisma = async () => {
 	const exchangeRate = await prisma.exchangeRate.findMany({
@@ -85,6 +89,8 @@ export const getDefaultExchangeRatePrisma = async () => {
 };
 
 export type GetDefaultExchangeRate = typeof getDefaultExchangeRatePrisma;
+export type GetDefaultExchangeRateReturn = Prisma.PromiseReturnType<typeof getDefaultExchangeRatePrisma>
+
 
 export const saveOrUpdateExchangeRatePrisma = async (input: SaveExchangeRate, ctx: Context) => {
 	if (!ctx?.userId) {
@@ -124,6 +130,8 @@ export const saveOrUpdateExchangeRatePrisma = async (input: SaveExchangeRate, ct
 };
 
 export type SaveOrUpdateExchangeRate = typeof saveOrUpdateExchangeRatePrisma;
+export type SaveOrUpdateExchangeRateReturn = Prisma.PromiseReturnType<typeof saveOrUpdateExchangeRatePrisma>
+
 
 export const deleteByIdPrisma = async (input: number) => {
 	const exchangeRate = await prisma.exchangeRate.update({
@@ -135,6 +143,8 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
+
 
 export const changeCurrentDefault = async () => {
 	return await prisma.exchangeRate.updateMany({

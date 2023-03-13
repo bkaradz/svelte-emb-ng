@@ -1,17 +1,16 @@
-import type { OrderLine, Orders, Products } from '@prisma/client';
+import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 import dayjs from 'dayjs';
 import { writable } from 'svelte/store';
 
-type NewOrderLine = OrderLine & Products;
 
 function addCartItems() {
-	const { subscribe, set, update } = writable<Map<number, Partial<NewOrderLine>>>(
-		new Map<number, Partial<NewOrderLine>>()
+	const { subscribe, set, update } = writable<Map<number, Partial<SaveOrdersLine>>>(
+		new Map<number, Partial<SaveOrdersLine>>()
 	);
 
 	return {
 		subscribe,
-		add: (product: NewOrderLine) =>
+		add: (product: SaveOrdersLine) =>
 			update((products) =>
 				products.set(product.id, {
 					...product,
@@ -21,14 +20,14 @@ function addCartItems() {
 					productsID: product.id
 				})
 			),
-		update: (product: NewOrderLine, payload: Partial<NewOrderLine>) =>
+		update: (product: SaveOrdersLine, payload: Partial<SaveOrdersLine>) =>
 			update((products) => products.set(product.id, { ...product, ...payload })),
-		remove: (product: NewOrderLine) =>
+		remove: (product: SaveOrdersLine) =>
 			update((products) => {
 				products.delete(product.id);
 				return products;
 			}),
-		reset: () => set(new Map<number, Partial<NewOrderLine>>())
+		reset: () => set(new Map<number, Partial<SaveOrdersLine>>())
 	};
 }
 
@@ -50,7 +49,7 @@ function addCartOrders() {
 
 	return {
 		subscribe,
-		add: (order: Orders) => set(order),
+		add: (order: SaveOrder) => set(order),
 		update: (product, payload) => {
 			set({ ...product, ...payload });
 		},

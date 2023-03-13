@@ -1,14 +1,10 @@
 <script lang="ts">
 	import small_logo from '$lib/assets/small_logo.png';
 	import { format } from '$lib/services/monetary';
-	import type { OrderLine } from '@prisma/client';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import { dinero, multiply, type Dinero } from 'dinero.js';
 
-	interface Orders extends Record<string, any> {
-		OrderLine: OrderLine[];
-	}
-
-	export let order: Orders;
+	export let order: SaveOrder;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;

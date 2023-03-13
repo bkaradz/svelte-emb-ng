@@ -3,6 +3,7 @@ import { getPagination } from '$lib/utility/pagination.util';
 import { getBoolean } from '$lib/utility/toBoolean';
 import type { SaveContact } from '$lib/validation/saveContact.validate';
 import type { SearchParams } from '$lib/validation/searchParams.validate';
+import type { Prisma } from '@prisma/client';
 import omit from 'lodash-es/omit';
 import type { Context } from '../context';
 
@@ -86,6 +87,8 @@ export const getContactsPrisma = async (input: SearchParams) => {
 };
 
 export type GetContacts = typeof getContactsPrisma;
+export type GetContactsReturn = Prisma.PromiseReturnType<typeof getContactsPrisma>
+
 
 export const getCorporatePrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -167,6 +170,8 @@ export const getCorporatePrisma = async (input: SearchParams) => {
 };
 
 export type GetCorporate = typeof getCorporatePrisma;
+export type GetCorporateReturn = Prisma.PromiseReturnType<typeof getCorporatePrisma>
+
 
 export const getByIdPrisma = async (input: number) => {
 	const product = await prisma.contacts.findUnique({
@@ -184,6 +189,8 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
+
 
 export const deleteByIdPrisma = async (input: number) => {
 	const product = await prisma.contacts.update({
@@ -196,6 +203,8 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
+
 
 export const saveOrUpdateContactPrisma = async (input: SaveContact, ctx: Context) => {
 	if (!ctx.userId) {
@@ -239,3 +248,5 @@ export const saveOrUpdateContactPrisma = async (input: SaveContact, ctx: Context
 };
 
 export type SaveOrUpdateContact = typeof saveOrUpdateContactPrisma;
+export type SaveOrUpdateContactReturn = Prisma.PromiseReturnType<typeof saveOrUpdateContactPrisma>
+

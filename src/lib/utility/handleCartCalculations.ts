@@ -3,7 +3,7 @@ import { createConverter } from '$lib/services/monetary';
 import type { CurrencyOption } from '$lib/stores/setCurrency.store';
 import { trpc } from '$lib/trpc/client';
 import logger from '$lib/utility/logger';
-import type { OrderLine, Orders, Products } from '@prisma/client';
+import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 import {
 	add,
 	dinero,
@@ -14,22 +14,7 @@ import {
 	type DineroSnapshot
 } from 'dinero.js';
 
-type NewOrderLine = OrderLine & { Products: Products };
-
-type MainOrder = {
-	id?: number | undefined;
-	customersID: number | undefined;
-	pricelistsID: number | undefined;
-	isActive: boolean;
-	accountsStatus: string | undefined;
-	orderDate: string | undefined | Date | null;
-	deliveryDate?: string | undefined | Date | null;
-	comment?: string | null;
-	OrderLine: Partial<NewOrderLine>[];
-	isInvoiced: boolean | null | undefined;
-};
-
-const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: number) => {
+const handleCalculations = async (lineArray: SaveOrdersLine[] = [], pricelistsId: number) => {
 	try {
 		return await trpc().cart.calculateCart.mutate({
 			pricelistsID: pricelistsId,
@@ -42,7 +27,7 @@ const handleCalculations = async (lineArray: NewOrderLine[] = [], pricelistsId: 
 };
 
 const handleCurrency = async (
-	order: Orders & { OrderLine: NewOrderLine[] },
+	order: SaveOrder,
 	selectedCurrency: CurrencyOption,
 	zero: Dinero<number>
 ) => {
@@ -74,7 +59,7 @@ const handleCurrency = async (
 	return order;
 };
 
-const getCountAndSubTotal = (cart: OrderLine[], zero: Dinero<number>) => {
+const getCountAndSubTotal = (cart: SaveOrdersLine[], zero: Dinero<number>) => {
 	const totals = cart.reduce(
 		(acc, item) => {
 			const unitPrice = item.unitPrice as DineroSnapshot<number>;
@@ -91,16 +76,12 @@ const getCountAndSubTotal = (cart: OrderLine[], zero: Dinero<number>) => {
 };
 
 export const handleCartCalculations = async (
-	oldOrder: Partial<MainOrder>,
+	oldOrder: Partial<SaveOrder>,
 	selectedCurrency: CurrencyOption
 ) => {
 	const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 
-	// oldOrder.OrderLine = oldOrder?.OrderLine
-
-	// delete oldOrder?.OrderLine
-
-	const order: Orders & { OrderLine: NewOrderLine[] } = JSON.parse(JSON.stringify(oldOrder));
+	const order: SaveOrder & { OrderLine: SaveOrdersLine[] } = JSON.parse(JSON.stringify(oldOrder));
 
 	const newOrder = await handleCurrency(order, selectedCurrency, zero);
 

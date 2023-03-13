@@ -12,7 +12,7 @@
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
+	import { saveOrdersSchema, type SaveOrder } from '$lib/validation/saveOrder.validate';
 	import type {
 		Address,
 		Contacts,
@@ -122,18 +122,8 @@
 		OrderLine: any[];
 	};
 
-	// let mainOrderInit: MainOrder = {
-	// 	id: null,
-	// 	customersID: null,
-	// 	pricelistsID: 0,
-	// 	isActive: true,
-	// 	accountsStatus: null,
-	// 	orderDate: TODAY,
-	// 	deliveryDate: FOUR_DAYS,
-	// 	OrderLine: Array.from($cartItem.values()) || []
-	// };
 
-	let mainOrder: Partial<MainOrder> = data.order;
+	let mainOrder: Partial<SaveOrder> = data.order;
 	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);

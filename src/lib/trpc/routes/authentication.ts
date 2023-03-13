@@ -1,12 +1,4 @@
-import prisma from '$lib/prisma/client';
-import {
-	createSession,
-	setSessionCookies,
-	validateUserPassword
-} from '$lib/services/session.services';
 import { publicProcedure, router } from '$lib/trpc/t';
-import { signJwt } from '$lib/utility/jwt.utils';
-import { getPagination } from '$lib/utility/pagination.util';
 import { loginCredentialsSchema } from '$lib/validation/login.validate';
 import { searchParamsSchema } from '$lib/validation/searchParams.validate';
 import { userRegisterSchema } from '$lib/validation/userRegister.validate';

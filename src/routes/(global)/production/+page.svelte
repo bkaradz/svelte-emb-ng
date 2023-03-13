@@ -17,7 +17,7 @@
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveOrdersSchema } from '$lib/validation/saveOrder.validate';
+	import { saveOrdersSchema, type SaveOrder, type SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import type {
 		Address,
 		Contacts,
@@ -38,8 +38,6 @@
 	let errorMessages = new Map();
 
 	$: disabled = false;
-
-	type NewOrderLine = OrderLine & Products;
 
 	type customersType = (Contacts & {
 		email: Email[];
@@ -66,20 +64,7 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
-	type MainOrder = {
-		id?: number | undefined;
-		customersID: number | undefined;
-		pricelistsID: number | undefined;
-		isActive: boolean;
-		accountsStatus: string | undefined;
-		orderDate: string | undefined;
-		deliveryDate?: string | undefined;
-		comment?: string;
-		OrderLine: Partial<NewOrderLine>[];
-		isInvoiced: boolean;
-	};
-
-	let mainOrderInit: Partial<MainOrder> = {
+	let mainOrderInit: Partial<SaveOrder> = {
 		id: undefined,
 		customersID: undefined,
 		pricelistsID: data.defaultPricelist.id, // To Look into this
@@ -119,18 +104,18 @@
 		cartItem.remove(item);
 	};
 
-	const onDecrease = (item: NewOrderLine) => {
+	const onDecrease = (item: SaveOrdersLine) => {
 		if (!item.quantity) {
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
 
-	const onIncrease = (item: NewOrderLine) => {
+	const onIncrease = (item: SaveOrdersLine) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
-	const handleEmbroideryType = (item: NewOrderLine) => {
+	const handleEmbroideryType = (item: SaveOrdersLine) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 	};
 
