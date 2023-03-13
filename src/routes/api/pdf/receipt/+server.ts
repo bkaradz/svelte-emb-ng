@@ -58,8 +58,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 		const dimensions = await page.evaluate(() => {
 			return {
-				// width: document.getElementById('receipt').offsetWidth,
-				height: document.getElementById('receipt').offsetHeight
+				height: document?.getElementById('receipt')?.offsetHeight
 			};
 		});
 

@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const userExist = await prisma.email.findUnique({
 			where: {
-				email: reqUser.email
+				email: reqUser.email[0].email
 			}
 		});
 
@@ -71,25 +71,13 @@ export const POST: RequestHandler = async ({ request }) => {
 				...restReqUser,
 				...role,
 				email: {
-					create: [
-						{
-							email: reqUser.email
-						}
-					]
+					createMany: { data: reqUser.email }
 				},
 				phone: {
-					create: [
-						{
-							phone: reqUser.phone
-						}
-					]
+					createMany: { data: reqUser.phone }
 				},
 				address: {
-					create: [
-						{
-							address: reqUser.address
-						}
-					]
+					createMany: { data: reqUser.address }
 				}
 			}
 		});

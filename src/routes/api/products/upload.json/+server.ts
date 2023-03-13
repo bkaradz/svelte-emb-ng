@@ -1,7 +1,7 @@
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
-import type { Products } from '@prisma/client';
+import type { Prisma, Products } from '@prisma/client';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -15,13 +15,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = parseInt(locals.user.id);
+		const createDBy = locals.user.id;
 
 		const data = await request.formData();
 
 		const file = data.get('products');
 
-		// if (!(Object.prototype.toString.call(file) === '[object File]') || file === null) {
 		if (!(file instanceof File)) {
 			logger.error('File is empty');
 			return new Response(JSON.stringify({ message: 'File is empty' }), {
@@ -36,17 +35,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const productsArray = (await parseCsv(csvString)) as Products[];
 
-		const allDocsPromises: Products[] = [];
+		const allDocsPromises: Prisma.ProductsCreateManyInput[] = [];
 
 		productsArray.forEach(async (element) => {
 			try {
-				const product: Partial<Products> = {
+				const product: Prisma.ProductsCreateManyInput = {
 					productCategories: 'embroidery',
 					isActive: true,
 					createdBy: createDBy,
 					name: element.name,
-					stitches: parseInt(element?.stitches)
+					stitches: (element?.stitches)
 				};
+
+				if (!product) {
+					return
+				}
 
 				allDocsPromises.push(product);
 			} catch (err: any) {

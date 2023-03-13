@@ -1,5 +1,6 @@
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
+import { userRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
 
@@ -43,21 +44,21 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
-export const UserSchema = z.object({
-	id: z.union([
-		z.number({ required_error: 'id is required' }),
-		z.string({ required_error: 'id is required' })
-	]),
-	name: z
-		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
-		.trim(),
-	email: z.string({ required_error: 'Email is required' }).email({ message: 'Not a valid email' }),
-	phone: z.string({ required_error: 'Phone is required' }),
-	address: z.string({ required_error: 'Address is required' }),
-	password: z.string({ required_error: 'Password is required' })
-});
+// export const UserSchema = z.object({
+// 	id: z.union([
+// 		z.number({ required_error: 'id is required' }),
+// 		z.string({ required_error: 'id is required' })
+// 	]),
+// 	name: z
+// 		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
+// 		.trim(),
+// 	email: z.string({ required_error: 'Email is required' }).email({ message: 'Not a valid email' }),
+// 	phone: z.string({ required_error: 'Phone is required' }),
+// 	address: z.string({ required_error: 'Address is required' }),
+// 	password: z.string({ required_error: 'Password is required' })
+// });
 
-export type User = z.infer<typeof UserSchema>;
+// export type User = z.infer<typeof UserSchema>;
 
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -70,9 +71,9 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const userUpdate: User = await request.json();
+		const userUpdate: UserRegister = await request.json();
 
-		const parsedUser = UserSchema.safeParse(userUpdate);
+		const parsedUser = userRegisterSchema.safeParse(userUpdate);
 
 		if (!parsedUser.success) {
 			return new Response(JSON.stringify({ message: parsedUser.error }), {
@@ -85,7 +86,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 
 		const allUsers = await prisma.contacts.update({
 			where: {
-				id: parseInt(userUpdate.id)
+				id: (userUpdate.id)
 			},
 			data: {
 				...userUpdate
@@ -117,7 +118,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
 		const userDelete = await request.json();
 
-		const createdBy = parseInt(locals.user.id);
+		const createdBy = (locals.user.id);
 
 		const userD = await prisma.contacts.update({
 			where: {

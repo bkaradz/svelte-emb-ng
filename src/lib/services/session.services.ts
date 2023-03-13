@@ -123,10 +123,10 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
  * @param createDBy -- User id from postgresql
  * @returns
  */
-export async function deleteSessions(createDBy: string) {
+export async function deleteSessions(sessionId: number) {
 	const session = await prisma.sessions.delete({
 		where: {
-			id: parseInt(createDBy)
+			id: (sessionId)
 		}
 	});
 	return session;

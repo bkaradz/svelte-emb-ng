@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createDBy = parseInt(locals.user.id);
+		const createdBy = (locals.user.id);
 
 		const data = await request.formData();
 
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		contactsArray.forEach(async (element) => {
 			try {
-				const contact = querySelection(element, createDBy);
+				const contact = querySelection(element, createdBy);
 				const contactsQuery = await prisma.contacts.create({ data: contact });
 				allDocsPromises.push(contactsQuery);
 			} catch (err: unknown) {
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 };
 
-const querySelection = (reqContact: any, createDBy: number) => {
+const querySelection = (reqContact: any, createdBy: number) => {
 	// eslint-disable-next-line prefer-const
 	let { name, email, phone, address, ...restContact } = reqContact;
 
@@ -95,7 +95,6 @@ const querySelection = (reqContact: any, createDBy: number) => {
 	contact = {
 		// ...restContact,
 		name,
-		createdBy: createDBy,
 		isActive: true,
 		isUser: false
 	};
