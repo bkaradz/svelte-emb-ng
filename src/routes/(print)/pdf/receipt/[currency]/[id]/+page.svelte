@@ -8,18 +8,11 @@
 	import logger from '$lib/utility/logger';
 	import { USD } from '@dinero.js/currencies';
 	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
-	import {
-		add,
-		dinero,
-		multiply,
-		toSnapshot,
-		type Dinero,
-		type DineroOptions,
-		type DineroSnapshot
-	} from 'dinero.js';
+	import { add, dinero, multiply, toSnapshot, type Dinero, type DineroOptions } from 'dinero.js';
 	import { onMount } from 'svelte';
 
-	type FullOrderLine = OrderLine & { Products: Products };
+
+	type FullOrderLine = OrderLine & { Products: Omit<Products, 'createdAt' | 'updatedAt'> };
 
 	type OrderType = Orders & {
 		customerContact: Contacts;
@@ -59,7 +52,7 @@
 		}
 	});
 
-	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: FullOrderLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency
