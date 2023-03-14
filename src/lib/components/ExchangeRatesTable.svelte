@@ -26,7 +26,7 @@
 			handleErrors(err);
 		} finally {
 			getRates(defaultQueryParams);
-			toasts.add({ message: `Eexchange Rate was deleted`, type: 'success' });
+			toasts.add({ message: `Exchange Rate was deleted`, type: 'success' });
 		}
 	};
 
@@ -55,7 +55,7 @@
 </script>
 
 <div class="mb-2 flex items-center justify-between bg-white p-4">
-	<h1>Eexchange Rates</h1>
+	<h1>Exchange Rates</h1>
 	<div>
 		<button on:click={handleAddPricelist} class="btn btn-primary rounded-full py-1 px-3"
 			>Add Rates</button

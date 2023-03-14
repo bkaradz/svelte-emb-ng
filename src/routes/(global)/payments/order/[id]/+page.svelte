@@ -4,32 +4,19 @@
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { handleCartCalculations } from '$lib/utility/handleCartCalculations';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type {
-		Contacts,
-		Options,
-		OrderLine,
-		Orders,
-		PaymentTypeOptions,
-		Pricelists,
-		Products
-	} from '@prisma/client';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+	import type { Options, PaymentTypeOptions } from '@prisma/client';
 	import { dinero, multiply } from 'dinero.js';
 
-	type OrderType = Orders & {
-		Pricelists: Pricelists;
-		OrderLine: (OrderLine & {
-			Products: Products;
-		})[];
-		customerContact: Contacts;
+	type DataInterface = {
+		order: SaveOrder;
+		currenciesOptions: Options;
+		paymentTypeOptions: PaymentTypeOptions[];
 	};
 
 	$: promise = handleCartCalculations(data.order, $selectedCurrency);
 
-	export let data: {
-		order: OrderType;
-		currenciesOptions: Options;
-		paymentTypeOptions: PaymentTypeOptions[];
-	};
+	export let data: DataInterface;
 </script>
 
 <svelte:head>
@@ -51,7 +38,7 @@
 						{@const totalPrice = multiply(dinero(lineItem.unitPrice), lineItem.quantity)}
 						<li class="gird grid-rows-2 border-b border-pickled-bluewood-400 py-1 px-2">
 							<div>
-								{lineItem.Products.name}
+								{lineItem?.Products?.name}
 							</div>
 							<div class="flex justify-between">
 								<span>

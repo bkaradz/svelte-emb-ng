@@ -5,14 +5,14 @@
 		selectChange: Function;
 	};
 	export let selected = '';
-	export let list = [];
-	export let selectChange;
+	export let list: Partial<{ name: string }>[] = [];
+	export let selectChange: Function;
 </script>
 
 <select
 	class="input"
 	bind:value={selected}
-	on:change|preventDefault={selectChange}
+	on:change|preventDefault={(e) => selectChange}
 	{...$$restProps}
 >
 	{#each list as item}

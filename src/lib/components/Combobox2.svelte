@@ -3,9 +3,6 @@
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall, svgSelector, svgXSmall } from '$lib/utility/svgLogos';
 
-	// interface disabledInterface {
-	// 	disabled?: boolean;
-	// }
 	export let label = '';
 	export let name = '';
 	export let value = { name: '' };

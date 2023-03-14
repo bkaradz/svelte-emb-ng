@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
 	export let name = '';
 	export let disabled = false;
 	export let checked = false;
 	export let label = '';
 	export let onChange = () => {};
-	export let validityClass;
+	export let validityClass: string;
 
-	let style;
+	let style: string;
 
 	if (validityClass === 'success') {
 		style = `peer-checked:bg-success peer-focus:ring-success`;

@@ -11,7 +11,7 @@
 	export let value = { name: '' };
 	export let list: Array<any | null> = [];
 	export let pending = false;
-	export let messages = [];
+	export let messages: string[] = [];
 	export let validityClass = '';
 	export let disabled = false;
 	export let onInput: Function;

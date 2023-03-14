@@ -5,7 +5,7 @@
 	export let label = '';
 	export let name = '';
 	export let pending = false;
-	export let messages = [];
+	export let messages: string[] = [];
 	export let validityClass = '';
 	export let onInput: Function;
 </script>

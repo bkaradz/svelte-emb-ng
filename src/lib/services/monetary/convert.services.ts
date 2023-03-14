@@ -135,7 +135,7 @@ if (browser) {
 					ratesMap.set(rate.currency, parseInt(Math.ceil(parseFloat(rate.rate) * 100)));
 				});
 				if (ratesMap.size === 0) {
-					throw new Error('Eexchange Rates not found');
+					throw new Error('Exchange Rates not found');
 				}
 				currenciesRates = ratesMap;
 			} else {
@@ -143,7 +143,7 @@ if (browser) {
 					message: 'Please enter one default exchange rate',
 					type: 'error'
 				});
-				// throw new Error("Default Eexchange Rates more than one found");
+				// throw new Error("Default Exchange Rates more than one found");
 			}
 		} catch (err: unknown) {
 			handleErrors(err);

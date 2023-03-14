@@ -13,6 +13,7 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import type { Orders } from '@prisma/client';
 	import { onMount } from 'svelte';
 
@@ -23,7 +24,7 @@
 		{ id: 9, name: 'View', dbName: null }
 	];
 
-	type newOrder = Orders & { selected: boolean };
+	type newOrder = SaveOrder & { selected: boolean };
 
 	type OrdersNew = Pagination & { results: newOrder[] };
 
@@ -77,7 +78,7 @@
 
 	const getOrders = async (paramsObj: any) => {
 		try {
-			const resOrders = (await trpc().orders.getOrders.query(paramsObj)) as OrdersNew;
+			const resOrders = (await trpc().orders.getOrders.query(paramsObj)) ;
 			resOrders.results = resOrders.results.map((item: newOrder) => {
 				item.selected = false;
 				return item;

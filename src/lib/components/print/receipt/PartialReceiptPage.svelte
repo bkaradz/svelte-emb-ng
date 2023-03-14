@@ -4,7 +4,7 @@
 	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import { dinero, multiply, type Dinero } from 'dinero.js';
 
-	export let order: SaveOrder;
+	export let order: SaveOrder
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;
@@ -57,7 +57,7 @@
 									>
 									<td class="px-1 py-1">
 										<div class="text-[10px] text-pickled-bluewood-600">
-											{item.Products.name}
+											{item?.Products?.name}
 										</div>
 									</td>
 									<td class="px-1 py-1">

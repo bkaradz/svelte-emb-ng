@@ -128,7 +128,7 @@
 			handleErrors(err);
 		} finally {
 			rates = { ...initRate };
-			toasts.add({ message: `Eexchange Rate with was added successfully`, type: 'success' });
+			toasts.add({ message: `Exchange Rate with was added successfully`, type: 'success' });
 		}
 	};
 
@@ -149,14 +149,14 @@
 
 {#if rates}
 	<div class="mb-2 bg-white p-4">
-		<h1>Add Eexchange Rates</h1>
+		<h1>Add Exchange Rates</h1>
 	</div>
 	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
 				<div class="flex items-end space-x-6 ">
 					<label class=" text-sm" for="id"
-						>Eexchange Rate Id
+						>Exchange Rate Id
 						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
 					</label>
 					<label class="text-sm" for="xChangeRateDate">

@@ -1,11 +1,9 @@
 <script lang="ts">
-	import type { Prisma } from '@prisma/client';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import type { Dinero } from 'dinero.js';
 	import PartialPage from './PartialPage.svelte';
 
-	type Orders = Prisma.OrdersGetPayload<Prisma.OrdersArgs>;
-
-	export let order: Orders;
+	export let order: SaveOrder;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;

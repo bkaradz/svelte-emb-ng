@@ -6,12 +6,6 @@
 		console.log(x);
 	};
 
-	// const onClick = (item: number) => {
-	// 	if (item <= currentSelection) {
-	// 		return;
-	// 	}
-	// 	currentSelection = item;
-	// };
 </script>
 
 <div>

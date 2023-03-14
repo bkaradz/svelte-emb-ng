@@ -16,20 +16,20 @@
 	let autoClose = 5000;
 	let visibleSince = new Date().getTime();
 
-	let intervalId = setInterval(() => {
+	let intervalId: number | undefined = <any>setInterval(() => {
 		const timeVisible = new Date().getTime() - visibleSince;
 		progress = timeVisible / autoClose;
 	}, 10);
 
 	$: if (progress > 1) {
 		clearInterval(intervalId);
-		intervalId = null;
+		intervalId = undefined;
 		removeToast(id);
 	}
 
 	const handleDelete = () => {
 		clearInterval(intervalId);
-		intervalId = null;
+		intervalId = undefined;
 		removeToast(id);
 	};
 

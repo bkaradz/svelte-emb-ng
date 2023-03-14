@@ -6,22 +6,14 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import logger from '$lib/utility/logger';
+	import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import { USD } from '@dinero.js/currencies';
-	import type { Contacts, OrderLine, Orders, Pricelists, Products } from '@prisma/client';
-	import { add, dinero, multiply, toSnapshot, type Dinero, type DineroOptions } from 'dinero.js';
+	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
+	import type { Dinero, DineroOptions } from 'dinero.js';
 	import { onMount } from 'svelte';
 
-
-	type FullOrderLine = OrderLine & { Products: Omit<Products, 'createdAt' | 'updatedAt'> };
-
-	type OrderType = Orders & {
-		customerContact: Contacts;
-		Pricelists: Pricelists;
-		OrderLine: FullOrderLine[];
-	};
-
 	type DataInterface = {
-		order: OrderType;
+		order: SaveOrder;
 		zero: Dinero<number>;
 		selectedCurrency: CurrencyOption;
 	};
@@ -52,7 +44,7 @@
 		}
 	});
 
-	const handleCurrency = async (lineArray: FullOrderLine[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: SaveOrdersLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency
@@ -82,7 +74,7 @@
 		getCountAndSubTotal(order.OrderLine);
 	};
 
-	const handleCalculations = async (lineArray: OrderLine[] = []) => {
+	const handleCalculations = async (lineArray: SaveOrdersLine[] = []) => {
 		try {
 			if (!order.pricelistsID) {
 				return;
@@ -103,7 +95,7 @@
 
 	$: calculatedTotal = add(calculatedVat, subTotal);
 
-	let order: OrderType;
+	let order: SaveOrder;
 
 	let zero = dinero({ amount: 0, currency: USD });
 

@@ -248,10 +248,6 @@
 	thead th {
 		width: 350px;
 	}
-	/* table {
-		table-layout: auto;
-		width: 100%;
-	} */
 
 	tbody {
 		height: calc(100vh - 328px);

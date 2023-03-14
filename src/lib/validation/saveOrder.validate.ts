@@ -1,11 +1,16 @@
 import { z } from 'zod';
+import { saveContactsSchema } from './saveContact.validate';
+import { savePricelistDetailsSchema } from './savePricelist.validate';
+import { saveProductsSchema } from './saveProduct.validate';
 
 export const saveOrdersLineSchema = z
 	.object({
 		id: z.number().optional(),
 		productsID: z.number(),
 		embroideryTypes: z.string().optional(),
-		quantity: z.number()
+		quantity: z.number(),
+		Products: saveProductsSchema.optional(),
+		unitPrice: z.any().optional()
 	})
 	.passthrough();
 
@@ -20,7 +25,9 @@ export const saveOrdersSchema = z
 		pricelistsID: z.number(),
 		isActive: z.boolean(),
 		accountsStatus: z.string(),
-		OrderLine: z.array(saveOrdersLineSchema)
+		OrderLine: z.array(saveOrdersLineSchema),
+		customerContact: saveContactsSchema.optional(),
+		Pricelists: savePricelistDetailsSchema.optional()
 	})
 	.passthrough();
 
