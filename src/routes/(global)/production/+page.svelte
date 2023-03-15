@@ -17,7 +17,11 @@
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveOrdersSchema, type SaveOrder, type SaveOrdersLine } from '$lib/validation/saveOrder.validate';
+	import {
+		saveOrdersSchema,
+		type SaveOrder,
+		type SaveOrdersLine
+	} from '$lib/validation/saveOrder.validate';
 	import type {
 		Address,
 		Contacts,
@@ -187,7 +191,7 @@
 		}
 
 		try {
-			await trpc().orders.SaveOrderOrUpdate.mutate(parsedOrder.data);
+			await trpc().orders.saveOrderOrUpdate.mutate(parsedOrder.data);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

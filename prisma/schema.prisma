@@ -233,8 +233,8 @@ model BankAccounts {
   isDefault           Boolean
   accountNo           String
   address             String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt()
 }
 
 model ExchangeRate {
@@ -243,7 +243,7 @@ model ExchangeRate {
   createdBy           Int
   isActive            Boolean               @default(true)
   isDefault           Boolean               @default(false)
-  xChangeRateDate     DateTime              @default(now())
+  exChangeRateDate    DateTime              @default(now())
   Payments            Payments[]
   ExchangeRateDetails ExchangeRateDetails[]
   createdAt           DateTime              @default(now())

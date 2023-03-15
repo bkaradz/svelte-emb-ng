@@ -15,15 +15,6 @@ export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
 		secure: config.get('secure')
 	});
 
-	// return cookies.set('accessToken', accessToken, {
-	// 	maxAge: config.get('cookieAccessTokenTtl'), // 15min
-	// 	httpOnly: config.get('httpOnly'),
-	// 	domain: 'localhost',
-	// 	path: '/',
-	// 	sameSite: config.get('sameSite'),
-	// 	secure: config.get('secure')
-	// })
-
 	return {
 		'Set-Cookie': `${[accessTokenSerial]}`
 	};
@@ -126,7 +117,7 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 export async function deleteSessions(sessionId: number) {
 	const session = await prisma.sessions.delete({
 		where: {
-			id: (sessionId)
+			id: sessionId
 		}
 	});
 	return session;

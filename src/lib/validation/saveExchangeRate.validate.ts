@@ -13,7 +13,7 @@ export const saveExchangeRateSchema = z
 		id: z.number().optional(),
 		isActive: z.boolean().default(true),
 		isDefault: z.boolean().default(false),
-		xChangeRateDate: z.string().datetime(),
+		exChangeRateDate: z.string().datetime(),
 		ExchangeRateDetails: z.array(saveExchangeRateDetailsSchema)
 	})
 	.passthrough();

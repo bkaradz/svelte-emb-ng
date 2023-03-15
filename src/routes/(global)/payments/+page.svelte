@@ -78,7 +78,7 @@
 
 	const getOrders = async (paramsObj: any) => {
 		try {
-			const resOrders = (await trpc().orders.getOrders.query(paramsObj)) ;
+			const resOrders = await trpc().orders.getOrders.query(paramsObj);
 			resOrders.results = resOrders.results.map((item: newOrder) => {
 				item.selected = false;
 				return item;

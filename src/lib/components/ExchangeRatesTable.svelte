@@ -91,7 +91,7 @@
 								/>
 							</td>
 							<td class="px-2 py-1 text-center">
-								{dayjs(list.xChangeRateDate).format('DD-MM-YYYY')}
+								{dayjs(list.exChangeRateDate).format('DD-MM-YYYY')}
 							</td>
 
 							<td class="px-2 py-1 text-center">

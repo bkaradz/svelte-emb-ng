@@ -96,7 +96,7 @@ export const getUsersPrisma = async (input: SearchParams) => {
 };
 
 export type GetUsers = typeof getUsersPrisma;
-export type GetUsersReturn = Prisma.PromiseReturnType<typeof getUsersPrisma>
+export type GetUsersReturn = Prisma.PromiseReturnType<typeof getUsersPrisma>;
 
 export const getByIdPrisma = async (input: number) => {
 	const product = await prisma.contacts.findUnique({
@@ -114,7 +114,7 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
-export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>;
 
 export const deleteByIdPrisma = async (input: number) => {
 	const product = await prisma.contacts.update({
@@ -127,8 +127,7 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
-export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
-
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>;
 
 export const registerOrUpdateUserPrisma = async (input: UserRegister) => {
 	const userExist = await prisma.email.findUnique({
@@ -233,8 +232,9 @@ export const registerOrUpdateUserPrisma = async (input: UserRegister) => {
 };
 
 export type RegisterOrUpdateUser = typeof registerOrUpdateUserPrisma;
-export type RegisterOrUpdateUserReturn = Prisma.PromiseReturnType<typeof registerOrUpdateUserPrisma>
-
+export type RegisterOrUpdateUserReturn = Prisma.PromiseReturnType<
+	typeof registerOrUpdateUserPrisma
+>;
 
 export const loginUserPrisma = async (input: LoginCredentials, ctx: Context) => {
 	const user = await validateUserPassword(input);
@@ -285,5 +285,4 @@ export const loginUserPrisma = async (input: LoginCredentials, ctx: Context) => 
 };
 
 export type LoginUser = typeof loginUserPrisma;
-export type LoginUserReturn = Prisma.PromiseReturnType<typeof loginUserPrisma>
-
+export type LoginUserReturn = Prisma.PromiseReturnType<typeof loginUserPrisma>;

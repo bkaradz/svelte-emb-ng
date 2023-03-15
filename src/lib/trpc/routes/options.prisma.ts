@@ -38,8 +38,7 @@ export const getOptionsPrisma = async (input: { group?: string | undefined }) =>
 };
 
 export type GetOptions = typeof getOptionsPrisma;
-export type GetOptionsReturn = Prisma.PromiseReturnType<typeof getOptionsPrisma>
-
+export type GetOptionsReturn = Prisma.PromiseReturnType<typeof getOptionsPrisma>;
 
 export const getByIdPrisma = async (input: number) => {
 	const option = await prisma.options.findUnique({
@@ -52,8 +51,7 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
-export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
-
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>;
 
 export const saveOrUpdateOptionPrisma = async (input: SaveOption, ctx: Context) => {
 	if (!ctx?.userId) {
@@ -76,8 +74,7 @@ export const saveOrUpdateOptionPrisma = async (input: SaveOption, ctx: Context) 
 };
 
 export type SaveOrUpdateOption = typeof saveOrUpdateOptionPrisma;
-export type SaveOrUpdateOptionReturn = Prisma.PromiseReturnType<typeof saveOrUpdateOptionPrisma>
-
+export type SaveOrUpdateOptionReturn = Prisma.PromiseReturnType<typeof saveOrUpdateOptionPrisma>;
 
 export const deleteByIdPrisma = async (input: number) => {
 	const option = await prisma.options.update({
@@ -89,8 +86,7 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
-export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
-
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>;
 
 export const changeCurrentDefault = async (group: string) => {
 	await prisma.options.updateMany({

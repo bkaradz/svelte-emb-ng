@@ -1,7 +1,6 @@
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
 import { userRegisterSchema, type UserRegister } from '$lib/validation/userRegister.validate';
-import { z } from 'zod';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -44,22 +43,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
-// export const UserSchema = z.object({
-// 	id: z.union([
-// 		z.number({ required_error: 'id is required' }),
-// 		z.string({ required_error: 'id is required' })
-// 	]),
-// 	name: z
-// 		.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
-// 		.trim(),
-// 	email: z.string({ required_error: 'Email is required' }).email({ message: 'Not a valid email' }),
-// 	phone: z.string({ required_error: 'Phone is required' }),
-// 	address: z.string({ required_error: 'Address is required' }),
-// 	password: z.string({ required_error: 'Password is required' })
-// });
-
-// export type User = z.infer<typeof UserSchema>;
-
 export const PUT: RequestHandler = async ({ request, locals }) => {
 	try {
 		if (!locals?.user?.id) {
@@ -84,12 +67,17 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
+		const { email, phone, address, ...restUpdate } = userUpdate;
+
 		const allUsers = await prisma.contacts.update({
 			where: {
-				id: (userUpdate.id)
+				id: userUpdate.id
 			},
 			data: {
-				...userUpdate
+				...restUpdate,
+				email: { createMany: { data: email } },
+				phone: { createMany: { data: phone } },
+				address: { createMany: { data: address } }
 			}
 		});
 
@@ -118,7 +106,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
 		const userDelete = await request.json();
 
-		const createdBy = (locals.user.id);
+		const createdBy = locals.user.id;
 
 		const userD = await prisma.contacts.update({
 			where: {

@@ -1,21 +1,19 @@
-/// <reference types="@sveltejs/kit" />
-
-// See https://kit.svelte.dev/docs/typescript
+// See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
-
-declare namespace App {
-	interface HTMLProps<T> {
-		onclickOutside?: (e: CustomEvent) => void;
+declare global {
+	namespace App {
+		// interface Error {}
+		interface Locals {
+			user: import('$lib/types').User;
+		}
+		// interface PageData {}
+		// interface Platform {}
 	}
-	interface Locals {
-		user: import('$lib/types').User;
+	namespace svelteHTML {
+		interface HTMLAttributes<T> {
+			'on:clickOutside'?: (event: CustomEvent) => void;
+		}
 	}
-
-	interface Platform {}
-
-	interface Session {
-		user?: import('$lib/types').User;
-	}
-
-	interface Stuff {}
 }
+
+export {};

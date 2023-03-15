@@ -5,7 +5,6 @@
 	export let onClick = (x: number) => {
 		console.log(x);
 	};
-
 </script>
 
 <div>

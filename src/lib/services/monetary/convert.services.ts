@@ -150,3 +150,18 @@ if (browser) {
 		}
 	})();
 }
+
+export function dineroFromFloat({
+	float,
+	currency,
+	scale
+}: {
+	float: number;
+	currency: Currency<number>;
+	scale: number;
+}) {
+	const factor = currency.base ** currency.exponent || scale;
+	const amount = Math.round(float * factor);
+
+	return dinero({ amount, currency, scale });
+}

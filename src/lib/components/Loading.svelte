@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	// import { svgLoader } from '$lib/utility/svgLogos';
 </script>
 

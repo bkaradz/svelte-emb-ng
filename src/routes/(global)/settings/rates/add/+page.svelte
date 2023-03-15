@@ -21,7 +21,7 @@
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
 	const initRate: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = {
-		xChangeRateDate: TODAY,
+		exChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: false,
 		ExchangeRateDetails: []
@@ -99,8 +99,8 @@
 
 		const reqRate = JSON.parse(JSON.stringify(rates));
 
-		if (reqRate.xChangeRateDate) {
-			reqRate.xChangeRateDate = new Date(reqRate.xChangeRateDate).toJSON();
+		if (reqRate.exChangeRateDate) {
+			reqRate.exChangeRateDate = new Date(reqRate.exChangeRateDate).toJSON();
 		}
 
 		reqRate.ExchangeRateDetails = reqRate.ExchangeRateDetails.map(
@@ -159,13 +159,13 @@
 						>Exchange Rate Id
 						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
 					</label>
-					<label class="text-sm" for="xChangeRateDate">
+					<label class="text-sm" for="exChangeRateDate">
 						Date Created
 						<input
 							class="input w-full"
-							name="xChangeRateDate"
+							name="exChangeRateDate"
 							type="datetime-local"
-							bind:value={rates.xChangeRateDate}
+							bind:value={rates.exChangeRateDate}
 							disabled
 						/>
 					</label>

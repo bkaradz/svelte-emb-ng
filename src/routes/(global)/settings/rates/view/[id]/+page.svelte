@@ -17,7 +17,7 @@
 
 	let rates = data.resultsRates;
 
-	data.resultsRates.xChangeRateDate = dayjs(data.resultsRates.xChangeRateDate).format(
+	data.resultsRates.exChangeRateDate = dayjs(data.resultsRates.exChangeRateDate).format(
 		'YYYY-MM-DDTHH:mm'
 	);
 
@@ -102,13 +102,13 @@
 							disabled
 						/>
 					</label>
-					<label class="text-sm" for="xChangeRateDate">
+					<label class="text-sm" for="exChangeRateDate">
 						Date Created
 						<input
 							class="input w-full"
-							name="xChangeRateDate"
+							name="exChangeRateDate"
 							type="datetime-local"
-							bind:value={rates.xChangeRateDate}
+							bind:value={rates.exChangeRateDate}
 							disabled
 						/>
 					</label>

@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetUsersReturn } from '$lib/trpc/routes/authentication.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import type { Current, Next, Previous } from '$lib/utility/pagination.util';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
 	import type { UserRegister } from '$lib/validation/userRegister.validate';
-	import type { Contacts } from '@prisma/client';
 	import { onMount } from 'svelte';
 
 	const tableHeadings = [
@@ -20,19 +19,19 @@
 		'delete'
 	];
 
-	type UserData = {
-		next: Next;
-		previous: Previous;
-		current: Current;
-		limit: number;
-		endIndex: number;
-		page: number;
-		totalPages: number;
-		totalRecords: number;
-		results: Contacts[];
-	};
+	// type UserData = {
+	// 	next: Next;
+	// 	previous: Previous;
+	// 	current: Current;
+	// 	limit: number;
+	// 	endIndex: number;
+	// 	page: number;
+	// 	totalPages: number;
+	// 	totalRecords: number;
+	// 	results: Contacts[];
+	// };
 
-	export let data: { users: UserData };
+	export let data: { users: GetUsersReturn };
 
 	let contacts = data.users.results;
 	let isEditableID: number | undefined = undefined;

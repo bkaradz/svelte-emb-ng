@@ -9,4 +9,4 @@ export const calculateCartPrisma = async (input: Partial<SaveOrder>) => {
 };
 
 export type CalculateCart = typeof calculateCartPrisma;
-export type CalculateCartReturn = Prisma.PromiseReturnType<typeof calculateCartPrisma>
+export type CalculateCartReturn = Prisma.PromiseReturnType<typeof calculateCartPrisma>;

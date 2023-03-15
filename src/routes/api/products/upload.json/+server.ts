@@ -44,11 +44,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					isActive: true,
 					createdBy: createDBy,
 					name: element.name,
-					stitches: (element?.stitches)
+					stitches: element?.stitches
 				};
 
 				if (!product) {
-					return
+					return;
 				}
 
 				allDocsPromises.push(product);

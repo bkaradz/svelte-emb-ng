@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createdBy = (locals.user.id);
+		const createdBy = locals.user.id;
 
 		const data = await request.formData();
 

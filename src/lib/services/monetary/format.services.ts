@@ -1,6 +1,7 @@
 import { BWP, type Currency } from '@dinero.js/currencies';
 import { dinero, haveSameCurrency, toFormat, toSnapshot, type Dinero } from 'dinero.js';
-import { ZWB, ZWR } from './convert.services';
+import { object } from 'zod';
+import { toDineroObject, ZWB, ZWR } from './convert.services';
 
 function intlFormat(locale: string, options = {}) {
 	return function formatter(dineroObject: Dinero<number>) {
@@ -36,15 +37,30 @@ function formatDefault(dineroObject: Dinero<number>) {
 	}
 }
 
-const formatters = {
-	USD: intlFormat('en-US'),
-	ZAR: intlFormat('en-ZA'),
-	EUR: intlFormat('fr-FR')
-};
+const formattersMap = new Map([
+	['USD', intlFormat('en-US')],
+	['ZAR', intlFormat('en-ZA')],
+	['EUR', intlFormat('fr-FR')]
+]);
 
-export function format(dineroObject: Dinero<number>) {
-	const { currency } = toSnapshot(dineroObject);
-	const formatFn = formatters[currency.code] || formatDefault;
+// const formatters = {
+// 	USD: intlFormat('en-US'),
+// 	ZAR: intlFormat('en-ZA'),
+// 	EUR: intlFormat('fr-FR')
+// };
 
-	return formatFn(dineroObject);
+export function format(dineroObject: Dinero<number> | undefined) {
+	try {
+		if (!dineroObject) {
+			throw new Error('Dinero object can not be undefined');
+		}
+
+		const { currency } = toSnapshot(dineroObject);
+		// const formatFn = formatters[currency.code] || formatDefault;
+		const formatFn = formattersMap.get(currency.code) || formatDefault;
+
+		return formatFn(dineroObject);
+	} catch (err) {
+		console.log('Error', err);
+	}
 }

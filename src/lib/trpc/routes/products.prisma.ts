@@ -71,8 +71,7 @@ export const getProductsPrisma = async (input: SearchParams) => {
 };
 
 export type GetProducts = typeof getProductsPrisma;
-export type GetProductsReturn = Prisma.PromiseReturnType<typeof getProductsPrisma>
-
+export type GetProductsReturn = Prisma.PromiseReturnType<typeof getProductsPrisma>;
 
 export const getByIdPrisma = async (input: number) => {
 	const product = await prisma.products.findUnique({
@@ -85,8 +84,7 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
-export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
-
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>;
 
 export const deleteByIdPrisma = async (input: number) => {
 	const product = await prisma.products.update({
@@ -99,8 +97,7 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
-export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
-
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>;
 
 export const saveOrUpdateProductsPrisma = async (input: saveProduct, ctx: Context) => {
 	if (!ctx?.userId) {
@@ -130,5 +127,6 @@ export const saveOrUpdateProductsPrisma = async (input: saveProduct, ctx: Contex
 };
 
 export type SaveOrUpdateProducts = typeof saveOrUpdateProductsPrisma;
-export type SaveOrUpdateProductsReturn = Prisma.PromiseReturnType<typeof saveOrUpdateProductsPrisma>
-
+export type SaveOrUpdateProductsReturn = Prisma.PromiseReturnType<
+	typeof saveOrUpdateProductsPrisma
+>;

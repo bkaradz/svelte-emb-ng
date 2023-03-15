@@ -42,8 +42,7 @@ export const getPricelistsPrisma = async (input: SearchParams) => {
 };
 
 export type GetPricelists = typeof getPricelistsPrisma;
-export type GetPricelistsReturn = Prisma.PromiseReturnType<typeof getPricelistsPrisma>
-
+export type GetPricelistsReturn = Prisma.PromiseReturnType<typeof getPricelistsPrisma>;
 
 export const getByIdPrisma = async (input: number) => {
 	const pricelist = await prisma.pricelists.findUnique({
@@ -59,8 +58,7 @@ export const getByIdPrisma = async (input: number) => {
 };
 
 export type GetById = typeof getByIdPrisma;
-export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>
-
+export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>;
 
 export const getDefaultPricelistPrisma = async () => {
 	const pricelist = await prisma.pricelists.findMany({
@@ -86,8 +84,7 @@ export const getDefaultPricelistPrisma = async () => {
 };
 
 export type GetDefaultPricelist = typeof getDefaultPricelistPrisma;
-export type GetDefaultPricelistReturn = Prisma.PromiseReturnType<typeof getDefaultPricelistPrisma>
-
+export type GetDefaultPricelistReturn = Prisma.PromiseReturnType<typeof getDefaultPricelistPrisma>;
 
 export const saveOrUpdatePricelistPrisma = async (input: SavePricelists, ctx: Context) => {
 	if (!ctx?.userId) {
@@ -133,8 +130,9 @@ export const saveOrUpdatePricelistPrisma = async (input: SavePricelists, ctx: Co
 };
 
 export type SaveOrUpdatePricelist = typeof saveOrUpdatePricelistPrisma;
-export type SaveOrUpdatePricelistReturn = Prisma.PromiseReturnType<typeof saveOrUpdatePricelistPrisma>
-
+export type SaveOrUpdatePricelistReturn = Prisma.PromiseReturnType<
+	typeof saveOrUpdatePricelistPrisma
+>;
 
 export const deleteByIdPrisma = async (input: number) => {
 	const pricelist = await prisma.pricelists.update({
@@ -146,8 +144,7 @@ export const deleteByIdPrisma = async (input: number) => {
 };
 
 export type DeleteById = typeof deleteByIdPrisma;
-export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
-
+export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>;
 
 export const changeCurrentDefault = async () => {
 	return await prisma.pricelists.updateMany({

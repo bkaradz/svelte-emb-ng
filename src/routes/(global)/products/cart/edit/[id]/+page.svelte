@@ -122,7 +122,6 @@
 		OrderLine: any[];
 	};
 
-
 	let mainOrder: Partial<SaveOrder> = data.order;
 	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
@@ -247,7 +246,7 @@
 		}
 
 		try {
-			await trpc().orders.SaveOrderOrUpdate.mutate(parsedOrder.data);
+			await trpc().orders.saveOrderOrUpdate.mutate(parsedOrder.data);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

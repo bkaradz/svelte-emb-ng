@@ -4,7 +4,7 @@
 	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import { dinero, multiply, type Dinero } from 'dinero.js';
 
-	export let order: SaveOrder
+	export let order: SaveOrder;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;
