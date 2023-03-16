@@ -6,11 +6,15 @@
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveExchangeRateSchema } from '$lib/validation/saveExchangeRate.validate';
-	import type { ExchangeRate, ExchangeRateDetails, Options } from '@prisma/client';
+	import type { ExchangeRate, ExchangeRateDetails, Options, Prisma } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
+
+	type newExchangeRate = Partial<(Omit<ExchangeRate, 'exChangeRateDate'> & {exChangeRateDate: Date | string} )> & {
+		ExchangeRateDetails: ExchangeRateDetails[];
+	};
 
 	export let data: { currencyOptions: Options[] };
 
@@ -20,14 +24,14 @@
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 
-	const initRate: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = {
+	const initRate: newExchangeRate = {
 		exChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: false,
 		ExchangeRateDetails: []
 	};
 
-	let rates: Partial<ExchangeRate> & { ExchangeRateDetails: ExchangeRateDetails[] } = {
+	let rates: newExchangeRate = {
 		...initRate
 	};
 
@@ -132,7 +136,7 @@
 		}
 	};
 
-	const handleEditable = (list: ExchangeRateDetails) => {
+	const handleEditable = (list: { id: any; currency?: string; rate?: Prisma.JsonValue; exchangeRateId?: number; createdAt?: Date; updatedAt?: Date; }) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {

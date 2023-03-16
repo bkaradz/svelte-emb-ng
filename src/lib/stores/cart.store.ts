@@ -1,5 +1,6 @@
 import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 import type { saveProduct } from '$lib/validation/saveProduct.validate';
+import type { Products } from '@prisma/client';
 import dayjs from 'dayjs';
 import { writable } from 'svelte/store';
 
@@ -10,7 +11,7 @@ function addCartItems() {
 
 	return {
 		subscribe,
-		add: (product: SaveOrdersLine) =>
+		add: (product: Products) =>
 			update((products) =>
 				products.set(product.id!, {
 					...product,
@@ -20,9 +21,9 @@ function addCartItems() {
 					productsID: product.id
 				})
 			),
-		update: (product: SaveOrdersLine, payload: Partial<SaveOrdersLine>) =>
+		update: (product: Products, payload: Partial<SaveOrdersLine>) =>
 			update((products) => products.set(product.id!, { ...product, ...payload })),
-		remove: (product: SaveOrdersLine) =>
+		remove: (product: Products) =>
 			update((products) => {
 				products.delete(product.id!);
 				return products;

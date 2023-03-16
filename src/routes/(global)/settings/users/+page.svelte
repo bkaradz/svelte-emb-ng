@@ -18,18 +18,6 @@
 		'delete'
 	];
 
-	// type UserData = {
-	// 	next: Next;
-	// 	previous: Previous;
-	// 	current: Current;
-	// 	limit: number;
-	// 	endIndex: number;
-	// 	page: number;
-	// 	totalPages: number;
-	// 	totalRecords: number;
-	// 	results: Contacts[];
-	// };
-
 	export let data: { users: GetUsersReturn };
 
 	let contacts = data.users.results;
@@ -55,12 +43,12 @@
 			toasts.add({ message: `User was updated`, type: 'success' });
 		}
 	};
-	const deleteUser = async (finalData: UserRegister) => {
+	const deleteUser = async (finalNumber: number) => {
 		try {
-			if (!finalData.id) {
+			if (!finalNumber) {
 				return;
 			}
-			await trpc().authentication.deleteById.mutate(finalData.id);
+			await trpc().authentication.deleteById.mutate(finalNumber);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -68,16 +56,6 @@
 			toasts.add({ message: `User was deleted`, type: 'success' });
 		}
 	};
-
-	// onMount(() => {
-	// 	getUsers();
-	// });
-
-	// type listsCool = Contacts & {
-	// 	email: Email[];
-	// 	phone: Phone[];
-	// 	address: Address[];
-	// };
 
 	const handleEditable = async (list: UserRegister) => {
 		if (isEditableID === undefined) {
@@ -88,8 +66,8 @@
 		}
 	};
 
-	const handleDelete = async (list: UserRegister) => {
-		await deleteUser(list);
+	const handleDelete = async (number: number) => {
+		await deleteUser(number);
 	};
 </script>
 
@@ -187,7 +165,7 @@
 								</button>
 							</td>
 							<td class="p-1 text-center ">
-								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
+								<button class=" m-0 p-0" on:click={() => handleDelete(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>
 							</td>

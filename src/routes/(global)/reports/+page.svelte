@@ -36,7 +36,7 @@
 		}
 	};
 
-	const generateRecieptPDF = async () => {
+	const generateReceiptPDF = async () => {
 		try {
 			const res = await fetch('/api/pdf/receipt', {
 				method: 'POST',
@@ -80,7 +80,7 @@
 		<button on:click={generatePDF}> Generate Quotation PDF puppetter </button>
 	</div>
 	<div class="btn btn-primary mt-4">
-		<button on:click={generateRecieptPDF}> Generate Receipt PDF puppetter </button>
+		<button on:click={generateReceiptPDF}> Generate Receipt PDF puppetter </button>
 	</div>
 	<h1 class=" text-2xl text-danger mt-8">Testing Gone Wrong</h1>
 </div>

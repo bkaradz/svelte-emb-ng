@@ -5,6 +5,8 @@
 	import { calculateProductPrices } from '$lib/services/orders/calculateAllPrice.product.services';
 	import { cartItem } from '$lib/stores/cart.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetDefaultPricelistReturn } from '$lib/trpc/routes/pricelists.prisma';
+	import type { GetProductsReturn } from '$lib/trpc/routes/products.prisma';
 	import logger from '$lib/utility/logger';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
@@ -21,15 +23,12 @@
 		svgShoppingBag,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import type { OrderLine, PricelistDetails, Pricelists, Products } from '@prisma/client';
+	import type { Products } from '@prisma/client';
 	import { dinero } from 'dinero.js';
+	import { number } from 'zod';
 
-	type productInterface = { results: Products[] } & Pagination;
-	type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };
 
-	type NewOrderLine = OrderLine & Products;
-
-	export let data: { products: productInterface; pricelist: NewPricelists };
+	export let data: { products: GetProductsReturn; pricelist: GetDefaultPricelistReturn };
 
 	let products = data.products;
 	let pricelist = data.pricelist;
@@ -83,7 +82,7 @@
 		try {
 			products = (await trpc().products.getProducts.query(
 				paramsObj
-			)) as unknown as productInterface;
+			))
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -93,11 +92,14 @@
 		cartItem.add(item);
 	};
 
-	const onDecrease = (item: NewOrderLine) => {
+	const onDecrease = (item: Products) => {
 		if (!$cartItem.has(item.id)) {
 			return;
 		} else {
 			const product = $cartItem.get(item.id);
+			if (!product) {
+				return
+			}
 			if (product?.quantity === 1) {
 				cartItem.remove(item);
 			} else {
@@ -106,7 +108,7 @@
 		}
 	};
 
-	const onIncrease = (item: Products) => {
+	const onIncrease = (item) => {
 		if (!$cartItem.has(item.id)) {
 			cartItem.add(item);
 		} else {

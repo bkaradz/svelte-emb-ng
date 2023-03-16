@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
-	import type { ExchangeRate, ExchangeRateDetails, Options } from '@prisma/client';
+	import type { ExchangeRate, ExchangeRateDetails, Options, Prisma } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { v4 as uuidv4 } from 'uuid';
 
 	let errorMessages = new Map();
 
-	type newExchangeRate = ExchangeRate & {
+	type newExchangeRate = (Omit<ExchangeRate, 'exChangeRateDate'> & {exChangeRateDate: Date | string} ) & {
 		ExchangeRateDetails: ExchangeRateDetails[];
 	};
 
@@ -70,16 +70,19 @@
 
 	const handleSubmit = async () => {};
 
-	const handleEditable = (list: Options) => {
+	const handleEditable = (list: { id: any; currency?: string; rate?: Prisma.JsonValue; exchangeRateId?: number; createdAt?: Date; updatedAt?: Date; }) => {
+		if (!list.id) {
+			return
+		}
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (list: Options) => {
+	const handleDelete = (id: number) => {
 		isEditableID = null;
-		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== list.id);
+		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== id);
 	};
 </script>
 
@@ -189,7 +192,7 @@
 										<button
 											disabled
 											class=" m-0 p-0"
-											on:click|preventDefault={() => handleDelete(list)}
+											on:click|preventDefault={() => handleDelete(list.id)}
 										>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>
