@@ -5,7 +5,6 @@
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
 	import type { UserRegister } from '$lib/validation/userRegister.validate';
-	import { onMount } from 'svelte';
 
 	const tableHeadings = [
 		'name',
@@ -70,9 +69,15 @@
 		}
 	};
 
-	onMount(() => {
-		getUsers();
-	});
+	// onMount(() => {
+	// 	getUsers();
+	// });
+
+	// type listsCool = Contacts & {
+	// 	email: Email[];
+	// 	phone: Phone[];
+	// 	address: Address[];
+	// };
 
 	const handleEditable = async (list: UserRegister) => {
 		if (isEditableID === undefined) {
