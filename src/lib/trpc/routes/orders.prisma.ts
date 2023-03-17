@@ -135,7 +135,7 @@ export const getOrderLinePrisma = async (input: SearchParams) => {
 		};
 	}
 
-	const productsQuery = await prisma.orderLine.findMany(query);
+	const ordersQuery = await prisma.orderLine.findMany(query);
 
 	pagination.totalRecords = await prisma.orderLine.count(queryTotal);
 	pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -144,14 +144,14 @@ export const getOrderLinePrisma = async (input: SearchParams) => {
 		pagination.next = undefined;
 	}
 
-	return { results: productsQuery, ...pagination };
+	return { results: ordersQuery, ...pagination };
 };
 
 export type GetOrderLine = typeof getOrderLinePrisma;
 export type GetOrderLineReturn = Prisma.PromiseReturnType<typeof getOrderLinePrisma>;
 
 export const getByIdPrisma = async (input: number) => {
-	const product = await prisma.orders.findUnique({
+	const order = await prisma.orders.findUnique({
 		where: {
 			id: input
 		},
@@ -166,7 +166,7 @@ export const getByIdPrisma = async (input: number) => {
 		}
 	});
 
-	return product;
+	return order;
 };
 
 export type GetById = typeof getByIdPrisma;

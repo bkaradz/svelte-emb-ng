@@ -23,7 +23,7 @@
 
 	export let data: { customers: CustomersTypes };
 
-	interface GlobalParamsTypes {
+	type GlobalParamsTypes = {
 		limit: number;
 		page: number;
 		sort?: string;
