@@ -12,7 +12,9 @@
 
 	let errorMessages = new Map();
 
-	type newExchangeRate = Partial<(Omit<ExchangeRate, 'exChangeRateDate'> & {exChangeRateDate: Date | string} )> & {
+	type newExchangeRate = Partial<
+		Omit<ExchangeRate, 'exChangeRateDate'> & { exChangeRateDate: Date | string }
+	> & {
 		ExchangeRateDetails: ExchangeRateDetails[];
 	};
 
@@ -136,7 +138,14 @@
 		}
 	};
 
-	const handleEditable = (list: { id: any; currency?: string; rate?: Prisma.JsonValue; exchangeRateId?: number; createdAt?: Date; updatedAt?: Date; }) => {
+	const handleEditable = (list: {
+		id: any;
+		currency?: string;
+		rate?: Prisma.JsonValue;
+		exchangeRateId?: number;
+		createdAt?: Date;
+		updatedAt?: Date;
+	}) => {
 		if (isEditableID === null) {
 			isEditableID = list.id;
 		} else {

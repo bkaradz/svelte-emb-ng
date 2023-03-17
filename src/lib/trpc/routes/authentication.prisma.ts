@@ -85,7 +85,7 @@ export const getUsersPrisma = async (input: SearchParams) => {
 			}
 		]
 	});
-	
+
 	pagination.totalRecords = await prisma.contacts.count(queryTotal);
 	pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
 

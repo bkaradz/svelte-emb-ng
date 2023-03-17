@@ -27,7 +27,6 @@
 	import { dinero } from 'dinero.js';
 	import { number } from 'zod';
 
-
 	export let data: { products: GetProductsReturn; pricelist: GetDefaultPricelistReturn };
 
 	let products = data.products;
@@ -80,9 +79,7 @@
 
 	const getProducts = async (paramsObj: any) => {
 		try {
-			products = (await trpc().products.getProducts.query(
-				paramsObj
-			))
+			products = await trpc().products.getProducts.query(paramsObj);
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -98,7 +95,7 @@
 		} else {
 			const product = $cartItem.get(item.id);
 			if (!product) {
-				return
+				return;
 			}
 			if (product?.quantity === 1) {
 				cartItem.remove(item);

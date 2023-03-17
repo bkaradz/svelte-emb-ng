@@ -7,7 +7,9 @@
 
 	let errorMessages = new Map();
 
-	type newExchangeRate = (Omit<ExchangeRate, 'exChangeRateDate'> & {exChangeRateDate: Date | string} ) & {
+	type newExchangeRate = (Omit<ExchangeRate, 'exChangeRateDate'> & {
+		exChangeRateDate: Date | string;
+	}) & {
 		ExchangeRateDetails: ExchangeRateDetails[];
 	};
 
@@ -70,9 +72,16 @@
 
 	const handleSubmit = async () => {};
 
-	const handleEditable = (list: { id: any; currency?: string; rate?: Prisma.JsonValue; exchangeRateId?: number; createdAt?: Date; updatedAt?: Date; }) => {
+	const handleEditable = (list: {
+		id: any;
+		currency?: string;
+		rate?: Prisma.JsonValue;
+		exchangeRateId?: number;
+		createdAt?: Date;
+		updatedAt?: Date;
+	}) => {
 		if (!list.id) {
-			return
+			return;
 		}
 		if (isEditableID === null) {
 			isEditableID = list.id;
