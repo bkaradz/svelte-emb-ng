@@ -20,7 +20,6 @@
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveContactsSchema } from '$lib/validation/saveContact.validate';
 	import type { Address, Contacts, Email, Phone } from '@prisma/client';
-	import { number } from 'zod';
 
 	let errorMessages = new Map();
 
@@ -40,7 +39,7 @@
 		name?: string;
 	}
 
-	let corporateSearch: Partial<Contacts> = { name: undefined };
+	let corporateSearch: Pick<Contacts, 'name' | 'id'> = {	name: '',	id: -20};
 
 	$: formData.organisationID = corporateSearch?.id;
 

@@ -36,7 +36,7 @@
 		name?: string;
 	}
 
-	let corporateSearch: Partial<Contacts> = { name: '' };
+	let corporateSearch: Pick<Contacts, 'name' | 'id'> = {	name: '',	id: -20};
 
 	$: formData.organisationID = corporateSearch?.id;
 
