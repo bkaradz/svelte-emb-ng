@@ -45,7 +45,12 @@ export const getExchangeRatesPrisma = async (input: { isDefault: boolean; isActi
 		};
 	}
 
-	return await prisma.exchangeRate.findMany(query);
+	return await prisma.exchangeRate.findMany({
+		...query,
+		include: {
+			ExchangeRateDetails: true
+		}
+	});
 };
 
 export type GetExchangeRates = typeof getExchangeRatesPrisma;

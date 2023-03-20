@@ -47,9 +47,6 @@
 			return;
 		}
 		try {
-			// const test = await trpc().authentication.loginUser.mutate(parsedUser.data);
-
-			// return;
 			const res = await fetch('/api/auth/login.json', {
 				method: 'POST',
 				body: JSON.stringify(formData),

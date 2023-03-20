@@ -70,6 +70,11 @@ export const getContactsPrisma = async (input: SearchParams) => {
 
 	const contactsQuery = await prisma.contacts.findMany({
 		...query,
+		include: {
+			email: true,
+			phone: true,
+			address: true
+		},
 		orderBy: [
 			{
 				name: 'asc'
@@ -152,6 +157,11 @@ export const getCorporatePrisma = async (input: SearchParams) => {
 
 	const contactsQuery = await prisma.contacts.findMany({
 		...query,
+		include: {
+			email: true,
+			phone: true,
+			address: true
+		},
 		orderBy: [
 			{
 				name: 'asc'

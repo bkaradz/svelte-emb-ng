@@ -79,6 +79,11 @@ export const getUsersPrisma = async (input: SearchParams) => {
 
 	const contactsQuery = await prisma.contacts.findMany({
 		...query,
+		include: {
+			email: true,
+			phone: true,
+			address: true
+		},
 		orderBy: [
 			{
 				name: 'asc'

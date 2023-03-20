@@ -38,7 +38,7 @@
 		isCorporate?: boolean;
 		isActive?: boolean;
 		isUser?: boolean;
-	}
+	};
 
 	const tableHeadings = [
 		{ id: 1, name: 'ID', dbName: 'id' },

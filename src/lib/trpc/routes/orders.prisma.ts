@@ -71,7 +71,22 @@ export const getOrdersPrisma = async (input: SearchParams) => {
 		};
 	}
 
-	const orderQuery = await prisma.orders.findMany(query);
+	const orderQuery = await prisma.orders.findMany({
+		...query,
+		include: {
+			customerContact: {
+				include: {
+					address: true
+				}
+			},
+			Pricelists: true,
+			OrderLine: {
+				include: {
+					Products: true
+				}
+			}
+		}
+	});
 
 	pagination.totalRecords = await prisma.orders.count(queryTotal);
 	pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -135,7 +150,16 @@ export const getOrderLinePrisma = async (input: SearchParams) => {
 		};
 	}
 
-	const ordersQuery = await prisma.orderLine.findMany(query);
+	const ordersQuery = await prisma.orderLine.findMany({
+		...query,
+		include: {
+			Orders: {
+				include: {
+					customerContact: true
+				}
+			}
+		}
+	});
 
 	pagination.totalRecords = await prisma.orderLine.count(queryTotal);
 	pagination.totalPages = Math.ceil(pagination.totalRecords / pagination.limit);
@@ -239,9 +263,9 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 		throw new Error('Customer does not exist');
 	}
 
-	let calcOrder = await calculateOrder(input);
+	const calcOrder = await calculateOrder(input);
 
-	calcOrder = calcOrder.map((item) =>
+	const calcOrder2 = calcOrder.map((item) =>
 		pick(item, [
 			'productsID',
 			'unitPrice',
@@ -276,7 +300,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 				...restOrder,
 				createdBy,
 				OrderLine: {
-					updateMany: { data: calcOrder }
+					updateMany: { data: calcOrder2 }
 				}
 			}
 		});
@@ -286,7 +310,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 				...restOrder,
 				createdBy,
 				OrderLine: {
-					createMany: { data: calcOrder }
+					createMany: { data: calcOrder2 }
 				}
 			}
 		});

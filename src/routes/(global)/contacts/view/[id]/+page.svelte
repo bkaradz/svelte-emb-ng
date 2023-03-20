@@ -4,6 +4,8 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { format } from '$lib/services/monetary';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetByIdReturn } from '$lib/trpc/routes/contacts.prisma';
+	import type { GetOrdersReturn } from '$lib/trpc/routes/orders.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import type { Pagination } from '$lib/utility/pagination.util';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
@@ -37,7 +39,7 @@
 
 	type OrdersType = Pagination & { results: Orders[] };
 
-	export let data: { customer: ContactsTypes; orders: OrdersType };
+	export let data: { customer: GetByIdReturn; orders: GetOrdersReturn };
 
 	const tableHeading = ['Order #', 'Date', 'Date Due', 'Total', 'Status', 'View'];
 
