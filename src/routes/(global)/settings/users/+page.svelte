@@ -18,6 +18,8 @@
 		'delete'
 	];
 
+	type ResultsType = GetUsersReturn['results'][0]
+
 	export let data: { users: GetUsersReturn };
 
 	let contacts = data.users.results;
@@ -33,9 +35,14 @@
 		}
 	};
 
-	const updateUser = async (finalData: UserRegister) => {
+	const updateUser = async (finalData: ResultsType) => {
 		try {
-			await trpc().authentication.registerOrUpdateUser.mutate(finalData);
+		
+			let updateEmail = finalData?.email?.map((email) => ({'email': email } as unknown as {'email': string}))
+			let updatePhone = finalData?.phone?.map((phone) => ({'phone': phone } as unknown as {'phone': string}))
+			let updateAddress = finalData?.address?.map((address) => ({'address': address } as unknown as {'address': string}))
+			const updateUser = structuredClone({...finalData, email: updateEmail, phone: updatePhone, address: updateAddress})
+			await trpc().authentication.UpdateUserWithoutPassword.mutate(updateUser);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -57,7 +64,7 @@
 		}
 	};
 
-	const handleEditable = async (list: UserRegister) => {
+	const handleEditable = async (list: ResultsType) => {
 		if (isEditableID === undefined) {
 			isEditableID = list.id;
 		} else {

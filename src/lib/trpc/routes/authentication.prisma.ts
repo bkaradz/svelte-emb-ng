@@ -5,7 +5,7 @@ import type { SearchParams } from '$lib/validation/searchParams.validate';
 import omit from 'lodash-es/omit';
 import bcrypt from 'bcrypt';
 import config from 'config';
-import type { UserRegister } from '$lib/validation/userRegister.validate';
+import type { EditUser, UserRegister } from '$lib/validation/userRegister.validate';
 import {
 	createSession,
 	setSessionCookies,
@@ -240,6 +240,57 @@ export const registerOrUpdateUserPrisma = async (input: UserRegister) => {
 export type RegisterOrUpdateUser = typeof registerOrUpdateUserPrisma;
 export type RegisterOrUpdateUserReturn = Prisma.PromiseReturnType<
 	typeof registerOrUpdateUserPrisma
+>;
+
+export const updateUserWithoutPasswordPrisma = async (input: EditUser) => {
+	const userExist = await prisma.email.findUnique({
+		where: {
+			email: input.email[0].email
+		}
+	});
+
+	/**
+	 * TODO: Correct userExist to update User
+	 */
+
+	if (userExist) {
+		return new Response(JSON.stringify({ message: 'User with that email already exist' }), {
+			headers: {
+				'content-type': 'application/json; charset=utf-8'
+			},
+			status: 409
+		});
+	}
+
+	if (input.id) {
+
+		const user = await prisma.contacts.update({
+			where: {
+				id: input.id
+			},
+			data: {
+				...input,
+				email: {
+					create: input.email
+				},
+				phone: {
+					create: input.phone
+				},
+				address: {
+					create: input.address
+				}
+			}
+		});
+
+		const { password, ...restUser } = user;
+
+		return restUser;
+	}
+};
+
+export type UpdateUserWithoutPassword = typeof updateUserWithoutPasswordPrisma;
+export type UpdateUserWithoutPasswordReturn = Prisma.PromiseReturnType<
+	typeof updateUserWithoutPasswordPrisma
 >;
 
 export const loginUserPrisma = async (input: LoginCredentials, ctx: Context) => {
