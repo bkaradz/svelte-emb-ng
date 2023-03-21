@@ -190,6 +190,10 @@ export const getByIdPrisma = async (input: number) => {
 		}
 	});
 
+	if (!order) {
+		throw new Error("Order not found");
+	}
+
 	return order;
 };
 

@@ -45,6 +45,7 @@
 		return calcPrice;
 	};
 
+	
 	$: updatePrices();
 	const tableHeadings = ['Order #', 'Date', 'Customer', 'Due Date', 'State', 'View'];
 
@@ -144,8 +145,8 @@
 							<ul>
 								{#each updatePrices() as item (item)}
 									<li class="flex justify-between hover:bg-warning px-6 py-2">
-										<span class="pr-4">{Object.keys(item)}</span>
-										<span>{item[Object.keys(item)[0]]}</span>
+										<span class="pr-4">{Object.keys(item)[0]}</span>
+										<span>{Object.values(item)[0]}</span>
 									</li>
 								{/each}
 							</ul>

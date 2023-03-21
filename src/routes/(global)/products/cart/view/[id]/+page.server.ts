@@ -5,14 +5,11 @@ import type { PageServerLoad } from './$types';
 export const load = (async (event) => {
 	const embroideryTypes = async () => {
 		return await router
-			.createCaller(await createContext(event))
-			.options.getOptions({ group: 'embroideryTypes' });
+			.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' });
 	};
 
 	const embroideryPositions = async () => {
-		return await router
-			.createCaller(await createContext(event))
-			.options.getOptions({ group: 'embroideryPositions' });
+		return await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' });
 	};
 
 	const queryParams = {
@@ -29,25 +26,8 @@ export const load = (async (event) => {
 	};
 
 	const order = async () => {
-		return await router
-			.createCaller(await createContext(event))
-			.orders.getById(parseInt(event.params.id));
+		return await router.createCaller(await createContext(event)).orders.getById(parseInt(event.params.id));
 	};
-
-	// if (order?.orderDate) {
-	//   order.orderDate = dayjs(order.orderDate).format('YYYY-MM-DDTHH:mm')
-	// }
-	// if (order?.deliveryDate) {
-	//   order.deliveryDate = dayjs(order.deliveryDate).format('YYYY-MM-DDTHH:mm')
-	// }
-	// const newLine = order?.OrderLine.map((item) => {
-	//   const { Products, ...restLine } = item
-	//   return { ...restLine, ...Products }
-	// })
-
-	// if (order?.OrderLine) {
-	//   order.OrderLine = newLine
-	// }
 
 	return {
 		order: order(),

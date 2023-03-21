@@ -10,10 +10,18 @@
 	type newExchangeRate = (Omit<ExchangeRate, 'exChangeRateDate'> & {
 		exChangeRateDate: Date | string;
 	}) & {
-		ExchangeRateDetails: ExchangeRateDetails[];
+		ExchangeRateDetails: (Omit<
+			ExchangeRateDetails,
+			'id' | 'createdAt' | 'updatedAt' | 'rate' | 'exchangeRateId'
+		> & {
+			id: number | string;
+			rate: Prisma.JsonValue | number | string;
+			exchangeRateId?: number;
+		})[];
 	};
 
 	export let data: { resultsCurrency: Options[]; resultsRates: newExchangeRate };
+	$: console.log('🚀 ~ file: +page.svelte:19 ~ data:', data);
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
@@ -89,7 +97,7 @@
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (id: number) => {
+	const handleDelete = (id: number | string) => {
 		isEditableID = null;
 		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== id);
 	};

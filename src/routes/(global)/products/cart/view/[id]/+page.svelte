@@ -6,43 +6,32 @@
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
+	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
+	import type { GetByIdReturn } from '$lib/trpc/routes/orders.prisma';
+	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
-	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+		import type { Next, Previous, Current } from '$lib/utility/pagination.util';
+import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type {
-		Address,
-		Contacts,
-		Email,
-		Options,
-		OrderLine,
-		Orders,
-		Phone,
-		Pricelists,
-		Products
-	} from '@prisma/client';
+	import type { Address, Contacts, Email, Options, OrderLine, Phone, Pricelists } from '@prisma/client';
 	import { add, dinero, multiply, toSnapshot, type DineroOptions } from 'dinero.js';
 
-	type customersType = (Contacts & {
-		email: Email[];
-		phone: Phone[];
-		address: Address[];
-	})[];
-
-	export let data: {
-		customers: { results: customersType };
-		embroideryTypes: Options[];
-		embroideryPositions: Options[];
-		pricelists: Pricelists;
-		order: Orders & {
-			Pricelists: Pricelists;
-			OrderLine: (OrderLine & { Products: Products })[];
-			customerContact: Contacts;
-		};
+	type ResultsType = GetContactsReturn['results'][0];
+	type OrderLineType = GetByIdReturn['OrderLine'][0];
+	type DataType = {
+		customers: GetContactsReturn;
+		embroideryTypes: GetOptionsReturn;
+		embroideryPositions: GetOptionsReturn;
+		pricelists: GetPricelistsReturn;
+		order: GetByIdReturn;
 	};
 
-	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
+	export let data: DataType
+
+	const updateCart = (data) => {
 		if (!data?.order) {
 			return;
 		}
@@ -52,9 +41,7 @@
 		OrderLine.forEach((item: any) => {
 			cartItem.add(item);
 		});
-		cartOrder.add({
-			...restOrder
-		});
+		cartOrder.add({ ...restOrder });
 	};
 
 	$: updateCart(data);
@@ -63,7 +50,7 @@
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray: OrderLine[] = []) => {
+	const handleCalculations = async (lineArray) => {
 		try {
 			if (!mainOrder.pricelistsID) {
 				return;
@@ -158,10 +145,10 @@
 	const removeItem = (item: unknown) => {
 		cartItem.remove(item);
 	};
-	const onDecrease = (item: unknown) => {
+	const onDecrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
-	const onIncrease = (item: unknown) => {
+	const onIncrease = (item) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 

@@ -12,15 +12,23 @@
 
 	let errorMessages = new Map();
 
-	type newExchangeRate = Partial<
-		Omit<ExchangeRate, 'exChangeRateDate'> & { exChangeRateDate: Date | string }
+	type newExchangeRate = (Omit<
+		ExchangeRate,
+		'exChangeRateDate' | 'id' | 'createdAt' | 'updatedAt' | 'createdBy'
 	> & {
-		ExchangeRateDetails: ExchangeRateDetails[];
+		exChangeRateDate: Date | string;
+	}) & {
+		ExchangeRateDetails: (Omit<
+			ExchangeRateDetails,
+			'id' | 'createdAt' | 'updatedAt' | 'rate' | 'exchangeRateId'
+		> & {
+			id: number | string;
+			rate: Prisma.JsonValue | number | string;
+			exchangeRateId?: number;
+		})[];
 	};
 
 	export let data: { currencyOptions: Options[] };
-
-	$: disabled = false;
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
@@ -30,7 +38,13 @@
 		exChangeRateDate: TODAY,
 		isActive: true,
 		isDefault: false,
-		ExchangeRateDetails: []
+		ExchangeRateDetails: [
+			{
+				id: uuidv4(),
+				currency: '',
+				rate: 0
+			}
+		]
 	};
 
 	let rates: newExchangeRate = {
@@ -101,8 +115,6 @@
 			return;
 		}
 
-		disabled = true;
-
 		const reqRate = JSON.parse(JSON.stringify(rates));
 
 		if (reqRate.exChangeRateDate) {
@@ -124,7 +136,7 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
-			disabled = false;
+
 			return;
 		}
 
@@ -152,9 +164,9 @@
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (list: ExchangeRateDetails) => {
+	const handleDelete = (id: number| string) => {
 		isEditableID = null;
-		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== list.id);
+		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== id);
 		usedCurrencies = getUsedCurrencies();
 		showButton = usedCurrencies.length < data.currencyOptions.length;
 	};
@@ -265,7 +277,7 @@
 									</td>
 
 									<td class="p-1 text-center ">
-										<button class=" m-0 p-0" on:click|preventDefault={() => handleDelete(list)}>
+										<button class=" m-0 p-0" on:click|preventDefault={() => handleDelete(list.id)}>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>
 									</td>

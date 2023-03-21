@@ -4,7 +4,6 @@
 	import type { GetUsersReturn } from '$lib/trpc/routes/authentication.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import { svgLockClosed, svgPencil, svgTrash } from '$lib/utility/svgLogos';
-	import type { UserRegister } from '$lib/validation/userRegister.validate';
 
 	const tableHeadings = [
 		'name',
@@ -38,10 +37,18 @@
 	const updateUser = async (finalData: ResultsType) => {
 		try {
 		
-			let updateEmail = finalData?.email?.map((email) => ({'email': email } as unknown as {'email': string}))
-			let updatePhone = finalData?.phone?.map((phone) => ({'phone': phone } as unknown as {'phone': string}))
-			let updateAddress = finalData?.address?.map((address) => ({'address': address } as unknown as {'address': string}))
-			const updateUser = structuredClone({...finalData, email: updateEmail, phone: updatePhone, address: updateAddress})
+			const updateEmail = finalData?.email?.map((email) => ({'email': email } as unknown as {'email': string}))
+			const updatePhone = finalData?.phone?.map((phone) => ({'phone': phone } as unknown as {'phone': string}))
+			const updateAddress = finalData?.address?.map((address) => ({'address': address } as unknown as {'address': string}))
+
+			const password = finalData?.password
+
+			if (!password) {
+				return
+			}
+
+			const updateUser = structuredClone({...finalData, email: updateEmail, phone: updatePhone, address: updateAddress, password})
+			
 			await trpc().authentication.UpdateUserWithoutPassword.mutate(updateUser);
 		} catch (err: any) {
 			handleErrors(err);
