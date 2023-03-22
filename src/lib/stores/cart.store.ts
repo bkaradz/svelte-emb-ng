@@ -1,7 +1,6 @@
 import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 import type { saveProduct } from '$lib/validation/saveProduct.validate';
 import type { Products } from '@prisma/client';
-import dayjs from 'dayjs';
 import { writable } from 'svelte/store';
 
 function addCartItems() {
@@ -33,8 +32,6 @@ function addCartItems() {
 }
 
 export const cartItem = addCartItems();
-
-const today = dayjs('2019-01-25').format('YYYY-MM-DDTHH:mm');
 
 function addCartOrders() {
 	const order: Partial<SaveOrder> = {};
