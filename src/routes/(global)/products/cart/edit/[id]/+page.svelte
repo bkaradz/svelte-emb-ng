@@ -7,60 +7,51 @@
 	import { selectedCurrency, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
+	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
+	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgCart } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { saveOrdersSchema, type SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type {
-		Address,
-		Contacts,
-		Email,
-		Options,
-		OrderLine,
-		Orders,
-		Phone,
-		Pricelists,
-		Products
-	} from '@prisma/client';
+	import {
+		saveOrdersSchema,
+		type SaveOrder,
+		type SaveOrdersLine
+	} from '$lib/validation/saveOrder.validate';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 
 	let errorMessages = new Map();
 
 	$: disabled = false;
 
-	type customersType = (Contacts & {
-		email: Email[];
-		phone: Phone[];
-		address: Address[];
-	})[];
-
-	export let data: {
-		customers: { results: customersType };
-		embroideryTypes: Options[];
-		embroideryPositions: Options[];
-		pricelists: Pricelists;
-		order: Orders & {
-			Pricelists: Pricelists;
-			OrderLine: (OrderLine & { Products: Products })[];
-			customerContact: Contacts;
-		};
+	type OrderLineType = SaveOrder['OrderLine'][0];
+	type DataType = {
+		customers: GetContactsReturn;
+		embroideryTypes: GetOptionsReturn;
+		embroideryPositions: GetOptionsReturn;
+		pricelists: GetPricelistsReturn;
+		order: SaveOrder;
 	};
 
-	const updateCart = (data: { order: { [x: string]: any; OrderLine: any } }) => {
+	export let data: DataType;
+
+	const updateCart = (data: DataType) => {
 		if (!data?.order) {
 			return;
 		}
 		const { OrderLine, ...restOrder } = data.order;
 		mainOrder = { ...restOrder, OrderLine: OrderLine };
 		customerSearch = restOrder.customerContact;
-		OrderLine.forEach((item: any) => {
-			cartItem.add(item);
+		OrderLine.forEach((item) => {
+			const id = item?.id;
+			if (!id) {
+				return;
+			}
+			cartItem.add({ ...item, id });
 		});
-		cartOrder.add({
-			...restOrder
-		});
+		cartOrder.add({ ...restOrder });
 	};
 
 	$: updateCart(data);
@@ -69,7 +60,7 @@
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray: OrderLine[] = []) => {
+	const handleCalculations = async (lineArray: (SaveOrdersLine & { quantity: number })[]) => {
 		try {
 			if (!mainOrder.pricelistsID) {
 				return;
@@ -84,7 +75,7 @@
 		}
 	};
 
-	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: SaveOrdersLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
 		 * Calculate using the cart default usd currency
@@ -110,19 +101,7 @@
 		getCountAndSubTotal(mainOrder.OrderLine);
 	};
 
-	type MainOrder = {
-		id?: number | null;
-		customersID: number | null;
-		pricelistsID: number | null;
-		isActive: boolean;
-		accountsStatus: string | null;
-		orderDate: string | null;
-		deliveryDate?: string | null;
-		comment?: string;
-		OrderLine: any[];
-	};
-
-	let mainOrder: Partial<SaveOrder> = data.order;
+	let mainOrder = data.order;
 	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
@@ -131,7 +110,13 @@
 	let customers = data.customers;
 	let pricelists = data.pricelists;
 
-	let customerQueryParams = {
+	type CustomerQueryTypes = {
+		limit: number;
+		page: number;
+		name?: string;
+	};
+
+	let customerQueryParams: CustomerQueryTypes = {
 		limit: 7,
 		page: 1
 	};
@@ -170,17 +155,21 @@
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
-	const removeItem = (item: unknown) => {
-		cartItem.remove(item);
+	const removeItem = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		cartItem.remove(id);
 	};
-	const onDecrease = (item: unknown) => {
+	const onDecrease = (item: OrderLineType) => {
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
-	const onIncrease = (item: unknown) => {
+	const onIncrease = (item: OrderLineType) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
-	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
+	const handleEmbroideryType = (item: OrderLineType) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	};
@@ -191,14 +180,18 @@
 		mainOrder.customersID = customerSearch.id;
 	}
 
-	const handleComboInput = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleComboInput = async (event: { target: { value: any } }) => {
+		const name = event?.target?.value;
+
 		customerQueryParams = {
 			...customerQueryParams,
-			name: (event.target as HTMLInputElement).value
+			name
 		};
-		customers = await getCustomers(customerQueryParams);
+		const customersReturn = await getCustomers(customerQueryParams);
+		if (!customersReturn) {
+			return;
+		}
+		customers = customersReturn;
 	};
 
 	const handleSubmit = async (status: string) => {

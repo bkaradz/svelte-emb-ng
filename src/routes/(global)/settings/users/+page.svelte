@@ -17,7 +17,7 @@
 		'delete'
 	];
 
-	type ResultsType = GetUsersReturn['results'][0]
+	type ResultsType = GetUsersReturn['results'][0];
 
 	export let data: { users: GetUsersReturn };
 
@@ -36,19 +36,30 @@
 
 	const updateUser = async (finalData: ResultsType) => {
 		try {
-		
-			const updateEmail = finalData?.email?.map((email) => ({'email': email } as unknown as {'email': string}))
-			const updatePhone = finalData?.phone?.map((phone) => ({'phone': phone } as unknown as {'phone': string}))
-			const updateAddress = finalData?.address?.map((address) => ({'address': address } as unknown as {'address': string}))
+			const updateEmail = finalData?.email?.map(
+				(email) => ({ email: email } as unknown as { email: string })
+			);
+			const updatePhone = finalData?.phone?.map(
+				(phone) => ({ phone: phone } as unknown as { phone: string })
+			);
+			const updateAddress = finalData?.address?.map(
+				(address) => ({ address: address } as unknown as { address: string })
+			);
 
-			const password = finalData?.password
+			const password = finalData?.password;
 
 			if (!password) {
-				return
+				return;
 			}
 
-			const updateUser = structuredClone({...finalData, email: updateEmail, phone: updatePhone, address: updateAddress, password})
-			
+			const updateUser = structuredClone({
+				...finalData,
+				email: updateEmail,
+				phone: updatePhone,
+				address: updateAddress,
+				password
+			});
+
 			await trpc().authentication.UpdateUserWithoutPassword.mutate(updateUser);
 		} catch (err: any) {
 			handleErrors(err);

@@ -263,7 +263,6 @@ export const updateUserWithoutPasswordPrisma = async (input: EditUser) => {
 	}
 
 	if (input.id) {
-
 		const user = await prisma.contacts.update({
 			where: {
 				id: input.id

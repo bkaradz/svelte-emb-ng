@@ -164,7 +164,7 @@
 			isEditableID = null;
 		}
 	};
-	const handleDelete = (id: number| string) => {
+	const handleDelete = (id: number | string) => {
 		isEditableID = null;
 		rates.ExchangeRateDetails = rates.ExchangeRateDetails.filter((rate) => rate.id !== id);
 		usedCurrencies = getUsedCurrencies();

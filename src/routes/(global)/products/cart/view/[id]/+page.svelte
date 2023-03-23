@@ -8,38 +8,38 @@
 	import { trpc } from '$lib/trpc/client';
 	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
 	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
-	import type { GetByIdReturn } from '$lib/trpc/routes/orders.prisma';
 	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
-		import type { Next, Previous, Current } from '$lib/utility/pagination.util';
-import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
+	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import { svgCart } from '$lib/utility/svgLogos';
-	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type { Address, Contacts, Email, Options, OrderLine, Phone, Pricelists } from '@prisma/client';
+	import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import { add, dinero, multiply, toSnapshot, type DineroOptions } from 'dinero.js';
 
-	type ResultsType = GetContactsReturn['results'][0];
-	type OrderLineType = GetByIdReturn['OrderLine'][0];
+	type OrderLineType = SaveOrder['OrderLine'][0];
 	type DataType = {
 		customers: GetContactsReturn;
 		embroideryTypes: GetOptionsReturn;
 		embroideryPositions: GetOptionsReturn;
 		pricelists: GetPricelistsReturn;
-		order: GetByIdReturn;
+		order: SaveOrder;
 	};
 
-	export let data: DataType
+	export let data: DataType;
 
-	const updateCart = (data) => {
+	const updateCart = (data: DataType) => {
 		if (!data?.order) {
 			return;
 		}
 		const { OrderLine, ...restOrder } = data.order;
 		mainOrder = { ...restOrder, OrderLine: OrderLine };
 		customerSearch = restOrder.customerContact;
-		OrderLine.forEach((item: any) => {
-			cartItem.add(item);
+		OrderLine.forEach((item) => {
+			const id = item?.id;
+			if (!id) {
+				return;
+			}
+			cartItem.add({ ...item, id });
 		});
 		cartOrder.add({ ...restOrder });
 	};
@@ -50,11 +50,15 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
 	let zero = dinero({ amount: 0, currency: $selectedCurrency.dineroObj });
 
-	const handleCalculations = async (lineArray) => {
+	const handleCalculations = async (lineArray: (SaveOrdersLine & { quantity: number })[]) => {
 		try {
 			if (!mainOrder.pricelistsID) {
 				return;
 			}
+			if (!Array.isArray(lineArray)) {
+				return;
+			}
+
 			return await trpc().cart.calculateCart.mutate({
 				pricelistsID: mainOrder.pricelistsID,
 				OrderLine: lineArray
@@ -65,7 +69,7 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 		}
 	};
 
-	const handleCurrency = async (lineArray: OrderLine[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: SaveOrdersLine[], selectedCurrency: CurrencyOption) => {
 		zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 		/**
 		 * Calculate using the cart default usd currency
@@ -94,7 +98,7 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 		getCountAndSubTotal(mainOrder.OrderLine);
 	};
 
-	let mainOrder: Partial<SaveOrder> = data.order;
+	let mainOrder = data.order;
 	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
 
 	$: idValue = generateSONumber(mainOrder.id);
@@ -103,7 +107,13 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	let customers = data.customers;
 	let pricelists = data.pricelists;
 
-	let customerQueryParams = {
+	type CustomerQueryTypes = {
+		limit: number;
+		page: number;
+		name?: string;
+	};
+
+	let customerQueryParams: CustomerQueryTypes = {
 		limit: 7,
 		page: 1
 	};
@@ -142,17 +152,24 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 
 	$: handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 
-	const removeItem = (item: unknown) => {
-		cartItem.remove(item);
+	const removeItem = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		cartItem.remove(id);
 	};
-	const onDecrease = (item) => {
+	const onDecrease = (item: OrderLineType) => {
+		if (!item.quantity) {
+			return;
+		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
-	const onIncrease = (item) => {
+	const onIncrease = (item: OrderLineType) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
-	const handleEmbroideryType = (item: { embroideryTypes: string }) => {
+	const handleEmbroideryType = (item: OrderLineType) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 		handleCurrency(Array.from($cartItem.values()), $selectedCurrency);
 	};
@@ -163,14 +180,18 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 		mainOrder.customersID = customerSearch.id;
 	}
 
-	const handleComboInput = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleComboInput = async (event: { target: { value: any } }) => {
+		const name = event?.target?.value;
+
 		customerQueryParams = {
 			...customerQueryParams,
-			name: (event.target as HTMLInputElement).value
+			name
 		};
-		customers = await getCustomers(customerQueryParams);
+		const customersReturn = await getCustomers(customerQueryParams);
+		if (!customersReturn) {
+			return;
+		}
+		customers = customersReturn;
 	};
 </script>
 
@@ -205,14 +226,13 @@ import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 				</span>
 			</div>
 			<div class="scrollHeight overflow-y-auto">
-				{#each mainOrder?.OrderLine as item (item.name)}
+				{#each mainOrder.OrderLine as item (item.name)}
 					{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 					<div class="flex items-center px-6 py-5 hover:bg-pickled-bluewood-200">
 						<div class="flex w-2/6">
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
 								<div>
 									<h3 class="mb-1 text-sm font-bold">{item.name}</h3>
-									<!-- <h3 class="text-sm mb-1.5">{item.brand}</h3> -->
 								</div>
 								<button
 									on:click={() => removeItem(item)}

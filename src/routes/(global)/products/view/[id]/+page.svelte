@@ -45,7 +45,6 @@
 		return calcPrice;
 	};
 
-	
 	$: updatePrices();
 	const tableHeadings = ['Order #', 'Date', 'Customer', 'Due Date', 'State', 'View'];
 

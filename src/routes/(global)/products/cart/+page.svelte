@@ -18,42 +18,32 @@
 	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveOrdersSchema, type SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type {
-		Address,
-		Contacts,
-		Email,
-		Options,
-		OrderLine,
-		Phone,
-		Pricelists,
-		Products
-	} from '@prisma/client';
+	import type { Contacts, Options, Pricelists } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { dinero, multiply } from 'dinero.js';
 	import type { Snapshot } from './$types';
 	import isBetween from 'dayjs/plugin/isBetween';
 	import weekday from 'dayjs/plugin/weekday';
+	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
+	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
+	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
 	let errorMessages = new Map();
 
-	type NewOrderLine = OrderLine & Products;
-
-	type customersType = (Contacts & {
-		email: Email[];
-		phone: Phone[];
-		address: Address[];
-	})[];
-
-	export let data: {
-		customers: { results: customersType };
-		embroideryTypes: Options[];
-		embroideryPositions: Options[];
-		pricelists: Pricelists[];
+	type OrderLineType = SaveOrder['OrderLine'][0];
+	type DataType = {
+		customers: GetContactsReturn;
+		embroideryTypes: GetOptionsReturn;
+		embroideryPositions: GetOptionsReturn;
+		pricelists: GetPricelistsReturn;
 		defaultPricelist: Pricelists;
 		currency: Options[];
+		order: SaveOrder;
 	};
+
+	export let data: DataType;
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
 
@@ -101,43 +91,47 @@
 
 	$: mainOrderInit.OrderLine = Array.from($cartItem.values());
 
-	const removeItem = (item: any) => {
-		cartItem.remove(item);
+	const removeItem = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		cartItem.remove(id);
 	};
 
-	const onDecrease = (item: NewOrderLine) => {
+	const onDecrease = (item: OrderLineType) => {
 		if (!item.quantity) {
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
 	};
 
-	const onIncrease = (item: NewOrderLine) => {
+	const onIncrease = (item: OrderLineType) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
-	const handleEmbroideryType = (item: NewOrderLine) => {
+	const handleEmbroideryType = (item: OrderLineType) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
 	};
 
-	let customerSearch: Partial<Contacts> = { name: undefined };
+	let customerSearch: Partial<Omit<Contacts, 'name'>> & { name: string } = { name: '' };
 
 	$: if (customerSearch.name) {
 		mainOrder.customersID = customerSearch.id;
 	}
 
-	const handleComboInput = async (
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) => {
+	const handleComboInput = async (event: { target: { value: any } }) => {
+		const name = event?.target?.value;
+
 		customerQueryParams = {
 			...customerQueryParams,
-			name: (event.target as HTMLInputElement).value
+			name
 		};
-		const resCustomers = await getCustomers(customerQueryParams);
-		if (!resCustomers) {
+		const customersReturn = await getCustomers(customerQueryParams);
+		if (!customersReturn) {
 			return;
 		}
-		customers = { results: resCustomers.results } as { results: customersType };
+		customers = customersReturn;
 	};
 
 	const handleSubmit = async (status: string) => {
@@ -190,7 +184,7 @@
 			handleErrors(err);
 		} finally {
 			mainOrder = { ...mainOrderInit, OrderLine: [] };
-			customerSearch = { name: undefined };
+			customerSearch = { name: '' };
 			cartItem.reset();
 			toasts.add({ message: `The order was created`, type: 'success' });
 		}

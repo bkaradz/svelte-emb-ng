@@ -23,9 +23,10 @@
 		svgShoppingBag,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import type { Products } from '@prisma/client';
+	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import { dinero } from 'dinero.js';
-	import { number } from 'zod';
+
+	type OrderLineType = SaveOrder['OrderLine'][0];
 
 	export let data: { products: GetProductsReturn; pricelist: GetDefaultPricelistReturn };
 
@@ -85,32 +86,44 @@
 		}
 	};
 
-	const addToCart = (item: Products) => {
-		cartItem.add(item);
+	const addToCart = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		cartItem.add({ ...item, id });
 	};
 
-	const onDecrease = (item: Products) => {
-		if (!$cartItem.has(item.id)) {
+	const onDecrease = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		if (!$cartItem.has(id)) {
 			return;
 		} else {
-			const product = $cartItem.get(item.id);
+			const product = $cartItem.get(id);
 			if (!product) {
 				return;
 			}
 			if (product?.quantity === 1) {
-				cartItem.remove(item);
+				cartItem.remove(id);
 			} else {
 				cartItem.update(product, { quantity: product?.quantity - 1 });
 			}
 		}
 	};
 
-	const onIncrease = (item) => {
-		if (!$cartItem.has(item.id)) {
-			cartItem.add(item);
+	const onIncrease = (item: OrderLineType) => {
+		const id = item.id;
+		if (!id) {
+			return;
+		}
+		if (!$cartItem.has(id)) {
+			cartItem.add({ ...item, id });
 		} else {
-			const product = $cartItem.get(item.id);
-			cartItem.update(product, { quantity: product?.quantity + 1 });
+			// const product = $cartItem.get(id);
+			cartItem.update(item, { quantity: item?.quantity + 1 });
 		}
 	};
 

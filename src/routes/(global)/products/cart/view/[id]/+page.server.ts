@@ -5,11 +5,14 @@ import type { PageServerLoad } from './$types';
 export const load = (async (event) => {
 	const embroideryTypes = async () => {
 		return await router
-			.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryTypes' });
+			.createCaller(await createContext(event))
+			.options.getOptions({ group: 'embroideryTypes' });
 	};
 
 	const embroideryPositions = async () => {
-		return await router.createCaller(await createContext(event)).options.getOptions({ group: 'embroideryPositions' });
+		return await router
+			.createCaller(await createContext(event))
+			.options.getOptions({ group: 'embroideryPositions' });
 	};
 
 	const queryParams = {
@@ -26,7 +29,9 @@ export const load = (async (event) => {
 	};
 
 	const order = async () => {
-		return await router.createCaller(await createContext(event)).orders.getById(parseInt(event.params.id));
+		return await router
+			.createCaller(await createContext(event))
+			.orders.getById(parseInt(event.params.id));
 	};
 
 	return {

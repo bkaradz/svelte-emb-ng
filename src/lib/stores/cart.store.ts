@@ -1,48 +1,54 @@
 import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
-import type { saveProduct } from '$lib/validation/saveProduct.validate';
-import type { Products } from '@prisma/client';
 import { writable } from 'svelte/store';
 
 function addCartItems() {
-	const { subscribe, set, update } = writable<Map<number, Partial<SaveOrdersLine>>>(
-		new Map<number, Partial<SaveOrdersLine>>()
+	const { subscribe, set, update } = writable<Map<number, SaveOrdersLine>>(
+		new Map<number, SaveOrdersLine>()
 	);
 
 	return {
 		subscribe,
-		add: (product: Products) =>
-			update((products) =>
-				products.set(product.id!, {
-					...product,
+		add: (
+			payload: Omit<SaveOrdersLine, 'embroideryTypes' | 'id'> & {
+				embroideryTypes?: string | undefined | null;
+				id: number;
+			}
+		) =>
+			update((cart) =>
+				cart.set(payload.id, {
+					...payload,
 					quantity: 1,
 					embroideryPositions: 'frontLeft',
 					embroideryTypes: 'flat',
-					productsID: product.id
+					productsID: payload.id
 				})
 			),
-		update: (product: Products, payload: Partial<SaveOrdersLine>) =>
-			update((products) => products.set(product.id!, { ...product, ...payload })),
-		remove: (product: Products) =>
-			update((products) => {
-				products.delete(product.id!);
-				return products;
+		update: (orderLine: SaveOrdersLine, payload: Partial<SaveOrdersLine>) =>
+			update((cart) => cart.set(orderLine.id!, { ...orderLine, ...payload })),
+		remove: (id: number) =>
+			update((cart) => {
+				cart.delete(id);
+				return cart;
 			}),
-		reset: () => set(new Map<number, Partial<SaveOrdersLine>>())
+		reset: () => set(new Map<number, SaveOrdersLine>())
 	};
 }
 
 export const cartItem = addCartItems();
 
 function addCartOrders() {
-	const order: Partial<SaveOrder> = {};
+	const order: Partial<Omit<SaveOrder, 'OrderLine'>> = {};
 
 	const { subscribe, set, update } = writable(order);
 
 	return {
 		subscribe,
-		add: (order: SaveOrder) => set(order),
-		update: (product: saveProduct, payload: Partial<saveProduct>) => {
-			set({ ...product, ...payload });
+		add: (order: Omit<SaveOrder, 'OrderLine'>) => set(order),
+		update: (
+			order: Omit<SaveOrder, 'OrderLine'>,
+			payload: Partial<Omit<SaveOrder, 'OrderLine'>>
+		) => {
+			set({ ...order, ...payload });
 		},
 		reset: () => set(order)
 	};
