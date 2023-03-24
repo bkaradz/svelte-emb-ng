@@ -42,7 +42,7 @@ const getUSDRates = (newCurrency: Currency<number>): Rates<number> | undefined =
 	if (!amount) {
 		return;
 	}
-	const rates = { USD: { amount: parseInt(Math.ceil(100 * 100 * 1000) / amount), scale: 5 } };
+	const rates = { USD: { amount: (Math.ceil(100 * 100 * 1000) /amount), scale: 5 } };
 
 	if (!rates) {
 		return;
@@ -129,10 +129,10 @@ if (browser) {
 			if (rates.length === 1) {
 				const ratesMap = new Map<string, number>();
 				rates[0]?.ExchangeRateDetails.map((rate) => {
-					if (!(typeof parseInt(rate.rate) === 'number')) {
+					if (!(typeof parseInt(rate.rate as string) === 'number')) {
 						return;
 					}
-					ratesMap.set(rate.currency, parseInt(Math.ceil(parseFloat(rate.rate) * 100)));
+					ratesMap.set(rate.currency, (Math.ceil(parseFloat(rate.rate as string) * 100)));
 				});
 				if (ratesMap.size === 0) {
 					throw new Error('Exchange Rates not found');

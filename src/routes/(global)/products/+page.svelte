@@ -120,8 +120,8 @@
 		if (!$cartItem.has(id)) {
 			cartItem.add({ ...item, id });
 		} else {
-			// const product = $cartItem.get(id);
-			cartItem.update(item, { quantity: item?.quantity + 1 });
+			const product = $cartItem.get(id);
+			cartItem.update(product, { quantity: product?.quantity + 1 });
 		}
 	};
 
