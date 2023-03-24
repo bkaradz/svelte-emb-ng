@@ -22,10 +22,9 @@
 		svgShoppingBag,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+	import type { Products } from '@prisma/client';
 	import { dinero } from 'dinero.js';
 
-	type OrderLineType = SaveOrder['OrderLine'][0];
 
 	export let data: { products: GetProductsReturn; pricelist: GetDefaultPricelistReturn };
 
@@ -85,7 +84,7 @@
 		}
 	};
 
-	const addToCart = (item: OrderLineType) => {
+	const addToCart = (item: Products) => {
 		const id = item.id;
 		if (!id) {
 			return;
@@ -93,7 +92,7 @@
 		cartItem.add({ ...item, id });
 	};
 
-	const onDecrease = (item: OrderLineType) => {
+	const onDecrease = (item: Products) => {
 		const id = item.id;
 		if (!id) {
 			return;
@@ -113,7 +112,7 @@
 		}
 	};
 
-	const onIncrease = (item: OrderLineType) => {
+	const onIncrease = (item: Products) => {
 		const id = item.id;
 		if (!id) {
 			return;

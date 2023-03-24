@@ -9,7 +9,7 @@ import type { Context } from '../context';
 import { calculateOrder } from '$lib/services/orders';
 import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.store';
-import { dinero, toSnapshot } from 'dinero.js';
+import { dinero } from 'dinero.js';
 
 export const getOrdersPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -332,7 +332,13 @@ export const getQuotationOrderPrisma = async (input: {id: number, currency:  Cur
 			id: input.id
 		},
 		include: {
-			customerContact: true,
+			customerContact: {
+				include: {
+					email: true,
+					address: true,
+					phone: true
+				}
+			},
 			Pricelists: true,
 			OrderLine: {
 				include: {

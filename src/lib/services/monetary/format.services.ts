@@ -1,7 +1,6 @@
 import { BWP, type Currency } from '@dinero.js/currencies';
 import { dinero, haveSameCurrency, toFormat, toSnapshot, type Dinero } from 'dinero.js';
-import { object } from 'zod';
-import { toDineroObject, ZWB, ZWR } from './convert.services';
+import { ZWB, ZWR } from './convert.services';
 
 function intlFormat(locale: string, options = {}) {
 	return function formatter(dineroObject: Dinero<number>) {

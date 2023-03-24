@@ -1,10 +1,13 @@
 <script lang="ts">
 	import small_logo from '$lib/assets/small_logo.png';
 	import { format } from '$lib/services/monetary';
-	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+	import type { GetQuotationOrderPrismaReturn } from '$lib/trpc/routes/orders.prisma';
 	import { dinero, multiply, type Dinero } from 'dinero.js';
 
-	export let order: SaveOrder;
+	type OrderType = GetQuotationOrderPrismaReturn['order']
+	type PageType = OrderType & {showTotals: boolean, page: string}
+
+	export let order: PageType;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;

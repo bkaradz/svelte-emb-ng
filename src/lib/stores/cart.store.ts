@@ -39,7 +39,7 @@ export const cartItem = addCartItems();
 function addCartOrders() {
 	const order: Partial<Omit<SaveOrder, 'OrderLine'>> = {};
 
-	const { subscribe, set, update } = writable(order);
+	const { subscribe, set } = writable(order);
 
 	return {
 		subscribe,

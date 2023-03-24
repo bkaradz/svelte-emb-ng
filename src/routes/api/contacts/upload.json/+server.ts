@@ -43,8 +43,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		contactsArray.forEach(async (element) => {
 			try {
-				const contact = querySelection(element, createdBy);
-				const contactsQuery = await prisma.contacts.create({ data: contact });
+				const contact = querySelection(element);
+				const contactsQuery = await prisma.contacts.create({ data: {...contact, createdBy} });
 				allDocsPromises.push(contactsQuery);
 			} catch (err: unknown) {
 				logger.error(`Error: ${err}`);
@@ -71,9 +71,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 };
 
-const querySelection = (reqContact: any, createdBy: number) => {
-	// eslint-disable-next-line prefer-const
-	let { name, email, phone, address, ...restContact } = reqContact;
+const querySelection = (reqContact: any) => {
+	let { name, email, phone, address } = reqContact;
 
 	name = name.trim();
 	if (email) {
@@ -93,7 +92,6 @@ const querySelection = (reqContact: any, createdBy: number) => {
 	let contact: Prisma.ContactsCreateInput;
 
 	contact = {
-		// ...restContact,
 		name,
 		isActive: true,
 		isUser: false

@@ -12,7 +12,7 @@
 <select
 	class="input"
 	bind:value={selected}
-	on:change|preventDefault={(e) => selectChange}
+	on:change|preventDefault={() => selectChange}
 	{...$$restProps}
 >
 	{#each list as item}

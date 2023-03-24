@@ -1,7 +1,11 @@
+import type { PricelistDetails } from '@prisma/client';
 import { expect, it } from 'vitest';
 import { savePricelistSchema, type SavePricelists } from './savePricelists.validate';
 
-export const validateFormInput = (values: Partial<SavePricelists>) => {
+
+type PricelistDetailsType = {pricelistDetails: (Partial<PricelistDetails>)[]}
+
+export const validateFormInput = (values: Partial<(Omit<SavePricelists, 'pricelistDetails'>  &  PricelistDetailsType )>) => {
 	const parsedData = savePricelistSchema.parse(values);
 
 	return parsedData;

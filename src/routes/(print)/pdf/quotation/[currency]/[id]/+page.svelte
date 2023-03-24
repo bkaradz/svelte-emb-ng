@@ -10,10 +10,14 @@
 	import logger from '$lib/utility/logger';
 	import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import { USD } from '@dinero.js/currencies';
-	import { add, dinero, multiply, toSnapshot, type Dinero, type DineroOptions } from 'dinero.js';
+	import { add, dinero, multiply, toSnapshot, type DineroOptions } from 'dinero.js';
 	import chunk from 'lodash-es/chunk';
 	import { onMount } from 'svelte';
 
+	type ResultsType = (OrderLineType)[]
+	type OrderLineType = GetQuotationOrderPrismaReturn['order']['OrderLine']
+	type OrderType = GetQuotationOrderPrismaReturn['order']
+	type PageType = OrderType & {showTotals: boolean, page: string}
 
 	export let data: GetQuotationOrderPrismaReturn;
 
@@ -29,7 +33,7 @@
 		zero = dinero({ amount: 0, currency: data.selectedCurrency.dineroObj });
 
 		await handleCurrency(data.order.OrderLine, data.selectedCurrency);
-		getCountAndSubTotal(data.order.OrderLine);
+		getCountAndSubTotal(data.order.OrderLine as SaveOrdersLine[]);
 		const splitLine = splitOrderLine({ ...data.order });
 		const pages = createPage(splitLine);
 		pagesCreated = Array.from(pages.values());
@@ -44,14 +48,14 @@
 		}
 	});
 
-	const handleCurrency = async (lineArray: (GetQuotationOrderPrismaReturn['order']['OrderLine']), selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: OrderLineType, selectedCurrency: CurrencyOption) => {
 		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency
 		 */
 		let newArray;
 		if (browser) {
-			newArray = await handleCalculations(lineArray);
+			newArray = await handleCalculations(lineArray as SaveOrdersLine[]);
 		}
 		if (!Array.isArray(newArray)) {
 			return;
@@ -72,7 +76,7 @@
 			})
 		];
 
-		getCountAndSubTotal(order.OrderLine);
+		getCountAndSubTotal(order.OrderLine as SaveOrder['OrderLine']);
 	};
 
 	const handleCalculations = async (lineArray: SaveOrdersLine[] = []) => {
@@ -96,10 +100,11 @@
 
 	$: calculatedTotal = add(calculatedVat, subTotal);
 
-	let order: SaveOrder;
+	let order: OrderType;
 
-	const partitionTwo = (array: any[], size: number) => {
-		const results: any[] = [[], []];
+	const partitionTwo = (array: OrderLineType, size: number) => {
+		
+		const results: ResultsType = [[], []];
 		array.map((value, index) => {
 			if (index <= size - 1) {
 				results[0].push(value);
@@ -110,9 +115,10 @@
 		return results;
 	};
 
-	const createPage = (splitLine: any[]) => {
+	const createPage = (splitLine: ResultsType) => {
 		let endPage = splitLine.length;
-		let splitOrder = new Map();
+		
+		let splitOrder = new Map<number, PageType>();
 		splitLine.map((value, index) => {
 			if (index === endPage - 1) {
 				splitOrder.set(index + 1, {
@@ -133,7 +139,7 @@
 		return splitOrder;
 	};
 
-	const splitOrderLine = (order: any = []) => {
+	const splitOrderLine = (order: (GetQuotationOrderPrismaReturn['order'])) => {
 		/**
 		 * first page max with totals = 13
 		 * first page max without totals = 16
@@ -144,6 +150,10 @@
 		const OTHER_PAGES_WITHOUT_TOTALS = 22;
 		const FIRST_PAGE_WITH_TOTALS = FIRST_PAGE_WITHOUT_TOTALS - 3;
 		const OTHER_PAGES_WITH_TOTALS = OTHER_PAGES_WITHOUT_TOTALS - 3;
+
+		if (!Array.isArray(order.OrderLine)) {
+			throw new Error("Order Line not found");
+		}
 
 		const lineLength = order.OrderLine.length;
 
@@ -158,7 +168,7 @@
 			return firstPage;
 		}
 
-		const otherPages: any[] = chunk(firstPage.pop(), OTHER_PAGES_WITHOUT_TOTALS);
+		const otherPages = chunk(firstPage.pop(), OTHER_PAGES_WITHOUT_TOTALS);
 
 		if (otherPages[otherPages.length - 1].length <= OTHER_PAGES_WITH_TOTALS) {
 			return [...firstPage, ...otherPages];
@@ -167,7 +177,7 @@
 		return [...firstPage, ...otherPages, []];
 	};
 
-	let pagesCreated: any;
+	let pagesCreated: PageType[]
 
 	let zero = dinero({ amount: 0, currency: USD });
 

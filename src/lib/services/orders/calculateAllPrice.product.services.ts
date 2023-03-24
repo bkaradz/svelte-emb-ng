@@ -1,7 +1,7 @@
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import logger from '$lib/utility/logger';
 import type { PricelistDetails, Pricelists, Products } from '@prisma/client';
-import { dinero, greaterThanOrEqual, multiply, type DineroSnapshot } from 'dinero.js';
+import { dinero, greaterThanOrEqual, multiply } from 'dinero.js';
 import { format } from '../monetary';
 
 type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };

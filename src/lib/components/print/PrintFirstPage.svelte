@@ -1,11 +1,14 @@
 <script lang="ts">
+	import type { GetQuotationOrderPrismaReturn } from '$lib/trpc/routes/orders.prisma';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
-	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 	import dayjs from 'dayjs';
 	import type { Dinero } from 'dinero.js';
 	import PartialPage from './PartialPage.svelte';
 
-	export let order: SaveOrder;
+	type OrderType = GetQuotationOrderPrismaReturn['order']
+	type PageType = OrderType & {showTotals: boolean, page: string}
+
+	export let order: PageType;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;
