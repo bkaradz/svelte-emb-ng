@@ -40,10 +40,7 @@
 
 	let formData = structuredClone(initFromData);
 
-	$: disabled = false;
-
 	const handleSubmit = async () => {
-		disabled = true;
 
 		const parsedProducts = saveProductsSchema.safeParse(formData);
 
@@ -53,7 +50,6 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
-			disabled = false;
 			return;
 		}
 		try {

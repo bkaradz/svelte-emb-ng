@@ -8,7 +8,6 @@
 	import type { GetDefaultPricelistReturn } from '$lib/trpc/routes/pricelists.prisma';
 	import type { GetProductsReturn } from '$lib/trpc/routes/products.prisma';
 	import logger from '$lib/utility/logger';
-	import type { Pagination } from '$lib/utility/pagination.util';
 	import {
 		svgCart,
 		svgCartBig,

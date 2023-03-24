@@ -2,8 +2,8 @@
 	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetOrdersReturn } from '$lib/trpc/routes/orders.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import type { Pagination } from '$lib/utility/pagination.util';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgChevronLeft,
@@ -13,8 +13,6 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import type { SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type { Orders } from '@prisma/client';
 	import { onMount } from 'svelte';
 
 	const tableHeadings = [
@@ -24,11 +22,7 @@
 		{ id: 9, name: 'View', dbName: null }
 	];
 
-	type newOrder = SaveOrder & { selected: boolean };
-
-	type OrdersNew = Pagination & { results: newOrder[] };
-
-	let orders: OrdersNew;
+	let orders: GetOrdersReturn;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
@@ -47,7 +41,7 @@
 		getOrders(currentGlobalParams);
 	});
 
-	const viewPayment = async (order: newOrder) => {
+	const viewPayment = async (order: GetOrdersReturn['results'][0]) => {
 		goto(`payments/order/${order.id}`);
 	};
 
@@ -79,8 +73,7 @@
 	const getOrders = async (paramsObj: any) => {
 		try {
 			const resOrders = await trpc().orders.getOrders.query(paramsObj);
-			resOrders.results = resOrders.results.map((item: newOrder) => {
-				item.selected = false;
+			resOrders.results = resOrders.results.map((item: GetOrdersReturn['results'][0]) => {
 				return item;
 			});
 			orders = resOrders;
@@ -89,48 +82,6 @@
 		}
 	};
 
-	// let selectedOrderId: number | null = null;
-	// let selectedOrder: newOrder | null = null;
-
-	// const handleSelected = (item: Orders & { selected: boolean }) => {
-	// 	getIdexOfAccounts(item);
-	// 	if (item.selected && selectedOrderId) {
-	// 		// unSelect the selected order
-	// 		orders.results = orders.results.map((list) => {
-	// 			if (list.id === selectedOrderId) {
-	// 				list.selected = false;
-	// 			}
-	// 			return list;
-	// 		});
-	// 		selectedOrderId = item.id;
-	// 		selectedOrder = item;
-	// 		return;
-	// 	}
-	// 	if (item.selected && !selectedOrderId) {
-	// 		selectedOrderId = item.id;
-	// 		selectedOrder = item;
-	// 		return;
-	// 	}
-	// 	selectedOrderId = null;
-	// 	selectedOrder = null;
-	// };
-
-	// let currentSelection = 1;
-
-	// const list = new Map([
-	// 	[0, 'Quotation'],
-	// 	[1, 'Sales Order'],
-	// 	[2, 'Invoice'],
-	// 	[3, 'Receipt']
-	// ]);
-
-	// const getIdexOfAccounts = (order: newOrder) => {
-	// 	list.forEach((value, key) => {
-	// 		if (value === order.accountsStatus) {
-	// 			currentSelection = key;
-	// 		}
-	// 	});
-	// };
 </script>
 
 <svelte:head>

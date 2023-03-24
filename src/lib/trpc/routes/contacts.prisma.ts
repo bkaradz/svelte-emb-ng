@@ -1,7 +1,7 @@
 import prisma from '$lib/prisma/client';
 import { getPagination } from '$lib/utility/pagination.util';
 import { getBoolean } from '$lib/utility/toBoolean';
-import type { SaveContact } from '$lib/validation/saveContact.validate';
+import type { SaveContact, SaveContactKeys } from '$lib/validation/saveContact.validate';
 import type { SearchParams } from '$lib/validation/searchParams.validate';
 import type { Prisma } from '@prisma/client';
 import omit from 'lodash-es/omit';
@@ -12,13 +12,13 @@ export const getContactsPrisma = async (input: SearchParams) => {
 
 	const finalQuery = omit(input, ['page', 'limit', 'sort']);
 
-	const objectKeys = Object.keys(finalQuery)[0];
+	const objectKeys = Object.keys(finalQuery)[0] as SaveContactKeys;
 
 	let whereQuery;
 
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
 		whereQuery = {
-			equals: getBoolean(finalQuery[objectKeys])
+			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
 	} else {
 		whereQuery = {
@@ -26,6 +26,7 @@ export const getContactsPrisma = async (input: SearchParams) => {
 			mode: 'insensitive'
 		};
 	}
+
 
 	let query;
 	let queryTotal;
@@ -99,13 +100,13 @@ export const getCorporatePrisma = async (input: SearchParams) => {
 
 	const finalQuery = omit(input, ['page', 'limit', 'sort']);
 
-	const objectKeys = Object.keys(finalQuery)[0];
+	const objectKeys = Object.keys(finalQuery)[0] as SaveContactKeys;
 
 	let whereQuery;
 
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
 		whereQuery = {
-			equals: getBoolean(finalQuery[objectKeys])
+			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
 	} else {
 		whereQuery = {
@@ -182,7 +183,7 @@ export type GetCorporate = typeof getCorporatePrisma;
 export type GetCorporateReturn = Prisma.PromiseReturnType<typeof getCorporatePrisma>;
 
 export const getByIdPrisma = async (input: number) => {
-	const product = await prisma.contacts.findUnique({
+	const contacts = await prisma.contacts.findUnique({
 		where: {
 			id: input
 		},
@@ -193,7 +194,11 @@ export const getByIdPrisma = async (input: number) => {
 		}
 	});
 
-	return product;
+	if (!contacts) {
+		throw new Error("Contact not found");
+	}
+
+	return contacts;
 };
 
 export type GetById = typeof getByIdPrisma;

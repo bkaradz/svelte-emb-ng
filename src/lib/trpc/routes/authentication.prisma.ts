@@ -27,7 +27,7 @@ export const getUsersPrisma = async (input: SearchParams) => {
 
 	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
 		whereQuery = {
-			equals: getBoolean(finalQuery[objectKeys])
+			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
 	} else {
 		whereQuery = {

@@ -8,6 +8,8 @@ import pick from 'lodash-es/pick';
 import type { Context } from '../context';
 import { calculateOrder } from '$lib/services/orders';
 import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.store';
+import { dinero, toSnapshot } from 'dinero.js';
 
 export const getOrdersPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -324,6 +326,46 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 export type SaveOrderOrUpdate = typeof saveOrderOrUpdatePrisma;
 export type SaveOrderOrUpdateReturn = Prisma.PromiseReturnType<typeof saveOrderOrUpdatePrisma>;
 
+export const getQuotationOrderPrisma = async (input: {id: number, currency:  CurrencyType}) => {
+	const order = await prisma.orders.findUnique({
+		where: {
+			id: input.id
+		},
+		include: {
+			customerContact: true,
+			Pricelists: true,
+			OrderLine: {
+				include: {
+					Products: true
+				}
+			}
+		}
+	});
+
+	if (!order) {
+		throw new Error("Order not found");
+	}
+
+	const currencyType = input.currency.toUpperCase() as CurrencyType;
+
+	const selectedCurrency = currencyOptions.get(currencyType);
+
+	if (!selectedCurrency) {
+		throw new Error("Currency not found");;
+	}
+
+	const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
+
+	return {
+		order,
+		zero,
+		selectedCurrency
+	};
+};
+
+export type GetQuotationOrder = typeof getQuotationOrderPrisma;
+export type GetQuotationOrderPrismaReturn = Prisma.PromiseReturnType<typeof getQuotationOrderPrisma>;
+
 const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 	if (
 		objectKeys === 'isCorporate' ||
@@ -332,7 +374,7 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 		objectKeys === 'isInvoiced'
 	) {
 		return {
-			equals: getBoolean(finalQuery[objectKeys])
+			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
 	}
 
@@ -356,3 +398,5 @@ const getOrderLineQueryOptions = (objectKeys: string, finalQuery: any) => {
 		mode: 'insensitive'
 	};
 };
+
+

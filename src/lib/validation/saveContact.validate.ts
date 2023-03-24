@@ -44,6 +44,8 @@ export const saveContactsSchema = z
 				.passthrough()
 		),
 		isCorporate: z.boolean({ required_error: 'Corporate or Individual is required' }),
+		isActive: z.boolean().default(true),
+		isUser: z.boolean().optional(),
 		organisationID: z.number().optional(),
 		vatOrBpNo: z.string().optional()
 	})

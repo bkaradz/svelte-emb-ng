@@ -6,6 +6,7 @@
 	import { currenciesOptions, type CurrencyOption } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetQuotationOrderPrismaReturn } from '$lib/trpc/routes/orders.prisma';
 	import logger from '$lib/utility/logger';
 	import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import { USD } from '@dinero.js/currencies';
@@ -13,15 +14,10 @@
 	import chunk from 'lodash-es/chunk';
 	import { onMount } from 'svelte';
 
-	type DataInterface = {
-		order: SaveOrder;
-		zero: Dinero<number>;
-		selectedCurrency: CurrencyOption;
-	};
 
-	export let data: DataInterface;
+	export let data: GetQuotationOrderPrismaReturn;
 
-	const updatePrint = async (data: DataInterface) => {
+	const updatePrint = async (data: GetQuotationOrderPrismaReturn) => {
 		if (!data?.order) {
 			return;
 		}
@@ -48,7 +44,7 @@
 		}
 	});
 
-	const handleCurrency = async (lineArray: SaveOrdersLine[], selectedCurrency: CurrencyOption) => {
+	const handleCurrency = async (lineArray: (GetQuotationOrderPrismaReturn['order']['OrderLine']), selectedCurrency: CurrencyOption) => {
 		zero = dinero(data.zero as unknown as DineroOptions<number>);
 		/**
 		 * Calculate using the cart default usd currency

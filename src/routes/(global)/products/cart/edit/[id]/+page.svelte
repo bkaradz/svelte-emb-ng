@@ -22,9 +22,8 @@
 	} from '$lib/validation/saveOrder.validate';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 
-	let errorMessages = new Map();
 
-	$: disabled = false;
+	let errorMessages = new Map();
 
 	type OrderLineType = SaveOrder['OrderLine'][0];
 	type DataType = {
@@ -224,7 +223,7 @@
 			mainOrder.orderDate = new Date(mainOrder.orderDate).toJSON();
 		}
 
-		disabled = true;
+		
 
 		const parsedOrder = saveOrdersSchema.safeParse(mainOrder);
 
@@ -234,7 +233,7 @@
 			if (errorMap) {
 				errorMessages = errorMap;
 			}
-			disabled = false;
+			
 			return;
 		}
 

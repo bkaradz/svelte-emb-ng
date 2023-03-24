@@ -7,7 +7,6 @@
 	import type { GetByIdReturn } from '$lib/trpc/routes/contacts.prisma';
 	import type { GetOrdersReturn } from '$lib/trpc/routes/orders.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import type { Pagination } from '$lib/utility/pagination.util';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgArrow,
@@ -17,29 +16,15 @@
 		svgView
 	} from '$lib/utility/svgLogos';
 	import { USD } from '@dinero.js/currencies';
-	import type {
-		Address,
-		Contacts,
-		Email,
-		OrderLine,
-		Orders,
-		Phone,
-		Pricelists,
-		Products
-	} from '@prisma/client';
+	import type { Contacts } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { add, dinero, multiply } from 'dinero.js';
 
-	type OrdersResultsType = (Orders & {
-		Pricelists: Pricelists;
-		OrderLine: (OrderLine & { Products: Products })[];
-	})[];
+	type ContactType = Omit<Contacts, 'organisationID'> & { organisationID: { name: string } };
 
-	type ContactsTypes = Contacts & Email & Phone & Address;
+	type CustomerType = Omit<GetByIdReturn, 'Contacts'> & ContactType;
 
-	type OrdersType = Pagination & { results: Orders[] };
-
-	export let data: { customer: GetByIdReturn; orders: GetOrdersReturn };
+	export let data: { customer: CustomerType; contacts: Contacts; orders: GetOrdersReturn };
 
 	const tableHeading = ['Order #', 'Date', 'Date Due', 'Total', 'Status', 'View'];
 
@@ -75,31 +60,6 @@
 		}
 	};
 
-	// let searchInputValue = '';
-	// let searchOption = 'id';
-
-	// const searchNamesOptions = {
-	// 	id: 'Order Number',
-	// 	organisation: 'Organisation',
-	// 	phone: 'Phone',
-	// 	email: 'Email',
-	// 	vatNo: 'Vat Number',
-	// 	balanceDue: 'Balance Due',
-	// 	state: 'State'
-	// };
-
-	// const handleSearchSelection = (event: MouseEvent) => {
-	// 	searchOption = (event.target as HTMLInputElement).name;
-	// 	searchInputValue = '';
-	// };
-
-	// const handleSearch = async (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
-	// 	currentGlobalParams.page = 1;
-	// 	let searchWord = (event.target as HTMLInputElement).value;
-	// 	currentGlobalParams = { ...currentGlobalParams, [searchOption]: searchWord };
-	// 	getOrders(currentGlobalParams);
-	// };
-
 	const getOrders = async (paramsObj: any) => {
 		try {
 			orders = await trpc().orders.getOrders.query(paramsObj);
@@ -108,16 +68,10 @@
 		}
 	};
 
-	// onMount(() => {
-	// 	getOrders(currentGlobalParams);
-	// });
-
 	const gotoContacts = async () => {
 		await goto(`/contacts`);
 	};
-	// const handleEdit = async (id: string) => {
-	// 	await goto(`/contacts/edit/${parseInt(id)}`);
-	// };
+
 	const viewOrder = async (id: number) => {
 		await goto(`/products/cart/view/${id}`);
 	};

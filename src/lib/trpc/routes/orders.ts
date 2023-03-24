@@ -8,9 +8,11 @@ import {
 	getByIdPrisma,
 	getOrderLinePrisma,
 	getOrdersPrisma,
+	getQuotationOrderPrisma,
 	saveOrderOrUpdatePrisma,
 	updateStatusPrisma
 } from './orders.prisma';
+
 
 export const orders = router({
 	getOrders: protectedProcedure.input(searchParamsSchema.passthrough()).query(async ({ input }) => {
@@ -36,5 +38,8 @@ export const orders = router({
 		}),
 	saveOrderOrUpdate: protectedProcedure.input(saveOrdersSchema).mutation(async ({ input, ctx }) => {
 		return await saveOrderOrUpdatePrisma(input, ctx);
-	})
+	}),
+	getQuotationOrder: protectedProcedure.input(z.object({id: z.number(), currency: z.string()})).query(async ({ input }) => {
+		return await getQuotationOrderPrisma(input);
+	}),
 });
