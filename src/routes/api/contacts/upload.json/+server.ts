@@ -16,8 +16,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		}
 
-		const createdBy = locals.user.id;
-
 		const data = await request.formData();
 
 		const file = data.get('contacts');
@@ -41,10 +39,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const allDocsPromises: pContact[] = [];
 
+		
+
 		contactsArray.forEach(async (element) => {
 			try {
 				const contact = querySelection(element);
-				const contactsQuery = await prisma.contacts.create({ data: {...contact, createdBy} });
+				const contactsQuery = await prisma.contacts.create({ data: contact });
 				allDocsPromises.push(contactsQuery);
 			} catch (err: unknown) {
 				logger.error(`Error: ${err}`);

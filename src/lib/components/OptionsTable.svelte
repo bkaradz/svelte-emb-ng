@@ -4,6 +4,7 @@
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import type { SaveOption } from '$lib/validation/saveOption.validate';
 	import type { Options } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
@@ -102,7 +103,7 @@
 				delete finalData.id;
 			}
 
-			await trpc().options.saveOrUpdateOption.mutate(finalData);
+			await trpc().options.saveOrUpdateOption.mutate(finalData as SaveOption);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {

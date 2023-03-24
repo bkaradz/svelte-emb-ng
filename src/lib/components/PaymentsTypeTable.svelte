@@ -4,6 +4,7 @@
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
+	import type { SavePaymentTypeOptions } from '$lib/validation/savePaymentTypeOptions.validate';
 	import type { PaymentTypeOptions } from '@prisma/client';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
@@ -19,13 +20,7 @@
 		'Delete & Add Row'
 	];
 
-	type newOptions = Omit<
-		PaymentTypeOptions,
-		'createdAt' | 'updatedAt' | 'createdBy' | 'id' | 'currency'
-	> & {
-		id?: number | string;
-		currency?: string;
-	};
+	type newOptions = Omit<PaymentTypeOptions, 'createdBy' | 'createdAt' | 'updatedAt' | 'currency' | 'id'> & { id?: number | string | undefined; currency?: string | undefined };
 
 	let paymentTypeOptionsList: newOptions[] = [];
 
@@ -67,7 +62,7 @@
 				isDefault: false,
 				currency: undefined
 			}
-		];
+		] as newOptions[];
 	};
 
 	const deleteOption = async (id: number) => {
@@ -103,16 +98,19 @@
 
 	const updateOrSaveOptions = async (finalData: newOptions) => {
 		try {
-			if (typeof finalData?.id === 'string' || finalData?.id === undefined) {
+			const id = finalData?.id
+			const currency = finalData?.currency
+
+			if (typeof id === 'string' || id === undefined) {
 				// Remove id
 				delete finalData.id;
 			}
-			if (finalData?.currency === undefined) {
-				// Remove id
-				delete finalData.currency;
+			if (currency === undefined) {
+				// Remove currency
+				throw new Error("Currency required");
 			}
 
-			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(finalData);
+			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(finalData as SavePaymentTypeOptions);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -123,7 +121,7 @@
 
 	const getOptions = async () => {
 		try {
-			paymentTypeOptionsList = await trpc().paymentTypeOptions.getPayments.query({});
+			paymentTypeOptionsList = await trpc().paymentTypeOptions.getPayments.query({}) as unknown as newOptions[];
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -268,10 +266,6 @@
 	thead th {
 		width: 350px;
 	}
-	/* table {
-		table-layout: auto;
-		width: 100%;
-	} */
 
 	tbody {
 		height: calc(100vh - 328px);

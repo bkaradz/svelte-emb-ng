@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createConverter, createConverterHOF, format } from '$lib/services/monetary';
-	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
+	import { currenciesOptions, selectedCurrency, type CurrencyType } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgTrashSmall } from '$lib/utility/svgLogos';
@@ -47,7 +47,9 @@
 			return;
 		}
 
-		if (!paymentTypeOptions.currency) {
+		const currency = paymentTypeOptions.currency as CurrencyType
+
+		if (!currency) {
 			toasts.add({
 				message: 'Selected currency not found',
 				type: 'error'
@@ -55,7 +57,7 @@
 			return;
 		}
 
-		const filterSelectCurrency = $currenciesOptions.get(paymentTypeOptions.currency);
+		const filterSelectCurrency = $currenciesOptions.get(currency);
 		const defaultCurrency = $currenciesOptions.get('USD');
 
 		if (!defaultCurrency) {
