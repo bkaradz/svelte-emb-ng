@@ -4,7 +4,9 @@
 	import type { GetQuotationOrderPrismaReturn } from '$lib/trpc/routes/orders.prisma';
 	import { dinero, multiply, type Dinero } from 'dinero.js';
 
-	type OrderType = GetQuotationOrderPrismaReturn['order']
+	// type OrderLineType = (Omit<(GetQuotationOrderPrismaReturn['order']['OrderLine']), 'unitPrice'>)
+	// type NewOrderLineType = OrderLineType & {unitPrice: DineroOptions<number>}
+	type OrderType = (GetQuotationOrderPrismaReturn['order'])
 	type PageType = OrderType & {showTotals: boolean, page: string}
 
 	export let order: PageType;

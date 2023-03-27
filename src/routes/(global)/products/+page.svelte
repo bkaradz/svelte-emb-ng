@@ -23,10 +23,13 @@
 		svgView
 	} from '$lib/utility/svgLogos';
 	import type { Products } from '@prisma/client';
-	import { dinero } from 'dinero.js';
+	import { dinero, type DineroOptions } from 'dinero.js';
 
+	type ProductsType = GetProductsReturn['results'][0];
+	type NewProductsType = Omit<ProductsType, 'unitPrice'> & { unitPrice: DineroOptions<number> };
+	type NewGetProductsReturn = Omit<GetProductsReturn, 'results'> & { results: NewProductsType[] };
 
-	export let data: { products: GetProductsReturn; pricelist: GetDefaultPricelistReturn };
+	export let data: { products: NewGetProductsReturn; pricelist: GetDefaultPricelistReturn };
 
 	let products = data.products;
 	let pricelist = data.pricelist;
@@ -78,7 +81,7 @@
 
 	const getProducts = async (paramsObj: any) => {
 		try {
-			products = await trpc().products.getProducts.query(paramsObj);
+			products = await trpc().products.getProducts.query(paramsObj) as NewGetProductsReturn;
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -121,6 +124,9 @@
 			cartItem.add({ ...item, id });
 		} else {
 			const product = $cartItem.get(id);
+			if (!product) {
+				return;
+			}
 			cartItem.update(product, { quantity: product?.quantity + 1 });
 		}
 	};

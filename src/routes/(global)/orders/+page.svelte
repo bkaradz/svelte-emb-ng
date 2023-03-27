@@ -5,9 +5,9 @@
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
+	import type { GetOrdersReturn } from '$lib/trpc/routes/orders.prisma';
 	import { handleErrors } from '$lib/utility/errorsHandling';
 	import logger from '$lib/utility/logger';
-	import type { Pagination } from '$lib/utility/pagination.util';
 	import { generateSONumber } from '$lib/utility/salesOrderNumber.util';
 	import {
 		svgChevronLeft,
@@ -19,15 +19,14 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import type { Orders } from '@prisma/client';
 	import { Buffer } from 'buffer';
 	import dayjs from 'dayjs';
 
-	type newOrder = Orders & { selected: boolean };
+	type OrderType = GetOrdersReturn['results'][0];
 
-	type OrdersNew = Pagination & { results: newOrder[] };
+	export let data: { orders: GetOrdersReturn };
 
-	export let data: { orders: OrdersNew };
+	const isSelectedMap = new Map<number, OrderType>();
 
 	const tableHeadings = [
 		{ id: 0, name: '', dbName: null },
@@ -61,7 +60,7 @@
 		goto(`/products/cart/view/${id}`);
 	};
 
-	const editOrder = async (order: newOrder) => {
+	const editOrder = async (order: OrderType) => {
 		if (
 			order.accountsStatus.toLowerCase() === 'invoice' ||
 			order.accountsStatus.toLowerCase() === 'receipt'
@@ -103,11 +102,11 @@
 	// Input must be of the form {limit, page, sort, query}
 	const getOrders = async (paramsObj: any) => {
 		try {
-			const resOrders = (await trpc().orders.getOrders.query(paramsObj)) as OrdersNew;
-			resOrders.results = resOrders.results.map((item: newOrder) => {
-				item.selected = false;
-				return item;
-			});
+			const resOrders = await trpc().orders.getOrders.query(paramsObj);
+			// resOrders.results = resOrders.results.map((item: OrderType) => {
+			// 	item.selected = false;
+			// 	return item;
+			// });
 			orders = resOrders;
 		} catch (err: any) {
 			handleErrors(err);
@@ -115,32 +114,47 @@
 	};
 
 	let selectedOrderId: number | null = null;
-	let selectedOrder: newOrder | null = null;
+	let selectedOrder: OrderType | null = null;
 
-	const handleSelected = (item: Orders & { selected: boolean }) => {
-		getIdexOfAccounts(item);
-		if (item.selected && selectedOrderId) {
-			// unSelect the selected order
-			orders.results = orders.results.map((list) => {
-				if (list.id === selectedOrderId) {
-					list.selected = false;
-				}
-				return list;
-			});
-			selectedOrderId = item.id;
-			selectedOrder = item;
-			return;
+	const handleSelected = (item: OrderType) => {
+		if (isSelectedMap.has(item.id)) {
+			isSelectedMap.delete(item.id);
+		} else {
+			isSelectedMap.set(item.id, item);
 		}
-		if (item.selected && !selectedOrderId) {
-			selectedOrderId = item.id;
-			selectedOrder = item;
-			return;
+
+		if (isSelectedMap.size === 1) {
+			selectedOrderId = [...isSelectedMap.keys()][0];
+			selectedOrder = [...isSelectedMap.values()][0];
+			getIdexOfAccounts(selectedOrder);
+		} else {
+			selectedOrderId = null;
+			selectedOrder = null;
 		}
-		selectedOrderId = null;
-		selectedOrder = null;
+
+		// getIdexOfAccounts(item);
+		// if (item.selected && selectedOrderId) {
+		// 	// unSelect the selected order
+		// 	orders.results = orders.results.map((list) => {
+		// 		if (list.id === selectedOrderId) {
+		// 			list.selected = false;
+		// 		}
+		// 		return list;
+		// 	});
+		// 	selectedOrderId = item.id;
+		// 	selectedOrder = item;
+		// 	return;
+		// }
+		// if (item.selected && !selectedOrderId) {
+		// 	selectedOrderId = item.id;
+		// 	selectedOrder = item;
+		// 	return;
+		// }
+		// selectedOrderId = null;
+		// selectedOrder = null;
 	};
 
-	const generateQuotation = async (order: newOrder) => {
+	const generateQuotation = async (order: OrderType) => {
 		try {
 			const res = await fetch('/api/pdf/quotation', {
 				method: 'POST',
@@ -173,7 +187,7 @@
 		}
 	};
 
-	const generateReceipt = async (order: newOrder) => {
+	const generateReceipt = async (order: OrderType) => {
 		try {
 			const res = await fetch('/api/pdf/receipt', {
 				method: 'POST',
@@ -206,7 +220,7 @@
 		}
 	};
 
-	const generatePDF = async (order: newOrder) => {
+	const generatePDF = async (order: OrderType) => {
 		if (order.accountsStatus.toLowerCase() === 'receipt') {
 			generateReceipt(order);
 			return;
@@ -224,7 +238,7 @@
 		[3, 'Receipt']
 	]);
 
-	const getIdexOfAccounts = (order: newOrder) => {
+	const getIdexOfAccounts = (order: OrderType) => {
 		list.forEach((value, key) => {
 			if (value === order.accountsStatus) {
 				currentSelection = key;
@@ -242,7 +256,6 @@
 			const salesStatus = list.get(item);
 			const data: Partial<{ id: number; accountsStatus: string; isInvoiced: boolean }> = {};
 			if (selectedOrder && salesStatus) {
-				// selectedOrder.accountsStatus = salesStatus;
 				data.id = selectedOrder.id;
 				data.accountsStatus = salesStatus;
 				if (salesStatus === 'Invoice' || salesStatus === 'Receipt') {
@@ -250,8 +263,16 @@
 				}
 			}
 
-			const res = await trpc().orders.updateStatus.mutate(data);
-			handleSelected(res);
+			const id = data.id;
+			const accountsStatus = salesStatus;
+			const isInvoiced = data.isInvoiced;
+
+			if (!id || !accountsStatus) {
+				throw new Error('id and accountsStatus are required');
+			}
+
+			const res = await trpc().orders.updateStatus.mutate({ id, accountsStatus, isInvoiced });
+			handleSelected(res as OrderType);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -480,12 +501,13 @@
 								</thead>
 								<tbody>
 									{#each orders.results as order (order.id)}
+										{@const checked = isSelectedMap.has(order.id)}
 										<tr
 											class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 										>
 											<td class="px-2 py-1 w-8">
 												<input
-													bind:checked={order.selected}
+													{checked}
 													on:change={() => handleSelected(order)}
 													type="checkbox"
 													name="select"
