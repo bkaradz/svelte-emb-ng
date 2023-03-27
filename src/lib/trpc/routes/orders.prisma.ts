@@ -294,6 +294,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	}
 
 	// const test: Prisma.OrderLineCreateManyOrdersInput
+	// const test2: Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput
 
 	if (restOrder.id) {
 		delete restOrder.customerContact;
@@ -326,7 +327,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 export type SaveOrderOrUpdate = typeof saveOrderOrUpdatePrisma;
 export type SaveOrderOrUpdateReturn = Prisma.PromiseReturnType<typeof saveOrderOrUpdatePrisma>;
 
-export const getQuotationOrderPrisma = async (input: {id: number, currency:  CurrencyType}) => {
+export const getQuotationOrderPrisma = async (input: { id: number; currency: CurrencyType }) => {
 	const order = await prisma.orders.findUnique({
 		where: {
 			id: input.id
@@ -349,7 +350,7 @@ export const getQuotationOrderPrisma = async (input: {id: number, currency:  Cur
 	});
 
 	if (!order) {
-		throw new Error("Order not found");
+		throw new Error('Order not found');
 	}
 
 	const currencyType = input.currency.toUpperCase() as CurrencyType;
@@ -357,7 +358,7 @@ export const getQuotationOrderPrisma = async (input: {id: number, currency:  Cur
 	const selectedCurrency = currencyOptions.get(currencyType);
 
 	if (!selectedCurrency) {
-		throw new Error("Currency not found");;
+		throw new Error('Currency not found');
 	}
 
 	const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
@@ -370,7 +371,9 @@ export const getQuotationOrderPrisma = async (input: {id: number, currency:  Cur
 };
 
 export type GetQuotationOrder = typeof getQuotationOrderPrisma;
-export type GetQuotationOrderPrismaReturn = Prisma.PromiseReturnType<typeof getQuotationOrderPrisma>;
+export type GetQuotationOrderPrismaReturn = Prisma.PromiseReturnType<
+	typeof getQuotationOrderPrisma
+>;
 
 const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 	if (
@@ -404,5 +407,3 @@ const getOrderLineQueryOptions = (objectKeys: string, finalQuery: any) => {
 		mode: 'insensitive'
 	};
 };
-
-

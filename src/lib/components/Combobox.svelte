@@ -3,9 +3,6 @@
 	import { blurOnEscape, selectTextOnFocus } from '$lib/utility/inputSelectDirective';
 	import { svgLoaderSmall, svgSelector, svgXSmall } from '$lib/utility/svgLogos';
 
-	// interface disabledInterface {
-	// 	disabled?: boolean;
-	// }
 	export let label = '';
 	export let name = '';
 	export let value = { name: '' };
@@ -66,19 +63,6 @@
 				break;
 		}
 	}
-
-	// const makeMatchBold = (searchMatchString: string) => {
-	// 	let MatchedWords = [];
-	// 	if (value.name) {
-	// 		const regex = new RegExp(value.name, 'ig');
-	// 		MatchedWords = searchMatchString.trim().match(regex);
-	// 	}
-
-	// 	let makeBold = `<strong>${MatchedWords[0]}</strong>`;
-	// 	let boldedStr = searchMatchString.replace(MatchedWords[0], makeBold);
-
-	// 	return boldedStr;
-	// };
 
 	if (!disabled) {
 		list.length ? (disabled = false) : (disabled = true);

@@ -26,6 +26,10 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 			throw new Error('OrderLine array not found');
 		}
 
+		if (reqOrder.OrderLine.length < 1) {
+			throw new Error('Order does not have an OrderLine array');
+		}
+
 		const asyncOrderLine = reqOrder.OrderLine.map(async (item) => {
 			const { quantity = 1, embroideryTypes = 'flat' } = item;
 			/**
@@ -38,7 +42,7 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 			});
 
 			if (!product) {
-				throw new Error(`Product id ${item?.id} does not exist`);
+				throw new Error(`Product does not exist`);
 			}
 
 			const { stitches } = product;

@@ -20,7 +20,10 @@
 		'Delete & Add Row'
 	];
 
-	type newOptions = Omit<PaymentTypeOptions, 'createdBy' | 'createdAt' | 'updatedAt' | 'currency' | 'id'> & { id?: number | string | undefined; currency?: string | undefined };
+	type newOptions = Omit<
+		PaymentTypeOptions,
+		'createdBy' | 'createdAt' | 'updatedAt' | 'currency' | 'id'
+	> & { id?: number | string | undefined; currency?: string | undefined };
 
 	let paymentTypeOptionsList: newOptions[] = [];
 
@@ -98,8 +101,8 @@
 
 	const updateOrSaveOptions = async (finalData: newOptions) => {
 		try {
-			const id = finalData?.id
-			const currency = finalData?.currency
+			const id = finalData?.id;
+			const currency = finalData?.currency;
 
 			if (typeof id === 'string' || id === undefined) {
 				// Remove id
@@ -107,10 +110,12 @@
 			}
 			if (currency === undefined) {
 				// Remove currency
-				throw new Error("Currency required");
+				throw new Error('Currency required');
 			}
 
-			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(finalData as SavePaymentTypeOptions);
+			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(
+				finalData as SavePaymentTypeOptions
+			);
 		} catch (err: any) {
 			handleErrors(err);
 		} finally {
@@ -121,7 +126,9 @@
 
 	const getOptions = async () => {
 		try {
-			paymentTypeOptionsList = await trpc().paymentTypeOptions.getPayments.query({}) as unknown as newOptions[];
+			paymentTypeOptionsList = (await trpc().paymentTypeOptions.getPayments.query(
+				{}
+			)) as unknown as newOptions[];
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}

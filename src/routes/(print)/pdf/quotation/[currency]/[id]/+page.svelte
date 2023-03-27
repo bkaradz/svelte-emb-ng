@@ -14,10 +14,10 @@
 	import chunk from 'lodash-es/chunk';
 	import { onMount } from 'svelte';
 
-	type ResultsType = (OrderLineType)[]
-	type OrderLineType = GetQuotationOrderPrismaReturn['order']['OrderLine']
-	type OrderType = GetQuotationOrderPrismaReturn['order']
-	type PageType = OrderType & {showTotals: boolean, page: string}
+	type ResultsType = OrderLineType[];
+	type OrderLineType = GetQuotationOrderPrismaReturn['order']['OrderLine'];
+	type OrderType = GetQuotationOrderPrismaReturn['order'];
+	type PageType = OrderType & { showTotals: boolean; page: string };
 
 	export let data: GetQuotationOrderPrismaReturn;
 
@@ -62,7 +62,7 @@
 		}
 		const convert = createConverter(selectedCurrency.dineroObj);
 
-		order.OrderLine = [
+		const newOrderLine = [
 			...newArray.map((item) => {
 				let unitPrice = convert(
 					dinero(item.unitPrice as unknown as DineroOptions<number>),
@@ -75,6 +75,8 @@
 				return { ...item, unitPrice: toSnapshot(unitPrice) };
 			})
 		];
+
+		order.OrderLine = newOrderLine as unknown as OrderLineType;
 
 		getCountAndSubTotal(order.OrderLine as SaveOrder['OrderLine']);
 	};
@@ -103,7 +105,6 @@
 	let order: OrderType;
 
 	const partitionTwo = (array: OrderLineType, size: number) => {
-		
 		const results: ResultsType = [[], []];
 		array.map((value, index) => {
 			if (index <= size - 1) {
@@ -117,7 +118,7 @@
 
 	const createPage = (splitLine: ResultsType) => {
 		let endPage = splitLine.length;
-		
+
 		let splitOrder = new Map<number, PageType>();
 		splitLine.map((value, index) => {
 			if (index === endPage - 1) {
@@ -139,7 +140,7 @@
 		return splitOrder;
 	};
 
-	const splitOrderLine = (order: (GetQuotationOrderPrismaReturn['order'])) => {
+	const splitOrderLine = (order: GetQuotationOrderPrismaReturn['order']) => {
 		/**
 		 * first page max with totals = 13
 		 * first page max without totals = 16
@@ -152,7 +153,7 @@
 		const OTHER_PAGES_WITH_TOTALS = OTHER_PAGES_WITHOUT_TOTALS - 3;
 
 		if (!Array.isArray(order.OrderLine)) {
-			throw new Error("Order Line not found");
+			throw new Error('Order Line not found');
 		}
 
 		const lineLength = order.OrderLine.length;
@@ -177,7 +178,7 @@
 		return [...firstPage, ...otherPages, []];
 	};
 
-	let pagesCreated: PageType[]
+	let pagesCreated: PageType[];
 
 	let zero = dinero({ amount: 0, currency: USD });
 

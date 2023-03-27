@@ -81,7 +81,7 @@
 
 	const getProducts = async (paramsObj: any) => {
 		try {
-			products = await trpc().products.getProducts.query(paramsObj) as NewGetProductsReturn;
+			products = (await trpc().products.getProducts.query(paramsObj)) as NewGetProductsReturn;
 		} catch (err: any) {
 			logger.error(`Error: ${err}`);
 		}
@@ -142,6 +142,22 @@
 			},
 			{ totalCartItems: 0 }
 		).totalCartItems;
+	};
+
+	const getCartQuantity = (id: number) => {
+		const quantity = $cartItem.get(id);
+		if (!quantity) {
+			return 0;
+		}
+		return quantity['quantity'];
+	};
+
+	const getCalculatedPrice = (product: Products, pricelist: GetDefaultPricelistReturn) => {
+		const price = calculateProductPrices(product, pricelist);
+		if (!price) {
+			return '...';
+		}
+		return price[0]['3'];
 	};
 </script>
 
@@ -456,9 +472,7 @@
 												{!product.unitPrice ? '...' : format(dinero(product.unitPrice))}
 											</td> -->
 											<td class="px-2 py-1 text-right pr-4">
-												{Array.isArray(calculateProductPrices(product, pricelist))
-													? calculateProductPrices(product, pricelist)[0]['3']
-													: '...'}
+												{getCalculatedPrice(product, pricelist)}
 											</td>
 											<td class="px-2 py-1">
 												<div class="flex items-center justify-center">
@@ -471,7 +485,7 @@
 															{@html svgCartMinus}
 														</button>
 														<div class="w-8 mx-2 text-center">
-															{cartHasProduct ? $cartItem.get(product.id)['quantity'] : 0}
+															{getCartQuantity(product.id)}
 														</div>
 														<button
 															class="px-1 border bg-royal-blue-200 border-royal-blue-500 rounded hover:bg-royal-blue-300"
@@ -481,16 +495,6 @@
 															{@html svgCartPlus}
 														</button>
 													</span>
-													<!-- <span>
-														<button
-															class=" m-0 p-0"
-															on:click|preventDefault={() => addToCart(product)}
-														>
-															<span class="fill-current text-danger">
-																{@html svgCart}
-															</span>
-														</button>
-													</span> -->
 												</div>
 											</td>
 											<td class="py-1 text-center">

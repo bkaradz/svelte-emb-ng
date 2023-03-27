@@ -81,7 +81,6 @@
 			handleErrors(err);
 		}
 	};
-
 </script>
 
 <svelte:head>

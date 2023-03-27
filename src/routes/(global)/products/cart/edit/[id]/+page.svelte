@@ -22,8 +22,7 @@
 	} from '$lib/validation/saveOrder.validate';
 	import { add, dinero, multiply, toSnapshot } from 'dinero.js';
 
-
-	let errorMessages = new Map();
+	// let errorMessages = new Map();
 
 	type OrderLineType = SaveOrder['OrderLine'][0];
 	type DataType = {
@@ -101,7 +100,7 @@
 	};
 
 	let mainOrder = data.order;
-	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
+	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) } as SaveOrder;
 
 	$: idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions = data.embroideryPositions;
@@ -223,17 +222,15 @@
 			mainOrder.orderDate = new Date(mainOrder.orderDate).toJSON();
 		}
 
-		
-
 		const parsedOrder = saveOrdersSchema.safeParse(mainOrder);
 
 		if (!parsedOrder.success) {
-			const errorMap = zodErrorMessagesMap(parsedOrder);
+			zodErrorMessagesMap(parsedOrder);
 
-			if (errorMap) {
-				errorMessages = errorMap;
-			}
-			
+			// if (errorMap) {
+			// 	errorMessages = errorMap;
+			// }
+
 			return;
 		}
 

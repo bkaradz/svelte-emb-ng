@@ -39,8 +39,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const allDocsPromises: pContact[] = [];
 
-		
-
 		contactsArray.forEach(async (element) => {
 			try {
 				const contact = querySelection(element);

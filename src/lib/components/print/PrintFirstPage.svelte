@@ -5,8 +5,8 @@
 	import type { Dinero } from 'dinero.js';
 	import PartialPage from './PartialPage.svelte';
 
-	type OrderType = GetQuotationOrderPrismaReturn['order']
-	type PageType = OrderType & {showTotals: boolean, page: string}
+	type OrderType = GetQuotationOrderPrismaReturn['order'];
+	type PageType = OrderType & { showTotals: boolean; page: string };
 
 	export let order: PageType;
 	export let subTotal: Dinero<number>;

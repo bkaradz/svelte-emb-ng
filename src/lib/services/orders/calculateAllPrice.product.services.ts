@@ -13,14 +13,17 @@ export const calculateProductPrices = (
 ) => {
 	try {
 		if (!product) {
-			return;
-			// throw new Error(`Product does not exist`);
+			// return;
+			throw new Error(`Product does not exist`);
 		}
 		if (!pricelist) {
-			return;
-			// throw new Error(`Pricelist does not exist`);
+			// return;
+			throw new Error(`Pricelist does not exist`);
 		}
 		if (product.productCategories !== 'embroidery') {
+			/**
+			 * TODO: Calculate the Prices when its not embroidery
+			 */
 			return;
 		}
 

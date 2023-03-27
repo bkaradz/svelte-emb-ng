@@ -27,7 +27,6 @@ export const getContactsPrisma = async (input: SearchParams) => {
 		};
 	}
 
-
 	let query;
 	let queryTotal;
 
@@ -195,7 +194,7 @@ export const getByIdPrisma = async (input: number) => {
 	});
 
 	if (!contacts) {
-		throw new Error("Contact not found");
+		throw new Error('Contact not found');
 	}
 
 	return contacts;

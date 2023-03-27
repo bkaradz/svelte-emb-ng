@@ -2,18 +2,19 @@
 	import small_logo from '$lib/assets/small_logo.png';
 	import { format } from '$lib/services/monetary';
 	import type { GetQuotationOrderPrismaReturn } from '$lib/trpc/routes/orders.prisma';
-	import { dinero, multiply, type Dinero } from 'dinero.js';
+	import { dinero, multiply, type Dinero, type DineroOptions } from 'dinero.js';
 
-	// type OrderLineType = (Omit<(GetQuotationOrderPrismaReturn['order']['OrderLine']), 'unitPrice'>)
-	// type NewOrderLineType = OrderLineType & {unitPrice: DineroOptions<number>}
-	type OrderType = (GetQuotationOrderPrismaReturn['order'])
-	type PageType = OrderType & {showTotals: boolean, page: string}
+	type OrderType = GetQuotationOrderPrismaReturn['order'];
+	type PageType = OrderType & { showTotals: boolean; page: string };
 
 	export let order: PageType;
 	export let subTotal: Dinero<number>;
 	export let calculatedVat: Dinero<number>;
 	export let calculatedTotal: Dinero<number>;
 	export let vat: number;
+	const toDineroUnits = (item: PageType['OrderLine'][0]) => {
+		return dinero(item.unitPrice as DineroOptions<number>);
+	};
 </script>
 
 <div class="page">
@@ -93,7 +94,7 @@
 						</thead>
 						<tbody class="bg-white">
 							{#each order.OrderLine as item (item.id)}
-								{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
+								{@const totalPrice = multiply(toDineroUnits(item), item.quantity)}
 								<tr
 									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal even:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 								>
@@ -111,7 +112,7 @@
 										</div>
 									</td>
 									<td class="px-4 py-2 text-xs text-pickled-bluewood-500 text-right truncate"
-										>{format(dinero(item.unitPrice))}
+										>{format(toDineroUnits(item))}
 									</td>
 									<td
 										class="px-4 py-2 text-xs text-pickled-bluewood-500 font-semibold text-right truncate"

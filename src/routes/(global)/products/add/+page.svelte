@@ -41,7 +41,6 @@
 	let formData = structuredClone(initFromData);
 
 	const handleSubmit = async () => {
-
 		const parsedProducts = saveProductsSchema.safeParse(formData);
 
 		if (!parsedProducts.success) {

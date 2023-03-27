@@ -30,7 +30,7 @@
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
-	let errorMessages = new Map();
+	// let errorMessages = new Map();
 
 	type OrderLineType = SaveOrder['OrderLine'][0];
 	type DataType = {
@@ -170,11 +170,11 @@
 		const parsedOrder = saveOrdersSchema.safeParse(mainOrder);
 
 		if (!parsedOrder.success) {
-			const errorMap = zodErrorMessagesMap(parsedOrder);
+			zodErrorMessagesMap(parsedOrder);
 
-			if (errorMap) {
-				errorMessages = errorMap;
-			}
+			// if (errorMap) {
+			// 	errorMessages = errorMap;
+			// }
 			return;
 		}
 

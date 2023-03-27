@@ -57,6 +57,7 @@
 			return;
 		}
 		const convert = createConverter(selectedCurrency.dineroObj);
+
 		order.OrderLine = [
 			...newArray.map((item) => {
 				let unitPrice = convert(

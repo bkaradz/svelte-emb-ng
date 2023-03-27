@@ -99,7 +99,7 @@
 	};
 
 	let mainOrder = data.order;
-	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) };
+	mainOrder = { ...$cartOrder, OrderLine: Array.from($cartItem.values()) } as SaveOrder;
 
 	$: idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions = data.embroideryPositions;
