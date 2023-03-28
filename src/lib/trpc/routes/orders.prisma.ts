@@ -271,7 +271,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 
 	const calcOrder = await calculateOrder(input);
 
-	const calcOrder2 = calcOrder.map((item) =>
+	const calcOrderMap = calcOrder.map((item) =>
 		pick(item, [
 			'productsID',
 			'unitPrice',
@@ -283,6 +283,18 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 		])
 	);
 
+	const saveCalcOrder = calcOrderMap as unknown as Prisma.OrderLineCreateManyOrdersInput
+
+	if (!saveCalcOrder) {
+		throw new Error("Create OrderLine not found");
+	}
+
+	const updateCalcOrder = calcOrderMap as unknown as Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput
+
+	if (!updateCalcOrder) {
+		throw new Error("Update OrderLine not found");
+	}
+
 	const { OrderLine, ...restOrder } = input;
 
 	if (restOrder?.orderDate) {
@@ -293,13 +305,10 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 		restOrder.deliveryDate = new Date(restOrder.deliveryDate) as unknown as string;
 	}
 
-	// const test: Prisma.OrderLineCreateManyOrdersInput
-	// const test2: Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput
-
 	if (restOrder.id) {
 		delete restOrder.customerContact;
 		delete restOrder.Pricelists;
-		return await prisma.orders.update({
+		return await prisma.orders.update({ 
 			where: {
 				id: restOrder.id
 			},
@@ -307,7 +316,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 				...restOrder,
 				createdBy,
 				OrderLine: {
-					updateMany: { data: calcOrder2 }
+					updateMany: { data: updateCalcOrder }
 				}
 			}
 		});
@@ -317,7 +326,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 				...restOrder,
 				createdBy,
 				OrderLine: {
-					createMany: { data: calcOrder2 }
+					createMany: { data: saveCalcOrder }
 				}
 			}
 		});

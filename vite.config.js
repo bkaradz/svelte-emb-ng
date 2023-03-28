@@ -27,7 +27,10 @@ const config = {
 		// },
 		// Exclude playwright tests folder
 		exclude: [...configDefaults.exclude, './src/tests']
-	}
+	},
+	server: {
+    host: true
+  }
 };
 
 export default config;

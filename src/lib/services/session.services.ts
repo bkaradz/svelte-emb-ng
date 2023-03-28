@@ -9,7 +9,6 @@ export const setSessionCookies = (accessToken: string, cookies: Cookies) => {
 	const accessTokenSerial = cookies.serialize('accessToken', accessToken, {
 		maxAge: config.get('cookieAccessTokenTtl'), // 15min
 		httpOnly: config.get('httpOnly'),
-		domain: 'localhost',
 		path: '/',
 		sameSite: config.get('sameSite'),
 		secure: config.get('secure')
@@ -24,10 +23,9 @@ export const deleteSessionCookies = (cookies: Cookies) => {
 	const accessTokenSerial = cookies.serialize('accessToken', '', {
 		expires: new Date(0),
 		httpOnly: true,
-		domain: 'localhost',
 		path: '/',
 		sameSite: 'lax',
-		secure: false
+		secure: config.get('secure')
 	});
 
 	return {

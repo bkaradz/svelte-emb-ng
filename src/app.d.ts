@@ -9,9 +9,16 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
+	// This is not working
 	namespace svelteHTML {
 		interface HTMLAttributes<T> {
-			'on:clickOutside'?: (event: CustomEvent) => void;
+			'on:clickOutside'?: (e: CustomEvent) => void;
+		}
+	}
+	// This is working
+	namespace svelte.JSX {
+		interface HTMLAttributes<T> {
+			onclickOutside?: (e: CustomEvent) => void
 		}
 	}
 }

@@ -326,7 +326,6 @@ export const loginUserPrisma = async (input: LoginCredentials, ctx: Context) => 
 	ctx.event.cookies.set('accessToken', accessToken, {
 		maxAge: config.get('cookieAccessTokenTtl'), // 15min
 		httpOnly: config.get('httpOnly'),
-		domain: 'localhost',
 		path: '/',
 		sameSite: config.get('sameSite'),
 		secure: config.get('secure')
