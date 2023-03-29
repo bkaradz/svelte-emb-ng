@@ -144,7 +144,7 @@
 		).totalCartItems;
 	};
 
-	const getCartQuantity = (id: number) => {
+	$: getCartQuantity = (id: number) => {
 		const quantity = $cartItem.get(id);
 		if (!quantity) {
 			return 0;

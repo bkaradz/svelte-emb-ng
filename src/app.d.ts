@@ -18,7 +18,7 @@ declare global {
 	// This is working
 	namespace svelte.JSX {
 		interface HTMLAttributes<T> {
-			onclickOutside?: (e: CustomEvent) => void
+			onclickOutside?: (e: CustomEvent) => void;
 		}
 	}
 }

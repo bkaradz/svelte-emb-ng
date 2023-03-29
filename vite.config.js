@@ -29,8 +29,8 @@ const config = {
 		exclude: [...configDefaults.exclude, './src/tests']
 	},
 	server: {
-    host: true
-  }
+		host: true
+	}
 };
 
 export default config;

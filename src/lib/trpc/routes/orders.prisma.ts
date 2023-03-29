@@ -283,16 +283,17 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 		])
 	);
 
-	const saveCalcOrder = calcOrderMap as unknown as Prisma.OrderLineCreateManyOrdersInput
+	const saveCalcOrder = calcOrderMap as unknown as Prisma.OrderLineCreateManyOrdersInput;
 
 	if (!saveCalcOrder) {
-		throw new Error("Create OrderLine not found");
+		throw new Error('Create OrderLine not found');
 	}
 
-	const updateCalcOrder = calcOrderMap as unknown as Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput
+	const updateCalcOrder =
+		calcOrderMap as unknown as Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput;
 
 	if (!updateCalcOrder) {
-		throw new Error("Update OrderLine not found");
+		throw new Error('Update OrderLine not found');
 	}
 
 	const { OrderLine, ...restOrder } = input;
@@ -308,7 +309,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	if (restOrder.id) {
 		delete restOrder.customerContact;
 		delete restOrder.Pricelists;
-		return await prisma.orders.update({ 
+		return await prisma.orders.update({
 			where: {
 				id: restOrder.id
 			},

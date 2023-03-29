@@ -7,7 +7,10 @@ export const load = (async (event) => {
 	const quotationPage = async () => {
 		return await router
 			.createCaller(await createContext(event))
-			.orders.getQuotationOrder({ id: parseInt(event.params.id), currency: event.params.currency } as {id: number, currency: CurrencyType });
+			.orders.getQuotationOrder({
+				id: parseInt(event.params.id),
+				currency: event.params.currency
+			} as { id: number; currency: CurrencyType });
 	};
 
 	return quotationPage();

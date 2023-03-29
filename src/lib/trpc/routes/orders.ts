@@ -13,7 +13,7 @@ import {
 	updateStatusPrisma
 } from './orders.prisma';
 
-const CurrencyTypeZod = ["USD", "ZAR", "BWP", "ZWB", "ZWR"] as const;
+const CurrencyTypeZod = ['USD', 'ZAR', 'BWP', 'ZWB', 'ZWR'] as const;
 
 export const orders = router({
 	getOrders: protectedProcedure.input(searchParamsSchema.passthrough()).query(async ({ input }) => {
@@ -46,4 +46,3 @@ export const orders = router({
 			return await getQuotationOrderPrisma(input);
 		})
 });
-
