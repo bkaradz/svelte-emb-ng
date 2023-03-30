@@ -65,8 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const errorMap = zodErrorMessagesMap(parsedPaymentTypesOptions);
 
 				if (errorMap) {
-					// TODO: Log error
-					console.log('Error Map', errorMap);
+					logger.error(`Error: ${errorMap}`);
 				}
 				return;
 			}

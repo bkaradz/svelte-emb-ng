@@ -1,6 +1,8 @@
 <script lang="ts">
+	import logger from '$lib/utility/logger';
+
 	export let handleSubmit = async (status: string) => {
-		console.log(status);
+		logger.info(`Error: ${status}`);
 	};
 </script>
 

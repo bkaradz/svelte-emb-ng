@@ -103,10 +103,7 @@
 	const getOrders = async (paramsObj: any) => {
 		try {
 			const resOrders = await trpc().orders.getOrders.query(paramsObj);
-			// resOrders.results = resOrders.results.map((item: OrderType) => {
-			// 	item.selected = false;
-			// 	return item;
-			// });
+
 			orders = resOrders;
 		} catch (err: any) {
 			handleErrors(err);

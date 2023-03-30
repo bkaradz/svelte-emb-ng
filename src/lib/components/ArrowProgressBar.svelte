@@ -1,9 +1,10 @@
 <script lang="ts">
 	export let list = ['Add list Array'];
 	export let currentSelection = 0;
+	import logger from '$lib/utility/logger';
 
 	export let onClick = (x: number) => {
-		console.log(x);
+		logger.info(`Error: ${x}`);
 	};
 </script>
 

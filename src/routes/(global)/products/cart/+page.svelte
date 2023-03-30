@@ -97,6 +97,9 @@
 			return;
 		}
 		cartItem.remove(id);
+		if ($cartItem.size === 0) {
+			goto(`/products`);
+		}
 	};
 
 	const onDecrease = (item: OrderLineType) => {

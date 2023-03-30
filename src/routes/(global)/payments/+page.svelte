@@ -13,7 +13,6 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
-	import { onMount } from 'svelte';
 
 	const tableHeadings = [
 		{ id: 1, name: 'Order #', dbName: 'orderID' },
@@ -22,13 +21,15 @@
 		{ id: 9, name: 'View', dbName: null }
 	];
 
-	let orders: GetOrdersReturn;
+	export let data: { resOrders: GetOrdersReturn };
+
+	let orders = data.resOrders;
 	let limit = 15;
 	let currentGlobalParams = {
 		limit,
 		page: 1,
-		sort: 'name',
-		isInvoiced: true
+		sort: 'name'
+		// isInvoiced: true
 	};
 
 	const checkValue = () => {
@@ -37,9 +38,9 @@
 		}
 	};
 
-	onMount(() => {
-		getOrders(currentGlobalParams);
-	});
+	// onMount(() => {
+	// 	getOrders(currentGlobalParams);
+	// });
 
 	const viewPayment = async (order: GetOrdersReturn['results'][0]) => {
 		goto(`payments/order/${order.id}`);
@@ -73,9 +74,7 @@
 	const getOrders = async (paramsObj: any) => {
 		try {
 			const resOrders = await trpc().orders.getOrders.query(paramsObj);
-			resOrders.results = resOrders.results.map((item: GetOrdersReturn['results'][0]) => {
-				return item;
-			});
+
 			orders = resOrders;
 		} catch (err: any) {
 			handleErrors(err);

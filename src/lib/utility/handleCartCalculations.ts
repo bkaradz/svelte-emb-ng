@@ -100,7 +100,7 @@ export const handleCartCalculations = async (
 
 	const calculatedTotal = add(calculatedVat, subTotalsCalc.subTotal);
 
-	return {
+	const results = {
 		totalCartItems: subTotalsCalc.totalCartItems,
 		subTotal: subTotalsCalc.subTotal,
 		calculatedVat,
@@ -108,4 +108,5 @@ export const handleCartCalculations = async (
 		order: newOrder,
 		vat
 	};
+	return results;
 };
