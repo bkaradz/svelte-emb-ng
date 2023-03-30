@@ -115,18 +115,16 @@
 			return;
 		}
 
-		const reqRate = JSON.parse(JSON.stringify(rates));
+		const reqRate = structuredClone(rates);
 
 		if (reqRate.exChangeRateDate) {
 			reqRate.exChangeRateDate = new Date(reqRate.exChangeRateDate).toJSON();
 		}
 
-		reqRate.ExchangeRateDetails = reqRate.ExchangeRateDetails.map(
-			(rate: Partial<ExchangeRateDetails>) => {
-				const { id, ...restRate } = rate;
-				return restRate;
-			}
-		);
+		reqRate.ExchangeRateDetails = reqRate.ExchangeRateDetails.map((rate: ExchangeRateDetails) => {
+			const { id, ...restRate } = rate;
+			return restRate;
+		});
 
 		const parsedRates = saveExchangeRateSchema.safeParse(reqRate);
 

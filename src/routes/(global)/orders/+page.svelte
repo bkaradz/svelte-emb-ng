@@ -128,27 +128,6 @@
 			selectedOrderId = null;
 			selectedOrder = null;
 		}
-
-		// getIdexOfAccounts(item);
-		// if (item.selected && selectedOrderId) {
-		// 	// unSelect the selected order
-		// 	orders.results = orders.results.map((list) => {
-		// 		if (list.id === selectedOrderId) {
-		// 			list.selected = false;
-		// 		}
-		// 		return list;
-		// 	});
-		// 	selectedOrderId = item.id;
-		// 	selectedOrder = item;
-		// 	return;
-		// }
-		// if (item.selected && !selectedOrderId) {
-		// 	selectedOrderId = item.id;
-		// 	selectedOrder = item;
-		// 	return;
-		// }
-		// selectedOrderId = null;
-		// selectedOrder = null;
 	};
 
 	const generateQuotation = async (order: OrderType) => {

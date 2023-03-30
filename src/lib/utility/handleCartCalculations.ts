@@ -15,6 +15,14 @@ import {
 } from 'dinero.js';
 
 const handleCalculations = async (lineArray: SaveOrdersLine[] = [], pricelistsId: number) => {
+	console.log(
+		'🚀 ~ file: handleCartCalculations.ts:18 ~ handleCalculations ~ pricelistsId:',
+		pricelistsId
+	);
+	console.log(
+		'🚀 ~ file: handleCartCalculations.ts:18 ~ handleCalculations ~ lineArray:',
+		lineArray
+	);
 	try {
 		return await trpc().cart.calculateCart.mutate({
 			pricelistsID: pricelistsId,
@@ -76,12 +84,12 @@ const getCountAndSubTotal = (cart: SaveOrdersLine[], zero: Dinero<number>) => {
 };
 
 export const handleCartCalculations = async (
-	oldOrder: Partial<SaveOrder>,
+	oldOrder: SaveOrder,
 	selectedCurrency: CurrencyOption
 ) => {
 	const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
 
-	const order: SaveOrder & { OrderLine: SaveOrdersLine[] } = JSON.parse(JSON.stringify(oldOrder));
+	const order = structuredClone(oldOrder);
 
 	const newOrder = await handleCurrency(order, selectedCurrency, zero);
 

@@ -51,8 +51,6 @@
 		vertical-align: middle;
 	}
 
-	/* Breadcrumps CSS */
-
 	.arrow-steps .step {
 		font-size: 14px;
 		text-align: center;
@@ -76,7 +74,7 @@
 		content: ' ';
 		position: absolute;
 		top: 0;
-		right: -17px;
+		right: -16px;
 		width: 0;
 		height: 0;
 		border-top: 19px solid transparent;
