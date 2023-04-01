@@ -5,14 +5,17 @@ export const saveProductsSchema = z
 		id: z.number().optional(),
 		isActive: z.boolean().default(true),
 		name: z
-			.string({ required_error: 'Name is required', invalid_type_error: 'Name must be a string' })
+			.string({
+				required_error: 'Product name is required',
+				invalid_type_error: 'Name must be a string'
+			})
 			.min(1)
 			.trim(),
-		description: z.string().optional(),
+		description: z.string().optional().or(z.null()),
 		productCategories: z.string({ required_error: 'Product Category is required' }).min(1),
 		stitches: z.number().optional(),
-		unitPrice: z.number().optional(),
-		units: z.number().optional()
+		unitPrice: z.number().optional().or(z.object({})),
+		units: z.number().optional().or(z.null())
 	})
 	.superRefine((data, ctx) => {
 		if (data.productCategories === 'embroidery' && !data.stitches) {

@@ -40,14 +40,14 @@
 			return;
 		}
 		const { OrderLine, ...restOrder } = data.order;
-		mainOrder = { ...restOrder, OrderLine: OrderLine };
-		customerSearch = restOrder.customerContact;
-		OrderLine.forEach((item) => {
-			const id = item?.id;
+		mainOrder = data.order;
+		customerSearch = data.order.customerContact;
+		data.order.OrderLine.forEach((item) => {
+			const id = item?.productsID;
 			if (!id) {
 				return;
 			}
-			cartItem.add({ ...item, id });
+			cartItem.add(item);
 		});
 		cartOrder.add({ ...restOrder });
 	};
@@ -284,7 +284,7 @@
 						<div class="flex w-2/6">
 							<div class="flex flex-col items-start justify-between flex-grow ml-4">
 								<div>
-									<h3 class="mb-1 text-sm font-bold">{item.name}</h3>
+									<h3 class="mb-1 text-sm font-bold">{item?.Products?.name}</h3>
 									<!-- <h3 class="text-sm mb-1.5">{item.brand}</h3> -->
 								</div>
 								<button
@@ -296,7 +296,7 @@
 							</div>
 						</div>
 						<span class="w-1/6 text-sm font-semibold text-right">
-							{item?.stitches}
+							{item?.Products?.stitches}
 						</span>
 						<span class="w-1/6 text-sm font-semibold text-right">
 							{#if embroideryTypes}

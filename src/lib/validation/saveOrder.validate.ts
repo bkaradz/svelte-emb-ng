@@ -7,10 +7,10 @@ export const saveOrdersLineSchema = z
 	.object({
 		id: z.number().optional(),
 		productsID: z.number(),
-		embroideryTypes: z.string().optional(),
+		embroideryTypes: z.string(),
 		quantity: z.number(),
-		Products: saveProductsSchema.optional(),
-		unitPrice: z.any().optional()
+		Products: saveProductsSchema,
+		unitPrice: z.number().optional().or(z.object({}))
 	})
 	.passthrough();
 

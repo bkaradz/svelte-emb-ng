@@ -37,7 +37,7 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 			 */
 			const product = await prisma.products.findUnique({
 				where: {
-					id: item?.id
+					id: item?.productsID
 				}
 			});
 

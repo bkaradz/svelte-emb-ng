@@ -27,10 +27,17 @@
 	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
 	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
 	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
+	import { onMount } from 'svelte';
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
 	// let errorMessages = new Map();
+
+	let embroideryPositionsSelection: string;
+	$: console.log(
+		'🚀 ~ file: +page.svelte:36 ~ embroideryPositionsSelection:',
+		embroideryPositionsSelection
+	);
 
 	type OrderLineType = SaveOrder['OrderLine'][0];
 	type DataType = {
@@ -47,6 +54,8 @@
 
 	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
 
+	onMount;
+
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
 	const sundayInBetween = dayjs().weekday(7).isBetween(TODAY, FOUR_DAYS);
@@ -55,12 +64,11 @@
 		FOUR_DAYS = dayjs().add(5, 'day').format('YYYY-MM-DDTHH:mm');
 	}
 
-	let mainOrderInit: Partial<SaveOrder> = {
-		id: undefined,
-		customersID: undefined,
+	let mainOrderInit: SaveOrder = {
+		customersID: -1,
 		pricelistsID: data.defaultPricelist.id,
 		isActive: true,
-		accountsStatus: undefined,
+		accountsStatus: 'Quotation',
 		orderDate: TODAY,
 		deliveryDate: FOUR_DAYS,
 		OrderLine: Array.from($cartItem.values()) || []
@@ -92,7 +100,7 @@
 	$: mainOrderInit.OrderLine = Array.from($cartItem.values());
 
 	const removeItem = (item: OrderLineType) => {
-		const id = item.id;
+		const id = item.productsID;
 		if (!id) {
 			return;
 		}
@@ -110,6 +118,7 @@
 	};
 
 	const onIncrease = (item: OrderLineType) => {
+		console.log('🚀 ~ file: +page.svelte:112 ~ onIncrease ~ item:', item);
 		cartItem.update(item, { quantity: item.quantity + 1 });
 	};
 
@@ -120,6 +129,9 @@
 	let customerSearch: Partial<Omit<Contacts, 'name'>> & { name: string } = { name: '' };
 
 	$: if (customerSearch.name) {
+		if (!customerSearch.id) {
+			throw new Error('id not found');
+		}
 		mainOrder.customersID = customerSearch.id;
 	}
 
@@ -216,6 +228,8 @@
 		capture: () => customerSearch,
 		restore: (value) => (customerSearch = value)
 	};
+
+	// on:change|preventDefault={() => handleEmbroideryType(item)}
 </script>
 
 <svelte:head>
@@ -269,13 +283,13 @@
 					</span>
 				</div>
 				<div class="scrollHeight overflow-y-auto">
-					{#each order.OrderLine as item (item.id)}
+					{#each order.OrderLine as item (item.productsID)}
 						{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 						<div class="flex items-center p-2 hover:bg-pickled-bluewood-200">
 							<div class="flex w-2/6">
 								<div class="flex flex-col items-start justify-between flex-grow ml-4">
 									<div>
-										<h3 class="mb-1 text-xs font-bold">{item.name}</h3>
+										<h3 class="mb-1 text-xs font-bold">{item.Products.name}</h3>
 									</div>
 									<button
 										on:click|preventDefault={() => removeItem(item)}
@@ -286,13 +300,12 @@
 								</div>
 							</div>
 							<span class="w-1/6 text-sm font-semibold text-right">
-								{item?.stitches}
+								{item?.Products?.stitches}
 							</span>
 							<span class="w-1/6 text-sm font-semibold text-right">
 								{#if embroideryTypes}
 									<select
 										bind:value={item.embroideryTypes}
-										on:change|preventDefault={() => handleEmbroideryType(item)}
 										class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 									>
 										{#each embroideryTypes as type}
@@ -306,7 +319,7 @@
 							<span class="w-1/6 text-sm font-semibold text-right">
 								{#if embroideryPositions}
 									<select
-										bind:value={item.embroideryPositions}
+										bind:value={embroideryPositionsSelection}
 										class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 									>
 										{#each embroideryPositions as type}

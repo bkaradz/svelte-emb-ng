@@ -8,15 +8,11 @@ function addCartItems() {
 
 	return {
 		subscribe,
-		add: (
-			payload: Omit<SaveOrdersLine, 'embroideryTypes' | 'id'> & {
-				embroideryTypes?: string | undefined | null;
-				id: number;
-			}
-		) =>
+		add: (payload: Omit<SaveOrdersLine['Products'], 'id'> & { id: number }) =>
 			update((cart) =>
 				cart.set(payload.id, {
-					...payload,
+					Products: payload,
+					unitPrice: payload.unitPrice,
 					quantity: 1,
 					embroideryPositions: 'frontLeft',
 					embroideryTypes: 'flat',
@@ -24,7 +20,7 @@ function addCartItems() {
 				})
 			),
 		update: (orderLine: SaveOrdersLine, payload: Partial<SaveOrdersLine>) =>
-			update((cart) => cart.set(orderLine.id!, { ...orderLine, ...payload })),
+			update((cart) => cart.set(orderLine.productsID, { ...orderLine, ...payload })),
 		remove: (id: number) =>
 			update((cart) => {
 				cart.delete(id);

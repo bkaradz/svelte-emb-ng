@@ -92,7 +92,7 @@
 		if (!id) {
 			return;
 		}
-		cartItem.add({ ...item, id });
+		cartItem.add(item);
 	};
 
 	const onDecrease = (item: Products) => {

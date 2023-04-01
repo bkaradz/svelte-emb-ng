@@ -16,10 +16,6 @@ import {
 
 const handleCalculations = async (lineArray: SaveOrdersLine[] = [], pricelistsId: number) => {
 	console.log(
-		'🚀 ~ file: handleCartCalculations.ts:18 ~ handleCalculations ~ pricelistsId:',
-		pricelistsId
-	);
-	console.log(
 		'🚀 ~ file: handleCartCalculations.ts:18 ~ handleCalculations ~ lineArray:',
 		lineArray
 	);
