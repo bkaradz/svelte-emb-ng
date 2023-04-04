@@ -10,7 +10,6 @@
 		{ embroideryTypes: '' },
 		{ embroideryTypes: '' }
 	];
-	$: console.log('🚀 ~ file: +page.svelte:13 ~ dataArray:', dataArray);
 
 	// on:change|preventDefault={() => handleEmbroideryType(item)}
 </script>

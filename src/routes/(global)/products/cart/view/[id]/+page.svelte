@@ -26,7 +26,6 @@
 	};
 
 	export let data: DataType;
-	$: console.log('🚀 ~ file: +page.svelte:29 ~ data:', data);
 
 	const updateCart = (data: DataType) => {
 		if (!data?.order) {

@@ -15,10 +15,6 @@ import {
 } from 'dinero.js';
 
 const handleCalculations = async (lineArray: SaveOrdersLine[] = [], pricelistsId: number) => {
-	console.log(
-		'🚀 ~ file: handleCartCalculations.ts:18 ~ handleCalculations ~ lineArray:',
-		lineArray
-	);
 	try {
 		return await trpc().cart.calculateCart.mutate({
 			pricelistsID: pricelistsId,

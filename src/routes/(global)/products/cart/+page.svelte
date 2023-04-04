@@ -18,43 +18,19 @@
 	import { svgArrow, svgCart, svgCartMinus, svgCartPlus } from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { saveOrdersSchema, type SaveOrder } from '$lib/validation/saveOrder.validate';
-	import type { Contacts, Options, Pricelists } from '@prisma/client';
+	import type { Contacts } from '@prisma/client';
 	import dayjs from 'dayjs';
 	import { dinero, multiply } from 'dinero.js';
 	import type { Snapshot } from './$types';
 	import isBetween from 'dayjs/plugin/isBetween';
 	import weekday from 'dayjs/plugin/weekday';
-	import type { GetContactsReturn } from '$lib/trpc/routes/contacts.prisma';
-	import type { GetOptionsReturn } from '$lib/trpc/routes/options.prisma';
-	import type { GetPricelistsReturn } from '$lib/trpc/routes/pricelists.prisma';
-	import { onMount } from 'svelte';
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
-	// let errorMessages = new Map();
-
-	let embroideryPositionsSelection: string;
-	$: console.log(
-		'🚀 ~ file: +page.svelte:36 ~ embroideryPositionsSelection:',
-		embroideryPositionsSelection
-	);
-
 	type OrderLineType = SaveOrder['OrderLine'][0];
-	type DataType = {
-		customers: GetContactsReturn;
-		embroideryTypes: GetOptionsReturn;
-		embroideryPositions: GetOptionsReturn;
-		pricelists: GetPricelistsReturn;
-		defaultPricelist: Pricelists;
-		currency: Options[];
-		order: SaveOrder;
-	};
 
-	export let data: DataType;
+	export let data;
 
-	$: promise = handleCartCalculations(mainOrderInit, $selectedCurrency);
-
-	onMount;
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
 	let FOUR_DAYS = dayjs().add(4, 'day').format('YYYY-MM-DDTHH:mm');
@@ -74,7 +50,16 @@
 		OrderLine: Array.from($cartItem.values()) || []
 	};
 
-	let mainOrder = mainOrderInit;
+	let mainOrder = structuredClone(mainOrderInit);
+
+	let promise = handleCartCalculations(mainOrder, $selectedCurrency);
+
+	$: $selectedCurrency, recalculateCart()
+
+	const recalculateCart = () => {
+		mainOrder.OrderLine = Array.from($cartItem.values())
+		promise = handleCartCalculations(mainOrder, $selectedCurrency);
+	}
 
 	let idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions = data.embroideryPositions;
@@ -97,8 +82,6 @@
 		}
 	};
 
-	$: mainOrderInit.OrderLine = Array.from($cartItem.values());
-
 	const removeItem = (item: OrderLineType) => {
 		const id = item.productsID;
 		if (!id) {
@@ -107,7 +90,9 @@
 		cartItem.remove(id);
 		if ($cartItem.size === 0) {
 			goto(`/products`);
+			return
 		}
+		recalculateCart()
 	};
 
 	const onDecrease = (item: OrderLineType) => {
@@ -115,15 +100,17 @@
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
+		recalculateCart()
 	};
 
 	const onIncrease = (item: OrderLineType) => {
-		console.log('🚀 ~ file: +page.svelte:112 ~ onIncrease ~ item:', item);
 		cartItem.update(item, { quantity: item.quantity + 1 });
+		recalculateCart()
 	};
 
 	const handleEmbroideryType = (item: OrderLineType) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
+		recalculateCart()
 	};
 
 	let customerSearch: Partial<Omit<Contacts, 'name'>> & { name: string } = { name: '' };
@@ -157,7 +144,7 @@
 			toasts.add({ message: 'A products must be selected', type: 'error' });
 			return;
 		}
-		if (!mainOrder.customersID) {
+		if (mainOrder.customersID < 1) {
 			toasts.add({ message: 'A customer must be selected', type: 'error' });
 			return;
 		}
@@ -187,9 +174,6 @@
 		if (!parsedOrder.success) {
 			zodErrorMessagesMap(parsedOrder);
 
-			// if (errorMap) {
-			// 	errorMessages = errorMap;
-			// }
 			return;
 		}
 
@@ -229,7 +213,6 @@
 		restore: (value) => (customerSearch = value)
 	};
 
-	// on:change|preventDefault={() => handleEmbroideryType(item)}
 </script>
 
 <svelte:head>
@@ -306,6 +289,7 @@
 								{#if embroideryTypes}
 									<select
 										bind:value={item.embroideryTypes}
+										on:change|preventDefault={() => handleEmbroideryType(item)}
 										class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 									>
 										{#each embroideryTypes as type}
@@ -319,7 +303,7 @@
 							<span class="w-1/6 text-sm font-semibold text-right">
 								{#if embroideryPositions}
 									<select
-										bind:value={embroideryPositionsSelection}
+										bind:value={item.embroideryPositions}
 										class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
 									>
 										{#each embroideryPositions as type}
