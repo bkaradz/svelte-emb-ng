@@ -42,6 +42,7 @@
 	];
 
 	let orders = data.orders;
+	$: console.log("🚀 ~ file: +page.svelte:45 ~ orders:", orders)
 
 	let limit = 15;
 	let currentGlobalParams = {
