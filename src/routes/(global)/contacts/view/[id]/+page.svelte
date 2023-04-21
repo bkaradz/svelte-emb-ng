@@ -101,7 +101,7 @@
 			</button>
 		</div>
 
-		<div class="mt-4 flex h-full flex-col  xl:flex-row">
+		<div class="mt-4 flex h-full flex-col xl:flex-row">
 			<!-- Contact Card -->
 			<div
 				class="mr-4 flex w-full basis-1/4 flex-col border-t-4 border-royal-blue-500 bg-white shadow-lg"
@@ -119,7 +119,7 @@
 						<span class="p-2 text-lg font-bold text-pickled-bluewood-500" />
 					</div>
 					<div class="p-2">
-						<p class="p-2 text-xs font-semibold text-pickled-bluewood-500 ">TOTAL INVOICED</p>
+						<p class="p-2 text-xs font-semibold text-pickled-bluewood-500">TOTAL INVOICED</p>
 						<span class="p-2 text-lg font-bold text-pickled-bluewood-500" />
 					</div>
 				</div>
@@ -168,7 +168,7 @@
 						<div />
 					</div>
 					<!-- View list Buttons -->
-					<div class="flex flex-row items-center ">
+					<div class="flex flex-row items-center">
 						<div class="container mx-auto mr-4 flex justify-center">
 							<ul class="flex">
 								<li>
@@ -176,8 +176,7 @@
 										<span class="mr-2 text-xs text-pickled-bluewood-500"
 											>Page {orders?.current.page} of {orders?.totalPages}({orders?.totalRecords} items)</span
 										>
-										<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit"
-											>Display</label
+										<label class="mr-2 text-xs text-pickled-bluewood-500" for="limit">Display</label
 										>
 										<input
 											class="input w-16 border"
@@ -230,7 +229,7 @@
 								<li>
 									<button
 										disabled
-										class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+										class="btn border border-pickled-bluewood-600 bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100 disabled:bg-pickled-bluewood-600"
 										>{orders?.current?.page}</button
 									>
 								</li>

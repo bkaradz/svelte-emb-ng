@@ -50,7 +50,7 @@
 							{#each order.OrderLine as item (item.id)}
 								{@const totalPrice = multiply(dinero(item.unitPrice), item.quantity)}
 								<tr
-									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal "
+									class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal"
 								>
 									<td class="px-1 py-1 text-xs text-pickled-bluewood-500 text-left"
 										>{item.productsID}</td

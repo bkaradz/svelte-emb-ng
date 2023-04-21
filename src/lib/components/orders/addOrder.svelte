@@ -1,4 +1,4 @@
-<div class="flex flex-col w-full  rounded">
+<div class="flex flex-col w-full rounded">
 	<div class="pb-5">
 		<slot name="header" />
 	</div>

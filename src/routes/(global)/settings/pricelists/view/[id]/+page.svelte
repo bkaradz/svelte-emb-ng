@@ -32,7 +32,7 @@
 	<form>
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
-				<div class="flex items-end space-x-6 ">
+				<div class="flex items-end space-x-6">
 					<label for="name" class="flex justify-between text-sm">
 						<span>Name</span>
 						<span class="text-xs text-danger"
@@ -68,7 +68,7 @@
 				</div>
 			</div>
 			<!-- Table start -->
-			<div class="w-full  ">
+			<div class="w-full">
 				<div>
 					{#each [...groupList] as list, index (index)}
 						<button
@@ -80,7 +80,7 @@
 						>
 					{/each}
 				</div>
-				<div class=" block ">
+				<div class=" block">
 					<table class="relative w-full rounded-lg text-left text-sm">
 						<thead>
 							<tr

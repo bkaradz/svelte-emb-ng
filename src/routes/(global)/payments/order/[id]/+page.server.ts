@@ -6,7 +6,7 @@ export const load = (async (event) => {
 	const order = async () => {
 		return await router
 			.createCaller(await createContext(event))
-			.orders.getById(parseInt(event.params.id));
+			.orders.getById(parseInt(event.params.id, 10));
 	};
 
 	const currenciesOptions = async () => {

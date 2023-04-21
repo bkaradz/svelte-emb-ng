@@ -51,7 +51,7 @@
 <svelte:window on:keydown={handleKeyDown} />
 
 <div
-	class="menu z-10 flex flex-row items-center justify-end  bg-gradient-to-tl from-royal-blue-500 to-royal-blue-200 drop-shadow-md"
+	class="menu z-10 flex flex-row items-center justify-end bg-gradient-to-tl from-royal-blue-500 to-royal-blue-200 drop-shadow-md"
 >
 	<div class="flex items-center mr-6">
 		<label class="mr-3 text-sm whitespace-nowrap text-white">
@@ -74,7 +74,7 @@
 	<span class="relative mr-8 inline-block text-info">
 		{@html svgBellSolid}
 		<span
-			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-success px-2 py-1 text-xs font-bold leading-none text-white"
 			>122</span
 		>
 	</span>

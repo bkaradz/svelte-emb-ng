@@ -129,7 +129,7 @@ if (browser) {
 			if (rates.length === 1) {
 				const ratesMap = new Map<string, number>();
 				rates[0]?.ExchangeRateDetails.map((rate) => {
-					if (!(typeof parseInt(rate.rate as string) === 'number')) {
+					if (!(typeof parseInt(rate.rate as string, 10) === 'number')) {
 						return;
 					}
 					ratesMap.set(rate.currency, Math.ceil(parseFloat(rate.rate as string) * 100));

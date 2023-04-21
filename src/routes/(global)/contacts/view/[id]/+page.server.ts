@@ -6,7 +6,7 @@ export const load = (async (event) => {
 	const contact = async () => {
 		return await router
 			.createCaller(await createContext(event))
-			.contacts.getById(parseInt(event.params.id));
+			.contacts.getById(parseInt(event.params.id, 10));
 	};
 
 	const orders = async () => {

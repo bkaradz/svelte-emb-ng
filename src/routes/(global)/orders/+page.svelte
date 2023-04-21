@@ -42,7 +42,7 @@
 	];
 
 	let orders = data.orders;
-	$: console.log("🚀 ~ file: +page.svelte:45 ~ orders:", orders)
+	$: console.log('🚀 ~ file: +page.svelte:45 ~ orders:', orders);
 
 	let limit = 15;
 	let currentGlobalParams = {
@@ -323,7 +323,7 @@
 					</div>
 				</div>
 				<!-- View list Buttons -->
-				<div class="flex flex-row items-center ">
+				<div class="flex flex-row items-center">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">
 							<li>
@@ -331,7 +331,7 @@
 									<span class="mr-2 text-xs text-pickled-bluewood-500"
 										>Page {orders.current.page} of {orders.totalPages}({orders.totalRecords} items)</span
 									>
-									<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit">Display</label>
+									<label class="mr-2 text-xs text-pickled-bluewood-500" for="limit">Display</label>
 									<input
 										class="input w-16 border"
 										type="number"
@@ -381,7 +381,7 @@
 							<li>
 								<button
 									disabled
-									class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+									class="btn border border-pickled-bluewood-600 bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100 disabled:bg-pickled-bluewood-600"
 									>{orders.current.page}</button
 								>
 							</li>
@@ -444,7 +444,7 @@
 							</h4>
 						</div>
 						<div
-							class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+							class="mx-4 mb-4 flex h-full items-center justify-evenly border border-royal-blue-100 bg-pickled-bluewood-50"
 						>
 							<div class="p-1">
 								<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">BALANCE DUE</p>

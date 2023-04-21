@@ -177,7 +177,7 @@
 	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
-				<div class="flex items-end space-x-6 ">
+				<div class="flex items-end space-x-6">
 					<label class=" text-sm" for="id"
 						>Exchange Rate Id
 						<input class="input w-full" type="text" name="id" id="id" bind:value={newId} disabled />
@@ -210,7 +210,7 @@
 				</div>
 			</div>
 			<!-- Table start -->
-			<div class="w-full  ">
+			<div class="w-full">
 				<div>
 					{#each [...groupList] as list, index (index)}
 						<button
@@ -222,7 +222,7 @@
 						>
 					{/each}
 				</div>
-				<div class=" block ">
+				<div class=" block">
 					<table class="relative w-full rounded-lg text-left text-sm">
 						<thead>
 							<tr
@@ -266,7 +266,7 @@
 										/>
 									</td>
 
-									<td class="p-1 text-center ">
+									<td class="p-1 text-center">
 										<button class=" m-0 p-0" on:click|preventDefault={() => handleEditable(list)}>
 											<span class="fill-current text-pickled-bluewood-500">
 												{@html isEditableID === list.id ? svgFloppy : svgPencil}
@@ -274,7 +274,7 @@
 										</button>
 									</td>
 
-									<td class="p-1 text-center ">
+									<td class="p-1 text-center">
 										<button class=" m-0 p-0" on:click|preventDefault={() => handleDelete(list.id)}>
 											<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 										</button>

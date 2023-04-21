@@ -6,7 +6,7 @@ import type { PageServerLoad } from './$types';
 export const load = (async (event) => {
 	const quotationPage = async () => {
 		return await router.createCaller(await createContext(event)).orders.getQuotationOrder({
-			id: parseInt(event.params.id),
+			id: parseInt(event.params.id, 10),
 			currency: event.params.currency
 		} as { id: number; currency: CurrencyType });
 	};

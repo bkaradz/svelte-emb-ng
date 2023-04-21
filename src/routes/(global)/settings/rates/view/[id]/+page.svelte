@@ -109,7 +109,7 @@
 	<form on:submit|preventDefault={handleSubmit} method="POST">
 		<div class="space-y-4 bg-white p-2 shadow-lg">
 			<div class="flex items-end justify-between">
-				<div class="flex items-end space-x-6 ">
+				<div class="flex items-end space-x-6">
 					<label class="text-sm" for="id">
 						Exchange Rate Id
 						<input
@@ -151,9 +151,9 @@
 				</div>
 			</div>
 			<!-- Table start -->
-			<div class="w-full  ">
+			<div class="w-full">
 				<div />
-				<div class=" block ">
+				<div class=" block">
 					<table class="relative w-full rounded-lg text-left text-sm">
 						<thead>
 							<tr
@@ -192,7 +192,7 @@
 										<span>${list.rate}</span>
 									</td>
 
-									<td class="p-1 text-center ">
+									<td class="p-1 text-center">
 										<button
 											disabled
 											class=" m-0 p-0"
@@ -204,7 +204,7 @@
 										</button>
 									</td>
 
-									<td class="p-1 text-center ">
+									<td class="p-1 text-center">
 										<button
 											disabled
 											class=" m-0 p-0"

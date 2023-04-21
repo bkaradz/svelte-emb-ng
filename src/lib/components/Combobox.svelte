@@ -80,7 +80,7 @@
 				{/if}
 			</label>
 			<div class={`${validityClass} input relative p-0`}>
-				<div class="flex items-center  bg-white">
+				<div class="flex items-center bg-white">
 					<!-- ComboBox Input -->
 					<input
 						use:selectTextOnFocus
