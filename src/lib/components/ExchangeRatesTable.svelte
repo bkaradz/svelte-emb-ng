@@ -65,7 +65,7 @@
 {#if rates.length}
 	<!-- Table start -->
 	<div class="w-full bg-white p-2 shadow-lg">
-		<div class=" block ">
+		<div class=" block">
 			<table class="relative w-full rounded-lg text-left text-sm">
 				<thead>
 					<tr
@@ -81,7 +81,7 @@
 						<tr
 							class="whitespace-no-wrap w-full border border-t-0 border-pickled-bluewood-300 font-normal odd:bg-pickled-bluewood-100 odd:text-pickled-bluewood-900 even:text-pickled-bluewood-900"
 						>
-							<td class="px-2 py-1 ">
+							<td class="px-2 py-1">
 								<input
 									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent text-center"
 									type="text"
@@ -100,14 +100,14 @@
 							<td class="px-2 py-1 text-center">
 								<input disabled bind:checked={list.isDefault} type="checkbox" name="isDefault" />
 							</td>
-							<td class="p-1 text-center ">
+							<td class="p-1 text-center">
 								<button class=" m-0 p-0" on:click={() => viewPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgView}
 									</span>
 								</button>
 							</td>
-							<td class="p-1 text-center ">
+							<td class="p-1 text-center">
 								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>

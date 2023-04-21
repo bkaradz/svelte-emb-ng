@@ -251,7 +251,7 @@
 					{disabled}
 					on:change|preventDefault={() => (disabled = true)}
 					type="submit"
-					class="group relative flex w-full mt-5 justify-center border border-transparent  bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+					class="group relative flex w-full mt-5 justify-center border border-transparent bg-royal-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-royal-blue-700 focus:outline-none focus:ring-2 focus:ring-royal-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					<span class="absolute inset-y-0 left-0 flex items-center pl-3">
 						{@html svgRegister}

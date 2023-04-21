@@ -66,7 +66,7 @@
 {#if pricelists.length}
 	<!-- Table start -->
 	<div class="w-full bg-white p-2 shadow-lg">
-		<div class=" block ">
+		<div class=" block">
 			<table class="relative w-full rounded-lg text-left text-sm">
 				<thead>
 					<tr
@@ -114,14 +114,14 @@
 								<input disabled bind:checked={list.isDefault} type="checkbox" name="isDefault" />
 							</td>
 
-							<td class="p-1 text-center ">
+							<td class="p-1 text-center">
 								<button class=" m-0 p-0" on:click={() => viewPricelist(list.id)}>
 									<span class="fill-current text-pickled-bluewood-500">
 										{@html svgView}
 									</span>
 								</button>
 							</td>
-							<td class="p-1 text-center ">
+							<td class="p-1 text-center">
 								<button class=" m-0 p-0" on:click={() => handleDelete(list)}>
 									<span class="fill-current text-pickled-bluewood-500">{@html svgTrash}</span>
 								</button>

@@ -526,12 +526,12 @@
 
 	let promise = handleCartCalculations(mainOrder, $selectedCurrency);
 
-	$: $selectedCurrency, recalculateCart()
+	$: $selectedCurrency, recalculateCart();
 
 	const recalculateCart = () => {
-		mainOrder.OrderLine = Array.from($cartItem.values())
+		mainOrder.OrderLine = Array.from($cartItem.values());
 		promise = handleCartCalculations(mainOrder, $selectedCurrency);
-	}
+	};
 
 	let idValue = generateSONumber(mainOrder.id);
 	let embroideryPositions = data.embroideryPositions;
@@ -562,9 +562,9 @@
 		cartItem.remove(id);
 		if ($cartItem.size === 0) {
 			goto(`/products`);
-			return
+			return;
 		}
-		recalculateCart()
+		recalculateCart();
 	};
 
 	const onDecrease = (item: OrderLineType) => {
@@ -572,17 +572,17 @@
 			return;
 		}
 		cartItem.update(item, { quantity: item.quantity > 1 ? item.quantity - 1 : 1 });
-		recalculateCart()
+		recalculateCart();
 	};
 
 	const onIncrease = (item: OrderLineType) => {
 		cartItem.update(item, { quantity: item.quantity + 1 });
-		recalculateCart()
+		recalculateCart();
 	};
 
 	const handleEmbroideryType = (item: OrderLineType) => {
 		cartItem.update(item, { embroideryTypes: item.embroideryTypes });
-		recalculateCart()
+		recalculateCart();
 	};
 
 	let customerSearch: Partial<Omit<Contacts, 'name'>> & { name: string } = { name: '' };
@@ -684,7 +684,6 @@
 		capture: () => customerSearch,
 		restore: (value) => (customerSearch = value)
 	};
-
 </script>
 
 <svelte:head>
@@ -929,7 +928,7 @@
 			<div class="border-t border-royal-blue-500">
 				<h2 class="mt-4 text-xl font-semibold capitalize">Payment Methods</h2>
 				<div class="grid grid-cols-3 mt-2">
-					<div class="border-b border-white ">
+					<div class="border-b border-white">
 						<button
 							on:click|preventDefault={() => setPaymentTab('showSave')}
 							class="btn btn-primary w-full {paymentTabs.get('showSave') ? 'bg-success' : ''}"
@@ -1005,4 +1004,3 @@
 		height: calc(100% - 75px);
 	}
 </style>
-

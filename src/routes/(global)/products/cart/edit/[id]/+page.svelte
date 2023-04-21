@@ -459,7 +459,7 @@
 			</div>
 		</div>
 
-		<div class="flex justify-between  border-t border-royal-blue-500">
+		<div class="flex justify-between border-t border-royal-blue-500">
 			<span class="text-sm font-medium uppercase pt-5">Subtotal</span>
 			<span class="text-sm font-semibold pt-5">
 				{format(subTotal)}
@@ -475,7 +475,7 @@
 		<div class="mt-5 border-t border-royal-blue-500">
 			<div class="flex justify-between my-5 font-medium uppercase text-danger text-base">
 				<span>Total</span>
-				<span class="text-base font-semibold ">
+				<span class="text-base font-semibold">
 					{format(calculatedTotal)}
 				</span>
 			</div>

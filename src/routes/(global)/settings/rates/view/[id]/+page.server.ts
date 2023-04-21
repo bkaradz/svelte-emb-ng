@@ -12,7 +12,7 @@ export const load = (async (event) => {
 	const resultsRates = async () => {
 		return await router
 			.createCaller(await createContext(event))
-			.exchangeRate.getById(parseInt(event.params.id));
+			.exchangeRate.getById(parseInt(event.params.id, 10));
 	};
 
 	return {

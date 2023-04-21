@@ -110,7 +110,7 @@ export const DELETE: RequestHandler = async ({ locals, request }) => {
 
 		const userD = await prisma.contacts.update({
 			where: {
-				id: parseInt(userDelete.id)
+				id: parseInt(userDelete.id, 10)
 			},
 			data: {
 				createdBy,

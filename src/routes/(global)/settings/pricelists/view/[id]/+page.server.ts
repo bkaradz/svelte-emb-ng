@@ -6,7 +6,7 @@ import type { PageServerLoad } from './$types';
 export const load = (async (event) => {
 	const tempPricelist = await router
 		.createCaller(await createContext(event))
-		.pricelists.getById(parseInt(event.params.id));
+		.pricelists.getById(parseInt(event.params.id, 10));
 
 	const pricelist = tempPricelist ? convertPricelist(tempPricelist) : null;
 

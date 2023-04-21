@@ -166,7 +166,7 @@
 </svelte:head>
 
 {#if products}
-	<div class="flex flex-1  flex-col overflow-hidden">
+	<div class="flex flex-1 flex-col overflow-hidden">
 		<div>
 			<!-- Heading and Buttons Bar -->
 			<div class="main-header flex flex-row items-center justify-between">
@@ -177,7 +177,7 @@
 						<span class="relative hover:cursor-pointer mr-4 mt-4 inline-block text-danger">
 							{@html svgShoppingBag}
 							<span
-								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-success px-2 py-1 text-xs font-bold leading-none text-white"
 								>{$cartItem.size}</span
 							>
 						</span>
@@ -190,7 +190,7 @@
 						>
 							{@html svgCartBig}
 							<span
-								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full  bg-success px-2 py-1 text-xs font-bold leading-none text-white"
+								class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-success px-2 py-1 text-xs font-bold leading-none text-white"
 								>{totalCartItems() ? totalCartItems() : 0}</span
 							>
 						</span>
@@ -269,7 +269,7 @@
 					</div>
 				</div>
 				<!-- View list Buttons -->
-				<div class="flex flex-row items-center ">
+				<div class="flex flex-row items-center">
 					<div class="container mx-auto mr-4 flex justify-center">
 						<ul class="flex">
 							<li>
@@ -277,7 +277,7 @@
 									<span class="mr-2 text-xs text-pickled-bluewood-500"
 										>Page {products.current.page} of {products.totalPages}({products.totalRecords} items)</span
 									>
-									<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit">Display</label>
+									<label class="mr-2 text-xs text-pickled-bluewood-500" for="limit">Display</label>
 									<input
 										class="input w-16 border"
 										type="number"
@@ -327,7 +327,7 @@
 							<li>
 								<button
 									disabled
-									class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+									class="btn border border-pickled-bluewood-600 bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100 disabled:bg-pickled-bluewood-600"
 									>{products.current.page}</button
 								>
 							</li>
@@ -384,7 +384,7 @@
 					<div
 						class="{cartHasProduct
 							? 'border-success'
-							: 'border-royal-blue-500'} flex h-44 w-full max-w-xs grow flex-col border-t-4 bg-white shadow-lg  hover:bg-pickled-bluewood-100 lg:w-1/6"
+							: 'border-royal-blue-500'} flex h-44 w-full max-w-xs grow flex-col border-t-4 bg-white shadow-lg hover:bg-pickled-bluewood-100 lg:w-1/6"
 					>
 						<div class="flex h-full items-center">
 							<span
@@ -406,7 +406,7 @@
 						</div>
 						{#if product?.productCategories === 'embroidery'}
 							<div
-								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+								class="mx-4 mb-4 flex h-full items-center justify-evenly border border-royal-blue-100 bg-pickled-bluewood-50"
 							>
 								<div class="p-1 text-center">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">STITCHES</p>
@@ -417,7 +417,7 @@
 							</div>
 						{:else}
 							<div
-								class="mx-4 mb-4 flex h-full items-center justify-evenly border  border-royal-blue-100 bg-pickled-bluewood-50"
+								class="mx-4 mb-4 flex h-full items-center justify-evenly border border-royal-blue-100 bg-pickled-bluewood-50"
 							>
 								<div class="p-1">
 									<p class="p-1 text-xs font-semibold text-pickled-bluewood-500">UNITS</p>
@@ -439,7 +439,7 @@
 				<div class=" flex flex-1 flex-wrap gap-4">
 					<!-- Table start -->
 					<div class="w-full bg-white py-6 shadow-lg">
-						<div class="mx-6 block ">
+						<div class="mx-6 block">
 							<table class="relative w-full rounded-lg text-left text-sm">
 								<thead class="sticky top-0">
 									<tr
@@ -478,7 +478,7 @@
 												<div class="flex items-center justify-center">
 													<span class="flex w-1/6 pr-4">
 														<button
-															class="border rounded px-1 bg-royal-blue-200 "
+															class="border rounded px-1 bg-royal-blue-200"
 															on:click|preventDefault={() => onDecrease(product)}
 															aria-label="Decrease quantity"
 														>

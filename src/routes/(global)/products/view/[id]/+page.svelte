@@ -109,13 +109,13 @@
 			</button>
 		</div>
 
-		<div class="mt-4 flex h-full flex-col  xl:flex-row">
+		<div class="mt-4 flex h-full flex-col xl:flex-row">
 			<!-- Product Card -->
 			<div
 				class="mr-4 flex w-full basis-1/4 flex-col space-y-2 border-t-4 border-royal-blue-500 bg-white p-4 shadow-lg"
 			>
 				<div class="w-full border border-royal-blue-200 bg-pickled-bluewood-100 p-3">
-					<h4 class="text-lg font-medium text-pickled-bluewood-600 ">
+					<h4 class="text-lg font-medium text-pickled-bluewood-600">
 						{product.id}
 					</h4>
 				</div>
@@ -168,7 +168,7 @@
 						<div />
 					</div>
 					<!-- View list Buttons -->
-					<div class="flex flex-row items-center ">
+					<div class="flex flex-row items-center">
 						<div class="container mx-auto mr-4 flex justify-center">
 							<ul class="flex">
 								<li>
@@ -177,8 +177,7 @@
 											>Page {ordersList?.current.page} of {ordersList?.totalPages}({ordersList?.totalRecords}
 											items)</span
 										>
-										<label class="mr-2 text-xs  text-pickled-bluewood-500" for="limit"
-											>Display</label
+										<label class="mr-2 text-xs text-pickled-bluewood-500" for="limit">Display</label
 										>
 										<input
 											class="input w-16 border"
@@ -231,7 +230,7 @@
 								<li>
 									<button
 										disabled
-										class="btn border border-pickled-bluewood-600  bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100  disabled:bg-pickled-bluewood-600"
+										class="btn border border-pickled-bluewood-600 bg-pickled-bluewood-600 px-4 text-pickled-bluewood-100 disabled:bg-pickled-bluewood-600"
 										>{ordersList?.current?.page}</button
 									>
 								</li>
@@ -301,7 +300,7 @@
 														>{order.Orders.accountsStatus}</span
 													>
 												</td>
-												<td class="p-1 text-center ">
+												<td class="p-1 text-center">
 													<button class=" m-0 p-0" on:click={() => viewOrder(order.Orders.id)}>
 														<span class="fill-current text-pickled-bluewood-500">
 															{@html svgView}

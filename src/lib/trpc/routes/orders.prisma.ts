@@ -1,4 +1,5 @@
 import prisma from '$lib/prisma/client';
+import type {Enumerable, OrderLineUpdateManyWithWhereWithoutOrdersInput} from '$lib/prisma/client';
 import { getPagination } from '$lib/utility/pagination.util';
 import { getBoolean } from '$lib/utility/toBoolean';
 import type { SearchParams } from '$lib/validation/searchParams.validate';
@@ -290,11 +291,11 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	}
 
 	const updateCalcOrder =
-		calcOrderMap as unknown as Prisma.OrderLineUpdateManyWithWhereWithoutOrdersInput;
+		calcOrderMap as unknown as Enumerable<OrderLineUpdateManyWithWhereWithoutOrdersInput> OR undefined
 
-	if (!updateCalcOrder) {
-		throw new Error('Update OrderLine not found');
-	}
+	// if (!updateCalcOrder) {
+	// 	throw new Error('Update OrderLine not found');
+	// }
 
 	const { OrderLine, ...restOrder } = input;
 
@@ -398,7 +399,7 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 	}
 
 	if (objectKeys === 'id' || objectKeys === 'customersID' || objectKeys === 'pricelistsID') {
-		return parseInt(finalQuery[objectKeys]);
+		return parseInt(finalQuery[objectKeys], 10);
 	}
 
 	return {
@@ -409,7 +410,7 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 
 const getOrderLineQueryOptions = (objectKeys: string, finalQuery: any) => {
 	if (objectKeys === 'id' || objectKeys === 'ordersID' || objectKeys === 'productsID') {
-		return parseInt(finalQuery[objectKeys]);
+		return parseInt(finalQuery[objectKeys], 10);
 	}
 
 	return {
