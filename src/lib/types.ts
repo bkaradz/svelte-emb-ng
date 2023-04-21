@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface userSessionInterface {
 	id: number;
 	name: string;
@@ -12,3 +14,19 @@ export interface userSessionInterface {
 }
 
 export type User = userSessionInterface | null;
+
+
+//  type Currency<TAmount> = {
+// 	readonly code: string;
+// 	readonly base: TAmount;
+// 	readonly exponent: TAmount;
+// };
+
+
+//  type DineroOptions<TAmount> = {
+//     readonly amount: TAmount;
+//     readonly currency: Currency<TAmount>;
+//     readonly scale?: TAmount;
+// };
+
+

@@ -8,7 +8,13 @@ function addCartItems() {
 
 	return {
 		subscribe,
-		add: (payload: Omit<SaveOrdersLine['Products'], 'id'> & { id: number }) =>
+		addOrderLine: (payload: SaveOrdersLine) =>
+			update((cart) =>
+				cart.set(payload.productsID, {
+					...payload
+				})
+			),
+		addProduct: (payload: Omit<SaveOrdersLine['Products'], 'id'> & { id: number }) =>
 			update((cart) =>
 				cart.set(payload.id, {
 					Products: payload,

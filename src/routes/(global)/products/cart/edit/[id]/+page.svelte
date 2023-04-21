@@ -47,7 +47,7 @@
 			if (!id) {
 				return;
 			}
-			cartItem.add(item);
+			cartItem.addProduct(item);
 		});
 		cartOrder.add({ ...restOrder });
 	};

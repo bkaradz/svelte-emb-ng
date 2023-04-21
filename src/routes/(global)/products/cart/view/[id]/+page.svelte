@@ -31,7 +31,7 @@
 			if (!id) {
 				return;
 			}
-			cartItem.add(item);
+			cartItem.addProduct(item);
 		});
 		cartOrder.add({ ...restOrder });
 	};
@@ -455,7 +455,7 @@
 	import ShowStewartBank from '$lib/components/cart/ShowStewartBank.svelte';
 	import Combobox from '$lib/components/Combobox.svelte';
 	import { format } from '$lib/services/monetary';
-	import { cartItem } from '$lib/stores/cart.store';
+	import { cartItem, cartOrder } from '$lib/stores/cart.store';
 	import { selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
@@ -471,12 +471,37 @@
 	import type { Snapshot } from './$types';
 	import isBetween from 'dayjs/plugin/isBetween';
 	import weekday from 'dayjs/plugin/weekday';
+	import { onMount } from 'svelte';
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
 	type OrderLineType = SaveOrder['OrderLine'][0];
 
 	export let data;
+
+	type DataType = typeof data
+
+	const updateCart = (data: DataType) => {
+		console.log("🚀 ~ file: +page.svelte:485 ~ updateCart ~ data:", data)
+		if (!data?.order) {
+			return;
+		}
+		const { OrderLine, ...restOrder } = data.order;
+		mainOrder = data.order;
+		customerSearch = data.order.customerContact;
+		data.order.OrderLine.forEach((item) => {
+			const id = item?.productsID;
+			if (!id) {
+				return;
+			}
+			cartItem.addOrderLine(item);
+		});
+		cartOrder.add({ ...restOrder });
+	};
+
+	onMount(()=> {
+		updateCart(data)
+	})
 
 
 	const TODAY = dayjs().format('YYYY-MM-DDTHH:mm');
@@ -488,12 +513,12 @@
 	}
 
 	let mainOrderInit: SaveOrder = {
-		customersID: -1,
-		pricelistsID: data.defaultPricelist.id,
-		isActive: true,
-		accountsStatus: 'Quotation',
-		orderDate: TODAY,
-		deliveryDate: FOUR_DAYS,
+		customersID: data.order.customersID,
+		pricelistsID: data.order.pricelistsID,
+		isActive:  data.order.isActive,
+		accountsStatus: data.order.accountsStatus,
+		orderDate: data.order.orderDate,
+		deliveryDate: data.order.deliveryDate,
 		OrderLine: Array.from($cartItem.values()) || []
 	};
 

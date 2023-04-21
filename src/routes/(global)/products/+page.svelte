@@ -92,7 +92,7 @@
 		if (!id) {
 			return;
 		}
-		cartItem.add(item);
+		cartItem.addProduct(item);
 	};
 
 	const onDecrease = (item: Products) => {
@@ -121,7 +121,7 @@
 			return;
 		}
 		if (!$cartItem.has(id)) {
-			cartItem.add({ ...item, id });
+			cartItem.addProduct({ ...item, id });
 		} else {
 			const product = $cartItem.get(id);
 			if (!product) {
