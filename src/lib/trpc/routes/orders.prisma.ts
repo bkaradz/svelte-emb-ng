@@ -291,7 +291,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	}
 
 	const updateCalcOrder =
-		calcOrderMap as unknown as Enumerable<OrderLineUpdateManyWithWhereWithoutOrdersInput> OR undefined
+		calcOrderMap as unknown as Enumerable<OrderLineUpdateManyWithWhereWithoutOrdersInput>
 
 	// if (!updateCalcOrder) {
 	// 	throw new Error('Update OrderLine not found');
