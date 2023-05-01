@@ -1,22 +1,26 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	// import { goto } from '$app/navigation';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { toasts } from '$lib/stores/toasts.store';
-	import logger from '$lib/utility/logger';
+	// import logger from '$lib/utility/logger';
 	import { svgEyeClose, svgEyeOpen, svgLogin } from '$lib/utility/svgLogos';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
+	import type { ActionData } from './$types';
+	// import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+	// import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
 
 	let errorMessages = new Map();
 
-	type FormData = {
-		email: string | undefined;
-		password: string | undefined;
-	};
+	export let form: ActionData
+	$: console.log("🚀 ~ file: +page.svelte:14 ~ form:", form)
 
-	const resetForm = () => {
-		return structuredClone(initFromData);
-	};
+	// type FormData = {
+	// 	email: string | undefined;
+	// 	password: string | undefined;
+	// };
+
+	// const resetForm = () => {
+	// 	return structuredClone(initFromData);
+	// };
 
 	const initFromData = {
 		email: undefined,
@@ -25,7 +29,7 @@
 
 	let formData: FormData = structuredClone(initFromData);
 
-	type formDataKeys = keyof LoginCredentials;
+	// type formDataKeys = keyof LoginCredentials;
 
 	const handleInput = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
 		let name = (event.target as HTMLInputElement).name as formDataKeys;
@@ -35,51 +39,53 @@
 
 	$: disabled = false;
 
-	const handleLogin = async () => {
-		const parsedUser = loginCredentialsSchema.safeParse(formData);
-		if (!parsedUser.success) {
-			const errorMap = zodErrorMessagesMap(parsedUser);
+	// const handleLogin = async () => {
+	// 	const parsedUser = loginCredentialsSchema.safeParse(formData);
+	// 	if (!parsedUser.success) {
+	// 		const errorMap = zodErrorMessagesMap(parsedUser);
 
-			if (errorMap) {
-				errorMessages = errorMap;
-			}
-			disabled = false;
-			return;
-		}
-		try {
-			const res = await fetch('/api/auth/login.json', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include'
-			});
+	// 		if (errorMap) {
+	// 			errorMessages = errorMap;
+	// 		}
+	// 		disabled = false;
+	// 		return;
+	// 	}
+	// 	try {
+	// 		const res = await fetch('/api/auth/login.json', {
+	// 			method: 'POST',
+	// 			body: JSON.stringify(formData),
+	// 			headers: { 'Content-Type': 'application/json' },
+	// 			credentials: 'include'
+	// 		});
 
-			if (res.ok) {
-				const sessionData = await res.json();
+	// 		if (res.ok) {
+	// 			const sessionData = await res.json();
 
-				formData = resetForm();
-				toasts.add({
-					message: `Login successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
-					type: 'success'
-				});
-				goto('/');
-			}
-			if (!res.ok) {
-				const errorMessage = await res.json();
+	// 			formData = resetForm();
+	// 			toasts.add({
+	// 				message: `Login successful <bold class="pl-1 text-danger text-base">Welcome ${sessionData?.name}</bold>`,
+	// 				type: 'success'
+	// 			});
+	// 			goto('/');
+	// 		}
+	// 		if (!res.ok) {
+	// 			const errorMessage = await res.json();
 
-				formData = resetForm();
-				toasts.add({
-					message: `${errorMessage.message}`,
-					type: 'error'
-				});
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred', type: 'error' });
-		}
-	};
+	// 			formData = resetForm();
+	// 			toasts.add({
+	// 				message: `${errorMessage.message}`,
+	// 				type: 'error'
+	// 			});
+	// 		}
+	// 	} catch (err: any) {
+	// 		logger.error(`Error: ${err}`);
+	// 		toasts.add({ message: 'An error has occurred', type: 'error' });
+	// 	}
+	// };
 	let isVisible = false;
 	$: type = isVisible ? 'text' : 'password';
+
+	// on:submit|preventDefault={handleLogin}
 </script>
 
 <svelte:head>
@@ -92,8 +98,7 @@
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Login</h2>
 	</div>
 
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin} method="POST">
-		<input type="hidden" name="remember" value="true" />
+	<form class="mt-8 space-y-6"  method="POST">
 		<div class="space-y-2 shadow-sm">
 			<label for="email" class="flex justify-between text-sm">
 				<span>Email</span>
