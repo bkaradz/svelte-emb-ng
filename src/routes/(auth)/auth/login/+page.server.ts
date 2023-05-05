@@ -7,7 +7,11 @@ import { createSession, setSessionCookies, validateUserPassword } from '$lib/ser
 import { signJwt } from '$lib/utility/jwt.utils';
 import config from 'config';
 
-export const load = (async () => {
+export const load = (async ({ locals }) => {
+    console.log("🚀 ~ file: +page.server.ts:11 ~ load ~ locals:", locals)
+    if (locals.user) {
+        throw redirect(302, '/')
+    }
     return {};
 }) satisfies PageServerLoad;
 
@@ -50,11 +54,19 @@ export const actions: Actions = {
 		const accessToken = signJwt(body, { expiresIn: config.get('accessTokenTtl') });
 
 		// return access tokens
-		const headers = setSessionCookies(accessToken, cookies);
+		// const headers = setSessionCookies(accessToken, cookies);
 
-        cookies.set({...headers});
+        cookies.set('accessToken', accessToken, {
+            maxAge: config.get('cookieAccessTokenTtl'), // 15min
+            httpOnly: config.get('httpOnly'),
+            path: '/',
+            sameSite: config.get('sameSite'),
+            secure: config.get('secure')
+        });
 
-		return new Response(JSON.stringify(body), { headers: headers });
+		// return new Response(JSON.stringify(body), { headers: headers });
+        return JSON.stringify(body)
+        // throw redirect(302, '/')
 
         } catch (error) {
             console.log('object', error);
