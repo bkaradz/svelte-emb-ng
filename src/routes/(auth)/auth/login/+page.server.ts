@@ -65,8 +65,8 @@ export const actions: Actions = {
         });
 
 		// return new Response(JSON.stringify(body), { headers: headers });
-        return JSON.stringify(body)
-        // throw redirect(302, '/')
+        // return JSON.stringify(body)
+        throw redirect(302, '/')
 
         } catch (error) {
             console.log('object', error);
