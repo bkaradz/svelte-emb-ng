@@ -11,7 +11,6 @@
 	let errorMessages = new Map();
 
 	export let form: ActionData
-	$: console.log("🚀 ~ file: +page.svelte:14 ~ form:", form)
 
 	// type FormData = {
 	// 	email: string | undefined;

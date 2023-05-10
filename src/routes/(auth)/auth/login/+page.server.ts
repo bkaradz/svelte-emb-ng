@@ -1,14 +1,12 @@
-import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 import { loginCredentialsSchema, type LoginCredentials } from '$lib/validation/login.validate';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, type Actions} from '@sveltejs/kit';
 import { createSession, setSessionCookies, validateUserPassword } from '$lib/services/session.services';
 import { signJwt } from '$lib/utility/jwt.utils';
 import config from 'config';
 
 export const load = (async ({ locals }) => {
-    console.log("🚀 ~ file: +page.server.ts:11 ~ load ~ locals:", locals)
     if (locals.user) {
         throw redirect(302, '/')
     }
@@ -20,7 +18,6 @@ export const actions: Actions = {
         const formData = Object.fromEntries(await request.formData())
         try {
             const parsedUser = loginCredentialsSchema.safeParse(formData);
-            console.log("🚀 ~ file: +page.server.ts:17 ~ default: ~ parsedUser:", parsedUser)
             if (!parsedUser.success) {
                 const errorMap = zodErrorMessagesMap(parsedUser);
                 return fail(400, {
@@ -69,7 +66,6 @@ export const actions: Actions = {
         // throw redirect(302, '/')
 
         } catch (error) {
-            console.log('object', error);
             return fail(400, {
                 message: 'Something went wrong',
                 errors: {}

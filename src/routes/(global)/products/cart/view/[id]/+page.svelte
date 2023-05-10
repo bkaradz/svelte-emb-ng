@@ -482,7 +482,6 @@
 	type DataType = typeof data
 
 	const updateCart = (data: DataType) => {
-		console.log("🚀 ~ file: +page.svelte:485 ~ updateCart ~ data:", data)
 		if (!data?.order) {
 			return;
 		}

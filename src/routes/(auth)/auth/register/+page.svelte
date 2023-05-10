@@ -13,8 +13,11 @@
 	} from '$lib/utility/svgLogos';
 	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
 	import { userRegisterSchema } from '$lib/validation/userRegister.validate';
+	import type { ActionData } from './$types';
 
 	let errorMessages = new Map();
+
+	export let form: ActionData
 
 	const resetForm = () => {
 		return { ...initFromData };
@@ -110,6 +113,8 @@
 		}
 		formData.address = formData.address.filter((_address, i) => i !== index);
 	};
+
+	// on:submit|preventDefault={handleRegister}
 </script>
 
 <svelte:head>
@@ -121,7 +126,7 @@
 		<img class="mx-auto h-12 w-auto" src={small_logo} alt="Lilian Logo" />
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Register</h2>
 	</div>
-	<form class="mt-8 space-y-6" on:submit|preventDefault={handleRegister} method="POST">
+	<form class="mt-8 space-y-6" method="POST" action="?/register">
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="name" class="flex justify-between text-sm">
