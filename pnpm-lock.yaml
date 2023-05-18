@@ -97,9 +97,6 @@ devDependencies:
   config:
     specifier: ^3.3.9
     version: 3.3.9
-  cross-fetch:
-    specifier: ^3.1.6
-    version: 3.1.6
   dayjs:
     specifier: ^1.11.7
     version: 1.11.7
@@ -1906,14 +1903,6 @@ packages:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
       node-fetch: 2.6.7
-    transitivePeerDependencies:
-      - encoding
-    dev: true
-
-  /cross-fetch@3.1.6:
-    resolution: {integrity: sha512-riRvo06crlE8HiqOwIpQhxwdOk4fOeR7FVM/wXoxchFEqMNUjvbs3bfo4OTgMEMHzppd4DxFBDbyySj8Cv781g==}
-    dependencies:
-      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
     dev: true
