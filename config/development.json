@@ -1,5 +1,4 @@
 {
-	"DATABASE_URL": "postgresql://postgres:karadz@localhost:5432/embDevPrisma",
 	"sameSite": "lax",
 	"secure": false,
 	"httpOnly": false

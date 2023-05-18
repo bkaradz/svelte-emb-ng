@@ -177,7 +177,7 @@
 			</div>
 			<!-- Right -->
 			<div class="flex items-center">
-				<form on:submit|preventDefault={handleUpload} method="POST">
+				<form method="POST" action="?/upload" enctype="multipart/form-data">
 					<div class="relative">
 						<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-2 text-white">
 							{@html svgUpload}
@@ -186,7 +186,7 @@
 							class="w-72 border border-pickled-bluewood-300 bg-pickled-bluewood-100 text-pickled-bluewood-500 ring-royal-blue-500 file:w-10 file:p-1 file:opacity-0"
 							type="file"
 							name="contacts"
-							id="uploadCSV"
+							id="contacts"
 							accept=".csv, .CSV"
 						/>
 						<button

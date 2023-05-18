@@ -1,5 +1,4 @@
 {
-	"DATABASE_URL": "postgresql://postgres:karadz@localhost:5432/ProductionDB",
 	"sameSite": "strict",
 	"secure": false,
 	"httpOnly": true
