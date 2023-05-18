@@ -15,7 +15,8 @@
 		"streetsidesoftware.code-spell-checker",
 		"this-fifo.vaporwave-theme-vscode",
 		"moalamri.inline-fold",
-		"yoavbls.pretty-ts-errors"
+		"yoavbls.pretty-ts-errors",
+		"KalimahApps.tailwindcss-config-viewer"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []
