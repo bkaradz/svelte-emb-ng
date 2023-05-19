@@ -1,42 +1,42 @@
-import prisma from '$lib/prisma/client';
+import type { PageServerLoad } from './$types';
+import { fail, type Actions } from '@sveltejs/kit';
 import logger from '$lib/utility/logger';
-import parseCsv from '$lib/utility/parseCsv';
-import { getBoolean } from '$lib/utility/toBoolean';
-import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+import prisma from '$lib/prisma/client';
 import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
+import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
+import { getBoolean } from '$lib/utility/toBoolean';
+import parseCsv from '$lib/utility/parseCsv';
 import type { PaymentTypeOptions } from '@prisma/client';
-import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
-	try {
-		if (!locals?.user?.id) {
-			return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-				headers: {
-					'content-type': 'application/json; charset=utf-8'
-				},
-				status: 401
-			});
+export const load = (async () => {
+    return {};
+}) satisfies PageServerLoad;
+
+export const actions: Actions = {
+    upload: async ({ request, locals }) => {
+        if (!locals?.user?.id) {
+			return fail(401, {
+				message: 'Unauthorized',
+				errors: {}
+			})
 		}
 
-		const createdBy = locals.user.id;
+        const createdBy = locals.user.id;
 
-		const data = await request.formData();
-
-		const file = data.get('options');
+		const data = await request.formData()
+		const file = data.get('products')
 
 		if (!(file instanceof File)) {
 			logger.error('File is empty');
-			return new Response(JSON.stringify({ message: 'File is empty' }), {
-				headers: {
-					'content-type': 'application/json; charset=utf-8'
-				},
-				status: 400
-			});
+			return fail(400, {
+				message: 'File is empty',
+				errors: {}
+			})
 		}
 
-		const csvString: string = await file.text();
+		const csvString = await file.text();
 
-		type PaymentTypeOptionsInter = Omit<
+        type PaymentTypeOptionsInter = Omit<
 			PaymentTypeOptions,
 			'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDefault'
 		>;
@@ -75,14 +75,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const optionsQuery = await prisma.paymentTypeOptions.createMany({ data: allDocsPromises });
 
-		return new Response(JSON.stringify(optionsQuery));
-	} catch (err: any) {
-		logger.error(`Error: ${err}`);
-		return new Response(JSON.stringify({ message: `A server error occurred ${err}` }), {
-			headers: {
-				'content-type': 'application/json; charset=utf-8'
-			},
-			status: 500
-		});
-	}
+        return { success: true, payload: JSON.stringify(optionsQuery) }
+    }
 };

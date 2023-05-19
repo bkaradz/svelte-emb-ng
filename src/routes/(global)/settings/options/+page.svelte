@@ -33,7 +33,7 @@
 	<div class="mb-2 bg-white p-4 flex justify-between items-center">
 		<h1>Options</h1>
 		<div class="flex items-center">
-			<form on:submit|preventDefault={handleUpload} method="POST">
+			<form method="POST" action="?/upload" enctype="multipart/form-data">
 				<div class="relative">
 					<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-1 text-white"
 						>{@html svgUpload}</button
@@ -42,7 +42,7 @@
 						class="w-72 border border-pickled-bluewood-300 bg-pickled-bluewood-100 text-pickled-bluewood-500 ring-royal-blue-500 file:w-10 file:p-0 file:opacity-0"
 						type="file"
 						name="options"
-						id="uploadCSV"
+						id="options"
 						accept=".csv, .CSV"
 					/>
 					<button

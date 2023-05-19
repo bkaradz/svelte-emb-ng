@@ -33,7 +33,7 @@
 	<div class="mb-2 bg-white p-4 flex justify-between items-center">
 		<h1>Payment Types</h1>
 		<div class="flex items-center">
-			<form on:submit|preventDefault={handleUpload} method="POST">
+			<form method="POST" action="?/upload" enctype="multipart/form-data">
 				<div class="relative">
 					<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-1 text-white"
 						>{@html svgUpload}</button
