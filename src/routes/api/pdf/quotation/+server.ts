@@ -27,8 +27,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		 */
 
 		// Create a browser instance
+		// headless: true
 		const browser = await puppeteer.launch({
-			headless: true
+			headless: "new"
 		});
 
 		// Create a new page

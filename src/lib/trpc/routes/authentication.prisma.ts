@@ -53,13 +53,13 @@ export const getUsersPrisma = async (input: SearchParams) => {
 		query = {
 			...baseQuery,
 			where: {
-				isUserActive: true,
+				isUser: true,
 				[objectKeys]: whereQuery
 			}
 		};
 		queryTotal = {
 			where: {
-				isUserActive: true,
+				isUser: true,
 				[objectKeys]: whereQuery
 			}
 		};
@@ -67,12 +67,12 @@ export const getUsersPrisma = async (input: SearchParams) => {
 		query = {
 			...baseQuery,
 			where: {
-				isUserActive: true
+				isUser: true
 			}
 		};
 		queryTotal = {
 			where: {
-				isUserActive: true
+				isUser: true
 			}
 		};
 	}

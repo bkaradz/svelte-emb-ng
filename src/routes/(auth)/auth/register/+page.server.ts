@@ -15,13 +15,11 @@ export const load = (async () => {
 export const actions: Actions = {
     register: async ({ cookies, request }) => {
         const formData = Object.fromEntries(await request.formData())
-        console.log("🚀 ~ file: +page.server.ts:18 ~ register: ~ formData:", formData)
         try {
             const parsedUser = userRegisterSchema.safeParse(formData);
 
             if (!parsedUser.success) {
                 const errorMap = zodErrorMessagesMap(parsedUser);
-                console.log("🚀 ~ file: +page.server.ts:23 ~ register: ~ errorMap:", errorMap)
                 return fail(400, {
                     message: 'Validation error',
                     errors: errorMap
@@ -87,7 +85,6 @@ export const actions: Actions = {
                     }
                 }
             });
-            console.log("🚀 ~ file: +page.server.ts:89 ~ register: ~ user:", user)
 
             const { password, ...restUser } = user;
 

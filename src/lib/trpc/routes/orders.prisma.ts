@@ -10,7 +10,7 @@ import type { Context } from '../context';
 import { calculateOrder } from '$lib/services/orders';
 import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.store';
-import { dinero } from 'dinero.js';
+import { dinero, toSnapshot } from 'dinero.js';
 
 export const getOrdersPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -372,7 +372,7 @@ export const getQuotationOrderPrisma = async (input: { id: number; currency: Cur
 		throw new Error('Currency not found');
 	}
 
-	const zero = dinero({ amount: 0, currency: selectedCurrency.dineroObj });
+	const zero = toSnapshot(dinero({ amount: 0, currency: selectedCurrency.dineroObj }));
 
 	return {
 		order,
