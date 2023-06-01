@@ -1,36 +1,72 @@
-<script lang="ts">
-	export let data;
+<script>
+	import { enhance } from '$app/forms';
 
-	const embroideryTypes = data.embroideryTypes;
-
-	const dataArray = [
-		{ embroideryTypes: '' },
-		{ embroideryTypes: '' },
-		{ embroideryTypes: '' },
-		{ embroideryTypes: '' },
-		{ embroideryTypes: '' }
-	];
-
-	// on:change|preventDefault={() => handleEmbroideryType(item)}
+	/** @type {import('./$types').ActionData} */
+	export let form;
+	$: console.log("form front end", { form });
 </script>
 
-<h1>Test</h1>
+<svelte:head>
+	<title>Dynamic form!</title>
+</svelte:head>
+
 <div>
-	{#each dataArray as item}
-		{#if embroideryTypes}
-			<select
-				bind:value={item.embroideryTypes}
-				class="text-sm border cursor-pointer p-1 rounded border-royal-blue-500 bg-royal-blue-200 hover:bg-royal-blue-300"
-			>
-				{#each embroideryTypes as type}
-					<option value={type.value}>
-						{type.label}
-					</option>
-				{/each}
-			</select>
-		{/if}
-	{/each}
+
+	<h1>Dynamic form</h1>
+	
+	{#if form?.success === true}
+		<p><strong>You did it!</strong></p>
+	{/if}
+	
+	<form method="POST" action="?/submit" use:enhance data-sveltekit-noscroll>
+		<label>
+			Your name
+			<input name="name" type="text" value={form?.items?.name ?? ''} />
+		</label>
+	
+		<fieldset>
+			<legend>How many pets do you have?</legend>
+	
+			<label>
+				<input type="radio" name="pets" value="0" />
+				0
+			</label>
+			<label>
+				<input type="radio" name="pets" value="1" />
+				1
+			</label>
+			<label>
+				<input type="radio" name="pets" value="2" />
+				2
+			</label>
+			<label>
+				<input type="radio" name="pets" value="3" />
+				3+
+			</label>
+		</fieldset>
+		<br />
+		{#each form?.pets || [''] as pet, i}
+			<label for="petname-{i}">Pet #{i + 1}'s name</label>
+			<input id="petname-{i}" type="text" name="petname[]" value={pet} />
+			<button class="btn btn-primary remove" formaction="?/removePet&pet={i}">Remove pet #{i + 1}</button>
+		{/each}
+		<div>
+			<button class="btn btn-primary" style="--color-link: #444;" formaction="?/addPet">Add pet name</button>
+			<button class="btn btn-primary">Submit form!</button>
+		</div>
+	</form>
 </div>
 
-<style lang="postcss">
+
+<style>
+	.remove {
+		padding: 0.5rem;
+		--color-link: darkred;
+	}
+	input:has(+ .remove) {
+		margin-bottom: 0.25rem;
+	}
+	input + .remove {
+		margin-bottom: 1.5rem;
+	}
 </style>
