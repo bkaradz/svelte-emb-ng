@@ -14,7 +14,10 @@ export const load = (async () => {
 
 export const actions: Actions = {
     register: async ({ cookies, request }) => {
+
         const formData = Object.fromEntries(await request.formData())
+        console.log("🚀 ~ file: +page.server.ts:19 ~ register: ~ formData:", formData)
+        
         try {
             const parsedUser = userRegisterSchema.safeParse(formData);
 
