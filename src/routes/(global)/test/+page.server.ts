@@ -1,5 +1,6 @@
-/** @type {import('./$types').Actions} */
-export const actions = {
+import type { Actions } from '@sveltejs/kit';
+
+export const actions: Actions = {
 	addPet: async ({ request }) => {
 		const formItems = await request.formData();
 		console.log("🚀 ~ file: +page.server.ts:5 ~ addPet: ~ formItems:", formItems)

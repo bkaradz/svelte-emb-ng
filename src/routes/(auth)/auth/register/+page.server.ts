@@ -102,5 +102,72 @@ export const actions: Actions = {
             })
         }
 
+    },
+    addEmail: async ({ request }) => {
+        const formItems = await request.formData();
+
+        const items = [...formItems.entries()];
+
+        const email = [...formItems.getAll('email[]'), ''];
+
+        return { items, email };
+    },
+    removeEmail: async ({ request, url }) => {
+        const formItems = await request.formData();
+		const email = parseInt(String(url.searchParams.get('email')), 10) || 0;
+        
+        const items = [...formItems.entries()];
+		const emails = [...formItems.getAll('email[]')];
+
+		if (email > 0) {
+			emails.splice(email, email);
+		}
+
+		return { items, emails };
+    },
+    addPhone: async ({ request }) => {
+        const formItems = await request.formData();
+
+        const items = [...formItems.entries()];
+
+        const phone = [...formItems.getAll('phone[]'), ''];
+
+        return { items, phone };
+    },
+    removePhone: async ({ request, url }) => {
+        const formItems = await request.formData();
+		const phone = parseInt(String(url.searchParams.get('phone')), 10) || 0;
+        
+        const items = [...formItems.entries()];
+		const phones = [...formItems.getAll('phone[]')];
+
+		if (phone > 0) {
+			phones.splice(phone, phone);
+		}
+
+		return { items, phones };
+        
+    },
+    addAddress: async ({ request }) => {
+        const formItems = await request.formData();
+
+        const items = [...formItems.entries()];
+
+        const address = [...formItems.getAll('address[]'), ''];
+
+        return { items, address };
+    },
+    removeAddress: async ({ request, url }) => {
+        const formItems = await request.formData();
+		const address = parseInt(String(url.searchParams.get('address')), 10) || 0;
+        
+        const items = [...formItems.entries()];
+		const addresses = [...formItems.getAll('address[]')];
+
+		if (address > 0) {
+			addresses.splice(address, address);
+		}
+
+		return { items, addresses };
     }
 };

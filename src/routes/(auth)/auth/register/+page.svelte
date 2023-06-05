@@ -17,7 +17,7 @@
 
 	let errorMessages = new Map();
 
-	export let form: ActionData
+	export let form: ActionData;
 
 	const resetForm = () => {
 		return { ...initFromData };
@@ -126,7 +126,7 @@
 		<img class="mx-auto h-12 w-auto" src={small_logo} alt="Lilian Logo" />
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Register</h2>
 	</div>
-	<form class="mt-8 space-y-6" method="POST" action="?/register"  >
+	<form class="mt-8 space-y-6" method="POST" action="?/register">
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="name" class="flex justify-between text-sm">
@@ -145,14 +145,17 @@
 			</label>
 			{#each formData.email as v, i (i)}
 				<div class="flex items-center space-x-2">
-					<input type="email" name="email" class="input" bind:value={v.email} />
-					<button on:click|preventDefault={() => addEmailField(i)}>
-						{#if i < formData.email.length - 1}
+					<input type="email" name="email[]" class="input" bind:value={v.email} />
+
+					{#if i < formData.email.length - 1}
+						<button on:click|preventDefault={() => addEmailField(i)}>
 							{@html svgMinusCircle}
-						{:else}
+						</button>
+					{:else}
+						<button on:click|preventDefault={() => addEmailField(i)}>
 							{@html svgPlusCircle}
-						{/if}
-					</button>
+						</button>
+					{/if}
 				</div>
 			{/each}
 
@@ -164,14 +167,17 @@
 			</label>
 			{#each formData.phone as v, i (i)}
 				<div class=" flex items-center space-x-2">
-					<input type="text" name="phone" class="input" bind:value={v.phone} />
-					<button on:click|preventDefault={() => addPhoneField(i)}>
-						{#if i < formData.phone.length - 1}
+					<input type="text" name="phone[]" class="input" bind:value={v.phone} />
+
+					{#if i < formData.phone.length - 1}
+						<button on:click|preventDefault={() => addPhoneField(i)}>
 							{@html svgMinusCircle}
-						{:else}
+						</button>
+					{:else}
+						<button on:click|preventDefault={() => addPhoneField(i)}>
 							{@html svgPlusCircle}
-						{/if}
-					</button>
+						</button>
+					{/if}
 				</div>
 			{/each}
 
@@ -183,14 +189,17 @@
 			</label>
 			{#each formData.address as v, i (i)}
 				<div class=" flex items-center space-x-2">
-					<textarea name="address" class="input" bind:value={v.address} cols="10" rows="5" />
-					<button on:click|preventDefault={() => addAddressField(i)}>
-						{#if i < formData.address.length - 1}
+					<textarea name="address[]" class="input" bind:value={v.address} cols="10" rows="5" />
+
+					{#if i < formData.address.length - 1}
+						<button on:click|preventDefault={() => addAddressField(i)}>
 							{@html svgMinusCircle}
-						{:else}
+						</button>
+					{:else}
+						<button on:click|preventDefault={() => addAddressField(i)}>
 							{@html svgPlusCircle}
-						{/if}
-					</button>
+						</button>
+					{/if}
 				</div>
 			{/each}
 
