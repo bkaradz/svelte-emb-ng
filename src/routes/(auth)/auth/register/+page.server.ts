@@ -105,47 +105,49 @@ export const actions: Actions = {
     },
     addEmail: async ({ request }) => {
         const formItems = await request.formData();
+        console.log("🚀 ~ file: +page.server.ts:108 ~ addEmail: ~ formItems:", formItems)
 
         const items = [...formItems.entries()];
+        console.log("🚀 ~ file: +page.server.ts:111 ~ addEmail: ~ items:", items)
 
-        const email = [...formItems.getAll('email[]'), ''];
+        const email = [...formItems.getAll('email[]'), '' ];
 
-        return { items, email };
+        return { ...items, email };
     },
     removeEmail: async ({ request, url }) => {
         const formItems = await request.formData();
-		const email = parseInt(String(url.searchParams.get('email')), 10) || 0;
+		const emailPosition = parseInt(String(url.searchParams.get('email')), 10) || 0;
         
         const items = [...formItems.entries()];
-		const emails = [...formItems.getAll('email[]')];
+		const email = [...formItems.getAll('email[]')];
 
-		if (email > 0) {
-			emails.splice(email, email);
+		if (emailPosition > 0) {
+			email.splice(emailPosition, emailPosition);
 		}
 
-		return { items, emails };
+		return { ...items, email };
     },
     addPhone: async ({ request }) => {
         const formItems = await request.formData();
 
         const items = [...formItems.entries()];
 
-        const phone = [...formItems.getAll('phone[]'), ''];
+        const phone = [...formItems.getAll('phone[]'),  '' ];
 
-        return { items, phone };
+        return { ...items, phone };
     },
     removePhone: async ({ request, url }) => {
         const formItems = await request.formData();
-		const phone = parseInt(String(url.searchParams.get('phone')), 10) || 0;
+		const phonePosition = parseInt(String(url.searchParams.get('phone')), 10) || 0;
         
         const items = [...formItems.entries()];
-		const phones = [...formItems.getAll('phone[]')];
+		const phone = [...formItems.getAll('phone[]')];
 
-		if (phone > 0) {
-			phones.splice(phone, phone);
+		if (phonePosition > 0) {
+			phone.splice(phonePosition, phonePosition);
 		}
 
-		return { items, phones };
+		return { ...items, phone };
         
     },
     addAddress: async ({ request }) => {
@@ -153,21 +155,21 @@ export const actions: Actions = {
 
         const items = [...formItems.entries()];
 
-        const address = [...formItems.getAll('address[]'), ''];
+        const address = [...formItems.getAll('address[]'),  '' ];
 
-        return { items, address };
+        return { ...items, address };
     },
     removeAddress: async ({ request, url }) => {
         const formItems = await request.formData();
-		const address = parseInt(String(url.searchParams.get('address')), 10) || 0;
+		const addressPosition = parseInt(String(url.searchParams.get('address')), 10) || 0;
         
         const items = [...formItems.entries()];
-		const addresses = [...formItems.getAll('address[]')];
+		const address = [...formItems.getAll('address[]')];
 
-		if (address > 0) {
-			addresses.splice(address, address);
+		if (addressPosition > 0) {
+			address.splice(addressPosition, addressPosition);
 		}
 
-		return { items, addresses };
+		return { ...items,  address };
     }
 };

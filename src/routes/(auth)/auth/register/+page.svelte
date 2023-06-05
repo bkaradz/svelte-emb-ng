@@ -18,6 +18,7 @@
 	let errorMessages = new Map();
 
 	export let form: ActionData;
+	$: console.log("🚀 ~ file: +page.svelte:21 ~ form:", form)
 
 	const resetForm = () => {
 		return { ...initFromData };
@@ -135,7 +136,7 @@
 					{errorMessages.get('name') ? errorMessages.get('name') : ''}
 				</span>
 			</label>
-			<input type="text" name="name" class="input" bind:value={formData.name} />
+			<input type="text" name="name" class="input" value={form?.name ?? ''} />
 
 			<label for="email" class="flex justify-between text-sm">
 				<span>Email</span>
@@ -143,16 +144,16 @@
 					{errorMessages.get('email') ? errorMessages.get('email') : ''}
 				</span>
 			</label>
-			{#each formData.email as v, i (i)}
+			{#each form?.email || [''] as emailValue, i (i)}
 				<div class="flex items-center space-x-2">
-					<input type="email" name="email[]" class="input" bind:value={v.email} />
+					<input type="email" name="email[]" class="input" value={emailValue} />
 
 					{#if i < formData.email.length - 1}
 						<button on:click|preventDefault={() => addEmailField(i)}>
 							{@html svgMinusCircle}
 						</button>
 					{:else}
-						<button on:click|preventDefault={() => addEmailField(i)}>
+						<button formaction="?/addEmail">
 							{@html svgPlusCircle}
 						</button>
 					{/if}
@@ -165,16 +166,16 @@
 					{errorMessages.get('phone') ? errorMessages.get('phone') : ''}
 				</span>
 			</label>
-			{#each formData.phone as v, i (i)}
+			{#each form?.phone || [''] as phoneValue, i (i)}
 				<div class=" flex items-center space-x-2">
-					<input type="text" name="phone[]" class="input" bind:value={v.phone} />
+					<input type="text" name="phone[]" class="input" value={phoneValue} />
 
 					{#if i < formData.phone.length - 1}
-						<button on:click|preventDefault={() => addPhoneField(i)}>
+						<button on:click|preventDefault={() => addPhoneField(i)} >
 							{@html svgMinusCircle}
 						</button>
 					{:else}
-						<button on:click|preventDefault={() => addPhoneField(i)}>
+						<button formaction="?/addPhone">
 							{@html svgPlusCircle}
 						</button>
 					{/if}
@@ -187,16 +188,16 @@
 					{errorMessages.get('address') ? errorMessages.get('address') : ''}
 				</span>
 			</label>
-			{#each formData.address as v, i (i)}
+			{#each form?.address || [''] as addressValue, i (i)}
 				<div class=" flex items-center space-x-2">
-					<textarea name="address[]" class="input" bind:value={v.address} cols="10" rows="5" />
+					<textarea name="address[]" class="input" value={addressValue} cols="10" rows="5" />
 
 					{#if i < formData.address.length - 1}
 						<button on:click|preventDefault={() => addAddressField(i)}>
 							{@html svgMinusCircle}
 						</button>
 					{:else}
-						<button on:click|preventDefault={() => addAddressField(i)}>
+						<button formaction="?/addAddress">
 							{@html svgPlusCircle}
 						</button>
 					{/if}
@@ -226,7 +227,7 @@
 						{/if}
 					</button>
 				</div>
-				<input type={passwordType} name="password" class="input" on:input={handleInput} />
+				<input name="password" class="input"  value={form?.password ?? ''} />
 			</div>
 
 			<label for="confirmPassword" class="flex justify-between text-sm">
@@ -253,10 +254,9 @@
 					</button>
 				</div>
 				<input
-					type={confirmPasswordType}
 					name="confirmPassword"
 					class="input"
-					on:input={handleInput}
+					value={form?.confirmPassword ?? ''}
 				/>
 			</div>
 
