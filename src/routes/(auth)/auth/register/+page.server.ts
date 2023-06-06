@@ -105,14 +105,14 @@ export const actions: Actions = {
     },
     addEmail: async ({ request }) => {
         const formItems = await request.formData();
-        console.log("🚀 ~ file: +page.server.ts:108 ~ addEmail: ~ formItems:", formItems)
 
-        const items = [...formItems.entries()];
-        console.log("🚀 ~ file: +page.server.ts:111 ~ addEmail: ~ items:", items)
+        // const items = [...formItems.entries()];
 
-        const email = [...formItems.getAll('email[]'), '' ];
+        // const email = [...formItems.getAll('email[]'), '' ];
 
-        return { ...items, email };
+        // return { ...items, email };
+
+        return addEntries(formItems)
     },
     removeEmail: async ({ request, url }) => {
         const formItems = await request.formData();
@@ -130,11 +130,13 @@ export const actions: Actions = {
     addPhone: async ({ request }) => {
         const formItems = await request.formData();
 
-        const items = [...formItems.entries()];
+        // const items = [...formItems.entries()];
 
-        const phone = [...formItems.getAll('phone[]'),  '' ];
+        // const phone = [...formItems.getAll('phone[]'),  '' ];
 
-        return { ...items, phone };
+        // return { ...items, phone };
+
+        return addEntries(formItems)
     },
     removePhone: async ({ request, url }) => {
         const formItems = await request.formData();
@@ -153,11 +155,13 @@ export const actions: Actions = {
     addAddress: async ({ request }) => {
         const formItems = await request.formData();
 
-        const items = [...formItems.entries()];
+        // const items = [...formItems.entries()];
 
-        const address = [...formItems.getAll('address[]'),  '' ];
+        // const address = [...formItems.getAll('address[]'),  '' ];
 
-        return { ...items, address };
+        // return { ...items, address };
+
+        return addEntries(formItems)
     },
     removeAddress: async ({ request, url }) => {
         const formItems = await request.formData();
@@ -173,3 +177,22 @@ export const actions: Actions = {
 		return { ...items,  address };
     }
 };
+
+const addEntries = (formItems: FormData) => {
+
+    const name = formItems.get('name')
+    const password = formItems.get('password')
+    const confirmPassword = formItems.get('confirmPassword')
+    console.log("🚀 ~ file: +page.server.ts:184 ~ addEntries ~ name:", name)
+
+    const items = [...formItems.entries()];
+    console.log("🚀 ~ file: +page.server.ts:184 ~ addEntries ~ items:", items)
+
+    const email = [...formItems.getAll('email[]'), '' ];
+
+    const phone = [...formItems.getAll('phone[]'),  '' ];
+
+    const address = [...formItems.getAll('address[]'),  '' ];
+
+    return { ...items, name, email, phone, address, password,  confirmPassword};
+}

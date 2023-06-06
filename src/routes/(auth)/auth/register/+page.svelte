@@ -148,7 +148,7 @@
 				<div class="flex items-center space-x-2">
 					<input type="email" name="email[]" class="input" value={emailValue} />
 
-					{#if i < formData.email.length - 1}
+					{#if i < form?.email?.length - 1}
 						<button on:click|preventDefault={() => addEmailField(i)}>
 							{@html svgMinusCircle}
 						</button>
@@ -170,7 +170,7 @@
 				<div class=" flex items-center space-x-2">
 					<input type="text" name="phone[]" class="input" value={phoneValue} />
 
-					{#if i < formData.phone.length - 1}
+					{#if i < form?.phone?.length - 1}
 						<button on:click|preventDefault={() => addPhoneField(i)} >
 							{@html svgMinusCircle}
 						</button>
@@ -192,7 +192,7 @@
 				<div class=" flex items-center space-x-2">
 					<textarea name="address[]" class="input" value={addressValue} cols="10" rows="5" />
 
-					{#if i < formData.address.length - 1}
+					{#if i < form?.address?.length - 1}
 						<button on:click|preventDefault={() => addAddressField(i)}>
 							{@html svgMinusCircle}
 						</button>
