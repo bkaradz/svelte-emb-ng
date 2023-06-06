@@ -149,7 +149,7 @@
 					<input type="email" name="email[]" class="input" value={emailValue} />
 
 					{#if i < form?.email?.length - 1}
-						<button on:click|preventDefault={() => addEmailField(i)}>
+						<button formaction="?/removeEmail&email={i}">
 							{@html svgMinusCircle}
 						</button>
 					{:else}
@@ -171,7 +171,7 @@
 					<input type="text" name="phone[]" class="input" value={phoneValue} />
 
 					{#if i < form?.phone?.length - 1}
-						<button on:click|preventDefault={() => addPhoneField(i)} >
+						<button formaction="?/removePhone&phone={i}" >
 							{@html svgMinusCircle}
 						</button>
 					{:else}
@@ -193,7 +193,7 @@
 					<textarea name="address[]" class="input" value={addressValue} cols="10" rows="5" />
 
 					{#if i < form?.address?.length - 1}
-						<button on:click|preventDefault={() => addAddressField(i)}>
+						<button formaction="?/removeAddress&address={i}">
 							{@html svgMinusCircle}
 						</button>
 					{:else}

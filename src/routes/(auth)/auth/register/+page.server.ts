@@ -8,6 +8,7 @@ import config from 'config';
 import bcrypt from 'bcrypt';
 
 
+
 export const load = (async () => {
     return {};
 }) satisfies PageServerLoad;
@@ -108,91 +109,86 @@ export const actions: Actions = {
 
         // const items = [...formItems.entries()];
 
-        // const email = [...formItems.getAll('email[]'), '' ];
+        const email = [...formItems.getAll('email[]'), '' ];
 
         // return { ...items, email };
 
-        return addEntries(formItems)
+        return addEntries(formItems,  {email})
     },
     removeEmail: async ({ request, url }) => {
         const formItems = await request.formData();
 		const emailPosition = parseInt(String(url.searchParams.get('email')), 10) || 0;
         
-        const items = [...formItems.entries()];
 		const email = [...formItems.getAll('email[]')];
 
-		if (emailPosition > 0) {
-			email.splice(emailPosition, emailPosition);
+		if (emailPosition >= 0) {
+			email.splice(emailPosition, 1);
 		}
 
-		return { ...items, email };
+        return addEntries(formItems,  {email})
     },
     addPhone: async ({ request }) => {
         const formItems = await request.formData();
 
         // const items = [...formItems.entries()];
 
-        // const phone = [...formItems.getAll('phone[]'),  '' ];
+        const phone = [...formItems.getAll('phone[]'),  '' ];
 
         // return { ...items, phone };
 
-        return addEntries(formItems)
+        return addEntries(formItems,  {phone})
     },
     removePhone: async ({ request, url }) => {
         const formItems = await request.formData();
 		const phonePosition = parseInt(String(url.searchParams.get('phone')), 10) || 0;
         
-        const items = [...formItems.entries()];
 		const phone = [...formItems.getAll('phone[]')];
 
-		if (phonePosition > 0) {
-			phone.splice(phonePosition, phonePosition);
+		if (phonePosition >= 0) {
+			phone.splice(phonePosition, 1);
 		}
 
-		return { ...items, phone };
-        
+        return addEntries(formItems,  {phone})
     },
     addAddress: async ({ request }) => {
         const formItems = await request.formData();
 
         // const items = [...formItems.entries()];
 
-        // const address = [...formItems.getAll('address[]'),  '' ];
+        const address = [...formItems.getAll('address[]'),  '' ];
 
         // return { ...items, address };
 
-        return addEntries(formItems)
+        return addEntries(formItems,  {address})
     },
     removeAddress: async ({ request, url }) => {
         const formItems = await request.formData();
 		const addressPosition = parseInt(String(url.searchParams.get('address')), 10) || 0;
         
-        const items = [...formItems.entries()];
 		const address = [...formItems.getAll('address[]')];
 
-		if (addressPosition > 0) {
-			address.splice(addressPosition, addressPosition);
+		if (addressPosition >= 0) {
+			address.splice(addressPosition, 1);
 		}
 
-		return { ...items,  address };
+        return addEntries(formItems,  {address})
     }
 };
 
-const addEntries = (formItems: FormData) => {
+
+const addEntries = (formItems: FormData, changedValue: { email?: FormDataEntryValue[]; phone?: FormDataEntryValue[]; address?: FormDataEntryValue[]; }) => {
 
     const name = formItems.get('name')
     const password = formItems.get('password')
     const confirmPassword = formItems.get('confirmPassword')
-    console.log("🚀 ~ file: +page.server.ts:184 ~ addEntries ~ name:", name)
 
     const items = [...formItems.entries()];
-    console.log("🚀 ~ file: +page.server.ts:184 ~ addEntries ~ items:", items)
 
-    const email = [...formItems.getAll('email[]'), '' ];
+    const email = [...formItems.getAll('email[]') ];
 
-    const phone = [...formItems.getAll('phone[]'),  '' ];
+    const phone = [...formItems.getAll('phone[]') ];
 
-    const address = [...formItems.getAll('address[]'),  '' ];
+    const address = [...formItems.getAll('address[]') ];
 
-    return { ...items, name, email, phone, address, password,  confirmPassword};
+    return { name, email, phone, address, password, confirmPassword, ...changedValue};
 }
