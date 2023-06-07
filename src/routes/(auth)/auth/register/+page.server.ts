@@ -16,9 +16,14 @@ export const load = (async () => {
 export const actions: Actions = {
     register: async ({ cookies, request }) => {
 
-        const formData = Object.fromEntries(await request.formData())
+        const formItems = await request.formData();
+        // const formData = Object.fromEntries(formItems)
         console.log("🚀 ~ file: +page.server.ts:19 ~ register: ~ formData:", formData)
-        
+
+        console.log('object', );
+
+        const formData = addEntries(formItems, {})
+
         try {
             const parsedUser = userRegisterSchema.safeParse(formData);
 
@@ -109,74 +114,75 @@ export const actions: Actions = {
 
         // const items = [...formItems.entries()];
 
-        const email = [...formItems.getAll('email[]'), '' ];
+        const email = [...formItems.getAll('email[]'), ''];
 
         // return { ...items, email };
 
-        return addEntries(formItems,  {email})
+        return addEntries(formItems, { email })
     },
     removeEmail: async ({ request, url }) => {
         const formItems = await request.formData();
-		const emailPosition = parseInt(String(url.searchParams.get('email')), 10) || 0;
-        
-		const email = [...formItems.getAll('email[]')];
+        const emailPosition = parseInt(String(url.searchParams.get('email')), 10) || 0;
 
-		if (emailPosition >= 0) {
-			email.splice(emailPosition, 1);
-		}
+        const email = [...formItems.getAll('email[]')];
 
-        return addEntries(formItems,  {email})
+        if (emailPosition >= 0) {
+            email.splice(emailPosition, 1);
+        }
+
+        return addEntries(formItems, { email })
     },
     addPhone: async ({ request }) => {
         const formItems = await request.formData();
 
         // const items = [...formItems.entries()];
 
-        const phone = [...formItems.getAll('phone[]'),  '' ];
+        const phone = [...formItems.getAll('phone[]'), ''];
 
         // return { ...items, phone };
 
-        return addEntries(formItems,  {phone})
+        return addEntries(formItems, { phone })
     },
     removePhone: async ({ request, url }) => {
         const formItems = await request.formData();
-		const phonePosition = parseInt(String(url.searchParams.get('phone')), 10) || 0;
-        
-		const phone = [...formItems.getAll('phone[]')];
+        const phonePosition = parseInt(String(url.searchParams.get('phone')), 10) || 0;
 
-		if (phonePosition >= 0) {
-			phone.splice(phonePosition, 1);
-		}
+        const phone = [...formItems.getAll('phone[]')];
 
-        return addEntries(formItems,  {phone})
+        if (phonePosition >= 0) {
+            phone.splice(phonePosition, 1);
+        }
+
+        return addEntries(formItems, { phone })
     },
     addAddress: async ({ request }) => {
         const formItems = await request.formData();
 
         // const items = [...formItems.entries()];
 
-        const address = [...formItems.getAll('address[]'),  '' ];
+        const address = [...formItems.getAll('address[]'), ''];
 
         // return { ...items, address };
 
-        return addEntries(formItems,  {address})
+        return addEntries(formItems, { address })
     },
     removeAddress: async ({ request, url }) => {
         const formItems = await request.formData();
-		const addressPosition = parseInt(String(url.searchParams.get('address')), 10) || 0;
-        
-		const address = [...formItems.getAll('address[]')];
+        const addressPosition = parseInt(String(url.searchParams.get('address')), 10) || 0;
 
-		if (addressPosition >= 0) {
-			address.splice(addressPosition, 1);
-		}
+        const address = [...formItems.getAll('address[]')];
 
-        return addEntries(formItems,  {address})
+        if (addressPosition >= 0) {
+            address.splice(addressPosition, 1);
+        }
+
+        return addEntries(formItems, { address })
     }
 };
 
+// email?: FormDataEntryValue[]; phone?: FormDataEntryValue[]; address?: FormDataEntryValue[];
 
-const addEntries = (formItems: FormData, changedValue: { email?: FormDataEntryValue[]; phone?: FormDataEntryValue[]; address?: FormDataEntryValue[]; }) => {
+const addEntries = (formItems: FormData, changedValue: { [k: string]: FormDataEntryValue[] }) => {
 
     const name = formItems.get('name')
     const password = formItems.get('password')
@@ -184,11 +190,11 @@ const addEntries = (formItems: FormData, changedValue: { email?: FormDataEntryVa
 
     const items = [...formItems.entries()];
 
-    const email = [...formItems.getAll('email[]') ];
+    const email = [...formItems.getAll('email[]')];
 
-    const phone = [...formItems.getAll('phone[]') ];
+    const phone = [...formItems.getAll('phone[]')];
 
-    const address = [...formItems.getAll('address[]') ];
+    const address = [...formItems.getAll('address[]')];
 
-    return { name, email, phone, address, password, confirmPassword, ...changedValue};
+    return { name, email, phone, address, password, confirmPassword, ...changedValue };
 }
