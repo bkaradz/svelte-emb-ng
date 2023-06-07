@@ -14,14 +14,11 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-    register: async ({ cookies, request }) => {
+    register: async ({ cookies, request, url }) => {
 
         const formItems = await request.formData();
         // const formData = Object.fromEntries(formItems)
-        console.log("🚀 ~ file: +page.server.ts:19 ~ register: ~ formData:", formData)
-
-        console.log('object', );
-
+        
         const formData = addEntries(formItems, {})
 
         try {
@@ -37,7 +34,7 @@ export const actions: Actions = {
 
             const userExist = await prisma.email.findUnique({
                 where: {
-                    email: parsedUser.data.email[0].email
+                    email: parsedUser.data.email[0]
                 }
             });
 
@@ -84,29 +81,26 @@ export const actions: Actions = {
                     ...restReqUser,
                     ...role,
                     email: {
-                        createMany: { data: parsedUser.data.email }
+                        createMany: { data: toObject(parsedUser.data.email, 'email') as any }
                     },
                     phone: {
-                        createMany: { data: parsedUser.data.phone }
+                        createMany: { data: toObject(parsedUser.data.phone, 'phone') as any }
                     },
                     address: {
-                        createMany: { data: parsedUser.data.address }
+                        createMany: { data: toObject(parsedUser.data.address, 'address') as any }
                     }
                 }
             });
-
-            const { password, ...restUser } = user;
-
-            // return { success: true, payload: JSON.stringify(restUser) }
-            throw redirect(302, '/auth/login')
-
-
+            
         } catch (error) {
+            console.log("🚀 ~ file: +page.server.ts:103 ~ register: ~ error:", error)
             return fail(400, {
                 message: 'Something went wrong',
-                errors: {}
+                errors: {error}
             })
         }
+
+        throw redirect(303, '/auth/login')
 
     },
     addEmail: async ({ request }) => {
@@ -197,4 +191,8 @@ const addEntries = (formItems: FormData, changedValue: { [k: string]: FormDataEn
     const address = [...formItems.getAll('address[]')];
 
     return { name, email, phone, address, password, confirmPassword, ...changedValue };
+}
+
+const toObject = (data: string[], value: string) => {
+    return data.map(d => ({[value]:d}))
 }
