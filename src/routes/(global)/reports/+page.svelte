@@ -8,7 +8,7 @@
 				method: 'POST',
 				body: JSON.stringify({
 					url: 'http://localhost:5173/pdf/quotation/',
-					currency: 'zar',
+					currency: 'ZAR',
 					id: 1
 				}),
 				headers: {
@@ -42,7 +42,7 @@
 				method: 'POST',
 				body: JSON.stringify({
 					url: 'http://localhost:5173/pdf/receipt/',
-					currency: 'zar',
+					currency: 'ZAR',
 					id: 1
 				}),
 				headers: {

@@ -21,6 +21,7 @@
 	};
 
 	export let data: { resultsCurrency: Options[]; resultsRates: newExchangeRate };
+	$: console.log('🚀 ~ file: +page.svelte:24 ~ data:', data);
 
 	let tableHeadings = ['Currency', 'Rate', 'Edit/Update', 'Delete/Add Row'];
 
