@@ -30,12 +30,12 @@
 		}
 	};
 
-	let defaultQueryParams = {};
+	let defaultQueryParams = { isActive: true };
 
 	const getRates = async (paramsObj: any) => {
 		try {
 			const resRates = await trpc().exchangeRate.getExchangeRates.query(paramsObj);
-			console.log("🚀 ~ file: ExchangeRatesTable.svelte:38 ~ getRates ~ resRates:", resRates)
+			console.log('🚀 ~ file: ExchangeRatesTable.svelte:38 ~ getRates ~ resRates:', resRates);
 			if (resRates) {
 				rates = resRates;
 			}
