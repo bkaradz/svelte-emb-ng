@@ -19,12 +19,15 @@ export const exchangeRate = router({
 			})
 		)
 		.query(async ({ input }) => {
-			const { isActive, isDefault } = input;
+			let { isActive, isDefault } = input;
 			console.log("🚀 ~ file: exchangeRate.ts:23 ~ .query ~ input:", input)
-			if (!isActive && !isDefault) {
+			if ((!isActive && !isDefault) || (isActive && isDefault)) {
 				console.log("Entered Noo Man's Land");
 				throw new Error('isActive and isDefault can not be undefined');
 			}
+			if (!isActive) isActive = false
+			if (!isDefault) isDefault = false
+
 			return await getExchangeRatesPrisma({ ...input, isActive, isDefault });
 		}),
 	getById: protectedProcedure.input(z.number()).query(async ({ input }) => {
