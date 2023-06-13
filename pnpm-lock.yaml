@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -14,6 +14,9 @@ devDependencies:
   '@lucia-auth/adapter-prisma':
     specifier: ^2.0.0
     version: 2.0.0(@prisma/client@4.15.0)(lucia-auth@1.8.0)
+  '@lucia-auth/sveltekit':
+    specifier: ^0.6.11
+    version: 0.6.11(lucia-auth@1.8.0)(svelte@3.59.1)
   '@playwright/test':
     specifier: ^1.35.0
     version: 1.35.0
@@ -798,6 +801,17 @@ packages:
       lucia-auth: 1.8.0
     dev: true
 
+  /@lucia-auth/sveltekit@0.6.11(lucia-auth@1.8.0)(svelte@3.59.1):
+    resolution: {integrity: sha512-VRYOVnxyL0Iemgp7PZZ/f9nbzS7+gEwl3k/5p03wOIFWdD2BY5CiBjVqMvHXLf6ZxqZzPzYebHCL6WSFvfdxmA==}
+    peerDependencies:
+      lucia-auth: 0.5.x - 0.10.x
+      svelte: 3.x
+    dependencies:
+      '@noble/hashes': 1.3.1
+      lucia-auth: 1.8.0
+      svelte: 3.59.1
+    dev: true
+
   /@mapbox/node-pre-gyp@1.0.10:
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
     hasBin: true
@@ -814,6 +828,11 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: true
+
+  /@noble/hashes@1.3.1:
+    resolution: {integrity: sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==}
+    engines: {node: '>= 16'}
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:

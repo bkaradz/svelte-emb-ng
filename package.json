@@ -18,6 +18,8 @@
 	"devDependencies": {
 		"@dinero.js/currencies": "2.0.0-alpha.8",
 		"@fast-csv/parse": "^4.3.6",
+		"@lucia-auth/adapter-prisma": "^2.0.0",
+		"@lucia-auth/sveltekit": "^0.6.11",
 		"@playwright/test": "^1.35.0",
 		"@prisma/client": "^4.15.0",
 		"@sveltejs/adapter-auto": "^1.0.3",
@@ -81,13 +83,9 @@
 		"vite": "^4.3.9",
 		"vitest": "^0.19.1",
 		"ws": "^8.13.0",
-		"@lucia-auth/adapter-prisma": "^2.0.0",
 		"zod": "^3.21.4"
 	},
 	"prisma": {
 		"seed": "node --experimental-specifier-resolution=node --loader ts-node/esm prisma/seed.ts"
-	},
-	"dependencies": {
-		
 	}
 }
