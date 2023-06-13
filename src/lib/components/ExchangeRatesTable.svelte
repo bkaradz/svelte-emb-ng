@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
@@ -53,6 +53,10 @@
 	const handleAddPricelist = async () => {
 		goto(`/settings/rates/add`);
 	};
+
+	beforeNavigate(({ type }) => {
+		if (!client) return;
+	});
 </script>
 
 <div class="mb-2 flex items-center justify-between bg-white p-4">
