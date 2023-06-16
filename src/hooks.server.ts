@@ -6,8 +6,14 @@ import { createTRPCHandle } from 'trpc-sveltekit';
 import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
 import type { userSessionInterface } from '$lib/types';
+import { auth } from '$lib/lucia/client';
 
 export const first = createTRPCHandle({ router, createContext });
+
+export const third: Handle = async ({ event, resolve }) => {
+	event.locals.auth = auth.handleRequest(event);
+	return await resolve(event);
+};
 
 export const second: Handle = async ({ event, resolve }) => {
 	const cookies = event.cookies.get('accessToken');
@@ -31,4 +37,4 @@ export const second: Handle = async ({ event, resolve }) => {
 	return await resolve(event);
 };
 
-export const handle: Handle = sequence(first, second);
+export const handle: Handle = sequence(first, second, third);

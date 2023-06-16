@@ -5,7 +5,9 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: import('$lib/types').User;
+			auth: import("lucia-auth").AuthRequest;
 		}
+		
 		// interface PageData {}
 		// interface Platform {}
 	}
@@ -20,6 +22,13 @@ declare global {
 		interface HTMLAttributes<T> {
 			onclickOutside?: (e: CustomEvent) => void;
 		}
+	}
+
+	namespace Lucia {
+		type Auth = import("$lib/lucia").Auth;
+		type UserAttributes = {
+			username: string;
+		};
 	}
 }
 
