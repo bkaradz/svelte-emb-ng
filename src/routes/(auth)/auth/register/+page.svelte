@@ -4,55 +4,12 @@
 	import { toasts } from '$lib/stores/toasts.store';
 	import { trpc } from '$lib/trpc/client';
 	import { handleErrors } from '$lib/utility/errorsHandling';
-	import {
-		svgEyeClose,
-		svgEyeOpen,
-		svgMinusCircle,
-		svgPlusCircle,
-		svgRegister
-	} from '$lib/utility/svgLogos';
-	import { zodErrorMessagesMap } from '$lib/validation/format.zod.messages';
-	import { userRegisterSchema } from '$lib/validation/userRegister.validate';
+	import { svgEyeClose, svgEyeOpen, svgRegister } from '$lib/utility/svgLogos';
 	import type { ActionData } from './$types';
 
 	let errorMessages = new Map();
 
 	export let form: ActionData;
-	$: console.log("🚀 ~ file: +page.svelte:21 ~ form:", form)
-
-	const resetForm = () => {
-		return { ...initFromData };
-	};
-
-	const initFromData = {
-		name: undefined,
-		email: [{ email: '' }],
-		phone: [{ phone: '' }],
-		address: [{ address: '' }],
-		password: undefined,
-		confirmPassword: undefined
-	};
-
-	type FormData = {
-		name: string | undefined;
-		email: { email: string }[];
-		phone: { phone: string }[];
-		address: { address: string }[];
-		password: string | undefined;
-		confirmPassword: string | undefined;
-	};
-
-	let formData: FormData = { ...initFromData };
-
-	type HandleInputFields = Pick<FormData, 'password' | 'confirmPassword'>;
-
-	type formDataKeys = keyof HandleInputFields;
-
-	const handleInput = (event: any) => {
-		let name = (event.target as HTMLInputElement).name as formDataKeys;
-		let value = (event.target as HTMLInputElement).value;
-		formData[name] = value;
-	};
 
 	$: disabled = false;
 
@@ -61,61 +18,6 @@
 
 	let confirmPasswordIsVisible = false;
 	$: confirmPasswordType = confirmPasswordIsVisible ? 'text' : 'password';
-
-	const handleRegister = async () => {
-		/**
-		 * TODO: improve error catching using zod only
-		 */
-		const parsedUser = userRegisterSchema.safeParse(formData);
-
-		if (!parsedUser.success) {
-			const errorMap = zodErrorMessagesMap(parsedUser);
-
-			if (errorMap) {
-				errorMessages = errorMap;
-			}
-			disabled = false;
-			return;
-		}
-		try {
-			await trpc().authentication.registerOrUpdateUser.mutate(parsedUser.data);
-		} catch (err: any) {
-			handleErrors(err);
-		} finally {
-			formData = resetForm();
-			toasts.add({
-				message: 'Registration was successful',
-				type: 'success'
-			});
-			goto('/auth/login');
-		}
-	};
-
-	const addEmailField = (index: number) => {
-		if (index === formData.email.length - 1) {
-			formData.email = [...formData.email, { email: '' }];
-			return;
-		}
-		formData.email = formData.email.filter((_email, i) => i !== index);
-	};
-
-	const addPhoneField = (index: number) => {
-		if (index === formData.phone.length - 1) {
-			formData.phone = [...formData.phone, { phone: '' }];
-			return;
-		}
-		formData.phone = formData.phone.filter((_phone, i) => i !== index);
-	};
-
-	const addAddressField = (index: number) => {
-		if (index === formData.address.length - 1) {
-			formData.address = [...formData.address, { address: '' }];
-			return;
-		}
-		formData.address = formData.address.filter((_address, i) => i !== index);
-	};
-
-	// on:submit|preventDefault={handleRegister}
 </script>
 
 <svelte:head>
@@ -138,71 +40,13 @@
 			</label>
 			<input type="text" name="name" class="input" value={form?.name ?? ''} />
 
-			<label for="email" class="flex justify-between text-sm">
-				<span>Email</span>
+			<label for="username" class="flex justify-between text-sm">
+				<span>Username</span>
 				<span class="text-xs text-danger">
-					{errorMessages.get('email') ? errorMessages.get('email') : ''}
+					{errorMessages.get('username') ? errorMessages.get('username') : ''}
 				</span>
 			</label>
-			{#each form?.email || [''] as emailValue, i (i)}
-				<div class="flex items-center space-x-2">
-					<input type="email" name="email[]" class="input" value={emailValue} />
-
-					{#if i < form?.email?.length - 1}
-						<button formaction="?/removeEmail&email={i}">
-							{@html svgMinusCircle}
-						</button>
-					{:else}
-						<button formaction="?/addEmail">
-							{@html svgPlusCircle}
-						</button>
-					{/if}
-				</div>
-			{/each}
-
-			<label for="phone" class="flex justify-between text-sm">
-				<span>Phone</span>
-				<span class="text-xs text-danger">
-					{errorMessages.get('phone') ? errorMessages.get('phone') : ''}
-				</span>
-			</label>
-			{#each form?.phone || [''] as phoneValue, i (i)}
-				<div class=" flex items-center space-x-2">
-					<input type="text" name="phone[]" class="input" value={phoneValue} />
-
-					{#if i < form?.phone?.length - 1}
-						<button formaction="?/removePhone&phone={i}" >
-							{@html svgMinusCircle}
-						</button>
-					{:else}
-						<button formaction="?/addPhone">
-							{@html svgPlusCircle}
-						</button>
-					{/if}
-				</div>
-			{/each}
-
-			<label for="address" class="flex justify-between text-sm">
-				<span>Address</span>
-				<span class="text-xs text-danger">
-					{errorMessages.get('address') ? errorMessages.get('address') : ''}
-				</span>
-			</label>
-			{#each form?.address || [''] as addressValue, i (i)}
-				<div class=" flex items-center space-x-2">
-					<textarea name="address[]" class="input" value={addressValue} cols="10" rows="5" />
-
-					{#if i < form?.address?.length - 1}
-						<button formaction="?/removeAddress&address={i}">
-							{@html svgMinusCircle}
-						</button>
-					{:else}
-						<button formaction="?/addAddress">
-							{@html svgPlusCircle}
-						</button>
-					{/if}
-				</div>
-			{/each}
+			<input type="text" name="username" class="input" value={form?.username ?? ''} />
 
 			<label for="password" class="flex justify-between text-sm">
 				<span>Password</span>
@@ -227,7 +71,7 @@
 						{/if}
 					</button>
 				</div>
-				<input name="password" class="input"  value={form?.password ?? ''} />
+				<input name="password" type={passwordType} class="input" value={form?.password ?? ''} />
 			</div>
 
 			<label for="confirmPassword" class="flex justify-between text-sm">
@@ -254,6 +98,7 @@
 					</button>
 				</div>
 				<input
+					type={confirmPasswordType}
 					name="confirmPassword"
 					class="input"
 					value={form?.confirmPassword ?? ''}

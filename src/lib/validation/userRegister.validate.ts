@@ -10,9 +10,13 @@ export const editUserSchema = z
 			})
 			.min(3)
 			.trim(),
-		email: z.array((z.string({ required_error: 'Email is required' }).email().nonempty())),
-		phone: z.array(z.string({ required_error: 'Phone is required' })),
-		address: z.array(z.string({ required_error: 'Address is required' })),
+		username: z
+			.string({
+				required_error: 'username is required',
+				invalid_type_error: 'username must be a string'
+			})
+			.min(3)
+			.trim(),
 		password: z.string({
 			required_error: 'Password is required',
 			invalid_type_error: 'Password must be a string'

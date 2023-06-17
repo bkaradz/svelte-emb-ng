@@ -7,34 +7,37 @@ import { verifyJwt } from '$lib/utility/jwt.utils';
 import { findSessions } from '$lib/services/session.services';
 import type { userSessionInterface } from '$lib/types';
 import { auth } from '$lib/lucia/client';
+import { handleHooks } from '@lucia-auth/sveltekit';
 
 export const first = createTRPCHandle({ router, createContext });
 
-export const third: Handle = async ({ event, resolve }) => {
+export const second: Handle = async ({ event, resolve }) => {
 	event.locals.auth = auth.handleRequest(event);
 	return await resolve(event);
 };
 
-export const second: Handle = async ({ event, resolve }) => {
-	const cookies = event.cookies.get('accessToken');
+// export const second: Handle = handleHooks({auth: auth})
 
-	let decoded: userSessionInterface | undefined = undefined;
+// export const third: Handle = async ({ event, resolve }) => {
+// 	const cookies = event.cookies.get('accessToken');
 
-	if (cookies) {
-		decoded = verifyJwt(cookies).decoded as unknown as userSessionInterface;
-	}
+// 	let decoded: userSessionInterface | undefined = undefined;
 
-	if (decoded) {
-		const session = await findSessions(decoded?.sessionID);
-		if (session) {
-			event.locals.user = decoded;
-			event.locals.user.authenticated = true;
-			return await resolve(event);
-		}
-	}
+// 	if (cookies) {
+// 		decoded = verifyJwt(cookies).decoded as unknown as userSessionInterface;
+// 	}
 
-	event.locals.user = null;
-	return await resolve(event);
-};
+// 	if (decoded) {
+// 		const session = await findSessions(decoded?.sessionID);
+// 		if (session) {
+// 			event.locals.user = decoded;
+// 			event.locals.user.authenticated = true;
+// 			return await resolve(event);
+// 		}
+// 	}
 
-export const handle: Handle = sequence(first, second, third);
+// 	event.locals.user = null;
+// 	return await resolve(event);
+// };
+
+export const handle: Handle = sequence(first, second);

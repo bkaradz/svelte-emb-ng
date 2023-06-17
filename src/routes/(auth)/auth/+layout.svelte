@@ -4,11 +4,10 @@
 	import { page } from '$app/stores';
 	import Loading from '$lib/components/Loading.svelte';
 	import Toasts from '$lib/components/Toasts.svelte';
-	import type { User } from '$lib/types';
 	import { svgLogin, svgRegister } from '$lib/utility/svgLogos';
 	import '../../../styles/app.css';
 
-	export let data: { user: User };
+	export let data;
 
 	$: if (data.user) {
 		if (browser) {

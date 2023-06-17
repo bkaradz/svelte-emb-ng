@@ -15,9 +15,6 @@ export const load = (async (event) => {
 			.exchangeRate.getById(parseInt(event.params.id, 10));
 	};
 
-	console.log('resultsCurrency', await resultsCurrency());
-	console.log('resultsRates', await resultsRates());
-
 	return {
 		resultsCurrency: resultsCurrency(),
 		resultsRates: resultsRates()

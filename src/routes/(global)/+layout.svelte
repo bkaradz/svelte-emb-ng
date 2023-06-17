@@ -8,7 +8,7 @@
 	import type { userSessionInterface } from '$lib/types';
 	import '../../styles/app.css';
 
-	export let data: { user: userSessionInterface };
+	export let data;
 
 	$: if (!data.user) {
 		if (browser) {
@@ -19,7 +19,7 @@
 		isPageLoading = false;
 	}
 
-	let isPageLoading = true;
+	let isPageLoading = false;
 </script>
 
 {#if !isPageLoading}

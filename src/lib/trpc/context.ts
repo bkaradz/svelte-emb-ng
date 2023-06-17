@@ -1,27 +1,15 @@
-import { findSessions } from '$lib/services/session.services';
-import type { userSessionInterface } from '$lib/types';
-import { verifyJwt } from '$lib/utility/jwt.utils';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { inferAsyncReturnType } from '@trpc/server';
 
 export async function createContext(event: RequestEvent) {
-	const cookies = event.cookies.get('accessToken');
+	const session = await event.locals.auth.validate()
 
-	let decoded: userSessionInterface | null = null;
-
-	if (cookies) {
-		decoded = verifyJwt(cookies).decoded as unknown as userSessionInterface;
-	}
-
-	if (decoded) {
-		const session = await findSessions(decoded?.sessionID);
-		if (session) {
-			return {
-				sessionId: decoded.sessionID,
-				userId: decoded?.id,
-				event
-			};
-		}
+	if (session) {
+		return {
+			sessionId: session.sessionId,
+			userId: session.userId,
+			event
+		};
 	}
 
 	return {

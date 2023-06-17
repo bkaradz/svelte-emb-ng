@@ -20,9 +20,7 @@ export const exchangeRate = router({
 		)
 		.query(async ({ input }) => {
 			let { isActive, isDefault } = input;
-			console.log("🚀 ~ file: exchangeRate.ts:23 ~ .query ~ input:", input)
 			if ((!isActive && !isDefault) || (isActive && isDefault)) {
-				console.log("Entered Noo Man's Land");
 				throw new Error('isActive and isDefault can not be undefined');
 			}
 			if (!isActive) isActive = false
