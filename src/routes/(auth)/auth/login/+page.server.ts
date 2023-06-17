@@ -9,8 +9,9 @@ export const load = (async ({ locals }) => {
 
     if (session) {
         throw redirect(302, "/")
-    }
-    return {};
+    } 
+    return {}
+    
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -35,7 +36,7 @@ export const actions: Actions = {
         } catch (error) {
             return fail(400, {
                 message: 'Could not login user.',
-                errors: { error }
+                errors: { }
             })
         }
         throw redirect(302, '/')

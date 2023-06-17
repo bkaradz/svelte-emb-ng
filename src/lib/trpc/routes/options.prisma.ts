@@ -58,7 +58,7 @@ export const saveOrUpdateOptionPrisma = async (input: SaveOption, ctx: Context) 
 		throw new Error('User not authorised');
 	}
 
-	const createdBy = ctx.userId as number;
+	const createdBy = ctx.userId;
 
 	if (input.isDefault) {
 		changeCurrentDefault(input.group);
