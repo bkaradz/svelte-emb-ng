@@ -17,7 +17,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const allUsers = await prisma.contacts.findMany({
 			where: {
 				isActive: true,
-				isUser: true
 			},
 			include: {
 				email: true,
@@ -27,7 +26,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		});
 
 		const allUsersFinal = allUsers.map((user) => {
-			const { password, ...rest } = user;
+			const { ...rest } = user;
 			return rest;
 		});
 

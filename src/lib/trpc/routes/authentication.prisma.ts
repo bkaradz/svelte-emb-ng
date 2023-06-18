@@ -25,7 +25,7 @@ export const getUsersPrisma = async (input: SearchParams) => {
 
 	let whereQuery;
 
-	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+	if (objectKeys === 'isCorporate' || objectKeys === 'isActive') {
 		whereQuery = {
 			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
@@ -53,13 +53,11 @@ export const getUsersPrisma = async (input: SearchParams) => {
 		query = {
 			...baseQuery,
 			where: {
-				isUser: true,
 				[objectKeys]: whereQuery
 			}
 		};
 		queryTotal = {
 			where: {
-				isUser: true,
 				[objectKeys]: whereQuery
 			}
 		};
@@ -67,12 +65,10 @@ export const getUsersPrisma = async (input: SearchParams) => {
 		query = {
 			...baseQuery,
 			where: {
-				isUser: true
 			}
 		};
 		queryTotal = {
 			where: {
-				isUser: true
 			}
 		};
 	}
@@ -193,17 +189,11 @@ export const registerOrUpdateUserPrisma = async (input: UserRegister) => {
 
 		if (allUsers === 0) {
 			role = {
-				userRole: 'ADMIN',
-				isUser: true,
 				isActive: true,
-				isUserActive: true
 			};
 		} else {
 			role = {
-				userRole: 'USER',
-				isUser: true,
 				isActive: true,
-				isUserActive: false
 			};
 		}
 

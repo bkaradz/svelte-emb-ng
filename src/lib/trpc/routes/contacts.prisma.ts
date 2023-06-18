@@ -16,7 +16,7 @@ export const getContactsPrisma = async (input: SearchParams) => {
 
 	let whereQuery;
 
-	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+	if (objectKeys === 'isCorporate' || objectKeys === 'isActive') {
 		whereQuery = {
 			equals: getBoolean(finalQuery[objectKeys] as any)
 		};
@@ -103,7 +103,7 @@ export const getCorporatePrisma = async (input: SearchParams) => {
 
 	let whereQuery;
 
-	if (objectKeys === 'isCorporate' || objectKeys === 'isActive' || objectKeys === 'isUser') {
+	if (objectKeys === 'isCorporate' || objectKeys === 'isActive') {
 		whereQuery = {
 			equals: getBoolean(finalQuery[objectKeys] as any)
 		};

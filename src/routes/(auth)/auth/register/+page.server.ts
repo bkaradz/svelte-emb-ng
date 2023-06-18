@@ -32,7 +32,7 @@ export const actions: Actions = {
 
             const { name, username, password } = parsedUser.data 
 
-            await auth.createUser({
+             await auth.createUser({
                 primaryKey: {
                     providerId: 'username',
                     providerUserId: username,

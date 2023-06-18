@@ -55,7 +55,6 @@ export const pricelists = [
 		]
 	},
 	{
-		createdBy: 1,
 		name: 'pricelist2',
 		isDefault: true,
 		isActive: true,

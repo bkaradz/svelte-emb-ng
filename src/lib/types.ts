@@ -5,7 +5,6 @@ export interface userSessionInterface {
 	name: string;
 	isActive: boolean;
 	isUserActive: boolean;
-	isUser: boolean;
 	userRole: 'ADMIN' | 'USER';
 	sessionID: number;
 	authenticated: boolean;

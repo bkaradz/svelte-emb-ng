@@ -18,6 +18,5 @@ export const auth = lucia({
 	}
 });
 
-// export { auth }
 
 export type Auth = typeof auth

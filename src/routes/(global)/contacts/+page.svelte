@@ -37,7 +37,6 @@
 		state?: string;
 		isCorporate?: boolean;
 		isActive?: boolean;
-		isUser?: boolean;
 	};
 
 	const tableHeadings = [

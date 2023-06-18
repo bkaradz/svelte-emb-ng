@@ -87,7 +87,6 @@ const querySelection = (reqContact: any) => {
 	contact = {
 		name,
 		isActive: true,
-		isUser: false
 	};
 
 	if (email) {

@@ -390,7 +390,6 @@ const getOrdersQueryOptions = (objectKeys: string, finalQuery: any) => {
 	if (
 		objectKeys === 'isCorporate' ||
 		objectKeys === 'isActive' ||
-		objectKeys === 'isUser' ||
 		objectKeys === 'isInvoiced'
 	) {
 		return {

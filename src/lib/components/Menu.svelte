@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { currenciesOptions, selectedCurrency } from '$lib/stores/setCurrency.store';
 	import { toasts } from '$lib/stores/toasts.store';
@@ -75,8 +76,9 @@
 		{@html svgBellSolid}
 		<span
 			class="absolute top-0 right-0 inline-flex translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-success px-2 py-1 text-xs font-bold leading-none text-white"
-			>122</span
 		>
+			122
+		</span>
 	</span>
 
 	<div class="relative">
@@ -120,13 +122,16 @@
 				</li>
 			</ul>
 			<div class="py-1">
-				<a
-					href="/"
-					on:click|preventDefault={handleLogout}
-					class="block px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:text-pickled-bluewood-200 dark:hover:text-white"
-				>
-					Logout
-				</a>
+				<form action="" method="POST" use:enhance>
+
+					<button
+						formaction="/auth/logout"
+						type="submit"
+						class="w-full px-4 py-2 text-sm text-pickled-bluewood-700 hover:bg-pickled-bluewood-100 dark:hover:bg-pickled-bluewood-600 dark:text-pickled-bluewood-200 dark:hover:text-white"
+					>
+						Logout
+					</button>
+				</form>
 			</div>
 		</div>
 	</div>

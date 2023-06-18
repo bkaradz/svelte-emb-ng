@@ -44,17 +44,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		let role;
 		if (allUsers.length === 0) {
 			role = {
-				userRole: 'ADMIN',
-				isUser: true,
 				isActive: true,
-				isUserActive: true
 			};
 		} else {
 			role = {
-				userRole: 'USER',
-				isUser: true,
 				isActive: true,
-				isUserActive: false
 			};
 		}
 

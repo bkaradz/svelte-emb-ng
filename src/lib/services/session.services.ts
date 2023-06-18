@@ -78,10 +78,6 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 			id: true,
 			name: true,
 			isActive: true,
-			isUserActive: true,
-			isUser: true,
-			userRole: true,
-			password: true
 		}
 	});
 

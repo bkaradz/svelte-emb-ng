@@ -11,8 +11,6 @@
 		'phone',
 		'address',
 		'isActive',
-		'isUser',
-		'userRole',
 		'edit',
 		'delete'
 	];
@@ -165,23 +163,8 @@
 									name="isActive"
 								/>
 							</td>
-							<td class="px-2 py-1">
-								<input
-									bind:checked={list.isUser}
-									disabled={!(isEditableID === list.id)}
-									type="checkbox"
-									name="isUser"
-								/>
-							</td>
-							<td class="px-2 py-1">
-								<input
-									class="m-0 w-full border-none bg-transparent p-0 text-sm focus:border-transparent focus:ring-transparent"
-									type="text"
-									name="userRole"
-									disabled={!(isEditableID === list.id)}
-									bind:value={list.userRole}
-								/>
-							</td>
+							
+							
 							<td class="p-1 text-center">
 								<button class=" m-0 p-0" on:click={() => handleEditable(list)}>
 									<span class="fill-current text-pickled-bluewood-500">

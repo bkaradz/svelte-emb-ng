@@ -12,41 +12,29 @@ datasource db {
 }
 
 model Contacts {
-  id                   Int                  @id @default(autoincrement())
-  createdBy            Int?
-  user                 Contacts?            @relation("userCreatedBy", fields: [createdBy], references: [id])
-  UserContacts         Contacts[]           @relation("userCreatedBy")
+  id                   Int        @id @default(autoincrement())
+  // AuthUser             AuthUser   @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy            String
+  // createdBy            Int?
+  // user                 Contacts?    @relation("userCreatedBy", fields: [createdBy], references: [id])
+  // UserContacts         Contacts[]   @relation("userCreatedBy")
   organisationID       Int?
-  organisation         Contacts?            @relation("organisation", fields: [organisationID], references: [id])
-  organisationContacts Contacts[]           @relation("organisation")
-  name                 String               @unique
-  isCorporate          Boolean              @default(false)
+  organisation         Contacts?  @relation("organisation", fields: [organisationID], references: [id])
+  organisationContacts Contacts[] @relation("organisation")
+  name                 String     @unique
+  isCorporate          Boolean    @default(false)
   notes                String?
   vatOrBpNo            String?
   email                Email[]
   phone                Phone[]
   address              Address[]
-  balanceDue           Json?                @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
-  totalReceipts        Json?                @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
-  isActive             Boolean              @default(true)
-  isUserActive         Boolean              @default(false)
-  isUser               Boolean              @default(false)
-  userRole             String               @default("USER")
-  password             String?
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt()
-  Products             Products[]
-  Options              Options[]
-  Pricelists           Pricelists[]
-  customerContact      Orders[]             @relation("customerID")
-  createdOrder         Orders[]             @relation("createdBy")
-  customerPayment      Payments[]           @relation("customerID")
-  createdPayment       Payments[]           @relation("createdBy")
-  PaymentDetails       PaymentDetails[]     @relation("createdBy")
-  PaymentType          PaymentType[]        @relation("createdBy")
-  ExchangeRate         ExchangeRate[]       @relation("createdBy")
-  PaymentTypeOptions   PaymentTypeOptions[] @relation("createdBy")
-  BankAccounts         BankAccounts[]       @relation("createdBy")
+  balanceDue           Json?      @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
+  totalReceipts        Json?      @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
+  isActive             Boolean    @default(true)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt()
+  customerContact Orders[]   @relation("customerID")
+  customerPayment Payments[] @relation("customerID")
 }
 
 model Phone {
@@ -72,8 +60,8 @@ model Address {
 
 model Products {
   id                Int         @id @default(autoincrement())
-  Contacts          Contacts    @relation(fields: [createdBy], references: [id])
-  createdBy         Int
+  // AuthUser          AuthUser    @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy         String
   name              String      @unique
   description       String?
   unitPrice         Json?       @default("{\"amount\":0,\"currency\":{\"code\":\"USD\",\"base\":10,\"exponent\":2},\"scale\":3}")
@@ -89,8 +77,8 @@ model Products {
 
 model Options {
   id        Int      @id @default(autoincrement())
-  Contacts  Contacts @relation(fields: [createdBy], references: [id])
-  createdBy Int
+  // AuthUser  AuthUser @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy String
   group     String
   isActive  Boolean  @default(true)
   isDefault Boolean  @default(false)
@@ -102,8 +90,8 @@ model Options {
 
 model Pricelists {
   id               Int                @id @default(autoincrement())
-  Contacts         Contacts           @relation(fields: [createdBy], references: [id])
-  createdBy        Int
+  // AuthUser         AuthUser           @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy        String
   name             String             @unique
   isActive         Boolean            @default(true)
   isDefault        Boolean            @default(false)
@@ -125,8 +113,8 @@ model PricelistDetails {
 
 model Orders {
   id              Int         @id @default(autoincrement())
-  createdOrder    Contacts    @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy       Int
+  // createdOrder    AuthUser    @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy       String
   customerContact Contacts    @relation("customerID", fields: [customersID], references: [id])
   customersID     Int
   Pricelists      Pricelists  @relation(fields: [pricelistsID], references: [id])
@@ -162,8 +150,8 @@ model OrderLine {
 
 model Payments {
   id              Int              @id @default(autoincrement())
-  createdPayment  Contacts         @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy       Int
+  // createdPayment  AuthUser         @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy       String
   customerContact Contacts         @relation("customerID", fields: [customersID], references: [id])
   customersID     Int
   PaymentDetails  PaymentDetails[]
@@ -177,8 +165,8 @@ model Payments {
 
 model PaymentDetails {
   id             Int           @id @default(autoincrement())
-  createdPayment Contacts      @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy      Int
+  // createdPayment AuthUser      @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy      String
   Payments       Payments      @relation(fields: [paymentsId], references: [id])
   paymentsId     Int
   PaymentType    PaymentType[]
@@ -189,8 +177,8 @@ model PaymentDetails {
 
 model PaymentType {
   id               Int             @id @default(autoincrement())
-  createdPayment   Contacts        @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy        Int
+  // createdPayment   AuthUser        @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy        String
   PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
   paymentDetailsId Int?
   name             String
@@ -201,8 +189,8 @@ model PaymentType {
 
 model PaymentTypeOptions {
   id                        Int      @id @default(autoincrement())
-  createdPaymentTypeOptions Contacts @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy                 Int
+  // createdPaymentTypeOptions AuthUser @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy                 String
   group                     String
   isActive                  Boolean
   isDefault                 Boolean
@@ -215,8 +203,8 @@ model PaymentTypeOptions {
 
 model BankAccounts {
   id                  Int      @id @default(autoincrement())
-  createdBankAccounts Contacts @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy           Int
+  // createdBankAccounts AuthUser @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy           String
   name                String
   isActive            Boolean
   isDefault           Boolean
@@ -228,8 +216,8 @@ model BankAccounts {
 
 model ExchangeRate {
   id                  Int                   @id @default(autoincrement())
-  createdExchange     Contacts              @relation("createdBy", fields: [createdBy], references: [id])
-  createdBy           Int
+  // createdExchange     AuthUser              @relation("createdBy", fields: [createdBy], references: [id])
+  // createdBy           String
   isActive            Boolean               @default(true)
   isDefault           Boolean               @default(false)
   exChangeRateDate    DateTime              @default(now())
@@ -250,13 +238,24 @@ model ExchangeRateDetails {
 }
 
 model AuthUser {
-  id           String        @id @unique
-  auth_session AuthSession[]
-  auth_key     AuthKey[]
-  name         String
-  username     String        @unique
+  id                 String               @id @unique
+  auth_session       AuthSession[]
+  auth_key           AuthKey[]
+  name               String
+  username           String               @unique
   // here you can add custom fields for your user
   // e.g. name, email, username, roles, etc.
+  // createdOrder       Orders[]             @relation("createdBy")
+  // createdPayment     Payments[]           @relation("createdBy")
+  // PaymentDetails     PaymentDetails[]     @relation("createdBy")
+  // PaymentType        PaymentType[]        @relation("createdBy")
+  // ExchangeRate       ExchangeRate[]       @relation("createdBy")
+  // Contacts           Contacts[]           @relation("createdBy")
+  // PaymentTypeOptions PaymentTypeOptions[] @relation("createdBy")
+  // BankAccounts       BankAccounts[]       @relation("createdBy")
+  // Products           Products[]           @relation("createdBy")
+  // Options            Options[]            @relation("createdBy")
+  // Pricelists         Pricelists[]         @relation("createdBy")
 
   @@map("auth_user")
 }
