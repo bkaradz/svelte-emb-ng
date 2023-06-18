@@ -51,86 +51,86 @@ async function main() {
 	await prisma.exchangeRateDetails.deleteMany();
 	await prisma.paymentTypeOptions.deleteMany();
 
-	// contacts.forEach(async (contact) => {
-	// 		await prisma.contacts.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...contact,
-	// 				isActive: true,
-	// 				isCorporate: false,
-	// 				email: {
-	// 					create: contact.email
-	// 				},
-	// 				phone: {
-	// 					create: contact.phone
-	// 				},
-	// 				address: {
-	// 					create: contact.address
-	// 				}
-	// 			}
-	// 		});
-	// 	});
+	contacts.forEach(async (contact) => {
+			await prisma.contacts.create({
+				data: {
+					// createdBy: adminId,
+					...contact,
+					isActive: true,
+					isCorporate: false,
+					email: {
+						create: contact.email
+					},
+					phone: {
+						create: contact.phone
+					},
+					address: {
+						create: contact.address
+					}
+				}
+			});
+		});
 
-	// 	products.forEach(async (product) => {
-	// 		await prisma.products.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...product
-	// 			}
-	// 		});
-	// 	});
+		products.forEach(async (product) => {
+			await prisma.products.create({
+				data: {
+					// createdBy: adminId,
+					...product
+				}
+			});
+		});
 
-	// 	options.forEach(async (option) => {
-	// 		await prisma.options.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...option
-	// 			}
-	// 		});
-	// 	});
+		options.forEach(async (option) => {
+			await prisma.options.create({
+				data: {
+					// createdBy: adminId,
+					...option
+				}
+			});
+		});
 
-	// 	paymentTypeOptions.forEach(async (option) => {
-	// 		await prisma.paymentTypeOptions.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...option
-	// 			}
-	// 		});
-	// 	});
+		paymentTypeOptions.forEach(async (option) => {
+			await prisma.paymentTypeOptions.create({
+				data: {
+					// createdBy: adminId,
+					...option
+				}
+			});
+		});
 
-	// 	pricelists.forEach(async (pricelist) => {
-	// 		const subPrices = pricelist.PricelistDetails.map((list) => {
-	// 			const pricePerThousandStitches = Math.ceil(list.pricePerThousandStitches * 100);
-	// 			const minimumPrice = Math.ceil(list.minimumPrice * 100);
-	// 			return {
-	// 				...list,
-	// 				pricePerThousandStitches: JSON.stringify(
-	// 					dinero({ amount: pricePerThousandStitches, currency: USD })
-	// 				),
-	// 				minimumPrice: JSON.stringify(dinero({ amount: minimumPrice, currency: USD }))
-	// 			};
-	// 		});
+		pricelists.forEach(async (pricelist) => {
+			const subPrices = pricelist.PricelistDetails.map((list) => {
+				const pricePerThousandStitches = Math.ceil(list.pricePerThousandStitches * 100);
+				const minimumPrice = Math.ceil(list.minimumPrice * 100);
+				return {
+					...list,
+					pricePerThousandStitches: JSON.stringify(
+						dinero({ amount: pricePerThousandStitches, currency: USD })
+					),
+					minimumPrice: JSON.stringify(dinero({ amount: minimumPrice, currency: USD }))
+				};
+			});
 
-	// 		await prisma.pricelists.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...pricelist,
-	// 				PricelistDetails: { createMany: { data: subPrices } }
-	// 			}
-	// 		});
-	// 	});
+			await prisma.pricelists.create({
+				data: {
+					// createdBy: adminId,
+					...pricelist,
+					PricelistDetails: { createMany: { data: subPrices } }
+				}
+			});
+		});
 
-	// 	exchangeRates.forEach(async (rate) => {
-	// 		await prisma.exchangeRate.create({
-	// 			data: {
-	// 				// createdBy: adminId,
-	// 				...rate,
-	// 				ExchangeRateDetails: {
-	// 					create: rate.ExchangeRateDetails
-	// 				}
-	// 			}
-	// 		});
-	// 	});
+		exchangeRates.forEach(async (rate) => {
+			await prisma.exchangeRate.create({
+				data: {
+					// createdBy: adminId,
+					...rate,
+					ExchangeRateDetails: {
+						create: rate.ExchangeRateDetails
+					}
+				}
+			});
+		});
 
 
 	users.forEach(async (user) => {
