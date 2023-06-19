@@ -51,10 +51,29 @@ async function main() {
 	await prisma.exchangeRateDetails.deleteMany();
 	await prisma.paymentTypeOptions.deleteMany();
 
-	contacts.forEach(async (contact) => {
+
+	users.forEach(async (user) => {
+		const { name, username, password } = user
+
+		const newUser = await auth.createUser({
+			primaryKey: {
+				providerId: 'username',
+				providerUserId: username,
+				password
+			},
+			attributes: {
+				name,
+				username
+			}
+		}) as User
+
+		const admin = await Promise.all([newUser]);
+		const adminId = admin[0].userId;
+
+		contacts.forEach(async (contact) => {
 			await prisma.contacts.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...contact,
 					isActive: true,
 					isCorporate: false,
@@ -74,7 +93,7 @@ async function main() {
 		products.forEach(async (product) => {
 			await prisma.products.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...product
 				}
 			});
@@ -83,7 +102,7 @@ async function main() {
 		options.forEach(async (option) => {
 			await prisma.options.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...option
 				}
 			});
@@ -92,7 +111,7 @@ async function main() {
 		paymentTypeOptions.forEach(async (option) => {
 			await prisma.paymentTypeOptions.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...option
 				}
 			});
@@ -113,7 +132,7 @@ async function main() {
 
 			await prisma.pricelists.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...pricelist,
 					PricelistDetails: { createMany: { data: subPrices } }
 				}
@@ -123,7 +142,7 @@ async function main() {
 		exchangeRates.forEach(async (rate) => {
 			await prisma.exchangeRate.create({
 				data: {
-					// createdBy: adminId,
+					createdBy: adminId,
 					...rate,
 					ExchangeRateDetails: {
 						create: rate.ExchangeRateDetails
@@ -131,25 +150,6 @@ async function main() {
 				}
 			});
 		});
-
-
-	users.forEach(async (user) => {
-		const { name, username, password } = user
-
-		const newUser = await auth.createUser({
-			primaryKey: {
-				providerId: 'username',
-				providerUserId: username,
-				password
-			},
-			attributes: {
-				name,
-				username
-			}
-		}) as User
-
-		// const admin = await Promise.all([newUser]);
-		// const adminId = admin[0].userId;
 		
 	});
 	
