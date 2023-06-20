@@ -10,11 +10,6 @@
 
 	export let data;
 
-	$: if (!data.user) {
-		if (browser) {
-			goto('/auth/login');
-		}
-	}
 	$: if (data.user) {
 		isPageLoading = false;
 	}

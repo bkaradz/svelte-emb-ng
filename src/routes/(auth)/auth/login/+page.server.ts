@@ -5,13 +5,11 @@ import { fail, redirect, type Actions } from '@sveltejs/kit';
 import { auth } from '$lib/lucia/client';
 
 export const load = (async ({ locals }) => {
-    const session = await locals.auth.validate()
+    const { session } = await locals.auth.validateUser()
 
-    if (session) {
-        throw redirect(302, "/")
-    } 
+    if (session) throw redirect(302, "/")
     return {}
-    
+
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -36,9 +34,9 @@ export const actions: Actions = {
         } catch (error) {
             return fail(400, {
                 message: 'Could not login user.',
-                errors: { }
+                errors: {}
             })
         }
-        throw redirect(302, '/')
+        // throw redirect(302, '/')
     }
 };

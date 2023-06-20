@@ -6,12 +6,11 @@ import { auth } from '$lib/lucia/client'
 
 
 export const load = (async ({ locals }) => {
-    const session = await locals.auth.validate()
+    const { session } = await locals.auth.validateUser()
 
-    if (session) {
-        throw redirect(302, "/")
-    }
+    if (session) throw redirect(302, "/")
     return {};
+
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
@@ -30,9 +29,9 @@ export const actions: Actions = {
                 })
             }
 
-            const { name, username, password } = parsedUser.data 
+            const { name, username, password } = parsedUser.data
 
-             await auth.createUser({
+            await auth.createUser({
                 primaryKey: {
                     providerId: 'username',
                     providerUserId: username,
@@ -51,8 +50,8 @@ export const actions: Actions = {
             })
         }
 
-        throw redirect(303, '/auth/login')
+        // throw redirect(303, '/auth/login')
 
     },
-  
+
 };

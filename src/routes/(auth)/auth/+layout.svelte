@@ -7,13 +7,6 @@
 	import { svgLogin, svgRegister } from '$lib/utility/svgLogos';
 	import '../../../styles/app.css';
 
-	export let data;
-
-	$: if (data.user) {
-		if (browser) {
-			goto('/');
-		}
-	}
 
 	let isPageLoading = false;
 
