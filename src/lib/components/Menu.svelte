@@ -29,24 +29,7 @@
 		}
 	}
 
-	const handleLogout = async () => {
-		try {
-			const res = await fetch('/api/auth/logout.json', {
-				method: 'POST'
-			});
-
-			if (res.ok) {
-				const data = await res.json();
-				toasts.add({
-					message: `${data.message}`,
-					type: 'success'
-				});
-				goto('/auth/login');
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-		}
-	};
+	
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />

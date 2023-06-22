@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
 	import Loading from '$lib/components/Loading.svelte';
 	import Menu from '$lib/components/Menu.svelte';
 	import SideMenu from '$lib/components/SideMenu.svelte';
 	import Toasts from '$lib/components/Toasts.svelte';
-	import type { userSessionInterface } from '$lib/types';
 	import '../../styles/app.css';
 
 	export let data;
