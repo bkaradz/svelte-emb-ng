@@ -50,6 +50,8 @@ export const actions: Actions = {
             })
         }
 
+        throw redirect(302, "/auth/login")
+
     },
 
 };

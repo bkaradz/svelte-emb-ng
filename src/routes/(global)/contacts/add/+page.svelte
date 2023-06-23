@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import Checkbox2 from '$lib/components/Checkbox2.svelte';
 	import Combobox2 from '$lib/components/Combobox2.svelte';
@@ -115,26 +116,6 @@
 		goto(`/contacts`);
 	};
 
-	const handleUpload = async (e: Event) => {
-		try {
-			const formElm = e.target as HTMLFormElement;
-			const formData = new FormData(formElm);
-
-			const res = await fetch('/api/contacts/upload.json', {
-				method: 'POST',
-				body: formData
-			});
-
-			if (res.ok) {
-				formElm.reset();
-				toasts.add({ message: 'Contacts uploaded', type: 'success' });
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred while uploading contacts', type: 'error' });
-		}
-	};
-
 	const handleComboInput = (e: any) => {
 		currentCorporateQueryParams = {
 			...currentCorporateQueryParams,
@@ -177,7 +158,7 @@
 			</div>
 			<!-- Right -->
 			<div class="flex items-center">
-				<form method="POST" action="?/upload" enctype="multipart/form-data">
+				<form method="POST" action="?/upload" enctype="multipart/form-data" use:enhance>
 					<div class="relative">
 						<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-2 text-white">
 							{@html svgUpload}

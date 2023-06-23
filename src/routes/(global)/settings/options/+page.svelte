@@ -1,28 +1,10 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import OptionsTable from '$lib/components/OptionsTable.svelte';
 	import { toasts } from '$lib/stores/toasts.store';
 	import logger from '$lib/utility/logger';
 	import { svgPlus, svgUpload } from '$lib/utility/svgLogos';
 
-	const handleUpload = async (e: SubmitEvent) => {
-		try {
-			const formElm = e.target as HTMLFormElement;
-			const formData = new FormData(formElm);
-
-			const res = await fetch('/api/options/upload.json', {
-				method: 'POST',
-				body: formData
-			});
-
-			if (res.ok) {
-				formElm.reset();
-				toasts.add({ message: 'Options uploaded', type: 'success' });
-			}
-		} catch (err: any) {
-			logger.error(`Error: ${err}`);
-			toasts.add({ message: 'An error has occurred while uploading Options', type: 'error' });
-		}
-	};
 </script>
 
 <svelte:head>
@@ -33,7 +15,7 @@
 	<div class="mb-2 bg-white p-4 flex justify-between items-center">
 		<h1>Options</h1>
 		<div class="flex items-center">
-			<form method="POST" action="?/upload" enctype="multipart/form-data">
+			<form method="POST" action="?/upload" enctype="multipart/form-data" use:enhance>
 				<div class="relative">
 					<button class="absolute border border-royal-blue-500 bg-royal-blue-500 p-1 text-white"
 						>{@html svgUpload}</button

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import small_logo from '$lib/assets/small_logo.png';
 	import { toasts } from '$lib/stores/toasts.store';
@@ -29,7 +30,7 @@
 		<img class="mx-auto h-12 w-auto" src={small_logo} alt="Lilian Logo" />
 		<h2 class="mt-6 text-center text-3xl font-bold text-pickled-bluewood-900">Register</h2>
 	</div>
-	<form class="mt-8 space-y-6" method="POST" action="?/register">
+	<form class="mt-8 space-y-6" method="POST" action="?/register" use:enhance>
 		<input type="hidden" name="remember" value="true" />
 		<div class="space-y-2 shadow-sm">
 			<label for="name" class="flex justify-between text-sm">

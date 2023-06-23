@@ -7,9 +7,7 @@
 
 	export let data;
 
-	$: if (data.user) {
-		isPageLoading = false;
-	}
+	$: if (data.user) isPageLoading = false;
 
 	let isPageLoading = false;
 </script>

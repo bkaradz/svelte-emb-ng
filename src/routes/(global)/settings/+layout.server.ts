@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
-export const load = (async ({ locals }) => {
+export const load = (async ({locals}) => {
     const { session, user } = await locals.auth.validateUser()
 
 	if (!session) {
@@ -9,5 +9,4 @@ export const load = (async ({ locals }) => {
 	}
 	
 	return { user }
-
-}) satisfies PageServerLoad; 
+}) satisfies LayoutServerLoad;
