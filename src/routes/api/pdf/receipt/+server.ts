@@ -2,6 +2,7 @@ import logger from '$lib/utility/logger';
 import config from 'config';
 import puppeteer from 'puppeteer';
 import type { RequestHandler } from './$types';
+import { error } from '@sveltejs/kit';
 
 const input = {
 	username: config.get<string>('printerEmail'),
@@ -64,7 +65,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		});
 
 		if (!dimensions.height) {
-			throw new Error('The page does not have a height');
+			throw error(404,'The page does not have a height');
 		}
 
 		const pdfBuffer = await page.pdf({

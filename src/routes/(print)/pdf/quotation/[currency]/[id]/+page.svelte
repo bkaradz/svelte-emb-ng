@@ -10,6 +10,7 @@
 	import logger from '$lib/utility/logger';
 	import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
 	import { USD } from '@dinero.js/currencies';
+	import { error } from '@sveltejs/kit';
 	import { add, dinero, multiply, toSnapshot, type DineroOptions } from 'dinero.js';
 	import chunk from 'lodash-es/chunk';
 	import { onMount } from 'svelte';
@@ -153,7 +154,7 @@
 		const OTHER_PAGES_WITH_TOTALS = OTHER_PAGES_WITHOUT_TOTALS - 3;
 
 		if (!Array.isArray(order.OrderLine)) {
-			throw new Error('Order Line not found');
+			throw error(404,'Order Line not found');
 		}
 
 		const lineLength = order.OrderLine.length;

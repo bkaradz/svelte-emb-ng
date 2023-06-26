@@ -3,6 +3,7 @@ import logger from '$lib/utility/logger';
 import type { PricelistDetails, Pricelists, Products } from '@prisma/client';
 import { dinero, greaterThanOrEqual, multiply } from 'dinero.js';
 import { format } from '../monetary';
+import { error } from '@sveltejs/kit';
 
 type NewPricelists = Pricelists & { PricelistDetails: PricelistDetails[] };
 
@@ -14,11 +15,11 @@ export const calculateProductPrices = (
 	try {
 		if (!product) {
 			// return;
-			throw new Error(`Product does not exist`);
+			throw error(404,`Product does not exist`);
 		}
 		if (!pricelist) {
 			// return;
-			throw new Error(`Pricelist does not exist`);
+			throw error(404,`Pricelist does not exist`);
 		}
 		if (product.productCategories !== 'embroidery') {
 			/**
@@ -67,9 +68,9 @@ export const calculateProductPrices = (
 			});
 		}
 
-		throw new Error('Something went wrong');
+		throw error(404,'Something went wrong');
 	} catch (err: any) {
 		logger.error(`Error: ${err}`);
-		throw new Error(`Error:  ${err?.message}`);
+		throw error(500,`Error:  ${err?.message}`);
 	}
 };

@@ -11,6 +11,7 @@ import { calculateOrder } from '$lib/services/orders';
 import type { SaveOrder } from '$lib/validation/saveOrder.validate';
 import { currencyOptions, type CurrencyType } from '$lib/stores/setCurrency.store';
 import { dinero, toSnapshot } from 'dinero.js';
+import { error } from '@sveltejs/kit';
 
 export const getOrdersPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -194,7 +195,7 @@ export const getByIdPrisma = async (input: number) => {
 	});
 
 	if (!order) {
-		throw new Error('Order not found');
+		throw error(404,'Order not found');
 	}
 
 	return order;
@@ -221,7 +222,7 @@ export const updateStatusPrisma = async (
 	ctx: Context
 ) => {
 	if (!ctx.userId) {
-		throw new Error('Unauthorised');
+		throw error(404,'Unauthorised');
 	}
 
 	const createdBy = ctx.userId;
@@ -243,7 +244,7 @@ export type UpdateStatusReturn = Prisma.PromiseReturnType<typeof updateStatusPri
 
 export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) => {
 	if (!ctx.userId) {
-		throw new Error('Unauthorised');
+		throw error(404,'Unauthorised');
 	}
 
 	const createdBy = ctx.userId;
@@ -256,7 +257,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	});
 
 	if (!pricelist) {
-		throw new Error('Pricelist does not exist');
+		throw error(404,'Pricelist does not exist');
 	}
 
 	// check that the customer exist
@@ -267,7 +268,7 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	});
 
 	if (!customerExist) {
-		throw new Error('Customer does not exist');
+		throw error(404,'Customer does not exist');
 	}
 
 	const calcOrder = await calculateOrder(input);
@@ -287,14 +288,14 @@ export const saveOrderOrUpdatePrisma = async (input: SaveOrder, ctx: Context) =>
 	const saveCalcOrder = calcOrderMap as unknown as Prisma.OrderLineCreateManyOrdersInput;
 
 	if (!saveCalcOrder) {
-		throw new Error('Create OrderLine not found');
+		throw error(404,'Create OrderLine not found');
 	}
 
 	const updateCalcOrder =
 		calcOrderMap as unknown as Enumerable<OrderLineUpdateManyWithWhereWithoutOrdersInput>
 
 	// if (!updateCalcOrder) {
-	// 	throw new Error('Update OrderLine not found');
+	// 	throw error(404,'Update OrderLine not found');
 	// }
 
 	const { OrderLine, ...restOrder } = input;
@@ -361,7 +362,7 @@ export const getQuotationOrderPrisma = async (input: { id: number; currency: Cur
 	});
 
 	if (!order) {
-		throw new Error('Order not found');
+		throw error(404,'Order not found');
 	}
 
 	const currencyType = input.currency.toUpperCase() as CurrencyType;
@@ -369,7 +370,7 @@ export const getQuotationOrderPrisma = async (input: { id: number; currency: Cur
 	const selectedCurrency = currencyOptions.get(currencyType);
 
 	if (!selectedCurrency) {
-		throw new Error('Currency not found');
+		throw error(404,'Currency not found');
 	}
 
 	const zero = toSnapshot(dinero({ amount: 0, currency: selectedCurrency.dineroObj }));

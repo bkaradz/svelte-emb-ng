@@ -4,6 +4,7 @@ import type { CurrencyOption } from '$lib/stores/setCurrency.store';
 import { trpc } from '$lib/trpc/client';
 import logger from '$lib/utility/logger';
 import type { SaveOrder, SaveOrdersLine } from '$lib/validation/saveOrder.validate';
+import { error } from '@sveltejs/kit';
 import {
 	add,
 	dinero,
@@ -22,7 +23,7 @@ const handleCalculations = async (lineArray: SaveOrdersLine[] = [], pricelistsId
 		});
 	} catch (err: any) {
 		logger.error(`Error: ${err}`);
-		throw new Error('Error occurred during calculations');
+		throw error(404,'Error occurred during calculations');
 	}
 };
 
@@ -86,7 +87,7 @@ export const handleCartCalculations = async (
 	const newOrder = await handleCurrency(order, selectedCurrency, zero);
 
 	if (!newOrder) {
-		throw new Error('Error in calculations');
+		throw error(404,'Error in calculations');
 	}
 
 	const subTotalsCalc = getCountAndSubTotal(newOrder.OrderLine, zero);

@@ -5,6 +5,7 @@ import type { SearchParams } from '$lib/validation/searchParams.validate';
 import type { Prisma } from '@prisma/client';
 import omit from 'lodash-es/omit';
 import type { Context } from '../context';
+import { error } from '@sveltejs/kit';
 
 export const getProductsPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -101,7 +102,7 @@ export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
 
 export const saveOrUpdateProductsPrisma = async (input: saveProduct, ctx: Context) => {
 	if (!ctx?.userId) {
-		throw new Error('User not authorised');
+		throw error(404,'User not authorised');
 	}
 
 	const createdBy = ctx.userId;

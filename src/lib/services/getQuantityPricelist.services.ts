@@ -1,5 +1,6 @@
 import logger from '$lib/utility/logger';
 import type { PricelistDetails, Pricelists } from '@prisma/client';
+import { error } from '@sveltejs/kit';
 
 export const getQuantityPricelist = ({
 	pricelist,
@@ -20,12 +21,12 @@ export const getQuantityPricelist = ({
 			.pop();
 
 		if (minimumQuantityArray === undefined) {
-			throw new Error('Pricelist Selection is Undefined');
+			throw error(404, 'Pricelist Selection is Undefined');
 		}
 
 		return minimumQuantityArray;
 	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
-		throw new Error(`Error: ${err}`);
+		throw error(500, `Error: ${err}`);
 	}
 };

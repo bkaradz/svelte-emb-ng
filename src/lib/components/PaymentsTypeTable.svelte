@@ -6,6 +6,7 @@
 	import { svgFloppy, svgPencil, svgPlus, svgTrash } from '$lib/utility/svgLogos';
 	import type { SavePaymentTypeOptions } from '$lib/validation/savePaymentTypeOptions.validate';
 	import type { PaymentTypeOptions } from '@prisma/client';
+	import { error } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 
@@ -110,7 +111,7 @@
 			}
 			if (currency === undefined) {
 				// Remove currency
-				throw new Error('Currency required');
+				throw error(404, 'Currency required');
 			}
 
 			await trpc().paymentTypeOptions.saveOrUpdatePayments.mutate(

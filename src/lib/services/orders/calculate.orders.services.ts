@@ -2,6 +2,7 @@ import prisma from '$lib/prisma/client';
 import { getQuantityPricelist } from '$lib/services/getQuantityPricelist.services';
 import logger from '$lib/utility/logger';
 import type { SaveOrder } from '$lib/validation/saveOrder.validate';
+import { error } from '@sveltejs/kit';
 import { dinero, greaterThanOrEqual, multiply, toSnapshot } from 'dinero.js';
 
 export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
@@ -19,15 +20,15 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 		});
 
 		if (!pricelist) {
-			throw new Error('Pricelist not found');
+			throw error(404, 'Pricelist not found');
 		}
 
 		if (!Array.isArray(reqOrder.OrderLine)) {
-			throw new Error('OrderLine array not found');
+			throw error(404, 'OrderLine array not found');
 		}
 
 		if (reqOrder.OrderLine.length < 1) {
-			throw new Error('Order does not have an OrderLine array');
+			throw error(404, 'Order does not have an OrderLine array');
 		}
 
 		const asyncOrderLine = reqOrder.OrderLine.map(async (item) => {
@@ -42,7 +43,7 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 			});
 
 			if (!product) {
-				throw new Error(`Product does not exist`);
+				throw error(404, `Product does not exist`);
 			}
 
 			const { stitches } = product;
@@ -89,6 +90,6 @@ export const calculateOrder = async (reqOrder: Partial<SaveOrder>) => {
 		return newOrderLine;
 	} catch (err: unknown) {
 		logger.error(`Error: ${err}`);
-		throw new Error(`Error:  ${err}`);
+		throw error(500, `Error:  ${err}`);
 	}
 };

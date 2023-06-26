@@ -2,6 +2,7 @@ import prisma from '$lib/prisma/client';
 import type { SavePaymentTypeOptions } from '$lib/validation/savePaymentTypeOptions.validate';
 import type { Prisma } from '@prisma/client';
 import type { Context } from '../context';
+import { error } from '@sveltejs/kit';
 
 export const getPaymentsPrisma = async (input: { group?: string | undefined }) => {
 	type ObjectKeys = keyof typeof input;
@@ -55,7 +56,7 @@ export type GetByIdReturn = Prisma.PromiseReturnType<typeof getByIdPrisma>;
 
 export const saveOrUpdatePaymentsPrisma = async (input: SavePaymentTypeOptions, ctx: Context) => {
 	if (!ctx?.userId) {
-		throw new Error('User not authorised');
+		throw error(404,'User not authorised');
 	}
 
 	const createdBy = ctx.userId ;

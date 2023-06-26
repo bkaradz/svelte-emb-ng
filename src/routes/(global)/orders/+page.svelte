@@ -19,6 +19,7 @@
 		svgSearch,
 		svgView
 	} from '$lib/utility/svgLogos';
+	import { error } from '@sveltejs/kit';
 	import { Buffer } from 'buffer';
 	import dayjs from 'dayjs';
 
@@ -244,7 +245,7 @@
 			const isInvoiced = data.isInvoiced;
 
 			if (!id || !accountsStatus) {
-				throw new Error('id and accountsStatus are required');
+				throw error(404,'id and accountsStatus are required');
 			}
 
 			const res = await trpc().orders.updateStatus.mutate({ id, accountsStatus, isInvoiced });

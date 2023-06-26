@@ -6,6 +6,7 @@ import type { SearchParams } from '$lib/validation/searchParams.validate';
 import type { Prisma } from '@prisma/client';
 import omit from 'lodash-es/omit';
 import type { Context } from '../context';
+import { error } from '@sveltejs/kit';
 
 export const getContactsPrisma = async (input: SearchParams) => {
 	const pagination = getPagination(input);
@@ -194,7 +195,7 @@ export const getByIdPrisma = async (input: number) => {
 	});
 
 	if (!contacts) {
-		throw new Error('Contact not found');
+		throw error(404,'Contact not found');
 	}
 
 	return contacts;
@@ -218,7 +219,7 @@ export type DeleteByIdReturn = Prisma.PromiseReturnType<typeof deleteByIdPrisma>
 
 export const saveOrUpdateContactPrisma = async (input: SaveContact, ctx: Context) => {
 	if (!ctx.userId) {
-		throw new Error('User not found');
+		throw error(404,'User not found');
 	}
 
 	if (input.id) {

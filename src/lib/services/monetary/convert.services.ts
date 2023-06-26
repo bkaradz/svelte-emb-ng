@@ -4,6 +4,7 @@ import { trpc } from '$lib/trpc/client';
 import { handleErrors } from '$lib/utility/errorsHandling';
 import logger from '$lib/utility/logger';
 import { USD } from '@dinero.js/currencies';
+import { error } from '@sveltejs/kit';
 import type { Currency, Dinero, DineroOptions } from 'dinero.js';
 import { convert, dinero, toSnapshot, type Rates } from 'dinero.js';
 
@@ -135,7 +136,7 @@ if (browser) {
 					ratesMap.set(rate.currency, Math.ceil(parseFloat(rate.rate as string) * 100));
 				});
 				if (ratesMap.size === 0) {
-					throw new Error('Exchange Rates not found');
+					throw error(404, 'Exchange Rates not found');
 				}
 				currenciesRates = ratesMap;
 			} else {
@@ -143,7 +144,6 @@ if (browser) {
 					message: 'Please enter one default exchange rate',
 					type: 'error'
 				});
-				// throw new Error("Default Exchange Rates more than one found");
 			}
 		} catch (err: unknown) {
 			handleErrors(err);

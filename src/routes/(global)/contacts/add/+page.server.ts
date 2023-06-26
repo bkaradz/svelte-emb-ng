@@ -2,7 +2,7 @@ import { router } from '$lib/trpc/router';
 import type { PageServerLoad } from './$types';
 import { createContext } from '$lib/trpc/context';
 import logger from '$lib/utility/logger';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import type { Contacts, Prisma } from '@prisma/client';
 import parseCsv from '$lib/utility/parseCsv';
 import normalizePhone from '$lib/utility/normalizePhone.util';
@@ -24,7 +24,14 @@ export const load = (async (event) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	upload: async ({ request }) => {
+	upload: async ({ request, locals }) => {
+
+		const { user } = await locals.auth.validateUser()
+
+		if (!user) {
+			throw redirect(303, "/auth/login")
+		}
+
 		const data = await request.formData()
 		const file = data.get('contacts')
 
@@ -46,7 +53,7 @@ export const actions: Actions = {
 
 		contactsArray.forEach(async (element) => {
 			try {
-				const contact = querySelection(element);
+				const contact = querySelection(element, user);
 				const contactsQuery = await prisma.contacts.create({ data: contact });
 				allDocsPromises.push(contactsQuery);
 			} catch (err: unknown) {
@@ -64,7 +71,7 @@ export const actions: Actions = {
 	}
 };
 
-const querySelection = (reqContact: any) => {
+const querySelection = (reqContact: any, user: { userId: string, username: string, name: string }) => {
 	let { name, email, phone, address } = reqContact;
 
 	name = name.trim();
@@ -85,6 +92,7 @@ const querySelection = (reqContact: any) => {
 	let contact: Prisma.ContactsCreateInput;
 
 	contact = {
+		createdBy: user.userId,
 		name,
 		isActive: true,
 	};

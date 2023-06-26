@@ -472,6 +472,7 @@
 	import isBetween from 'dayjs/plugin/isBetween';
 	import weekday from 'dayjs/plugin/weekday';
 	import { onMount } from 'svelte';
+	import { error } from '@sveltejs/kit';
 	dayjs.extend(isBetween);
 	dayjs.extend(weekday);
 
@@ -588,7 +589,7 @@
 
 	$: if (customerSearch.name) {
 		if (!customerSearch.id) {
-			throw new Error('id not found');
+			throw error(404,'id not found');
 		}
 		mainOrder.customersID = customerSearch.id;
 	}

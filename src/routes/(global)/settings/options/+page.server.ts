@@ -1,30 +1,30 @@
 import { getBoolean } from '$lib/utility/toBoolean';
 import type { PageServerLoad } from './$types';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import prisma from '$lib/prisma/client';
 import logger from '$lib/utility/logger';
 import parseCsv from '$lib/utility/parseCsv';
 import type { Options } from '@prisma/client';
 
 export const load = (async () => {
-    return {};
+	return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-    upload: async ({ request, locals }) => {
-        if (!locals?.user?.id) {
-			return fail(401, {
-				message: 'Unauthorized',
-				errors: {}
-			})
+	upload: async ({ request, locals }) => {
+
+		const { user } = await locals.auth.validateUser()
+
+		if (!user) {
+			throw redirect(303, "/auth/login")
 		}
 
-        const createDBy = locals.user.id;
+		const createDBy = user.userId;
 
-        const data = await request.formData()
+		const data = await request.formData()
 		const file = data.get('options')
 
-        if (!(file instanceof File)) {
+		if (!(file instanceof File)) {
 			logger.error('File is empty');
 			return fail(400, {
 				message: 'File is empty',
@@ -32,7 +32,7 @@ export const actions: Actions = {
 			})
 		}
 
-        const csvString: string = await file.text();
+		const csvString: string = await file.text();
 
 		const optionsArray = (await parseCsv(csvString)) as Options[];
 
@@ -74,6 +74,6 @@ export const actions: Actions = {
 
 		const optionsQuery = await prisma.options.createMany({ data: allDocsPromises });
 
-        return { success: true, payload: JSON.stringify(optionsQuery)}
-    }
+		return { success: true, payload: JSON.stringify(optionsQuery) }
+	}
 };

@@ -2,6 +2,7 @@ import { BWP, type Currency } from '@dinero.js/currencies';
 import { dinero, haveSameCurrency, toFormat, toSnapshot, type Dinero } from 'dinero.js';
 import { ZWB, ZWR } from './convert.services';
 import logger from '$lib/utility/logger';
+import { error } from '@sveltejs/kit';
 
 function intlFormat(locale: string, options = {}) {
 	return function formatter(dineroObject: Dinero<number>) {
@@ -52,7 +53,7 @@ const formattersMap = new Map([
 export function format(dineroObject: Dinero<number> | undefined) {
 	try {
 		if (!dineroObject) {
-			throw new Error('Dinero object can not be undefined');
+			throw error(404, 'Dinero object can not be undefined');
 		}
 
 		const { currency } = toSnapshot(dineroObject);

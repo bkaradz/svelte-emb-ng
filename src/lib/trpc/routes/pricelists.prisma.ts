@@ -4,6 +4,7 @@ import type { SavePricelists } from '$lib/validation/savePricelists.validate';
 import type { SearchParams } from '$lib/validation/searchParams.validate';
 import type { Pricelists, Prisma } from '@prisma/client';
 import type { Context } from '../context';
+import { error } from '@sveltejs/kit';
 
 export const getPricelistsPrisma = async (input: SearchParams) => {
 	type ObjectKeys = keyof Pricelists;
@@ -73,11 +74,11 @@ export const getDefaultPricelistPrisma = async () => {
 	});
 
 	if (pricelist.length > 1) {
-		throw new Error('Default pricelist more than one');
+		throw error(404,'Default pricelist more than one');
 	}
 
 	if (pricelist.length === 0) {
-		throw new Error('Default pricelist not found');
+		throw error(404,'Default pricelist not found');
 	}
 
 	return pricelist[0];
@@ -88,7 +89,7 @@ export type GetDefaultPricelistReturn = Prisma.PromiseReturnType<typeof getDefau
 
 export const saveOrUpdatePricelistPrisma = async (input: SavePricelists, ctx: Context) => {
 	if (!ctx?.userId) {
-		throw new Error('User not authorised');
+		throw error(404,'User not authorised');
 	}
 
 	const createdBy = ctx.userId;

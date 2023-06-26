@@ -1,7 +1,7 @@
 // import * as cookie from 'cookie';
 import prisma from '$lib/prisma/client';
 import type { LoginCredentials } from '$lib/validation/login.validate';
-import type { Cookies } from '@sveltejs/kit';
+import { error, type Cookies } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import config from 'config';
 
@@ -67,7 +67,7 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 	});
 
 	if (!emailRes?.contactsId) {
-		throw new Error(`email not found`);
+		throw error(404, `email not found`);
 	}
 
 	const userRes = await prisma.contacts.findUnique({
@@ -82,17 +82,17 @@ export async function validateUserPassword(userCredentials: LoginCredentials) {
 	});
 
 	if (!userRes) {
-		throw new Error(`User not found`);
+		throw error(404, `User not found`);
 	}
 
 	if (!userRes?.password) {
-		throw new Error(`Not a valid not found`);
+		throw error(404, `Not a valid not found`);
 	}
 
 	const isValid = await bcrypt.compare(password, userRes.password).catch(() => false);
 
 	if (!isValid) {
-		throw new Error(`Email or Password not valid`);
+		throw error(404, `Email or Password not valid`);
 	}
 
 	{

@@ -3,6 +3,7 @@ import { getBoolean } from '$lib/utility/toBoolean';
 import type { SaveExchangeRate } from '$lib/validation/saveExchangeRate.validate';
 import type { Prisma } from '@prisma/client';
 import type { Context } from '../context';
+import { error } from '@sveltejs/kit';
 
 export const getExchangeRatesPrisma = async (input: { isDefault: boolean; isActive: boolean }) => {
 	type ObjectKeys = keyof typeof input;
@@ -85,7 +86,7 @@ export const getDefaultExchangeRatePrisma = async () => {
 	});
 
 	if (exchangeRate.length > 1) {
-		throw new Error('Default exchange rates are more than one');
+		throw error(404,'Default exchange rates are more than one');
 	}
 
 	return exchangeRate;
@@ -98,7 +99,7 @@ export type GetDefaultExchangeRateReturn = Prisma.PromiseReturnType<
 
 export const saveOrUpdateExchangeRatePrisma = async (input: SaveExchangeRate, ctx: Context) => {
 	if (!ctx?.userId) {
-		throw new Error('User not authorised');
+		throw error(404,'User not authorised');
 	}
 
 	const createdBy = ctx.userId;

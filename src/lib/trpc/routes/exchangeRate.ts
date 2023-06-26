@@ -9,6 +9,7 @@ import {
 	getExchangeRatesPrisma,
 	saveOrUpdateExchangeRatePrisma
 } from './exchangeRate.prisma';
+import { error } from '@sveltejs/kit';
 
 export const exchangeRate = router({
 	getExchangeRates: protectedProcedure
@@ -21,7 +22,7 @@ export const exchangeRate = router({
 		.query(async ({ input }) => {
 			let { isActive, isDefault } = input;
 			if ((!isActive && !isDefault) || (isActive && isDefault)) {
-				throw new Error('isActive and isDefault can not be undefined');
+				throw error(404,'isActive and isDefault can not be undefined');
 			}
 			if (!isActive) isActive = false
 			if (!isDefault) isDefault = false

@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import logger from '$lib/utility/logger';
 import prisma from '$lib/prisma/client';
 import { savePaymentTypesOptionsSchema } from '$lib/validation/savePaymentTypeOptions.validate';
@@ -9,19 +9,19 @@ import parseCsv from '$lib/utility/parseCsv';
 import type { PaymentTypeOptions } from '@prisma/client';
 
 export const load = (async () => {
-    return {};
+	return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-    upload: async ({ request, locals }) => {
-        if (!locals?.user?.id) {
-			return fail(401, {
-				message: 'Unauthorized',
-				errors: {}
-			})
+	upload: async ({ request, locals }) => {
+
+		const { user } = await locals.auth.validateUser()
+
+		if (!user) {
+			throw redirect(303, "/auth/login")
 		}
 
-        const createdBy = locals.user.id;
+		const createdBy = user.userId;
 
 		const data = await request.formData()
 		const file = data.get('products')
@@ -36,7 +36,7 @@ export const actions: Actions = {
 
 		const csvString = await file.text();
 
-        type PaymentTypeOptionsInter = Omit<
+		type PaymentTypeOptionsInter = Omit<
 			PaymentTypeOptions,
 			'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'isDefault'
 		>;
@@ -75,6 +75,6 @@ export const actions: Actions = {
 
 		const optionsQuery = await prisma.paymentTypeOptions.createMany({ data: allDocsPromises });
 
-        return { success: true, payload: JSON.stringify(optionsQuery) }
-    }
+		return { success: true, payload: JSON.stringify(optionsQuery) }
+	}
 };
